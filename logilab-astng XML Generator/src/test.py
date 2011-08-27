@@ -5,6 +5,11 @@ Created on 19.08.2011
 @author: bluesbreaker
 '''
 import logilab.astng
+from logilab.common.configuration import ConfigurationMixIn
+from pylint.pyreverse.utils import insert_default_options
+from logilab.astng.inspector import Linker
+from pylint.pyreverse.diadefslib import DiadefsHandler
+from pylint.pyreverse import writer
 from lxml import etree
 from logilab.astng import builder
 '''import all names of nodes'''
@@ -37,6 +42,7 @@ def make_tree(root_xml,root_astng):
                  sub.set("asname",name[1])
             current_xml_node.append(sub)
     elif(isinstance(root_astng, Module)):
+        print root_astng.depends
         current_xml_node.set("name",root_astng.name)
     elif(isinstance(root_astng, AssName)):
         current_xml_node.set("name",root_astng.name)
@@ -84,11 +90,48 @@ def make_tree(root_xml,root_astng):
         current_xml_node.set("func",str(root_astng.func))
     elif(isinstance(root_astng, Compare)):
         #0 of ops is operation, !=, for example
-        #FIXME ops is lisr of tuples!!!!!
+        #FIXME ops is list of tuples!!!!!
+        #Compare operators can be combined, for example  a == b == c or 1 <= x <= 10.
         current_xml_node.set("op",str(root_astng.ops[0]))
+    elif(isinstance(root_astng, Comprehension)):
+        pass
+        #Way to create list much simplier, for example [3*x for x in vec]
+        #FIXME How it can be displayed
+        #print root_astng.root(),root_astng.fromlineno,root_astng.target, root_astng.iter, root_astng.ifs
+        #current_xml_node.set("op",str(root_astng.ops[0]))
     elif(isinstance(root_astng, Const)):
         current_xml_node.set("type",root_astng.name)
         current_xml_node.text = str(root_astng.as_string())
+    elif(isinstance(root_astng, Continue)):
+        pass
+    elif(isinstance(root_astng, Decorators)):
+        pass
+        #Decorator for function or method
+        #FIXME
+        #print root_astng.root(),root_astng.fromlineno,root_astng.nodes
+        #current_xml_node.set("type",root_astng.name)
+    elif(isinstance(root_astng, DelAttr)):
+        #FIXME
+        pass
+        #print root_astng.root(),root_astng.fromlineno,root_astng.expr
+        #current_xml_node.set("type",root_astng.name)
+    elif(isinstance(root_astng, Delete)):
+        #FIXME
+        pass
+        #print root_astng.root(),root_astng.fromlineno,root_astng.expr
+        #current_xml_node.set("type",root_astng.name)
+    elif(isinstance(root_astng, Dict)):
+        pass
+        #print root_astng.root(),root_astng.fromlineno,root_astng.items
+        #current_xml_node.set("type",root_astng.name)
+    elif(isinstance(root_astng, Discard)):
+        pass
+        #print root_astng.root(),root_astng.fromlineno,root_astng.value
+        #current_xml_node.set("type",root_astng.name)
+    elif(isinstance(root_astng, ExceptHandler)):
+        pass
+        #print root_astng.root(),root_astng.fromlineno,root_astng.type,root_astng.name,root_astng.body
+        #current_xml_node.set("type",root_astng.name)
     elif(isinstance(root_astng, Name)):
         current_xml_node.set("name", root_astng.name)
     elif(isinstance(root_astng, Getattr)):
@@ -97,9 +140,99 @@ def make_tree(root_xml,root_astng):
     root_xml.append(current_xml_node)
     for child in root_astng.get_children():
         make_tree(current_xml_node, child)
-    
+#FIXME - faster get modules
+def link_imports(root_astng,linker):
+    if(isinstance(root_astng, Import)):
+        linker.visit_import(root_astng)
+    elif(isinstance(root_astng, From)):
+        linker.visit_from(root_astng)
+    elif(isinstance(root_astng, Module)):
+        linker.visit_module(root_astng)
+    for child in root_astng.get_children():
+        link_imports(child, linker)
 
-pc = PyreverseCommand(sys.argv[1:])
+OPTIONS = (
+("filter-mode",
+    dict(short='f', default='PUB_ONLY', dest='mode', type='string',
+    action='store', metavar='<mode>', 
+    help="""filter attributes and functions according to
+    <mode>. Correct modes are :
+                            'PUB_ONLY' filter all non public attributes
+                                [DEFAULT], equivalent to PRIVATE+SPECIAL_A
+                            'ALL' no filter
+                            'SPECIAL' filter Python special functions
+                                except constructor
+                            'OTHER' filter protected and private
+                                attributes""")),
+
+("class",
+dict(short='c', action="append", metavar="<class>", dest="classes", default=[],
+    help="create a class diagram with all classes related to <class>;\
+ this uses by default the options -ASmy")),
+
+("show-ancestors",
+dict(short="a",  action="store", metavar='<ancestor>', type='int',
+    help='show <ancestor> generations of ancestor classes not in <projects>')),
+("all-ancestors",
+dict(short="A", default=None,
+    help="show all ancestors off all classes in <projects>") ),
+("show-associated",
+dict(short='s', action="store", metavar='<ass_level>', type='int',
+    help='show <ass_level> levels of associated classes not in <projects>')),
+("all-associated",
+dict(short='S', default=None,
+    help='show recursively all associated off all associated classes')),
+
+("show-builtin",
+dict(short="b", action="store_true", default=False,
+    help='include builtin objects in representation of classes')),
+
+("module-names",
+dict(short="m", default=None, type='yn', metavar='[yn]',
+    help='include module name in representation of classes')),
+# TODO : generate dependencies like in pylint
+#("package-dependencies",
+#dict(short="M", action="store", metavar='<package_depth>', type='int',
+    #help='show <package_depth> module dependencies beyond modules in \
+#<projects> (for the package diagram)')),
+("only-classnames",
+dict(short='k', action="store_true", default=False,
+    help="don't show attributes and methods in the class boxes; \
+this disables -f values")),
+("output", dict(short="o", dest="output_format", action="store",
+                 default="dot", metavar="<format>",
+                help="create a *.<format> output file if format available.")),
+)
+
+class LogilabXMLGenerator(ConfigurationMixIn):
+    """"""
+    options = OPTIONS
+
+    def __init__(self, args):
+        ConfigurationMixIn.__init__(self, usage=__doc__)
+        insert_default_options()
+        self.manager = ASTNGManager()
+        self.register_options_provider(self.manager)
+        args = self.load_command_line_configuration()
+        self.run(args)
+
+    def run(self, args):
+        """checking arguments and run project"""
+        if not args:
+            print self.help()
+            return
+        project = self.manager.project_from_files(args, astng_wrapper)
+        self.project = project 
+        linker = Linker(project, tag=True)
+        link_imports(project, linker)
+        """handler = DiadefsHandler(self.config)
+        diadefs = handler.get_diadefs(project, linker)
+        if self.config.output_format == "vcg":
+            writer.VCGWriter(self.config).write(diadefs)
+        else:
+            writer.DotWriter(self.config).write(diadefs)"""    
+
+pc = LogilabXMLGenerator(sys.argv[1:])
 xml_root = etree.Element("Project")
 make_tree(xml_root,pc.project)
 handle = etree.tostring(xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)       
