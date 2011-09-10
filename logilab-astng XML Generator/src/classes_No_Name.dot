@@ -1,0 +1,5 @@
+digraph "classes_No_Name" {
+charset="utf-8"
+rankdir=BT
+"7" [shape="record", label="{NextClass|message\l|printer()\l}"];
+}

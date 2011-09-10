@@ -28,6 +28,12 @@ def make_tree(root_xml,root_astng):
     if(hasattr(root_astng, 'fromlineno')):
         '''FIXME Module doesn't need it''' 
         current_xml_node.set("fromlineno",str(root_astng.fromlineno))
+    if(hasattr(root_astng, 'tolineno')):
+        '''FIXME Module doesn't need it''' 
+        current_xml_node.set("tolineno",str(root_astng.tolineno))
+    if(hasattr(root_astng, 'lineno')):
+        '''FIXME Module doesn't need it''' 
+        current_xml_node.set("lineno",str(root_astng.lineno))
     if(isinstance(root_astng, Import)):
         for name in root_astng.names:
             sub = etree.Element("ImportName", name=name[0])
