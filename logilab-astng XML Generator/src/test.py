@@ -169,6 +169,7 @@ class LogilabXMLGenerator(ConfigurationMixIn):
         self.manager = ASTNGManager()
         self.register_options_provider(self.manager)
         args = self.load_command_line_configuration()
+        args = args[0:1]
         self.run(args)
 
     def run(self, args):
@@ -191,6 +192,6 @@ pc = LogilabXMLGenerator(sys.argv[1:])
 xml_root = etree.Element("Project")
 make_tree(xml_root,pc.project)
 handle = etree.tostring(xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)       
-applic = open("/home/bluesbreaker/test.xml", "w")
+applic = open(sys.argv[-1], "w")
 applic.writelines(handle)
 applic.close()
