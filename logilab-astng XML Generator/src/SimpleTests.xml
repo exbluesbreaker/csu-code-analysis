@@ -1,551 +1,552 @@
 <?xml version='1.0' encoding='utf-8'?>
-<Project>
+<PythonSourceTree>
   <Project>
-    <Module fromlineno="0" tolineno="0" lineno="0" name="Tests"/>
-    <Module fromlineno="0" tolineno="10" lineno="0" name="Tests.05-fibonacci">
-      <Function fromlineno="3" tolineno="7" lineno="3">
-        <Arguments fromlineno="3" tolineno="3" lineno="None" format_args="max">
-          <AssName fromlineno="3" tolineno="3" lineno="3" name="max"/>
+    <Module num_lines="0" name="Tests"/>
+    <Module num_lines="10" name="Tests.05-fibonacci">
+      <Function fromlineno="3" tolineno="7">
+        <Arguments fromlineno="3" tolineno="3" format_args="max">
+          <AssName fromlineno="3" tolineno="3" name="max"/>
         </Arguments>
-        <Assign fromlineno="4" tolineno="4" lineno="4" targets="[&lt;Tuple(tuple) l.4 [Tests.05-fibonacci] at Ox8ad1aec&gt;]" value="(0, 1)">
-          <Tuple fromlineno="4" tolineno="4" lineno="4">
-            <AssName fromlineno="4" tolineno="4" lineno="4" name="a"/>
-            <AssName fromlineno="4" tolineno="4" lineno="4" name="b"/>
+        <Assign fromlineno="4" tolineno="4" value="(0, 1)">
+          <Tuple fromlineno="4" tolineno="4">
+            <AssName fromlineno="4" tolineno="4" name="a"/>
+            <AssName fromlineno="4" tolineno="4" name="b"/>
           </Tuple>
-          <Tuple fromlineno="4" tolineno="4" lineno="4">
-            <Const fromlineno="4" tolineno="4" lineno="4" type="int">0</Const>
-            <Const fromlineno="4" tolineno="4" lineno="4" type="int">1</Const>
+          <Tuple fromlineno="4" tolineno="4">
+            <Const fromlineno="4" tolineno="4" type="int">0</Const>
+            <Const fromlineno="4" tolineno="4" type="int">1</Const>
           </Tuple>
         </Assign>
-        <While fromlineno="5" tolineno="7" lineno="5">
-          <Compare fromlineno="5" tolineno="5" lineno="5" op="('&lt;', &lt;Name(max) l.5 [Tests.05-fibonacci] at Ox8ad1ccc&gt;)">
-            <Name fromlineno="5" tolineno="5" lineno="5" name="a"/>
-            <Name fromlineno="5" tolineno="5" lineno="5" name="max"/>
+        <While fromlineno="5" tolineno="7">
+          <Compare fromlineno="5" tolineno="5" op="('&lt;', &lt;Name(max) l.5 [Tests.05-fibonacci] at Ox934fc8c&gt;)">
+            <Name fromlineno="5" tolineno="5" name="a"/>
+            <Name fromlineno="5" tolineno="5" name="max"/>
           </Compare>
-          <Discard fromlineno="6" tolineno="6" lineno="6">
-            <Yield fromlineno="6" tolineno="6" lineno="6">
-              <Name fromlineno="6" tolineno="6" lineno="6" name="a"/>
+          <Discard fromlineno="6" tolineno="6">
+            <Yield fromlineno="6" tolineno="6">
+              <Name fromlineno="6" tolineno="6" name="a"/>
             </Yield>
           </Discard>
-          <Assign fromlineno="7" tolineno="7" lineno="7" targets="[&lt;Tuple(tuple) l.7 [Tests.05-fibonacci] at Ox8ad1dac&gt;]" value="(b, (a) + (b))">
-            <Tuple fromlineno="7" tolineno="7" lineno="7">
-              <AssName fromlineno="7" tolineno="7" lineno="7" name="a"/>
-              <AssName fromlineno="7" tolineno="7" lineno="7" name="b"/>
+          <Assign fromlineno="7" tolineno="7" value="(b, (a) + (b))">
+            <Tuple fromlineno="7" tolineno="7">
+              <AssName fromlineno="7" tolineno="7" name="a"/>
+              <AssName fromlineno="7" tolineno="7" name="b"/>
             </Tuple>
-            <Tuple fromlineno="7" tolineno="7" lineno="7">
-              <Name fromlineno="7" tolineno="7" lineno="7" name="b"/>
-              <BinOp fromlineno="7" tolineno="7" lineno="7" op="+" left="a" right="b">
-                <Name fromlineno="7" tolineno="7" lineno="7" name="a"/>
-                <Name fromlineno="7" tolineno="7" lineno="7" name="b"/>
+            <Tuple fromlineno="7" tolineno="7">
+              <Name fromlineno="7" tolineno="7" name="b"/>
+              <BinOp fromlineno="7" tolineno="7" op="+" left="a" right="b">
+                <Name fromlineno="7" tolineno="7" name="a"/>
+                <Name fromlineno="7" tolineno="7" name="b"/>
               </BinOp>
             </Tuple>
           </Assign>
         </While>
       </Function>
-      <For fromlineno="9" tolineno="10" lineno="9">
-        <AssName fromlineno="9" tolineno="9" lineno="9" name="n"/>
-        <CallFunc fromlineno="9" tolineno="9" lineno="9" func="Name(fibonacci)">
-          <Name fromlineno="9" tolineno="9" lineno="9" name="fibonacci"/>
-          <Const fromlineno="9" tolineno="9" lineno="9" type="int">100</Const>
+      <For fromlineno="9" tolineno="10">
+        <AssName fromlineno="9" tolineno="9" name="n"/>
+        <CallFunc fromlineno="9" tolineno="9" func="Name(fibonacci)">
+          <Name fromlineno="9" tolineno="9" name="fibonacci"/>
+          <Const fromlineno="9" tolineno="9" type="int">100</Const>
         </CallFunc>
-        <Print fromlineno="10" tolineno="10" lineno="10">
-          <Name fromlineno="10" tolineno="10" lineno="10" name="n"/>
+        <Print fromlineno="10" tolineno="10">
+          <Name fromlineno="10" tolineno="10" name="n"/>
         </Print>
       </For>
     </Module>
-    <Module fromlineno="0" tolineno="24" lineno="0" name="Tests.01-ten_frequent_words">
-      <From fromlineno="3" tolineno="3" lineno="3" modname="urllib2">
+    <Module num_lines="24" name="Tests.01-ten_frequent_words">
+      <From fromlineno="3" tolineno="3" modname="urllib2">
         <ImportName name="urlopen"/>
       </From>
-      <Assign fromlineno="5" tolineno="5" lineno="5" targets="[&lt;AssName(u) l.5 [Tests.01-ten_frequent_words] at Ox8ad480c&gt;]" value="urlopen('http://python.org')">
-        <AssName fromlineno="5" tolineno="5" lineno="5" name="u"/>
-        <CallFunc fromlineno="5" tolineno="5" lineno="5" func="Name(urlopen)">
-          <Name fromlineno="5" tolineno="5" lineno="5" name="urlopen"/>
-          <Const fromlineno="5" tolineno="5" lineno="5" type="str">'http://python.org'</Const>
+      <Assign fromlineno="5" tolineno="5" value="urlopen('http://python.org')">
+        <AssName fromlineno="5" tolineno="5" name="u"/>
+        <CallFunc fromlineno="5" tolineno="5" func="Name(urlopen)">
+          <Name fromlineno="5" tolineno="5" name="urlopen"/>
+          <Const fromlineno="5" tolineno="5" type="str">'http://python.org'</Const>
         </CallFunc>
       </Assign>
-      <Assign fromlineno="6" tolineno="6" lineno="6" targets="[&lt;AssName(words) l.6 [Tests.01-ten_frequent_words] at Ox8ad490c&gt;]" value="{}">
-        <AssName fromlineno="6" tolineno="6" lineno="6" name="words"/>
-        <Dict fromlineno="6" tolineno="6" lineno="6"/>
+      <Assign fromlineno="6" tolineno="6" value="{}">
+        <AssName fromlineno="6" tolineno="6" name="words"/>
+        <Dict fromlineno="6" tolineno="6"/>
       </Assign>
-      <For fromlineno="8" tolineno="14" lineno="8">
-        <AssName fromlineno="8" tolineno="8" lineno="8" name="line"/>
-        <Name fromlineno="8" tolineno="8" lineno="8" name="u"/>
-        <Assign fromlineno="9" tolineno="9" lineno="9" targets="[&lt;AssName(line) l.9 [Tests.01-ten_frequent_words] at Ox8ad4a8c&gt;]" value="line.strip(' \n')">
-          <AssName fromlineno="9" tolineno="9" lineno="9" name="line"/>
-          <CallFunc fromlineno="9" tolineno="9" lineno="9" func="Getattr(strip)">
-            <Getattr fromlineno="9" tolineno="9" lineno="9" attrname="strip" expr="line">
-              <Name fromlineno="9" tolineno="9" lineno="9" name="line"/>
+      <For fromlineno="8" tolineno="14">
+        <AssName fromlineno="8" tolineno="8" name="line"/>
+        <Name fromlineno="8" tolineno="8" name="u"/>
+        <Assign fromlineno="9" tolineno="9" value="line.strip(' \n')">
+          <AssName fromlineno="9" tolineno="9" name="line"/>
+          <CallFunc fromlineno="9" tolineno="9" func="Getattr(strip)">
+            <Getattr fromlineno="9" tolineno="9" attrname="strip" expr="line">
+              <Name fromlineno="9" tolineno="9" name="line"/>
             </Getattr>
-            <Const fromlineno="9" tolineno="9" lineno="9" type="str">' \n'</Const>
+            <Const fromlineno="9" tolineno="9" type="str">' \n'</Const>
           </CallFunc>
         </Assign>
-        <For fromlineno="10" tolineno="14" lineno="10">
-          <AssName fromlineno="10" tolineno="10" lineno="10" name="word"/>
-          <CallFunc fromlineno="10" tolineno="10" lineno="10" func="Getattr(split)">
-            <Getattr fromlineno="10" tolineno="10" lineno="10" attrname="split" expr="line">
-              <Name fromlineno="10" tolineno="10" lineno="10" name="line"/>
+        <For fromlineno="10" tolineno="14">
+          <AssName fromlineno="10" tolineno="10" name="word"/>
+          <CallFunc fromlineno="10" tolineno="10" func="Getattr(split)">
+            <Getattr fromlineno="10" tolineno="10" attrname="split" expr="line">
+              <Name fromlineno="10" tolineno="10" name="line"/>
             </Getattr>
-            <Const fromlineno="10" tolineno="10" lineno="10" type="str">' '</Const>
+            <Const fromlineno="10" tolineno="10" type="str">' '</Const>
           </CallFunc>
-          <TryExcept fromlineno="11" tolineno="14" lineno="11">
-            <AugAssign fromlineno="12" tolineno="12" lineno="12" target="words[word]" value="1">
-              <Subscript fromlineno="12" tolineno="12" lineno="12">
-                <Name fromlineno="12" tolineno="12" lineno="12" name="words"/>
-                <Index fromlineno="12" tolineno="12" lineno="None">
-                  <Name fromlineno="12" tolineno="12" lineno="12" name="word"/>
+          <TryExcept fromlineno="11" tolineno="14">
+            <AugAssign fromlineno="12" tolineno="12" target="words[word]" value="1">
+              <Subscript fromlineno="12" tolineno="12">
+                <Name fromlineno="12" tolineno="12" name="words"/>
+                <Index fromlineno="12" tolineno="12">
+                  <Name fromlineno="12" tolineno="12" name="word"/>
                 </Index>
               </Subscript>
-              <Const fromlineno="12" tolineno="12" lineno="12" type="int">1</Const>
+              <Const fromlineno="12" tolineno="12" type="int">1</Const>
             </AugAssign>
-            <ExceptHandler fromlineno="13" tolineno="14" lineno="13">
-              <Name fromlineno="13" tolineno="13" lineno="13" name="KeyError"/>
-              <Assign fromlineno="14" tolineno="14" lineno="14" targets="[&lt;Subscript() l.14 [Tests.01-ten_frequent_words] at Ox8ad4eac&gt;]" value="1">
-                <Subscript fromlineno="14" tolineno="14" lineno="14">
-                  <Name fromlineno="14" tolineno="14" lineno="14" name="words"/>
-                  <Index fromlineno="14" tolineno="14" lineno="None">
-                    <Name fromlineno="14" tolineno="14" lineno="14" name="word"/>
+            <ExceptHandler fromlineno="13" tolineno="14">
+              <Name fromlineno="13" tolineno="13" name="KeyError"/>
+              <Assign fromlineno="14" tolineno="14" value="1">
+                <Subscript fromlineno="14" tolineno="14">
+                  <Name fromlineno="14" tolineno="14" name="words"/>
+                  <Index fromlineno="14" tolineno="14">
+                    <Name fromlineno="14" tolineno="14" name="word"/>
                   </Index>
                 </Subscript>
-                <Const fromlineno="14" tolineno="14" lineno="14" type="int">1</Const>
+                <Const fromlineno="14" tolineno="14" type="int">1</Const>
               </Assign>
             </ExceptHandler>
           </TryExcept>
         </For>
       </For>
-      <Assign fromlineno="19" tolineno="19" lineno="19" targets="[&lt;AssName(pairs) l.19 [Tests.01-ten_frequent_words] at Ox8ad4f6c&gt;]" value="words.items()">
-        <AssName fromlineno="19" tolineno="19" lineno="19" name="pairs"/>
-        <CallFunc fromlineno="19" tolineno="19" lineno="19" func="Getattr(items)">
-          <Getattr fromlineno="19" tolineno="19" lineno="19" attrname="items" expr="words">
-            <Name fromlineno="19" tolineno="19" lineno="19" name="words"/>
+      <Assign fromlineno="19" tolineno="19" value="words.items()">
+        <AssName fromlineno="19" tolineno="19" name="pairs"/>
+        <CallFunc fromlineno="19" tolineno="19" func="Getattr(items)">
+          <Getattr fromlineno="19" tolineno="19" attrname="items" expr="words">
+            <Name fromlineno="19" tolineno="19" name="words"/>
           </Getattr>
         </CallFunc>
       </Assign>
-      <Discard fromlineno="21" tolineno="21" lineno="21">
-        <CallFunc fromlineno="21" tolineno="21" lineno="21" func="Getattr(sort)">
-          <Getattr fromlineno="21" tolineno="21" lineno="21" attrname="sort" expr="pairs">
-            <Name fromlineno="21" tolineno="21" lineno="21" name="pairs"/>
+      <Discard fromlineno="21" tolineno="21">
+        <CallFunc fromlineno="21" tolineno="21" func="Getattr(sort)">
+          <Getattr fromlineno="21" tolineno="21" attrname="sort" expr="pairs">
+            <Name fromlineno="21" tolineno="21" name="pairs"/>
           </Getattr>
-          <Keyword fromlineno="21" tolineno="21" lineno="None">
-            <Lambda fromlineno="21" tolineno="21" lineno="21">
-              <Arguments fromlineno="21" tolineno="21" lineno="None" format_args="x">
-                <AssName fromlineno="21" tolineno="21" lineno="21" name="x"/>
+          <Keyword fromlineno="21" tolineno="21">
+            <Lambda fromlineno="21" tolineno="21">
+              <Arguments fromlineno="21" tolineno="21" format_args="x">
+                <AssName fromlineno="21" tolineno="21" name="x"/>
               </Arguments>
-              <Subscript fromlineno="21" tolineno="21" lineno="21">
-                <Name fromlineno="21" tolineno="21" lineno="21" name="x"/>
-                <Index fromlineno="21" tolineno="21" lineno="None">
-                  <Const fromlineno="21" tolineno="21" lineno="21" type="int">1</Const>
+              <Subscript fromlineno="21" tolineno="21">
+                <Name fromlineno="21" tolineno="21" name="x"/>
+                <Index fromlineno="21" tolineno="21">
+                  <Const fromlineno="21" tolineno="21" type="int">1</Const>
                 </Index>
               </Subscript>
             </Lambda>
           </Keyword>
-          <Keyword fromlineno="21" tolineno="21" lineno="None">
-            <Const fromlineno="21" tolineno="21" lineno="21" type="bool">True</Const>
+          <Keyword fromlineno="21" tolineno="21">
+            <Const fromlineno="21" tolineno="21" type="bool">True</Const>
           </Keyword>
         </CallFunc>
       </Discard>
-      <For fromlineno="23" tolineno="24" lineno="23">
-        <AssName fromlineno="23" tolineno="23" lineno="23" name="p"/>
-        <Subscript fromlineno="23" tolineno="23" lineno="23">
-          <Name fromlineno="23" tolineno="23" lineno="23" name="pairs"/>
-          <Slice fromlineno="23" tolineno="23" lineno="None">
-            <Const fromlineno="23" tolineno="23" lineno="23" type="int">10</Const>
+      <For fromlineno="23" tolineno="24">
+        <AssName fromlineno="23" tolineno="23" name="p"/>
+        <Subscript fromlineno="23" tolineno="23">
+          <Name fromlineno="23" tolineno="23" name="pairs"/>
+          <Slice fromlineno="23" tolineno="23">
+            <Const fromlineno="23" tolineno="23" type="int">10</Const>
           </Slice>
         </Subscript>
-        <Print fromlineno="24" tolineno="24" lineno="24">
-          <Subscript fromlineno="24" tolineno="24" lineno="24">
-            <Name fromlineno="24" tolineno="24" lineno="24" name="p"/>
-            <Index fromlineno="24" tolineno="24" lineno="None">
-              <Const fromlineno="24" tolineno="24" lineno="24" type="int">0</Const>
+        <Print fromlineno="24" tolineno="24">
+          <Subscript fromlineno="24" tolineno="24">
+            <Name fromlineno="24" tolineno="24" name="p"/>
+            <Index fromlineno="24" tolineno="24">
+              <Const fromlineno="24" tolineno="24" type="int">0</Const>
             </Index>
           </Subscript>
-          <Subscript fromlineno="24" tolineno="24" lineno="24">
-            <Name fromlineno="24" tolineno="24" lineno="24" name="p"/>
-            <Index fromlineno="24" tolineno="24" lineno="None">
-              <Const fromlineno="24" tolineno="24" lineno="24" type="int">1</Const>
+          <Subscript fromlineno="24" tolineno="24">
+            <Name fromlineno="24" tolineno="24" name="p"/>
+            <Index fromlineno="24" tolineno="24">
+              <Const fromlineno="24" tolineno="24" type="int">1</Const>
             </Index>
           </Subscript>
         </Print>
       </For>
     </Module>
-    <Module fromlineno="0" tolineno="27" lineno="0" name="Tests.06-alt_dict">
-      <Class fromlineno="3" tolineno="23" lineno="3">
-        <Name fromlineno="3" tolineno="3" lineno="3" name="dict"/>
-        <Function fromlineno="4" tolineno="9" lineno="4">
-          <Arguments fromlineno="4" tolineno="4" lineno="None" format_args="self, key">
-            <AssName fromlineno="4" tolineno="4" lineno="4" name="self"/>
-            <AssName fromlineno="4" tolineno="4" lineno="4" name="key"/>
+    <Module num_lines="27" name="Tests.06-alt_dict">
+      <Class fromlineno="3" tolineno="23">
+        <Name fromlineno="3" tolineno="3" name="dict"/>
+        <Function fromlineno="4" tolineno="9">
+          <Arguments fromlineno="4" tolineno="4" format_args="self, key">
+            <AssName fromlineno="4" tolineno="4" name="self"/>
+            <AssName fromlineno="4" tolineno="4" name="key"/>
           </Arguments>
-          <TryExcept fromlineno="6" tolineno="9" lineno="6">
-            <Return fromlineno="7" tolineno="7" lineno="7">
-              <Subscript fromlineno="7" tolineno="7" lineno="7">
-                <Name fromlineno="7" tolineno="7" lineno="7" name="self"/>
-                <Index fromlineno="7" tolineno="7" lineno="None">
-                  <Name fromlineno="7" tolineno="7" lineno="7" name="key"/>
+          <TryExcept fromlineno="6" tolineno="9">
+            <Return fromlineno="7" tolineno="7">
+              <Subscript fromlineno="7" tolineno="7">
+                <Name fromlineno="7" tolineno="7" name="self"/>
+                <Index fromlineno="7" tolineno="7">
+                  <Name fromlineno="7" tolineno="7" name="key"/>
                 </Index>
               </Subscript>
             </Return>
-            <ExceptHandler fromlineno="8" tolineno="9" lineno="8">
-              <Name fromlineno="8" tolineno="8" lineno="8" name="KeyError"/>
-              <AssName fromlineno="8" tolineno="8" lineno="8" name="k"/>
-              <Raise fromlineno="9" tolineno="9" lineno="9">
-                <Name fromlineno="9" tolineno="9" lineno="9" name="AttributeError"/>
-                <Name fromlineno="9" tolineno="9" lineno="9" name="k"/>
+            <ExceptHandler fromlineno="8" tolineno="9">
+              <Name fromlineno="8" tolineno="8" name="KeyError"/>
+              <AssName fromlineno="8" tolineno="8" name="k"/>
+              <Raise fromlineno="9" tolineno="9">
+                <Name fromlineno="9" tolineno="9" name="AttributeError"/>
+                <Name fromlineno="9" tolineno="9" name="k"/>
               </Raise>
             </ExceptHandler>
           </TryExcept>
         </Function>
-        <Function fromlineno="13" tolineno="14" lineno="13">
-          <Arguments fromlineno="13" tolineno="13" lineno="None" format_args="self, key, value">
-            <AssName fromlineno="13" tolineno="13" lineno="13" name="self"/>
-            <AssName fromlineno="13" tolineno="13" lineno="13" name="key"/>
-            <AssName fromlineno="13" tolineno="13" lineno="13" name="value"/>
+        <Function fromlineno="13" tolineno="14">
+          <Arguments fromlineno="13" tolineno="13" format_args="self, key, value">
+            <AssName fromlineno="13" tolineno="13" name="self"/>
+            <AssName fromlineno="13" tolineno="13" name="key"/>
+            <AssName fromlineno="13" tolineno="13" name="value"/>
           </Arguments>
-          <Assign fromlineno="14" tolineno="14" lineno="14" targets="[&lt;Subscript() l.14 [Tests.06-alt_dict] at Ox8ad8e4c&gt;]" value="value">
-            <Subscript fromlineno="14" tolineno="14" lineno="14">
-              <Name fromlineno="14" tolineno="14" lineno="14" name="self"/>
-              <Index fromlineno="14" tolineno="14" lineno="None">
-                <Name fromlineno="14" tolineno="14" lineno="14" name="key"/>
+          <Assign fromlineno="14" tolineno="14" value="value">
+            <Subscript fromlineno="14" tolineno="14">
+              <Name fromlineno="14" tolineno="14" name="self"/>
+              <Index fromlineno="14" tolineno="14">
+                <Name fromlineno="14" tolineno="14" name="key"/>
               </Index>
             </Subscript>
-            <Name fromlineno="14" tolineno="14" lineno="14" name="value"/>
+            <Name fromlineno="14" tolineno="14" name="value"/>
           </Assign>
         </Function>
-        <Function fromlineno="16" tolineno="20" lineno="16">
-          <Arguments fromlineno="16" tolineno="16" lineno="None" format_args="self, key">
-            <AssName fromlineno="16" tolineno="16" lineno="16" name="self"/>
-            <AssName fromlineno="16" tolineno="16" lineno="16" name="key"/>
+        <Function fromlineno="16" tolineno="20">
+          <Arguments fromlineno="16" tolineno="16" format_args="self, key">
+            <AssName fromlineno="16" tolineno="16" name="self"/>
+            <AssName fromlineno="16" tolineno="16" name="key"/>
           </Arguments>
-          <TryExcept fromlineno="17" tolineno="20" lineno="17">
-            <Delete fromlineno="18" tolineno="18" lineno="18">
-              <Subscript fromlineno="18" tolineno="18" lineno="18">
-                <Name fromlineno="18" tolineno="18" lineno="18" name="self"/>
-                <Index fromlineno="18" tolineno="18" lineno="None">
-                  <Name fromlineno="18" tolineno="18" lineno="18" name="key"/>
+          <TryExcept fromlineno="17" tolineno="20">
+            <Delete fromlineno="18" tolineno="18">
+              <Subscript fromlineno="18" tolineno="18">
+                <Name fromlineno="18" tolineno="18" name="self"/>
+                <Index fromlineno="18" tolineno="18">
+                  <Name fromlineno="18" tolineno="18" name="key"/>
                 </Index>
               </Subscript>
             </Delete>
-            <ExceptHandler fromlineno="19" tolineno="20" lineno="19">
-              <Name fromlineno="19" tolineno="19" lineno="19" name="KeyError"/>
-              <AssName fromlineno="19" tolineno="19" lineno="19" name="k"/>
-              <Raise fromlineno="20" tolineno="20" lineno="20">
-                <Name fromlineno="20" tolineno="20" lineno="20" name="AttributeError"/>
-                <Name fromlineno="20" tolineno="20" lineno="20" name="k"/>
+            <ExceptHandler fromlineno="19" tolineno="20">
+              <Name fromlineno="19" tolineno="19" name="KeyError"/>
+              <AssName fromlineno="19" tolineno="19" name="k"/>
+              <Raise fromlineno="20" tolineno="20">
+                <Name fromlineno="20" tolineno="20" name="AttributeError"/>
+                <Name fromlineno="20" tolineno="20" name="k"/>
               </Raise>
             </ExceptHandler>
           </TryExcept>
         </Function>
-        <Function fromlineno="22" tolineno="23" lineno="22">
-          <Arguments fromlineno="22" tolineno="22" lineno="None" format_args="self">
-            <AssName fromlineno="22" tolineno="22" lineno="22" name="self"/>
+        <Function fromlineno="22" tolineno="23">
+          <Arguments fromlineno="22" tolineno="22" format_args="self">
+            <AssName fromlineno="22" tolineno="22" name="self"/>
           </Arguments>
-          <Return fromlineno="23" tolineno="23" lineno="23">
-            <BinOp fromlineno="23" tolineno="23" lineno="23" op="+" left="((self.__class__.__name__) + ('(')) + (dict.__repr__(self))" right="')'">
-              <BinOp fromlineno="23" tolineno="23" lineno="23" op="+" left="(self.__class__.__name__) + ('(')" right="dict.__repr__(self)">
-                <BinOp fromlineno="23" tolineno="23" lineno="23" op="+" left="self.__class__.__name__" right="'('">
-                  <Getattr fromlineno="23" tolineno="23" lineno="23" attrname="__name__" expr="self.__class__">
-                    <Getattr fromlineno="23" tolineno="23" lineno="23" attrname="__class__" expr="self">
-                      <Name fromlineno="23" tolineno="23" lineno="23" name="self"/>
+          <Return fromlineno="23" tolineno="23">
+            <BinOp fromlineno="23" tolineno="23" op="+" left="((self.__class__.__name__) + ('(')) + (dict.__repr__(self))" right="')'">
+              <BinOp fromlineno="23" tolineno="23" op="+" left="(self.__class__.__name__) + ('(')" right="dict.__repr__(self)">
+                <BinOp fromlineno="23" tolineno="23" op="+" left="self.__class__.__name__" right="'('">
+                  <Getattr fromlineno="23" tolineno="23" attrname="__name__" expr="self.__class__">
+                    <Getattr fromlineno="23" tolineno="23" attrname="__class__" expr="self">
+                      <Name fromlineno="23" tolineno="23" name="self"/>
                     </Getattr>
                   </Getattr>
-                  <Const fromlineno="23" tolineno="23" lineno="23" type="str">'('</Const>
+                  <Const fromlineno="23" tolineno="23" type="str">'('</Const>
                 </BinOp>
-                <CallFunc fromlineno="23" tolineno="23" lineno="23" func="Getattr(__repr__)">
-                  <Getattr fromlineno="23" tolineno="23" lineno="23" attrname="__repr__" expr="dict">
-                    <Name fromlineno="23" tolineno="23" lineno="23" name="dict"/>
+                <CallFunc fromlineno="23" tolineno="23" func="Getattr(__repr__)">
+                  <Getattr fromlineno="23" tolineno="23" attrname="__repr__" expr="dict">
+                    <Name fromlineno="23" tolineno="23" name="dict"/>
                   </Getattr>
-                  <Name fromlineno="23" tolineno="23" lineno="23" name="self"/>
+                  <Name fromlineno="23" tolineno="23" name="self"/>
                 </CallFunc>
               </BinOp>
-              <Const fromlineno="23" tolineno="23" lineno="23" type="str">')'</Const>
+              <Const fromlineno="23" tolineno="23" type="str">')'</Const>
             </BinOp>
           </Return>
         </Function>
       </Class>
-      <Assign fromlineno="25" tolineno="25" lineno="25" targets="[&lt;AssName(d) l.25 [Tests.06-alt_dict] at Ox8adc54c&gt;]" value="Entity(a=1)">
-        <AssName fromlineno="25" tolineno="25" lineno="25" name="d"/>
-        <CallFunc fromlineno="25" tolineno="25" lineno="25" func="Name(Entity)">
-          <Name fromlineno="25" tolineno="25" lineno="25" name="Entity"/>
-          <Keyword fromlineno="25" tolineno="25" lineno="None">
-            <Const fromlineno="25" tolineno="25" lineno="25" type="int">1</Const>
+      <Assign fromlineno="25" tolineno="25" value="Entity(a=1)">
+        <AssName fromlineno="25" tolineno="25" name="d"/>
+        <CallFunc fromlineno="25" tolineno="25" func="Name(Entity)">
+          <Name fromlineno="25" tolineno="25" name="Entity"/>
+          <Keyword fromlineno="25" tolineno="25">
+            <Const fromlineno="25" tolineno="25" type="int">1</Const>
           </Keyword>
         </CallFunc>
       </Assign>
-      <Assign fromlineno="26" tolineno="26" lineno="26" targets="[&lt;AssAttr(b_100) l.26 [Tests.06-alt_dict] at Ox8adc66c&gt;]" value="100">
-        <AssAttr fromlineno="26" tolineno="26" lineno="26" attrname="b_100" expr="d">
-          <Name fromlineno="26" tolineno="26" lineno="26" name="d"/>
+      <Assign fromlineno="26" tolineno="26" value="100">
+        <AssAttr fromlineno="26" tolineno="26" attrname="b_100" expr="d">
+          <Name fromlineno="26" tolineno="26" name="d"/>
         </AssAttr>
-        <Const fromlineno="26" tolineno="26" lineno="26" type="int">100</Const>
+        <Const fromlineno="26" tolineno="26" type="int">100</Const>
       </Assign>
-      <Assert fromlineno="27" tolineno="27" lineno="27" class="BoolOp" test="(d.a == d['a']) and (d.b_100 == d['b_100'])">
-        <BoolOp fromlineno="27" tolineno="27" lineno="27" op="and" values="d.a == d['a'],d.b_100 == d['b_100'],">
-          <Compare fromlineno="27" tolineno="27" lineno="27" op="('==', &lt;Subscript() l.27 [Tests.06-alt_dict] at Ox8adc7ec&gt;)">
-            <Getattr fromlineno="27" tolineno="27" lineno="27" attrname="a" expr="d">
-              <Name fromlineno="27" tolineno="27" lineno="27" name="d"/>
+      <Assert fromlineno="27" tolineno="27" class="BoolOp" test="(d.a == d['a']) and (d.b_100 == d['b_100'])">
+        <BoolOp fromlineno="27" tolineno="27" op="and" values="d.a == d['a'],d.b_100 == d['b_100'],">
+          <Compare fromlineno="27" tolineno="27" op="('==', &lt;Subscript() l.27 [Tests.06-alt_dict] at Ox935a7ac&gt;)">
+            <Getattr fromlineno="27" tolineno="27" attrname="a" expr="d">
+              <Name fromlineno="27" tolineno="27" name="d"/>
             </Getattr>
-            <Subscript fromlineno="27" tolineno="27" lineno="27">
-              <Name fromlineno="27" tolineno="27" lineno="27" name="d"/>
-              <Index fromlineno="27" tolineno="27" lineno="None">
-                <Const fromlineno="27" tolineno="27" lineno="27" type="str">'a'</Const>
+            <Subscript fromlineno="27" tolineno="27">
+              <Name fromlineno="27" tolineno="27" name="d"/>
+              <Index fromlineno="27" tolineno="27">
+                <Const fromlineno="27" tolineno="27" type="str">'a'</Const>
               </Index>
             </Subscript>
           </Compare>
-          <Compare fromlineno="27" tolineno="27" lineno="27" op="('==', &lt;Subscript() l.27 [Tests.06-alt_dict] at Ox8adc8ec&gt;)">
-            <Getattr fromlineno="27" tolineno="27" lineno="27" attrname="b_100" expr="d">
-              <Name fromlineno="27" tolineno="27" lineno="27" name="d"/>
+          <Compare fromlineno="27" tolineno="27" op="('==', &lt;Subscript() l.27 [Tests.06-alt_dict] at Ox935a8ac&gt;)">
+            <Getattr fromlineno="27" tolineno="27" attrname="b_100" expr="d">
+              <Name fromlineno="27" tolineno="27" name="d"/>
             </Getattr>
-            <Subscript fromlineno="27" tolineno="27" lineno="27">
-              <Name fromlineno="27" tolineno="27" lineno="27" name="d"/>
-              <Index fromlineno="27" tolineno="27" lineno="None">
-                <Const fromlineno="27" tolineno="27" lineno="27" type="str">'b_100'</Const>
+            <Subscript fromlineno="27" tolineno="27">
+              <Name fromlineno="27" tolineno="27" name="d"/>
+              <Index fromlineno="27" tolineno="27">
+                <Const fromlineno="27" tolineno="27" type="str">'b_100'</Const>
               </Index>
             </Subscript>
           </Compare>
         </BoolOp>
       </Assert>
     </Module>
-    <Module fromlineno="0" tolineno="3" lineno="0" name="Tests.09-factorial">
-      <Assign fromlineno="3" tolineno="3" lineno="3" targets="[&lt;AssName(factorial) l.3 [Tests.09-factorial] at Ox8ad172c&gt;]" value="lambda x: (factorial((x) - (1))) * (x) if x &gt; 1 else 1">
-        <AssName fromlineno="3" tolineno="3" lineno="3" name="factorial"/>
-        <Lambda fromlineno="3" tolineno="3" lineno="3">
-          <Arguments fromlineno="3" tolineno="3" lineno="None" format_args="x">
-            <AssName fromlineno="3" tolineno="3" lineno="3" name="x"/>
+    <Module num_lines="3" name="Tests.09-factorial">
+      <Assign fromlineno="3" tolineno="3" value="lambda x: (factorial((x) - (1))) * (x) if x &gt; 1 else 1">
+        <AssName fromlineno="3" tolineno="3" name="factorial"/>
+        <Lambda fromlineno="3" tolineno="3">
+          <Arguments fromlineno="3" tolineno="3" format_args="x">
+            <AssName fromlineno="3" tolineno="3" name="x"/>
           </Arguments>
-          <IfExp fromlineno="3" tolineno="3" lineno="3">
-            <Compare fromlineno="3" tolineno="3" lineno="3" op="('&gt;', &lt;Const(int) l.3 [Tests.09-factorial] at Ox8ad174c&gt;)">
-              <Name fromlineno="3" tolineno="3" lineno="3" name="x"/>
-              <Const fromlineno="3" tolineno="3" lineno="3" type="int">1</Const>
+          <IfExp fromlineno="3" tolineno="3">
+            <Compare fromlineno="3" tolineno="3" op="('&gt;', &lt;Const(int) l.3 [Tests.09-factorial] at Ox934f78c&gt;)">
+              <Name fromlineno="3" tolineno="3" name="x"/>
+              <Const fromlineno="3" tolineno="3" type="int">1</Const>
             </Compare>
-            <BinOp fromlineno="3" tolineno="3" lineno="3" op="*" left="factorial((x) - (1))" right="x">
-              <CallFunc fromlineno="3" tolineno="3" lineno="3" func="Name(factorial)">
-                <Name fromlineno="3" tolineno="3" lineno="3" name="factorial"/>
-                <BinOp fromlineno="3" tolineno="3" lineno="3" op="-" left="x" right="1">
-                  <Name fromlineno="3" tolineno="3" lineno="3" name="x"/>
-                  <Const fromlineno="3" tolineno="3" lineno="3" type="int">1</Const>
+            <BinOp fromlineno="3" tolineno="3" op="*" left="factorial((x) - (1))" right="x">
+              <CallFunc fromlineno="3" tolineno="3" func="Name(factorial)">
+                <Name fromlineno="3" tolineno="3" name="factorial"/>
+                <BinOp fromlineno="3" tolineno="3" op="-" left="x" right="1">
+                  <Name fromlineno="3" tolineno="3" name="x"/>
+                  <Const fromlineno="3" tolineno="3" type="int">1</Const>
                 </BinOp>
               </CallFunc>
-              <Name fromlineno="3" tolineno="3" lineno="3" name="x"/>
+              <Name fromlineno="3" tolineno="3" name="x"/>
             </BinOp>
-            <Const fromlineno="3" tolineno="3" lineno="3" type="int">1</Const>
+            <Const fromlineno="3" tolineno="3" type="int">1</Const>
           </IfExp>
         </Lambda>
       </Assign>
     </Module>
-    <Module fromlineno="0" tolineno="23" lineno="0" name="Tests.04-exec_context">
-      <From fromlineno="4" tolineno="4" lineno="4" modname="__future__">
+    <Module num_lines="23" name="Tests.04-exec_context">
+      <From fromlineno="4" tolineno="4" modname="__future__">
         <ImportName name="with_statement"/>
       </From>
-      <From fromlineno="5" tolineno="5" lineno="5" modname="contextlib">
+      <From fromlineno="5" tolineno="5" modname="contextlib">
         <ImportName name="contextmanager"/>
       </From>
-      <From fromlineno="6" tolineno="6" lineno="6" modname="threading">
+      <From fromlineno="6" tolineno="6" modname="threading">
         <ImportName name="Lock"/>
       </From>
-      <Function fromlineno="10" tolineno="15" lineno="9">
-        <Decorators fromlineno="9" tolineno="9" lineno="9">
-          <Name fromlineno="9" tolineno="9" lineno="9" name="contextmanager"/>
+      <Function fromlineno="10" tolineno="15">
+        <Decorators fromlineno="9" tolineno="9">
+          <Name fromlineno="9" tolineno="9" name="contextmanager"/>
         </Decorators>
-        <Arguments fromlineno="10" tolineno="10" lineno="None" format_args="lock">
-          <AssName fromlineno="10" tolineno="10" lineno="10" name="lock"/>
+        <Arguments fromlineno="10" tolineno="10" format_args="lock">
+          <AssName fromlineno="10" tolineno="10" name="lock"/>
         </Arguments>
-        <Discard fromlineno="11" tolineno="11" lineno="11">
-          <CallFunc fromlineno="11" tolineno="11" lineno="11" func="Getattr(acquire)">
-            <Getattr fromlineno="11" tolineno="11" lineno="11" attrname="acquire" expr="lock">
-              <Name fromlineno="11" tolineno="11" lineno="11" name="lock"/>
+        <Discard fromlineno="11" tolineno="11">
+          <CallFunc fromlineno="11" tolineno="11" func="Getattr(acquire)">
+            <Getattr fromlineno="11" tolineno="11" attrname="acquire" expr="lock">
+              <Name fromlineno="11" tolineno="11" name="lock"/>
             </Getattr>
           </CallFunc>
         </Discard>
-        <TryFinally fromlineno="12" tolineno="15" lineno="12">
-          <Discard fromlineno="13" tolineno="13" lineno="13">
-            <Yield fromlineno="13" tolineno="13" lineno="13"/>
+        <TryFinally fromlineno="12" tolineno="15">
+          <Discard fromlineno="13" tolineno="13">
+            <Yield fromlineno="13" tolineno="13"/>
           </Discard>
-          <Discard fromlineno="15" tolineno="15" lineno="15">
-            <CallFunc fromlineno="15" tolineno="15" lineno="15" func="Getattr(release)">
-              <Getattr fromlineno="15" tolineno="15" lineno="15" attrname="release" expr="lock">
-                <Name fromlineno="15" tolineno="15" lineno="15" name="lock"/>
+          <Discard fromlineno="15" tolineno="15">
+            <CallFunc fromlineno="15" tolineno="15" func="Getattr(release)">
+              <Getattr fromlineno="15" tolineno="15" attrname="release" expr="lock">
+                <Name fromlineno="15" tolineno="15" name="lock"/>
               </Getattr>
             </CallFunc>
           </Discard>
         </TryFinally>
       </Function>
-      <Assign fromlineno="18" tolineno="18" lineno="18" targets="[&lt;AssName(myLock) l.18 [Tests.04-exec_context] at Ox8ad852c&gt;]" value="Lock()">
-        <AssName fromlineno="18" tolineno="18" lineno="18" name="myLock"/>
-        <CallFunc fromlineno="18" tolineno="18" lineno="18" func="Name(Lock)">
-          <Name fromlineno="18" tolineno="18" lineno="18" name="Lock"/>
+      <Assign fromlineno="18" tolineno="18" value="Lock()">
+        <AssName fromlineno="18" tolineno="18" name="myLock"/>
+        <CallFunc fromlineno="18" tolineno="18" func="Name(Lock)">
+          <Name fromlineno="18" tolineno="18" name="Lock"/>
         </CallFunc>
       </Assign>
-      <With fromlineno="21" tolineno="23" lineno="21">
-        <CallFunc fromlineno="21" tolineno="21" lineno="21" func="Name(locked)">
-          <Name fromlineno="21" tolineno="21" lineno="21" name="locked"/>
-          <Name fromlineno="21" tolineno="21" lineno="21" name="myLock"/>
+      <With fromlineno="21" tolineno="23">
+        <CallFunc fromlineno="21" tolineno="21" func="Name(locked)">
+          <Name fromlineno="21" tolineno="21" name="locked"/>
+          <Name fromlineno="21" tolineno="21" name="myLock"/>
         </CallFunc>
-        <Print fromlineno="23" tolineno="23" lineno="23">
-          <Const fromlineno="23" tolineno="23" lineno="23" type="str">'\xd0\x9e\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd1\x8f\xd0\xb5\xd0\xbc\xd1\x8b\xd0\xb9 \xd0\xb1\xd0\xbb\xd0\xbe\xd0\xba \xd0\xba\xd0\xbe\xd0\xb4\xd0\xb0. \xd0\x91\xd0\xbb\xd0\xbe\xd0\xba\xd0\xb8\xd1\x80\xd0\xbe\xd0\xb2\xd0\xba\xd0\xb0 \xd0\xb1\xd1\x83\xd0\xb4\xd0\xb5\xd1\x82 \xd0\xbe\xd1\x81\xd0\xb2\xd0\xbe\xd0\xb1\xd0\xbe\xd0\xb6\xd0\xb4\xd0\xb5\xd0\xbd\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbb\xd1\x8e\xd0\xb1\xd0\xbe\xd0\xbc \xd0\xb2\xd1\x8b\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb5 \xd0\xb8\xd0\xb7 \xd1\x8d\xd1\x82\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xb1\xd0\xbb\xd0\xbe\xd0\xba\xd0\xb0.'</Const>
+        <Print fromlineno="23" tolineno="23">
+          <Const fromlineno="23" tolineno="23" type="str">'\xd0\x9e\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd1\x8f\xd0\xb5\xd0\xbc\xd1\x8b\xd0\xb9 \xd0\xb1\xd0\xbb\xd0\xbe\xd0\xba \xd0\xba\xd0\xbe\xd0\xb4\xd0\xb0. \xd0\x91\xd0\xbb\xd0\xbe\xd0\xba\xd0\xb8\xd1\x80\xd0\xbe\xd0\xb2\xd0\xba\xd0\xb0 \xd0\xb1\xd1\x83\xd0\xb4\xd0\xb5\xd1\x82 \xd0\xbe\xd1\x81\xd0\xb2\xd0\xbe\xd0\xb1\xd0\xbe\xd0\xb6\xd0\xb4\xd0\xb5\xd0\xbd\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbb\xd1\x8e\xd0\xb1\xd0\xbe\xd0\xbc \xd0\xb2\xd1\x8b\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb5 \xd0\xb8\xd0\xb7 \xd1\x8d\xd1\x82\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xb1\xd0\xbb\xd0\xbe\xd0\xba\xd0\xb0.'</Const>
         </Print>
       </With>
     </Module>
-    <Module fromlineno="0" tolineno="13" lineno="0" name="Tests.08-transp_matrix">
-      <From fromlineno="3" tolineno="3" lineno="3" modname="pprint">
+    <Module num_lines="13" name="Tests.08-transp_matrix">
+      <From fromlineno="3" tolineno="3" modname="pprint">
         <ImportName name="pprint"/>
       </From>
-      <Assign fromlineno="4" tolineno="8" lineno="4" targets="[&lt;AssName(matrix) l.4 [Tests.08-transp_matrix] at Ox8adccec&gt;]" value="[[0.5, 0, 0, 0, 0], [1, 0.5, 0, 0, 0], [1, 1, 0.5, 0, 0], [1, 1, 1, 0.5, 0], [1, 1, 1, 1, 0.5]]">
-        <AssName fromlineno="4" tolineno="4" lineno="4" name="matrix"/>
-        <List fromlineno="4" tolineno="8" lineno="4">
-          <List fromlineno="4" tolineno="4" lineno="4">
-            <Const fromlineno="4" tolineno="4" lineno="4" type="float">0.5</Const>
-            <Const fromlineno="4" tolineno="4" lineno="4" type="int">0</Const>
-            <Const fromlineno="4" tolineno="4" lineno="4" type="int">0</Const>
-            <Const fromlineno="4" tolineno="4" lineno="4" type="int">0</Const>
-            <Const fromlineno="4" tolineno="4" lineno="4" type="int">0</Const>
+      <Assign fromlineno="4" tolineno="8" value="[[0.5, 0, 0, 0, 0], [1, 0.5, 0, 0, 0], [1, 1, 0.5, 0, 0], [1, 1, 1, 0.5, 0], [1, 1, 1, 1, 0.5]]">
+        <AssName fromlineno="4" tolineno="4" name="matrix"/>
+        <List fromlineno="4" tolineno="8">
+          <List fromlineno="4" tolineno="4">
+            <Const fromlineno="4" tolineno="4" type="float">0.5</Const>
+            <Const fromlineno="4" tolineno="4" type="int">0</Const>
+            <Const fromlineno="4" tolineno="4" type="int">0</Const>
+            <Const fromlineno="4" tolineno="4" type="int">0</Const>
+            <Const fromlineno="4" tolineno="4" type="int">0</Const>
           </List>
-          <List fromlineno="5" tolineno="5" lineno="5">
-            <Const fromlineno="5" tolineno="5" lineno="5" type="int">1</Const>
-            <Const fromlineno="5" tolineno="5" lineno="5" type="float">0.5</Const>
-            <Const fromlineno="5" tolineno="5" lineno="5" type="int">0</Const>
-            <Const fromlineno="5" tolineno="5" lineno="5" type="int">0</Const>
-            <Const fromlineno="5" tolineno="5" lineno="5" type="int">0</Const>
+          <List fromlineno="5" tolineno="5">
+            <Const fromlineno="5" tolineno="5" type="int">1</Const>
+            <Const fromlineno="5" tolineno="5" type="float">0.5</Const>
+            <Const fromlineno="5" tolineno="5" type="int">0</Const>
+            <Const fromlineno="5" tolineno="5" type="int">0</Const>
+            <Const fromlineno="5" tolineno="5" type="int">0</Const>
           </List>
-          <List fromlineno="6" tolineno="6" lineno="6">
-            <Const fromlineno="6" tolineno="6" lineno="6" type="int">1</Const>
-            <Const fromlineno="6" tolineno="6" lineno="6" type="int">1</Const>
-            <Const fromlineno="6" tolineno="6" lineno="6" type="float">0.5</Const>
-            <Const fromlineno="6" tolineno="6" lineno="6" type="int">0</Const>
-            <Const fromlineno="6" tolineno="6" lineno="6" type="int">0</Const>
+          <List fromlineno="6" tolineno="6">
+            <Const fromlineno="6" tolineno="6" type="int">1</Const>
+            <Const fromlineno="6" tolineno="6" type="int">1</Const>
+            <Const fromlineno="6" tolineno="6" type="float">0.5</Const>
+            <Const fromlineno="6" tolineno="6" type="int">0</Const>
+            <Const fromlineno="6" tolineno="6" type="int">0</Const>
           </List>
-          <List fromlineno="7" tolineno="7" lineno="7">
-            <Const fromlineno="7" tolineno="7" lineno="7" type="int">1</Const>
-            <Const fromlineno="7" tolineno="7" lineno="7" type="int">1</Const>
-            <Const fromlineno="7" tolineno="7" lineno="7" type="int">1</Const>
-            <Const fromlineno="7" tolineno="7" lineno="7" type="float">0.5</Const>
-            <Const fromlineno="7" tolineno="7" lineno="7" type="int">0</Const>
+          <List fromlineno="7" tolineno="7">
+            <Const fromlineno="7" tolineno="7" type="int">1</Const>
+            <Const fromlineno="7" tolineno="7" type="int">1</Const>
+            <Const fromlineno="7" tolineno="7" type="int">1</Const>
+            <Const fromlineno="7" tolineno="7" type="float">0.5</Const>
+            <Const fromlineno="7" tolineno="7" type="int">0</Const>
           </List>
-          <List fromlineno="8" tolineno="8" lineno="8">
-            <Const fromlineno="8" tolineno="8" lineno="8" type="int">1</Const>
-            <Const fromlineno="8" tolineno="8" lineno="8" type="int">1</Const>
-            <Const fromlineno="8" tolineno="8" lineno="8" type="int">1</Const>
-            <Const fromlineno="8" tolineno="8" lineno="8" type="int">1</Const>
-            <Const fromlineno="8" tolineno="8" lineno="8" type="float">0.5</Const>
+          <List fromlineno="8" tolineno="8">
+            <Const fromlineno="8" tolineno="8" type="int">1</Const>
+            <Const fromlineno="8" tolineno="8" type="int">1</Const>
+            <Const fromlineno="8" tolineno="8" type="int">1</Const>
+            <Const fromlineno="8" tolineno="8" type="int">1</Const>
+            <Const fromlineno="8" tolineno="8" type="float">0.5</Const>
           </List>
         </List>
       </Assign>
-      <Assign fromlineno="10" tolineno="10" lineno="10" targets="[&lt;AssName(matrix_t) l.10 [Tests.08-transp_matrix] at Ox8ae122c&gt;]" value="list(zip(, *matrix))">
-        <AssName fromlineno="10" tolineno="10" lineno="10" name="matrix_t"/>
-        <CallFunc fromlineno="10" tolineno="10" lineno="10" func="Name(list)">
-          <Name fromlineno="10" tolineno="10" lineno="10" name="list"/>
-          <CallFunc fromlineno="10" tolineno="10" lineno="10" func="Name(zip)">
-            <Name fromlineno="10" tolineno="10" lineno="10" name="zip"/>
-            <Name fromlineno="10" tolineno="10" lineno="10" name="matrix"/>
+      <Assign fromlineno="10" tolineno="10" value="list(zip(, *matrix))">
+        <AssName fromlineno="10" tolineno="10" name="matrix_t"/>
+        <CallFunc fromlineno="10" tolineno="10" func="Name(list)">
+          <Name fromlineno="10" tolineno="10" name="list"/>
+          <CallFunc fromlineno="10" tolineno="10" func="Name(zip)">
+            <Name fromlineno="10" tolineno="10" name="zip"/>
+            <Name fromlineno="10" tolineno="10" name="matrix"/>
           </CallFunc>
         </CallFunc>
       </Assign>
-      <Discard fromlineno="12" tolineno="12" lineno="12">
-        <CallFunc fromlineno="12" tolineno="12" lineno="12" func="Name(pprint)">
-          <Name fromlineno="12" tolineno="12" lineno="12" name="pprint"/>
-          <Name fromlineno="12" tolineno="12" lineno="12" name="matrix"/>
+      <Discard fromlineno="12" tolineno="12">
+        <CallFunc fromlineno="12" tolineno="12" func="Name(pprint)">
+          <Name fromlineno="12" tolineno="12" name="pprint"/>
+          <Name fromlineno="12" tolineno="12" name="matrix"/>
         </CallFunc>
       </Discard>
-      <Discard fromlineno="13" tolineno="13" lineno="13">
-        <CallFunc fromlineno="13" tolineno="13" lineno="13" func="Name(pprint)">
-          <Name fromlineno="13" tolineno="13" lineno="13" name="pprint"/>
-          <Name fromlineno="13" tolineno="13" lineno="13" name="matrix_t"/>
+      <Discard fromlineno="13" tolineno="13">
+        <CallFunc fromlineno="13" tolineno="13" func="Name(pprint)">
+          <Name fromlineno="13" tolineno="13" name="pprint"/>
+          <Name fromlineno="13" tolineno="13" name="matrix_t"/>
         </CallFunc>
       </Discard>
     </Module>
-    <Module fromlineno="0" tolineno="62" lineno="0" name="Tests.03-override">
-      <Import fromlineno="4" tolineno="4" lineno="4">
+    <Module num_lines="62" name="Tests.03-override">
+      <Dependency module="sys"/>
+      <Import fromlineno="4" tolineno="4">
         <ImportName name="sys"/>
       </Import>
-      <Class fromlineno="6" tolineno="7" lineno="6">
-        <Name fromlineno="6" tolineno="6" lineno="6" name="Exception"/>
-        <Pass fromlineno="7" tolineno="7" lineno="7"/>
+      <Class fromlineno="6" tolineno="7">
+        <Name fromlineno="6" tolineno="6" name="Exception"/>
+        <Pass fromlineno="7" tolineno="7"/>
       </Class>
-      <Class fromlineno="9" tolineno="28" lineno="9">
-        <Name fromlineno="9" tolineno="9" lineno="9" name="object"/>
-        <Assign fromlineno="10" tolineno="11" lineno="10" targets="[&lt;AssName(emess) l.10 [Tests.03-override] at Ox8ae838c&gt;]" value="(&quot;Can't found appropriate signature of func %s() for call with&quot;) + (' params %r')">
-          <AssName fromlineno="10" tolineno="10" lineno="10" name="emess"/>
-          <BinOp fromlineno="10" tolineno="11" lineno="10" op="+" left="&quot;Can't found appropriate signature of func %s() for call with&quot;" right="' params %r'">
-            <Const fromlineno="10" tolineno="10" lineno="10" type="str">"Can't found appropriate signature of func %s() for call with"</Const>
-            <Const fromlineno="11" tolineno="11" lineno="11" type="str">' params %r'</Const>
+      <Class fromlineno="9" tolineno="28">
+        <Name fromlineno="9" tolineno="9" name="object"/>
+        <Assign fromlineno="10" tolineno="11" value="(&quot;Can't found appropriate signature of func %s() for call with&quot;) + (' params %r')">
+          <AssName fromlineno="10" tolineno="10" name="emess"/>
+          <BinOp fromlineno="10" tolineno="11" op="+" left="&quot;Can't found appropriate signature of func %s() for call with&quot;" right="' params %r'">
+            <Const fromlineno="10" tolineno="10" type="str">"Can't found appropriate signature of func %s() for call with"</Const>
+            <Const fromlineno="11" tolineno="11" type="str">' params %r'</Const>
           </BinOp>
         </Assign>
-        <Function fromlineno="12" tolineno="15" lineno="12">
-          <Arguments fromlineno="12" tolineno="12" lineno="None" format_args="self, name">
-            <AssName fromlineno="12" tolineno="12" lineno="12" name="self"/>
-            <AssName fromlineno="12" tolineno="12" lineno="12" name="name"/>
+        <Function fromlineno="12" tolineno="15">
+          <Arguments fromlineno="12" tolineno="12" format_args="self, name">
+            <AssName fromlineno="12" tolineno="12" name="self"/>
+            <AssName fromlineno="12" tolineno="12" name="name"/>
           </Arguments>
-          <Assign fromlineno="13" tolineno="13" lineno="13" targets="[&lt;AssAttr(function_map) l.13 [Tests.03-override] at Ox8ae85cc&gt;]" value="{}">
-            <AssAttr fromlineno="13" tolineno="13" lineno="13" attrname="function_map" expr="self">
-              <Name fromlineno="13" tolineno="13" lineno="13" name="self"/>
+          <Assign fromlineno="13" tolineno="13" value="{}">
+            <AssAttr fromlineno="13" tolineno="13" attrname="function_map" expr="self">
+              <Name fromlineno="13" tolineno="13" name="self"/>
             </AssAttr>
-            <Dict fromlineno="13" tolineno="13" lineno="13"/>
+            <Dict fromlineno="13" tolineno="13"/>
           </Assign>
-          <Assign fromlineno="14" tolineno="14" lineno="14" targets="[&lt;AssAttr(default) l.14 [Tests.03-override] at Ox8ae868c&gt;]" value="None">
-            <AssAttr fromlineno="14" tolineno="14" lineno="14" attrname="default" expr="self">
-              <Name fromlineno="14" tolineno="14" lineno="14" name="self"/>
+          <Assign fromlineno="14" tolineno="14" value="None">
+            <AssAttr fromlineno="14" tolineno="14" attrname="default" expr="self">
+              <Name fromlineno="14" tolineno="14" name="self"/>
             </AssAttr>
-            <Const fromlineno="14" tolineno="14" lineno="14" type="NoneType">None</Const>
+            <Const fromlineno="14" tolineno="14" type="NoneType">None</Const>
           </Assign>
-          <Assign fromlineno="15" tolineno="15" lineno="15" targets="[&lt;AssAttr(name) l.15 [Tests.03-override] at Ox8ae872c&gt;]" value="name">
-            <AssAttr fromlineno="15" tolineno="15" lineno="15" attrname="name" expr="self">
-              <Name fromlineno="15" tolineno="15" lineno="15" name="self"/>
+          <Assign fromlineno="15" tolineno="15" value="name">
+            <AssAttr fromlineno="15" tolineno="15" attrname="name" expr="self">
+              <Name fromlineno="15" tolineno="15" name="self"/>
             </AssAttr>
-            <Name fromlineno="15" tolineno="15" lineno="15" name="name"/>
+            <Name fromlineno="15" tolineno="15" name="name"/>
           </Assign>
         </Function>
-        <Function fromlineno="16" tolineno="28" lineno="16">
-          <Arguments fromlineno="16" tolineno="16" lineno="None" format_args="self, *dt">
-            <AssName fromlineno="16" tolineno="16" lineno="16" name="self"/>
+        <Function fromlineno="16" tolineno="28">
+          <Arguments fromlineno="16" tolineno="16" format_args="self, *dt">
+            <AssName fromlineno="16" tolineno="16" name="self"/>
           </Arguments>
-          <Assign fromlineno="18" tolineno="18" lineno="18" targets="[&lt;AssName(cls) l.18 [Tests.03-override] at Ox8ae88ec&gt;]" value="tuple(map(type, dt))">
-            <AssName fromlineno="18" tolineno="18" lineno="18" name="cls"/>
-            <CallFunc fromlineno="18" tolineno="18" lineno="18" func="Name(tuple)">
-              <Name fromlineno="18" tolineno="18" lineno="18" name="tuple"/>
-              <CallFunc fromlineno="18" tolineno="18" lineno="18" func="Name(map)">
-                <Name fromlineno="18" tolineno="18" lineno="18" name="map"/>
-                <Name fromlineno="18" tolineno="18" lineno="18" name="type"/>
-                <Name fromlineno="18" tolineno="18" lineno="18" name="dt"/>
+          <Assign fromlineno="18" tolineno="18" value="tuple(map(type, dt))">
+            <AssName fromlineno="18" tolineno="18" name="cls"/>
+            <CallFunc fromlineno="18" tolineno="18" func="Name(tuple)">
+              <Name fromlineno="18" tolineno="18" name="tuple"/>
+              <CallFunc fromlineno="18" tolineno="18" func="Name(map)">
+                <Name fromlineno="18" tolineno="18" name="map"/>
+                <Name fromlineno="18" tolineno="18" name="type"/>
+                <Name fromlineno="18" tolineno="18" name="dt"/>
               </CallFunc>
             </CallFunc>
           </Assign>
-          <TryExcept fromlineno="21" tolineno="27" lineno="21">
-            <Assign fromlineno="22" tolineno="22" lineno="22" targets="[&lt;AssName(x) l.22 [Tests.03-override] at Ox8ae8acc&gt;]" value="self.function_map[cls]">
-              <AssName fromlineno="22" tolineno="22" lineno="22" name="x"/>
-              <Subscript fromlineno="22" tolineno="22" lineno="22">
-                <Getattr fromlineno="22" tolineno="22" lineno="22" attrname="function_map" expr="self">
-                  <Name fromlineno="22" tolineno="22" lineno="22" name="self"/>
+          <TryExcept fromlineno="21" tolineno="27">
+            <Assign fromlineno="22" tolineno="22" value="self.function_map[cls]">
+              <AssName fromlineno="22" tolineno="22" name="x"/>
+              <Subscript fromlineno="22" tolineno="22">
+                <Getattr fromlineno="22" tolineno="22" attrname="function_map" expr="self">
+                  <Name fromlineno="22" tolineno="22" name="self"/>
                 </Getattr>
-                <Index fromlineno="22" tolineno="22" lineno="None">
-                  <Name fromlineno="22" tolineno="22" lineno="22" name="cls"/>
+                <Index fromlineno="22" tolineno="22">
+                  <Name fromlineno="22" tolineno="22" name="cls"/>
                 </Index>
               </Subscript>
             </Assign>
-            <ExceptHandler fromlineno="23" tolineno="27" lineno="23">
-              <Name fromlineno="23" tolineno="23" lineno="23" name="KeyError"/>
-              <If fromlineno="24" tolineno="27" lineno="24">
-                <Compare fromlineno="24" tolineno="24" lineno="24" op="('is not', &lt;Const(NoneType) l.24 [Tests.03-override] at Ox8ae8d2c&gt;)">
-                  <Getattr fromlineno="24" tolineno="24" lineno="24" attrname="default" expr="self">
-                    <Name fromlineno="24" tolineno="24" lineno="24" name="self"/>
+            <ExceptHandler fromlineno="23" tolineno="27">
+              <Name fromlineno="23" tolineno="23" name="KeyError"/>
+              <If fromlineno="24" tolineno="27">
+                <Compare fromlineno="24" tolineno="24" op="('is not', &lt;Const(NoneType) l.24 [Tests.03-override] at Ox9366cec&gt;)">
+                  <Getattr fromlineno="24" tolineno="24" attrname="default" expr="self">
+                    <Name fromlineno="24" tolineno="24" name="self"/>
                   </Getattr>
-                  <Const fromlineno="24" tolineno="24" lineno="24" type="NoneType">None</Const>
+                  <Const fromlineno="24" tolineno="24" type="NoneType">None</Const>
                 </Compare>
-                <Assign fromlineno="25" tolineno="25" lineno="25" targets="[&lt;AssName(x) l.25 [Tests.03-override] at Ox8ae8dac&gt;]" value="self.default">
-                  <AssName fromlineno="25" tolineno="25" lineno="25" name="x"/>
-                  <Getattr fromlineno="25" tolineno="25" lineno="25" attrname="default" expr="self">
-                    <Name fromlineno="25" tolineno="25" lineno="25" name="self"/>
+                <Assign fromlineno="25" tolineno="25" value="self.default">
+                  <AssName fromlineno="25" tolineno="25" name="x"/>
+                  <Getattr fromlineno="25" tolineno="25" attrname="default" expr="self">
+                    <Name fromlineno="25" tolineno="25" name="self"/>
                   </Getattr>
                 </Assign>
-                <Raise fromlineno="27" tolineno="27" lineno="27">
-                  <CallFunc fromlineno="27" tolineno="27" lineno="27" func="Name(CannotResolve)">
-                    <Name fromlineno="27" tolineno="27" lineno="27" name="CannotResolve"/>
-                    <BinOp fromlineno="27" tolineno="27" lineno="27" op="%" left="self.emess" right="(self.name, cls)">
-                      <Getattr fromlineno="27" tolineno="27" lineno="27" attrname="emess" expr="self">
-                        <Name fromlineno="27" tolineno="27" lineno="27" name="self"/>
+                <Raise fromlineno="27" tolineno="27">
+                  <CallFunc fromlineno="27" tolineno="27" func="Name(CannotResolve)">
+                    <Name fromlineno="27" tolineno="27" name="CannotResolve"/>
+                    <BinOp fromlineno="27" tolineno="27" op="%" left="self.emess" right="(self.name, cls)">
+                      <Getattr fromlineno="27" tolineno="27" attrname="emess" expr="self">
+                        <Name fromlineno="27" tolineno="27" name="self"/>
                       </Getattr>
-                      <Tuple fromlineno="27" tolineno="27" lineno="27">
-                        <Getattr fromlineno="27" tolineno="27" lineno="27" attrname="name" expr="self">
-                          <Name fromlineno="27" tolineno="27" lineno="27" name="self"/>
+                      <Tuple fromlineno="27" tolineno="27">
+                        <Getattr fromlineno="27" tolineno="27" attrname="name" expr="self">
+                          <Name fromlineno="27" tolineno="27" name="self"/>
                         </Getattr>
-                        <Name fromlineno="27" tolineno="27" lineno="27" name="cls"/>
+                        <Name fromlineno="27" tolineno="27" name="cls"/>
                       </Tuple>
                     </BinOp>
                   </CallFunc>
@@ -553,520 +554,520 @@
               </If>
             </ExceptHandler>
           </TryExcept>
-          <Return fromlineno="28" tolineno="28" lineno="28">
-            <CallFunc fromlineno="28" tolineno="28" lineno="28" func="Name(x)">
-              <Name fromlineno="28" tolineno="28" lineno="28" name="x"/>
-              <Name fromlineno="28" tolineno="28" lineno="28" name="dt"/>
+          <Return fromlineno="28" tolineno="28">
+            <CallFunc fromlineno="28" tolineno="28" func="Name(x)">
+              <Name fromlineno="28" tolineno="28" name="x"/>
+              <Name fromlineno="28" tolineno="28" name="dt"/>
             </CallFunc>
           </Return>
         </Function>
       </Class>
-      <Function fromlineno="29" tolineno="41" lineno="29">
-        <Arguments fromlineno="29" tolineno="29" lineno="None" format_args=", *dt"/>
-        <Function fromlineno="31" tolineno="40" lineno="31">
-          <Arguments fromlineno="31" tolineno="31" lineno="None" format_args="func">
-            <AssName fromlineno="31" tolineno="31" lineno="31" name="func"/>
+      <Function fromlineno="29" tolineno="41">
+        <Arguments fromlineno="29" tolineno="29" format_args=", *dt"/>
+        <Function fromlineno="31" tolineno="40">
+          <Arguments fromlineno="31" tolineno="31" format_args="func">
+            <AssName fromlineno="31" tolineno="31" name="func"/>
           </Arguments>
-          <Assign fromlineno="32" tolineno="32" lineno="32" targets="[&lt;AssName(name) l.32 [Tests.03-override] at Ox8aed24c&gt;]" value="func.__name__">
-            <AssName fromlineno="32" tolineno="32" lineno="32" name="name"/>
-            <Getattr fromlineno="32" tolineno="32" lineno="32" attrname="__name__" expr="func">
-              <Name fromlineno="32" tolineno="32" lineno="32" name="func"/>
+          <Assign fromlineno="32" tolineno="32" value="func.__name__">
+            <AssName fromlineno="32" tolineno="32" name="name"/>
+            <Getattr fromlineno="32" tolineno="32" attrname="__name__" expr="func">
+              <Name fromlineno="32" tolineno="32" name="func"/>
             </Getattr>
           </Assign>
-          <Assign fromlineno="33" tolineno="33" lineno="33" targets="[&lt;AssName(fr) l.33 [Tests.03-override] at Ox8aed30c&gt;]" value="sys._getframe(1).f_locals.get(name, Resolver(name))">
-            <AssName fromlineno="33" tolineno="33" lineno="33" name="fr"/>
-            <CallFunc fromlineno="33" tolineno="33" lineno="33" func="Getattr(get)">
-              <Getattr fromlineno="33" tolineno="33" lineno="33" attrname="get" expr="sys._getframe(1).f_locals">
-                <Getattr fromlineno="33" tolineno="33" lineno="33" attrname="f_locals" expr="sys._getframe(1)">
-                  <CallFunc fromlineno="33" tolineno="33" lineno="33" func="Getattr(_getframe)">
-                    <Getattr fromlineno="33" tolineno="33" lineno="33" attrname="_getframe" expr="sys">
-                      <Name fromlineno="33" tolineno="33" lineno="33" name="sys"/>
+          <Assign fromlineno="33" tolineno="33" value="sys._getframe(1).f_locals.get(name, Resolver(name))">
+            <AssName fromlineno="33" tolineno="33" name="fr"/>
+            <CallFunc fromlineno="33" tolineno="33" func="Getattr(get)">
+              <Getattr fromlineno="33" tolineno="33" attrname="get" expr="sys._getframe(1).f_locals">
+                <Getattr fromlineno="33" tolineno="33" attrname="f_locals" expr="sys._getframe(1)">
+                  <CallFunc fromlineno="33" tolineno="33" func="Getattr(_getframe)">
+                    <Getattr fromlineno="33" tolineno="33" attrname="_getframe" expr="sys">
+                      <Name fromlineno="33" tolineno="33" name="sys"/>
                     </Getattr>
-                    <Const fromlineno="33" tolineno="33" lineno="33" type="int">1</Const>
+                    <Const fromlineno="33" tolineno="33" type="int">1</Const>
                   </CallFunc>
                 </Getattr>
               </Getattr>
-              <Name fromlineno="33" tolineno="33" lineno="33" name="name"/>
-              <CallFunc fromlineno="33" tolineno="33" lineno="33" func="Name(Resolver)">
-                <Name fromlineno="33" tolineno="33" lineno="33" name="Resolver"/>
-                <Name fromlineno="33" tolineno="33" lineno="33" name="name"/>
+              <Name fromlineno="33" tolineno="33" name="name"/>
+              <CallFunc fromlineno="33" tolineno="33" func="Name(Resolver)">
+                <Name fromlineno="33" tolineno="33" name="Resolver"/>
+                <Name fromlineno="33" tolineno="33" name="name"/>
               </CallFunc>
             </CallFunc>
           </Assign>
-          <Assign fromlineno="38" tolineno="38" lineno="38" targets="[&lt;Subscript() l.38 [Tests.03-override] at Ox8aed54c&gt;]" value="func">
-            <Subscript fromlineno="38" tolineno="38" lineno="38">
-              <Getattr fromlineno="38" tolineno="38" lineno="38" attrname="function_map" expr="fr">
-                <Name fromlineno="38" tolineno="38" lineno="38" name="fr"/>
+          <Assign fromlineno="38" tolineno="38" value="func">
+            <Subscript fromlineno="38" tolineno="38">
+              <Getattr fromlineno="38" tolineno="38" attrname="function_map" expr="fr">
+                <Name fromlineno="38" tolineno="38" name="fr"/>
               </Getattr>
-              <Index fromlineno="38" tolineno="38" lineno="None">
-                <Name fromlineno="38" tolineno="38" lineno="38" name="dt"/>
+              <Index fromlineno="38" tolineno="38">
+                <Name fromlineno="38" tolineno="38" name="dt"/>
               </Index>
             </Subscript>
-            <Name fromlineno="38" tolineno="38" lineno="38" name="func"/>
+            <Name fromlineno="38" tolineno="38" name="func"/>
           </Assign>
-          <Return fromlineno="40" tolineno="40" lineno="40">
-            <Name fromlineno="40" tolineno="40" lineno="40" name="fr"/>
+          <Return fromlineno="40" tolineno="40">
+            <Name fromlineno="40" tolineno="40" name="fr"/>
           </Return>
         </Function>
-        <Return fromlineno="41" tolineno="41" lineno="41">
-          <Name fromlineno="41" tolineno="41" lineno="41" name="closure"/>
+        <Return fromlineno="41" tolineno="41">
+          <Name fromlineno="41" tolineno="41" name="closure"/>
         </Return>
       </Function>
-      <Function fromlineno="42" tolineno="46" lineno="42">
-        <Arguments fromlineno="42" tolineno="42" lineno="None" format_args="func">
-          <AssName fromlineno="42" tolineno="42" lineno="42" name="func"/>
+      <Function fromlineno="42" tolineno="46">
+        <Arguments fromlineno="42" tolineno="42" format_args="func">
+          <AssName fromlineno="42" tolineno="42" name="func"/>
         </Arguments>
-        <Assign fromlineno="43" tolineno="43" lineno="43" targets="[&lt;AssName(name) l.43 [Tests.03-override] at Ox8aed7ac&gt;]" value="func.__name__">
-          <AssName fromlineno="43" tolineno="43" lineno="43" name="name"/>
-          <Getattr fromlineno="43" tolineno="43" lineno="43" attrname="__name__" expr="func">
-            <Name fromlineno="43" tolineno="43" lineno="43" name="func"/>
+        <Assign fromlineno="43" tolineno="43" value="func.__name__">
+          <AssName fromlineno="43" tolineno="43" name="name"/>
+          <Getattr fromlineno="43" tolineno="43" attrname="__name__" expr="func">
+            <Name fromlineno="43" tolineno="43" name="func"/>
           </Getattr>
         </Assign>
-        <Assign fromlineno="44" tolineno="44" lineno="44" targets="[&lt;AssName(fr) l.44 [Tests.03-override] at Ox8aed86c&gt;]" value="sys._getframe(1).f_locals.get(name, Resolver(name))">
-          <AssName fromlineno="44" tolineno="44" lineno="44" name="fr"/>
-          <CallFunc fromlineno="44" tolineno="44" lineno="44" func="Getattr(get)">
-            <Getattr fromlineno="44" tolineno="44" lineno="44" attrname="get" expr="sys._getframe(1).f_locals">
-              <Getattr fromlineno="44" tolineno="44" lineno="44" attrname="f_locals" expr="sys._getframe(1)">
-                <CallFunc fromlineno="44" tolineno="44" lineno="44" func="Getattr(_getframe)">
-                  <Getattr fromlineno="44" tolineno="44" lineno="44" attrname="_getframe" expr="sys">
-                    <Name fromlineno="44" tolineno="44" lineno="44" name="sys"/>
+        <Assign fromlineno="44" tolineno="44" value="sys._getframe(1).f_locals.get(name, Resolver(name))">
+          <AssName fromlineno="44" tolineno="44" name="fr"/>
+          <CallFunc fromlineno="44" tolineno="44" func="Getattr(get)">
+            <Getattr fromlineno="44" tolineno="44" attrname="get" expr="sys._getframe(1).f_locals">
+              <Getattr fromlineno="44" tolineno="44" attrname="f_locals" expr="sys._getframe(1)">
+                <CallFunc fromlineno="44" tolineno="44" func="Getattr(_getframe)">
+                  <Getattr fromlineno="44" tolineno="44" attrname="_getframe" expr="sys">
+                    <Name fromlineno="44" tolineno="44" name="sys"/>
                   </Getattr>
-                  <Const fromlineno="44" tolineno="44" lineno="44" type="int">1</Const>
+                  <Const fromlineno="44" tolineno="44" type="int">1</Const>
                 </CallFunc>
               </Getattr>
             </Getattr>
-            <Name fromlineno="44" tolineno="44" lineno="44" name="name"/>
-            <CallFunc fromlineno="44" tolineno="44" lineno="44" func="Name(Resolver)">
-              <Name fromlineno="44" tolineno="44" lineno="44" name="Resolver"/>
-              <Name fromlineno="44" tolineno="44" lineno="44" name="name"/>
+            <Name fromlineno="44" tolineno="44" name="name"/>
+            <CallFunc fromlineno="44" tolineno="44" func="Name(Resolver)">
+              <Name fromlineno="44" tolineno="44" name="Resolver"/>
+              <Name fromlineno="44" tolineno="44" name="name"/>
             </CallFunc>
           </CallFunc>
         </Assign>
-        <Assign fromlineno="45" tolineno="45" lineno="45" targets="[&lt;AssAttr(default) l.45 [Tests.03-override] at Ox8aedaac&gt;]" value="func">
-          <AssAttr fromlineno="45" tolineno="45" lineno="45" attrname="default" expr="fr">
-            <Name fromlineno="45" tolineno="45" lineno="45" name="fr"/>
+        <Assign fromlineno="45" tolineno="45" value="func">
+          <AssAttr fromlineno="45" tolineno="45" attrname="default" expr="fr">
+            <Name fromlineno="45" tolineno="45" name="fr"/>
           </AssAttr>
-          <Name fromlineno="45" tolineno="45" lineno="45" name="func"/>
+          <Name fromlineno="45" tolineno="45" name="func"/>
         </Assign>
-        <Return fromlineno="46" tolineno="46" lineno="46">
-          <Name fromlineno="46" tolineno="46" lineno="46" name="fr"/>
+        <Return fromlineno="46" tolineno="46">
+          <Name fromlineno="46" tolineno="46" name="fr"/>
         </Return>
       </Function>
-      <Function fromlineno="49" tolineno="50" lineno="48">
-        <Decorators fromlineno="48" tolineno="48" lineno="48">
-          <Name fromlineno="48" tolineno="48" lineno="48" name="overdef"/>
+      <Function fromlineno="49" tolineno="50">
+        <Decorators fromlineno="48" tolineno="48">
+          <Name fromlineno="48" tolineno="48" name="overdef"/>
         </Decorators>
-        <Arguments fromlineno="48" tolineno="48" lineno="None" format_args=", *dt, **mp"/>
-        <Print fromlineno="50" tolineno="50" lineno="50">
-          <Const fromlineno="50" tolineno="50" lineno="50" type="str">'Default call'</Const>
+        <Arguments fromlineno="48" tolineno="48" format_args=", *dt, **mp"/>
+        <Print fromlineno="50" tolineno="50">
+          <Const fromlineno="50" tolineno="50" type="str">'Default call'</Const>
         </Print>
       </Function>
-      <Function fromlineno="52" tolineno="53" lineno="51">
-        <Decorators fromlineno="51" tolineno="51" lineno="51">
-          <CallFunc fromlineno="51" tolineno="51" lineno="51" func="Name(overload)">
-            <Name fromlineno="51" tolineno="51" lineno="51" name="overload"/>
-            <Name fromlineno="51" tolineno="51" lineno="51" name="int"/>
+      <Function fromlineno="52" tolineno="53">
+        <Decorators fromlineno="51" tolineno="51">
+          <CallFunc fromlineno="51" tolineno="51" func="Name(overload)">
+            <Name fromlineno="51" tolineno="51" name="overload"/>
+            <Name fromlineno="51" tolineno="51" name="int"/>
           </CallFunc>
         </Decorators>
-        <Arguments fromlineno="52" tolineno="52" lineno="None" format_args="x">
-          <AssName fromlineno="52" tolineno="52" lineno="52" name="x"/>
+        <Arguments fromlineno="52" tolineno="52" format_args="x">
+          <AssName fromlineno="52" tolineno="52" name="x"/>
         </Arguments>
-        <Return fromlineno="53" tolineno="53" lineno="53">
-          <BinOp fromlineno="53" tolineno="53" lineno="53" op="+" left="x" right="1">
-            <Name fromlineno="53" tolineno="53" lineno="53" name="x"/>
-            <Const fromlineno="53" tolineno="53" lineno="53" type="int">1</Const>
+        <Return fromlineno="53" tolineno="53">
+          <BinOp fromlineno="53" tolineno="53" op="+" left="x" right="1">
+            <Name fromlineno="53" tolineno="53" name="x"/>
+            <Const fromlineno="53" tolineno="53" type="int">1</Const>
           </BinOp>
         </Return>
       </Function>
-      <Function fromlineno="55" tolineno="56" lineno="54">
-        <Decorators fromlineno="54" tolineno="54" lineno="54">
-          <CallFunc fromlineno="54" tolineno="54" lineno="54" func="Name(overload)">
-            <Name fromlineno="54" tolineno="54" lineno="54" name="overload"/>
-            <Name fromlineno="54" tolineno="54" lineno="54" name="str"/>
+      <Function fromlineno="55" tolineno="56">
+        <Decorators fromlineno="54" tolineno="54">
+          <CallFunc fromlineno="54" tolineno="54" func="Name(overload)">
+            <Name fromlineno="54" tolineno="54" name="overload"/>
+            <Name fromlineno="54" tolineno="54" name="str"/>
           </CallFunc>
         </Decorators>
-        <Arguments fromlineno="55" tolineno="55" lineno="None" format_args="x">
-          <AssName fromlineno="55" tolineno="55" lineno="55" name="x"/>
+        <Arguments fromlineno="55" tolineno="55" format_args="x">
+          <AssName fromlineno="55" tolineno="55" name="x"/>
         </Arguments>
-        <Return fromlineno="56" tolineno="56" lineno="56">
-          <BinOp fromlineno="56" tolineno="56" lineno="56" op="+" left="x" right="'1'">
-            <Name fromlineno="56" tolineno="56" lineno="56" name="x"/>
-            <Const fromlineno="56" tolineno="56" lineno="56" type="str">'1'</Const>
+        <Return fromlineno="56" tolineno="56">
+          <BinOp fromlineno="56" tolineno="56" op="+" left="x" right="'1'">
+            <Name fromlineno="56" tolineno="56" name="x"/>
+            <Const fromlineno="56" tolineno="56" type="str">'1'</Const>
           </BinOp>
         </Return>
       </Function>
-      <Function fromlineno="58" tolineno="59" lineno="57">
-        <Decorators fromlineno="57" tolineno="57" lineno="57">
-          <CallFunc fromlineno="57" tolineno="57" lineno="57" func="Name(overload)">
-            <Name fromlineno="57" tolineno="57" lineno="57" name="overload"/>
-            <Name fromlineno="57" tolineno="57" lineno="57" name="str"/>
-            <Name fromlineno="57" tolineno="57" lineno="57" name="int"/>
+      <Function fromlineno="58" tolineno="59">
+        <Decorators fromlineno="57" tolineno="57">
+          <CallFunc fromlineno="57" tolineno="57" func="Name(overload)">
+            <Name fromlineno="57" tolineno="57" name="overload"/>
+            <Name fromlineno="57" tolineno="57" name="str"/>
+            <Name fromlineno="57" tolineno="57" name="int"/>
           </CallFunc>
         </Decorators>
-        <Arguments fromlineno="58" tolineno="58" lineno="None" format_args="x, y">
-          <AssName fromlineno="58" tolineno="58" lineno="58" name="x"/>
-          <AssName fromlineno="58" tolineno="58" lineno="58" name="y"/>
+        <Arguments fromlineno="58" tolineno="58" format_args="x, y">
+          <AssName fromlineno="58" tolineno="58" name="x"/>
+          <AssName fromlineno="58" tolineno="58" name="y"/>
         </Arguments>
-        <Return fromlineno="59" tolineno="59" lineno="59">
-          <BinOp fromlineno="59" tolineno="59" lineno="59" op="+" left="x" right="str(y)">
-            <Name fromlineno="59" tolineno="59" lineno="59" name="x"/>
-            <CallFunc fromlineno="59" tolineno="59" lineno="59" func="Name(str)">
-              <Name fromlineno="59" tolineno="59" lineno="59" name="str"/>
-              <Name fromlineno="59" tolineno="59" lineno="59" name="y"/>
+        <Return fromlineno="59" tolineno="59">
+          <BinOp fromlineno="59" tolineno="59" op="+" left="x" right="str(y)">
+            <Name fromlineno="59" tolineno="59" name="x"/>
+            <CallFunc fromlineno="59" tolineno="59" func="Name(str)">
+              <Name fromlineno="59" tolineno="59" name="str"/>
+              <Name fromlineno="59" tolineno="59" name="y"/>
             </CallFunc>
           </BinOp>
         </Return>
       </Function>
-      <Print fromlineno="60" tolineno="60" lineno="60">
-        <CallFunc fromlineno="60" tolineno="60" lineno="60" func="Name(f)">
-          <Name fromlineno="60" tolineno="60" lineno="60" name="f"/>
-          <Const fromlineno="60" tolineno="60" lineno="60" type="int">1</Const>
+      <Print fromlineno="60" tolineno="60">
+        <CallFunc fromlineno="60" tolineno="60" func="Name(f)">
+          <Name fromlineno="60" tolineno="60" name="f"/>
+          <Const fromlineno="60" tolineno="60" type="int">1</Const>
         </CallFunc>
       </Print>
-      <Print fromlineno="61" tolineno="61" lineno="61">
-        <CallFunc fromlineno="61" tolineno="61" lineno="61" func="Name(f)">
-          <Name fromlineno="61" tolineno="61" lineno="61" name="f"/>
-          <Const fromlineno="61" tolineno="61" lineno="61" type="str">'1'</Const>
+      <Print fromlineno="61" tolineno="61">
+        <CallFunc fromlineno="61" tolineno="61" func="Name(f)">
+          <Name fromlineno="61" tolineno="61" name="f"/>
+          <Const fromlineno="61" tolineno="61" type="str">'1'</Const>
         </CallFunc>
       </Print>
-      <Discard fromlineno="62" tolineno="62" lineno="62">
-        <CallFunc fromlineno="62" tolineno="62" lineno="62" func="Name(f)">
-          <Name fromlineno="62" tolineno="62" lineno="62" name="f"/>
-          <Const fromlineno="62" tolineno="62" lineno="62" type="int">2</Const>
-          <Const fromlineno="62" tolineno="62" lineno="62" type="int">2</Const>
+      <Discard fromlineno="62" tolineno="62">
+        <CallFunc fromlineno="62" tolineno="62" func="Name(f)">
+          <Name fromlineno="62" tolineno="62" name="f"/>
+          <Const fromlineno="62" tolineno="62" type="int">2</Const>
+          <Const fromlineno="62" tolineno="62" type="int">2</Const>
         </CallFunc>
       </Discard>
     </Module>
-    <Module fromlineno="0" tolineno="60" lineno="0" name="Tests.07-functor">
-      <Import fromlineno="4" tolineno="4" lineno="4">
+    <Module num_lines="60" name="Tests.07-functor">
+      <Import fromlineno="4" tolineno="4">
         <ImportName name="byteplay"/>
       </Import>
-      <Import fromlineno="5" tolineno="5" lineno="5">
+      <Import fromlineno="5" tolineno="5">
         <ImportName name="new"/>
       </Import>
-      <Import fromlineno="6" tolineno="6" lineno="6">
+      <Import fromlineno="6" tolineno="6">
         <ImportName name="functools"/>
       </Import>
-      <Import fromlineno="7" tolineno="7" lineno="7">
+      <Import fromlineno="7" tolineno="7">
         <ImportName name="inspect"/>
       </Import>
-      <Class fromlineno="9" tolineno="60" lineno="9">
-        <Name fromlineno="9" tolineno="9" lineno="9" name="object"/>
-        <Function fromlineno="10" tolineno="24" lineno="10">
-          <Arguments fromlineno="10" tolineno="10" lineno="None" format_args="self, func, code=None">
-            <AssName fromlineno="10" tolineno="10" lineno="10" name="self"/>
-            <AssName fromlineno="10" tolineno="10" lineno="10" name="func"/>
-            <AssName fromlineno="10" tolineno="10" lineno="10" name="code"/>
-            <Const fromlineno="10" tolineno="10" lineno="10" type="NoneType">None</Const>
+      <Class fromlineno="9" tolineno="60">
+        <Name fromlineno="9" tolineno="9" name="object"/>
+        <Function fromlineno="10" tolineno="24">
+          <Arguments fromlineno="10" tolineno="10" format_args="self, func, code=None">
+            <AssName fromlineno="10" tolineno="10" name="self"/>
+            <AssName fromlineno="10" tolineno="10" name="func"/>
+            <AssName fromlineno="10" tolineno="10" name="code"/>
+            <Const fromlineno="10" tolineno="10" type="NoneType">None</Const>
           </Arguments>
-          <Assign fromlineno="11" tolineno="11" lineno="11" targets="[&lt;AssAttr(func) l.11 [Tests.07-functor] at Ox8afa90c&gt;]" value="None">
-            <AssAttr fromlineno="11" tolineno="11" lineno="11" attrname="func" expr="self">
-              <Name fromlineno="11" tolineno="11" lineno="11" name="self"/>
+          <Assign fromlineno="11" tolineno="11" value="None">
+            <AssAttr fromlineno="11" tolineno="11" attrname="func" expr="self">
+              <Name fromlineno="11" tolineno="11" name="self"/>
             </AssAttr>
-            <Const fromlineno="11" tolineno="11" lineno="11" type="NoneType">None</Const>
+            <Const fromlineno="11" tolineno="11" type="NoneType">None</Const>
           </Assign>
-          <Assign fromlineno="12" tolineno="12" lineno="12" targets="[&lt;AssAttr(ofunc) l.12 [Tests.07-functor] at Ox8afa9ac&gt;]" value="func">
-            <AssAttr fromlineno="12" tolineno="12" lineno="12" attrname="ofunc" expr="self">
-              <Name fromlineno="12" tolineno="12" lineno="12" name="self"/>
+          <Assign fromlineno="12" tolineno="12" value="func">
+            <AssAttr fromlineno="12" tolineno="12" attrname="ofunc" expr="self">
+              <Name fromlineno="12" tolineno="12" name="self"/>
             </AssAttr>
-            <Name fromlineno="12" tolineno="12" lineno="12" name="func"/>
+            <Name fromlineno="12" tolineno="12" name="func"/>
           </Assign>
-          <If fromlineno="13" tolineno="22" lineno="13">
-            <Compare fromlineno="13" tolineno="13" lineno="13" op="('is', &lt;Const(NoneType) l.13 [Tests.07-functor] at Ox8afaacc&gt;)">
-              <Name fromlineno="13" tolineno="13" lineno="13" name="code"/>
-              <Const fromlineno="13" tolineno="13" lineno="13" type="NoneType">None</Const>
+          <If fromlineno="13" tolineno="22">
+            <Compare fromlineno="13" tolineno="13" op="('is', &lt;Const(NoneType) l.13 [Tests.07-functor] at Ox9378a8c&gt;)">
+              <Name fromlineno="13" tolineno="13" name="code"/>
+              <Const fromlineno="13" tolineno="13" type="NoneType">None</Const>
             </Compare>
-            <Assign fromlineno="15" tolineno="15" lineno="15" targets="[&lt;AssAttr(code) l.15 [Tests.07-functor] at Ox8afab4c&gt;]" value="[(byteplay.LOAD_CONST, func)]">
-              <AssAttr fromlineno="15" tolineno="15" lineno="15" attrname="code" expr="self">
-                <Name fromlineno="15" tolineno="15" lineno="15" name="self"/>
+            <Assign fromlineno="15" tolineno="15" value="[(byteplay.LOAD_CONST, func)]">
+              <AssAttr fromlineno="15" tolineno="15" attrname="code" expr="self">
+                <Name fromlineno="15" tolineno="15" name="self"/>
               </AssAttr>
-              <List fromlineno="15" tolineno="15" lineno="15">
-                <Tuple fromlineno="15" tolineno="15" lineno="15">
-                  <Getattr fromlineno="15" tolineno="15" lineno="15" attrname="LOAD_CONST" expr="byteplay">
-                    <Name fromlineno="15" tolineno="15" lineno="15" name="byteplay"/>
+              <List fromlineno="15" tolineno="15">
+                <Tuple fromlineno="15" tolineno="15">
+                  <Getattr fromlineno="15" tolineno="15" attrname="LOAD_CONST" expr="byteplay">
+                    <Name fromlineno="15" tolineno="15" name="byteplay"/>
                   </Getattr>
-                  <Name fromlineno="15" tolineno="15" lineno="15" name="func"/>
+                  <Name fromlineno="15" tolineno="15" name="func"/>
                 </Tuple>
               </List>
             </Assign>
-            <Assign fromlineno="16" tolineno="16" lineno="16" targets="[&lt;AssName(rparams) l.16 [Tests.07-functor] at Ox8afacac&gt;]" value="inspect.getargspec(func)[0]">
-              <AssName fromlineno="16" tolineno="16" lineno="16" name="rparams"/>
-              <Subscript fromlineno="16" tolineno="16" lineno="16">
-                <CallFunc fromlineno="16" tolineno="16" lineno="16" func="Getattr(getargspec)">
-                  <Getattr fromlineno="16" tolineno="16" lineno="16" attrname="getargspec" expr="inspect">
-                    <Name fromlineno="16" tolineno="16" lineno="16" name="inspect"/>
+            <Assign fromlineno="16" tolineno="16" value="inspect.getargspec(func)[0]">
+              <AssName fromlineno="16" tolineno="16" name="rparams"/>
+              <Subscript fromlineno="16" tolineno="16">
+                <CallFunc fromlineno="16" tolineno="16" func="Getattr(getargspec)">
+                  <Getattr fromlineno="16" tolineno="16" attrname="getargspec" expr="inspect">
+                    <Name fromlineno="16" tolineno="16" name="inspect"/>
                   </Getattr>
-                  <Name fromlineno="16" tolineno="16" lineno="16" name="func"/>
+                  <Name fromlineno="16" tolineno="16" name="func"/>
                 </CallFunc>
-                <Index fromlineno="16" tolineno="16" lineno="None">
-                  <Const fromlineno="16" tolineno="16" lineno="16" type="int">0</Const>
+                <Index fromlineno="16" tolineno="16">
+                  <Const fromlineno="16" tolineno="16" type="int">0</Const>
                 </Index>
               </Subscript>
             </Assign>
-            <Discard fromlineno="17" tolineno="17" lineno="17">
-              <CallFunc fromlineno="17" tolineno="17" lineno="17" func="Getattr(extend)">
-                <Getattr fromlineno="17" tolineno="17" lineno="17" attrname="extend" expr="self.code">
-                  <Getattr fromlineno="17" tolineno="17" lineno="17" attrname="code" expr="self">
-                    <Name fromlineno="17" tolineno="17" lineno="17" name="self"/>
+            <Discard fromlineno="17" tolineno="17">
+              <CallFunc fromlineno="17" tolineno="17" func="Getattr(extend)">
+                <Getattr fromlineno="17" tolineno="17" attrname="extend" expr="self.code">
+                  <Getattr fromlineno="17" tolineno="17" attrname="code" expr="self">
+                    <Name fromlineno="17" tolineno="17" name="self"/>
                   </Getattr>
                 </Getattr>
-                <GenExpr fromlineno="17" tolineno="17" lineno="17">
-                  <Tuple fromlineno="17" tolineno="17" lineno="17">
-                    <Getattr fromlineno="17" tolineno="17" lineno="17" attrname="LOAD_FAST" expr="byteplay">
-                      <Name fromlineno="17" tolineno="17" lineno="17" name="byteplay"/>
+                <GenExpr fromlineno="17" tolineno="17">
+                  <Tuple fromlineno="17" tolineno="17">
+                    <Getattr fromlineno="17" tolineno="17" attrname="LOAD_FAST" expr="byteplay">
+                      <Name fromlineno="17" tolineno="17" name="byteplay"/>
                     </Getattr>
-                    <Name fromlineno="17" tolineno="17" lineno="17" name="i"/>
+                    <Name fromlineno="17" tolineno="17" name="i"/>
                   </Tuple>
-                  <Comprehension fromlineno="17" tolineno="17" lineno="None">
-                    <AssName fromlineno="17" tolineno="17" lineno="17" name="i"/>
-                    <Name fromlineno="17" tolineno="17" lineno="17" name="rparams"/>
+                  <Comprehension fromlineno="17" tolineno="17">
+                    <AssName fromlineno="17" tolineno="17" name="i"/>
+                    <Name fromlineno="17" tolineno="17" name="rparams"/>
                   </Comprehension>
                 </GenExpr>
               </CallFunc>
             </Discard>
-            <Discard fromlineno="18" tolineno="18" lineno="18">
-              <CallFunc fromlineno="18" tolineno="18" lineno="18" func="Getattr(append)">
-                <Getattr fromlineno="18" tolineno="18" lineno="18" attrname="append" expr="self.code">
-                  <Getattr fromlineno="18" tolineno="18" lineno="18" attrname="code" expr="self">
-                    <Name fromlineno="18" tolineno="18" lineno="18" name="self"/>
+            <Discard fromlineno="18" tolineno="18">
+              <CallFunc fromlineno="18" tolineno="18" func="Getattr(append)">
+                <Getattr fromlineno="18" tolineno="18" attrname="append" expr="self.code">
+                  <Getattr fromlineno="18" tolineno="18" attrname="code" expr="self">
+                    <Name fromlineno="18" tolineno="18" name="self"/>
                   </Getattr>
                 </Getattr>
-                <Tuple fromlineno="18" tolineno="18" lineno="18">
-                  <Getattr fromlineno="18" tolineno="18" lineno="18" attrname="CALL_FUNCTION" expr="byteplay">
-                    <Name fromlineno="18" tolineno="18" lineno="18" name="byteplay"/>
+                <Tuple fromlineno="18" tolineno="18">
+                  <Getattr fromlineno="18" tolineno="18" attrname="CALL_FUNCTION" expr="byteplay">
+                    <Name fromlineno="18" tolineno="18" name="byteplay"/>
                   </Getattr>
-                  <CallFunc fromlineno="18" tolineno="18" lineno="18" func="Name(len)">
-                    <Name fromlineno="18" tolineno="18" lineno="18" name="len"/>
-                    <Name fromlineno="18" tolineno="18" lineno="18" name="rparams"/>
+                  <CallFunc fromlineno="18" tolineno="18" func="Name(len)">
+                    <Name fromlineno="18" tolineno="18" name="len"/>
+                    <Name fromlineno="18" tolineno="18" name="rparams"/>
                   </CallFunc>
                 </Tuple>
               </CallFunc>
             </Discard>
-            <Assign fromlineno="22" tolineno="22" lineno="22" targets="[&lt;AssAttr(code) l.22 [Tests.07-functor] at Ox8afe26c&gt;]" value="code">
-              <AssAttr fromlineno="22" tolineno="22" lineno="22" attrname="code" expr="self">
-                <Name fromlineno="22" tolineno="22" lineno="22" name="self"/>
+            <Assign fromlineno="22" tolineno="22" value="code">
+              <AssAttr fromlineno="22" tolineno="22" attrname="code" expr="self">
+                <Name fromlineno="22" tolineno="22" name="self"/>
               </AssAttr>
-              <Name fromlineno="22" tolineno="22" lineno="22" name="code"/>
+              <Name fromlineno="22" tolineno="22" name="code"/>
             </Assign>
           </If>
-          <Assign fromlineno="24" tolineno="24" lineno="24" targets="[&lt;AssAttr(ocode) l.24 [Tests.07-functor] at Ox8afe2ec&gt;]" value="bp.Code.from_code(func.func_code)">
-            <AssAttr fromlineno="24" tolineno="24" lineno="24" attrname="ocode" expr="self">
-              <Name fromlineno="24" tolineno="24" lineno="24" name="self"/>
+          <Assign fromlineno="24" tolineno="24" value="bp.Code.from_code(func.func_code)">
+            <AssAttr fromlineno="24" tolineno="24" attrname="ocode" expr="self">
+              <Name fromlineno="24" tolineno="24" name="self"/>
             </AssAttr>
-            <CallFunc fromlineno="24" tolineno="24" lineno="24" func="Getattr(from_code)">
-              <Getattr fromlineno="24" tolineno="24" lineno="24" attrname="from_code" expr="bp.Code">
-                <Getattr fromlineno="24" tolineno="24" lineno="24" attrname="Code" expr="bp">
-                  <Name fromlineno="24" tolineno="24" lineno="24" name="bp"/>
+            <CallFunc fromlineno="24" tolineno="24" func="Getattr(from_code)">
+              <Getattr fromlineno="24" tolineno="24" attrname="from_code" expr="bp.Code">
+                <Getattr fromlineno="24" tolineno="24" attrname="Code" expr="bp">
+                  <Name fromlineno="24" tolineno="24" name="bp"/>
                 </Getattr>
               </Getattr>
-              <Getattr fromlineno="24" tolineno="24" lineno="24" attrname="func_code" expr="func">
-                <Name fromlineno="24" tolineno="24" lineno="24" name="func"/>
+              <Getattr fromlineno="24" tolineno="24" attrname="func_code" expr="func">
+                <Name fromlineno="24" tolineno="24" name="func"/>
               </Getattr>
             </CallFunc>
           </Assign>
         </Function>
-        <Function fromlineno="25" tolineno="37" lineno="25">
-          <Arguments fromlineno="25" tolineno="25" lineno="None" format_args="self, obj">
-            <AssName fromlineno="25" tolineno="25" lineno="25" name="self"/>
-            <AssName fromlineno="25" tolineno="25" lineno="25" name="obj"/>
+        <Function fromlineno="25" tolineno="37">
+          <Arguments fromlineno="25" tolineno="25" format_args="self, obj">
+            <AssName fromlineno="25" tolineno="25" name="self"/>
+            <AssName fromlineno="25" tolineno="25" name="obj"/>
           </Arguments>
-          <Assign fromlineno="26" tolineno="26" lineno="26" targets="[&lt;AssName(code) l.26 [Tests.07-functor] at Ox8afe58c&gt;]" value="self.code[:]">
-            <AssName fromlineno="26" tolineno="26" lineno="26" name="code"/>
-            <Subscript fromlineno="26" tolineno="26" lineno="26">
-              <Getattr fromlineno="26" tolineno="26" lineno="26" attrname="code" expr="self">
-                <Name fromlineno="26" tolineno="26" lineno="26" name="self"/>
+          <Assign fromlineno="26" tolineno="26" value="self.code[:]">
+            <AssName fromlineno="26" tolineno="26" name="code"/>
+            <Subscript fromlineno="26" tolineno="26">
+              <Getattr fromlineno="26" tolineno="26" attrname="code" expr="self">
+                <Name fromlineno="26" tolineno="26" name="self"/>
               </Getattr>
-              <Slice fromlineno="26" tolineno="26" lineno="None"/>
+              <Slice fromlineno="26" tolineno="26"/>
             </Subscript>
           </Assign>
-          <If fromlineno="27" tolineno="33" lineno="27">
-            <CallFunc fromlineno="27" tolineno="27" lineno="27" func="Name(isinstance)">
-              <Name fromlineno="27" tolineno="27" lineno="27" name="isinstance"/>
-              <Name fromlineno="27" tolineno="27" lineno="27" name="obj"/>
-              <Name fromlineno="27" tolineno="27" lineno="27" name="FastFunctor"/>
+          <If fromlineno="27" tolineno="33">
+            <CallFunc fromlineno="27" tolineno="27" func="Name(isinstance)">
+              <Name fromlineno="27" tolineno="27" name="isinstance"/>
+              <Name fromlineno="27" tolineno="27" name="obj"/>
+              <Name fromlineno="27" tolineno="27" name="FastFunctor"/>
             </CallFunc>
-            <Discard fromlineno="30" tolineno="30" lineno="30">
-              <CallFunc fromlineno="30" tolineno="30" lineno="30" func="Getattr(extend)">
-                <Getattr fromlineno="30" tolineno="30" lineno="30" attrname="extend" expr="code">
-                  <Name fromlineno="30" tolineno="30" lineno="30" name="code"/>
+            <Discard fromlineno="30" tolineno="30">
+              <CallFunc fromlineno="30" tolineno="30" func="Getattr(extend)">
+                <Getattr fromlineno="30" tolineno="30" attrname="extend" expr="code">
+                  <Name fromlineno="30" tolineno="30" name="code"/>
                 </Getattr>
-                <Getattr fromlineno="30" tolineno="30" lineno="30" attrname="code" expr="obj">
-                  <Name fromlineno="30" tolineno="30" lineno="30" name="obj"/>
+                <Getattr fromlineno="30" tolineno="30" attrname="code" expr="obj">
+                  <Name fromlineno="30" tolineno="30" name="obj"/>
                 </Getattr>
               </CallFunc>
             </Discard>
-            <Discard fromlineno="33" tolineno="33" lineno="33">
-              <CallFunc fromlineno="33" tolineno="33" lineno="33" func="Getattr(append)">
-                <Getattr fromlineno="33" tolineno="33" lineno="33" attrname="append" expr="code">
-                  <Name fromlineno="33" tolineno="33" lineno="33" name="code"/>
+            <Discard fromlineno="33" tolineno="33">
+              <CallFunc fromlineno="33" tolineno="33" func="Getattr(append)">
+                <Getattr fromlineno="33" tolineno="33" attrname="append" expr="code">
+                  <Name fromlineno="33" tolineno="33" name="code"/>
                 </Getattr>
-                <Tuple fromlineno="33" tolineno="33" lineno="33">
-                  <Getattr fromlineno="33" tolineno="33" lineno="33" attrname="LOAD_CONST" expr="byteplay">
-                    <Name fromlineno="33" tolineno="33" lineno="33" name="byteplay"/>
+                <Tuple fromlineno="33" tolineno="33">
+                  <Getattr fromlineno="33" tolineno="33" attrname="LOAD_CONST" expr="byteplay">
+                    <Name fromlineno="33" tolineno="33" name="byteplay"/>
                   </Getattr>
-                  <Name fromlineno="33" tolineno="33" lineno="33" name="obj"/>
+                  <Name fromlineno="33" tolineno="33" name="obj"/>
                 </Tuple>
               </CallFunc>
             </Discard>
           </If>
-          <Discard fromlineno="35" tolineno="35" lineno="35">
-            <CallFunc fromlineno="35" tolineno="35" lineno="35" func="Getattr(append)">
-              <Getattr fromlineno="35" tolineno="35" lineno="35" attrname="append" expr="code">
-                <Name fromlineno="35" tolineno="35" lineno="35" name="code"/>
+          <Discard fromlineno="35" tolineno="35">
+            <CallFunc fromlineno="35" tolineno="35" func="Getattr(append)">
+              <Getattr fromlineno="35" tolineno="35" attrname="append" expr="code">
+                <Name fromlineno="35" tolineno="35" name="code"/>
               </Getattr>
-              <Tuple fromlineno="35" tolineno="35" lineno="35">
-                <Getattr fromlineno="35" tolineno="35" lineno="35" attrname="BINARY_ADD" expr="byteplay">
-                  <Name fromlineno="35" tolineno="35" lineno="35" name="byteplay"/>
+              <Tuple fromlineno="35" tolineno="35">
+                <Getattr fromlineno="35" tolineno="35" attrname="BINARY_ADD" expr="byteplay">
+                  <Name fromlineno="35" tolineno="35" name="byteplay"/>
                 </Getattr>
-                <Const fromlineno="35" tolineno="35" lineno="35" type="NoneType">None</Const>
+                <Const fromlineno="35" tolineno="35" type="NoneType">None</Const>
               </Tuple>
             </CallFunc>
           </Discard>
-          <Return fromlineno="37" tolineno="37" lineno="37">
-            <CallFunc fromlineno="37" tolineno="37" lineno="37" func="Getattr(__class__)">
-              <Getattr fromlineno="37" tolineno="37" lineno="37" attrname="__class__" expr="self">
-                <Name fromlineno="37" tolineno="37" lineno="37" name="self"/>
+          <Return fromlineno="37" tolineno="37">
+            <CallFunc fromlineno="37" tolineno="37" func="Getattr(__class__)">
+              <Getattr fromlineno="37" tolineno="37" attrname="__class__" expr="self">
+                <Name fromlineno="37" tolineno="37" name="self"/>
               </Getattr>
-              <Getattr fromlineno="37" tolineno="37" lineno="37" attrname="ofunc" expr="self">
-                <Name fromlineno="37" tolineno="37" lineno="37" name="self"/>
+              <Getattr fromlineno="37" tolineno="37" attrname="ofunc" expr="self">
+                <Name fromlineno="37" tolineno="37" name="self"/>
               </Getattr>
-              <Keyword fromlineno="37" tolineno="37" lineno="None">
-                <Name fromlineno="37" tolineno="37" lineno="37" name="code"/>
+              <Keyword fromlineno="37" tolineno="37">
+                <Name fromlineno="37" tolineno="37" name="code"/>
               </Keyword>
             </CallFunc>
           </Return>
         </Function>
-        <Function fromlineno="38" tolineno="39" lineno="38">
-          <Arguments fromlineno="38" tolineno="38" lineno="None" format_args="self, *dt, **mp">
-            <AssName fromlineno="38" tolineno="38" lineno="38" name="self"/>
+        <Function fromlineno="38" tolineno="39">
+          <Arguments fromlineno="38" tolineno="38" format_args="self, *dt, **mp">
+            <AssName fromlineno="38" tolineno="38" name="self"/>
           </Arguments>
-          <Return fromlineno="39" tolineno="39" lineno="39">
-            <CallFunc fromlineno="39" tolineno="39" lineno="39" func="CallFunc()">
-              <CallFunc fromlineno="39" tolineno="39" lineno="39" func="Getattr(fast)">
-                <Getattr fromlineno="39" tolineno="39" lineno="39" attrname="fast" expr="self">
-                  <Name fromlineno="39" tolineno="39" lineno="39" name="self"/>
+          <Return fromlineno="39" tolineno="39">
+            <CallFunc fromlineno="39" tolineno="39" func="CallFunc()">
+              <CallFunc fromlineno="39" tolineno="39" func="Getattr(fast)">
+                <Getattr fromlineno="39" tolineno="39" attrname="fast" expr="self">
+                  <Name fromlineno="39" tolineno="39" name="self"/>
                 </Getattr>
               </CallFunc>
-              <Name fromlineno="39" tolineno="39" lineno="39" name="dt"/>
-              <Name fromlineno="39" tolineno="39" lineno="39" name="mp"/>
+              <Name fromlineno="39" tolineno="39" name="dt"/>
+              <Name fromlineno="39" tolineno="39" name="mp"/>
             </CallFunc>
           </Return>
         </Function>
-        <Function fromlineno="40" tolineno="60" lineno="40">
-          <Arguments fromlineno="40" tolineno="40" lineno="None" format_args="self">
-            <AssName fromlineno="40" tolineno="40" lineno="40" name="self"/>
+        <Function fromlineno="40" tolineno="60">
+          <Arguments fromlineno="40" tolineno="40" format_args="self">
+            <AssName fromlineno="40" tolineno="40" name="self"/>
           </Arguments>
-          <If fromlineno="41" tolineno="59" lineno="41">
-            <Compare fromlineno="41" tolineno="41" lineno="41" op="('is', &lt;Const(NoneType) l.41 [Tests.07-functor] at Ox8afefec&gt;)">
-              <Getattr fromlineno="41" tolineno="41" lineno="41" attrname="func" expr="self">
-                <Name fromlineno="41" tolineno="41" lineno="41" name="self"/>
+          <If fromlineno="41" tolineno="59">
+            <Compare fromlineno="41" tolineno="41" op="('is', &lt;Const(NoneType) l.41 [Tests.07-functor] at Ox937dfac&gt;)">
+              <Getattr fromlineno="41" tolineno="41" attrname="func" expr="self">
+                <Name fromlineno="41" tolineno="41" name="self"/>
               </Getattr>
-              <Const fromlineno="41" tolineno="41" lineno="41" type="NoneType">None</Const>
+              <Const fromlineno="41" tolineno="41" type="NoneType">None</Const>
             </Compare>
-            <Assign fromlineno="42" tolineno="42" lineno="42" targets="[&lt;AssName(code) l.42 [Tests.07-functor] at Ox8b4308c&gt;]" value="(self.code) + ([(bp.RETURN_VALUE, None)])">
-              <AssName fromlineno="42" tolineno="42" lineno="42" name="code"/>
-              <BinOp fromlineno="42" tolineno="42" lineno="42" op="+" left="self.code" right="[(bp.RETURN_VALUE, None)]">
-                <Getattr fromlineno="42" tolineno="42" lineno="42" attrname="code" expr="self">
-                  <Name fromlineno="42" tolineno="42" lineno="42" name="self"/>
+            <Assign fromlineno="42" tolineno="42" value="(self.code) + ([(bp.RETURN_VALUE, None)])">
+              <AssName fromlineno="42" tolineno="42" name="code"/>
+              <BinOp fromlineno="42" tolineno="42" op="+" left="self.code" right="[(bp.RETURN_VALUE, None)]">
+                <Getattr fromlineno="42" tolineno="42" attrname="code" expr="self">
+                  <Name fromlineno="42" tolineno="42" name="self"/>
                 </Getattr>
-                <List fromlineno="42" tolineno="42" lineno="42">
-                  <Tuple fromlineno="42" tolineno="42" lineno="42">
-                    <Getattr fromlineno="42" tolineno="42" lineno="42" attrname="RETURN_VALUE" expr="bp">
-                      <Name fromlineno="42" tolineno="42" lineno="42" name="bp"/>
+                <List fromlineno="42" tolineno="42">
+                  <Tuple fromlineno="42" tolineno="42">
+                    <Getattr fromlineno="42" tolineno="42" attrname="RETURN_VALUE" expr="bp">
+                      <Name fromlineno="42" tolineno="42" name="bp"/>
                     </Getattr>
-                    <Const fromlineno="42" tolineno="42" lineno="42" type="NoneType">None</Const>
+                    <Const fromlineno="42" tolineno="42" type="NoneType">None</Const>
                   </Tuple>
                 </List>
               </BinOp>
             </Assign>
-            <Assign fromlineno="43" tolineno="43" lineno="43" targets="[&lt;AssName(oc) l.43 [Tests.07-functor] at Ox8b4324c&gt;]" value="self.ocode">
-              <AssName fromlineno="43" tolineno="43" lineno="43" name="oc"/>
-              <Getattr fromlineno="43" tolineno="43" lineno="43" attrname="ocode" expr="self">
-                <Name fromlineno="43" tolineno="43" lineno="43" name="self"/>
+            <Assign fromlineno="43" tolineno="43" value="self.ocode">
+              <AssName fromlineno="43" tolineno="43" name="oc"/>
+              <Getattr fromlineno="43" tolineno="43" attrname="ocode" expr="self">
+                <Name fromlineno="43" tolineno="43" name="self"/>
               </Getattr>
             </Assign>
-            <Assign fromlineno="45" tolineno="54" lineno="45" targets="[&lt;AssName(bin_code) l.45 [Tests.07-functor] at Ox8b4330c&gt;]" value="byteplay.Code(code, oc.freevars, oc.args, oc.varargs, oc.varkwargs, oc.newlocals, ('&lt;just_code_%s&gt;') % (id(self)), ('&lt;auto_gen_%s&gt;') % (id(self)), 0, 'auto_generated code')">
-              <AssName fromlineno="45" tolineno="45" lineno="45" name="bin_code"/>
-              <CallFunc fromlineno="45" tolineno="54" lineno="45" func="Getattr(Code)">
-                <Getattr fromlineno="45" tolineno="45" lineno="45" attrname="Code" expr="byteplay">
-                  <Name fromlineno="45" tolineno="45" lineno="45" name="byteplay"/>
+            <Assign fromlineno="45" tolineno="54" value="byteplay.Code(code, oc.freevars, oc.args, oc.varargs, oc.varkwargs, oc.newlocals, ('&lt;just_code_%s&gt;') % (id(self)), ('&lt;auto_gen_%s&gt;') % (id(self)), 0, 'auto_generated code')">
+              <AssName fromlineno="45" tolineno="45" name="bin_code"/>
+              <CallFunc fromlineno="45" tolineno="54" func="Getattr(Code)">
+                <Getattr fromlineno="45" tolineno="45" attrname="Code" expr="byteplay">
+                  <Name fromlineno="45" tolineno="45" name="byteplay"/>
                 </Getattr>
-                <Name fromlineno="45" tolineno="45" lineno="45" name="code"/>
-                <Getattr fromlineno="46" tolineno="46" lineno="46" attrname="freevars" expr="oc">
-                  <Name fromlineno="46" tolineno="46" lineno="46" name="oc"/>
+                <Name fromlineno="45" tolineno="45" name="code"/>
+                <Getattr fromlineno="46" tolineno="46" attrname="freevars" expr="oc">
+                  <Name fromlineno="46" tolineno="46" name="oc"/>
                 </Getattr>
-                <Getattr fromlineno="47" tolineno="47" lineno="47" attrname="args" expr="oc">
-                  <Name fromlineno="47" tolineno="47" lineno="47" name="oc"/>
+                <Getattr fromlineno="47" tolineno="47" attrname="args" expr="oc">
+                  <Name fromlineno="47" tolineno="47" name="oc"/>
                 </Getattr>
-                <Getattr fromlineno="48" tolineno="48" lineno="48" attrname="varargs" expr="oc">
-                  <Name fromlineno="48" tolineno="48" lineno="48" name="oc"/>
+                <Getattr fromlineno="48" tolineno="48" attrname="varargs" expr="oc">
+                  <Name fromlineno="48" tolineno="48" name="oc"/>
                 </Getattr>
-                <Getattr fromlineno="49" tolineno="49" lineno="49" attrname="varkwargs" expr="oc">
-                  <Name fromlineno="49" tolineno="49" lineno="49" name="oc"/>
+                <Getattr fromlineno="49" tolineno="49" attrname="varkwargs" expr="oc">
+                  <Name fromlineno="49" tolineno="49" name="oc"/>
                 </Getattr>
-                <Getattr fromlineno="50" tolineno="50" lineno="50" attrname="newlocals" expr="oc">
-                  <Name fromlineno="50" tolineno="50" lineno="50" name="oc"/>
+                <Getattr fromlineno="50" tolineno="50" attrname="newlocals" expr="oc">
+                  <Name fromlineno="50" tolineno="50" name="oc"/>
                 </Getattr>
-                <BinOp fromlineno="51" tolineno="51" lineno="51" op="%" left="'&lt;just_code_%s&gt;'" right="id(self)">
-                  <Const fromlineno="51" tolineno="51" lineno="51" type="str">'&lt;just_code_%s&gt;'</Const>
-                  <CallFunc fromlineno="51" tolineno="51" lineno="51" func="Name(id)">
-                    <Name fromlineno="51" tolineno="51" lineno="51" name="id"/>
-                    <Name fromlineno="51" tolineno="51" lineno="51" name="self"/>
+                <BinOp fromlineno="51" tolineno="51" op="%" left="'&lt;just_code_%s&gt;'" right="id(self)">
+                  <Const fromlineno="51" tolineno="51" type="str">'&lt;just_code_%s&gt;'</Const>
+                  <CallFunc fromlineno="51" tolineno="51" func="Name(id)">
+                    <Name fromlineno="51" tolineno="51" name="id"/>
+                    <Name fromlineno="51" tolineno="51" name="self"/>
                   </CallFunc>
                 </BinOp>
-                <BinOp fromlineno="52" tolineno="52" lineno="52" op="%" left="'&lt;auto_gen_%s&gt;'" right="id(self)">
-                  <Const fromlineno="52" tolineno="52" lineno="52" type="str">'&lt;auto_gen_%s&gt;'</Const>
-                  <CallFunc fromlineno="52" tolineno="52" lineno="52" func="Name(id)">
-                    <Name fromlineno="52" tolineno="52" lineno="52" name="id"/>
-                    <Name fromlineno="52" tolineno="52" lineno="52" name="self"/>
+                <BinOp fromlineno="52" tolineno="52" op="%" left="'&lt;auto_gen_%s&gt;'" right="id(self)">
+                  <Const fromlineno="52" tolineno="52" type="str">'&lt;auto_gen_%s&gt;'</Const>
+                  <CallFunc fromlineno="52" tolineno="52" func="Name(id)">
+                    <Name fromlineno="52" tolineno="52" name="id"/>
+                    <Name fromlineno="52" tolineno="52" name="self"/>
                   </CallFunc>
                 </BinOp>
-                <Const fromlineno="53" tolineno="53" lineno="53" type="int">0</Const>
-                <Const fromlineno="54" tolineno="54" lineno="54" type="str">'auto_generated code'</Const>
+                <Const fromlineno="53" tolineno="53" type="int">0</Const>
+                <Const fromlineno="54" tolineno="54" type="str">'auto_generated code'</Const>
               </CallFunc>
             </Assign>
-            <Assign fromlineno="56" tolineno="56" lineno="56" targets="[&lt;AssAttr(func) l.56 [Tests.07-functor] at Ox8b4372c&gt;]" value="new.function(bin_code.to_code(), globals())">
-              <AssAttr fromlineno="56" tolineno="56" lineno="56" attrname="func" expr="self">
-                <Name fromlineno="56" tolineno="56" lineno="56" name="self"/>
+            <Assign fromlineno="56" tolineno="56" value="new.function(bin_code.to_code(), globals())">
+              <AssAttr fromlineno="56" tolineno="56" attrname="func" expr="self">
+                <Name fromlineno="56" tolineno="56" name="self"/>
               </AssAttr>
-              <CallFunc fromlineno="56" tolineno="56" lineno="56" func="Getattr(function)">
-                <Getattr fromlineno="56" tolineno="56" lineno="56" attrname="function" expr="new">
-                  <Name fromlineno="56" tolineno="56" lineno="56" name="new"/>
+              <CallFunc fromlineno="56" tolineno="56" func="Getattr(function)">
+                <Getattr fromlineno="56" tolineno="56" attrname="function" expr="new">
+                  <Name fromlineno="56" tolineno="56" name="new"/>
                 </Getattr>
-                <CallFunc fromlineno="56" tolineno="56" lineno="56" func="Getattr(to_code)">
-                  <Getattr fromlineno="56" tolineno="56" lineno="56" attrname="to_code" expr="bin_code">
-                    <Name fromlineno="56" tolineno="56" lineno="56" name="bin_code"/>
+                <CallFunc fromlineno="56" tolineno="56" func="Getattr(to_code)">
+                  <Getattr fromlineno="56" tolineno="56" attrname="to_code" expr="bin_code">
+                    <Name fromlineno="56" tolineno="56" name="bin_code"/>
                   </Getattr>
                 </CallFunc>
-                <CallFunc fromlineno="56" tolineno="56" lineno="56" func="Name(globals)">
-                  <Name fromlineno="56" tolineno="56" lineno="56" name="globals"/>
+                <CallFunc fromlineno="56" tolineno="56" func="Name(globals)">
+                  <Name fromlineno="56" tolineno="56" name="globals"/>
                 </CallFunc>
               </CallFunc>
             </Assign>
-            <Assign fromlineno="59" tolineno="59" lineno="59" targets="[&lt;AssAttr(func) l.59 [Tests.07-functor] at Ox8b4390c&gt;]" value="functools.update_wrapper(self.func, self.ofunc)">
-              <AssAttr fromlineno="59" tolineno="59" lineno="59" attrname="func" expr="self">
-                <Name fromlineno="59" tolineno="59" lineno="59" name="self"/>
+            <Assign fromlineno="59" tolineno="59" value="functools.update_wrapper(self.func, self.ofunc)">
+              <AssAttr fromlineno="59" tolineno="59" attrname="func" expr="self">
+                <Name fromlineno="59" tolineno="59" name="self"/>
               </AssAttr>
-              <CallFunc fromlineno="59" tolineno="59" lineno="59" func="Getattr(update_wrapper)">
-                <Getattr fromlineno="59" tolineno="59" lineno="59" attrname="update_wrapper" expr="functools">
-                  <Name fromlineno="59" tolineno="59" lineno="59" name="functools"/>
+              <CallFunc fromlineno="59" tolineno="59" func="Getattr(update_wrapper)">
+                <Getattr fromlineno="59" tolineno="59" attrname="update_wrapper" expr="functools">
+                  <Name fromlineno="59" tolineno="59" name="functools"/>
                 </Getattr>
-                <Getattr fromlineno="59" tolineno="59" lineno="59" attrname="func" expr="self">
-                  <Name fromlineno="59" tolineno="59" lineno="59" name="self"/>
+                <Getattr fromlineno="59" tolineno="59" attrname="func" expr="self">
+                  <Name fromlineno="59" tolineno="59" name="self"/>
                 </Getattr>
-                <Getattr fromlineno="59" tolineno="59" lineno="59" attrname="ofunc" expr="self">
-                  <Name fromlineno="59" tolineno="59" lineno="59" name="self"/>
+                <Getattr fromlineno="59" tolineno="59" attrname="ofunc" expr="self">
+                  <Name fromlineno="59" tolineno="59" name="self"/>
                 </Getattr>
               </CallFunc>
             </Assign>
           </If>
-          <Return fromlineno="60" tolineno="60" lineno="60">
-            <Getattr fromlineno="60" tolineno="60" lineno="60" attrname="func" expr="self">
-              <Name fromlineno="60" tolineno="60" lineno="60" name="self"/>
+          <Return fromlineno="60" tolineno="60">
+            <Getattr fromlineno="60" tolineno="60" attrname="func" expr="self">
+              <Name fromlineno="60" tolineno="60" name="self"/>
             </Getattr>
           </Return>
         </Function>
       </Class>
     </Module>
   </Project>
-</Project>
+</PythonSourceTree>

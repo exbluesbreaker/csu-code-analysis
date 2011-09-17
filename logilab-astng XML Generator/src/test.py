@@ -24,19 +24,17 @@ if __name__ == '__main__':
 def make_tree(root_xml,root_astng):
     ''' Create tag with name of node class'''
     current_xml_node = etree.Element(root_astng.__class__.__name__)
-    '''If node, related with position in text file'''
-    if(hasattr(root_astng, 'fromlineno')):
-        '''FIXME Module doesn't need it''' 
-        current_xml_node.set("fromlineno",str(root_astng.fromlineno))
-    if(hasattr(root_astng, 'tolineno')):
-        '''FIXME Module doesn't need it''' 
-        current_xml_node.set("tolineno",str(root_astng.tolineno))
-    if(hasattr(root_astng, 'lineno')):
-        '''FIXME Module doesn't need it''' 
-        current_xml_node.set("lineno",str(root_astng.lineno))
-    if(hasattr(root_astng, 'col_offset')):
-        '''FIXME Module doesn't need it'''
-        current_xml_node.set("col_offset",str(root_astng.col_offset))
+    '''Set parameters, related with position in source code'''
+    if(isinstance(root_astng, Module)):
+        '''Set number of source code lines in module'''
+        current_xml_node.set("num_lines",str(root_astng.tolineno))
+    else:
+                if(hasattr(root_astng, 'fromlineno')):
+                    current_xml_node.set("fromlineno",str(root_astng.fromlineno))
+                if(hasattr(root_astng, 'tolineno')):
+                    current_xml_node.set("tolineno",str(root_astng.tolineno))
+                if(hasattr(root_astng, 'col_offset')):
+                    current_xml_node.set("col_offset",str(root_astng.col_offset))
     if(isinstance(root_astng, Import)):
         for name in root_astng.names:
             sub = etree.Element("ImportName", name=name[0])
@@ -51,7 +49,10 @@ def make_tree(root_xml,root_astng):
                  sub.set("asname",name[1])
             current_xml_node.append(sub)
     elif(isinstance(root_astng, Module)):
-        print root_astng.depends
+        '''Set dependencies of module'''
+        for depend in root_astng.depends:
+            sub = etree.Element("Dependency", module=depend)
+            current_xml_node.append(sub)
         current_xml_node.set("name",root_astng.name)
     elif(isinstance(root_astng, AssName)):
         current_xml_node.set("name",root_astng.name)
@@ -70,8 +71,8 @@ def make_tree(root_xml,root_astng):
         current_xml_node.set("test",root_astng.test.as_string())
         #current_xml_node.set("expr",root_astng.expr.as_string())
     elif(isinstance(root_astng, Assign)):
-        #FIXME better targets
-        current_xml_node.set("targets",str(root_astng.targets))
+        #Targets is list
+        #current_xml_node.set("targets",str(root_astng.targets))
         current_xml_node.set("value",root_astng.value.as_string())
     elif(isinstance(root_astng, AugAssign)):
         #+= Assign
@@ -189,7 +190,7 @@ class LogilabXMLGenerator(ConfigurationMixIn):
             writer.DotWriter(self.config).write(diadefs)"""    
 
 pc = LogilabXMLGenerator(sys.argv[1:])
-xml_root = etree.Element("Project")
+xml_root = etree.Element("PythonSourceTree")
 make_tree(xml_root,pc.project)
 handle = etree.tostring(xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)       
 applic = open(sys.argv[-1], "w")
