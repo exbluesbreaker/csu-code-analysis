@@ -139,9 +139,15 @@ def make_tree(root_xml,root_astng):
         #print root_astng.root(),root_astng.fromlineno,root_astng.value
         #current_xml_node.set("type",root_astng.name)
     elif(isinstance(root_astng, ExceptHandler)):
-        pass
-        #print root_astng.root(),root_astng.fromlineno,root_astng.type,root_astng.name,root_astng.body
-        #current_xml_node.set("type",root_astng.name)
+        #print root_astng.type,root_astng.name,root_astng.body,root_astng.parent
+        current_xml_node.set("type",root_astng.type.__class__.__name__)
+    elif(isinstance(root_astng, Exec)):
+        #print root_astng.expr,root_astng.globals,root_astng.locals
+        current_xml_node.set("expr_type",root_astng.expr.__class__.__name__)
+    elif(isinstance(root_astng, ExtSlice)):
+        print root_astng.dims
+    elif(isinstance(root_astng, For)):
+        print root_astng.body,root_astng.iter,root_astng.target,root_astng.orelse
     elif(isinstance(root_astng, Name)):
         current_xml_node.set("name", root_astng.name)
     elif(isinstance(root_astng, Getattr)):
