@@ -145,14 +145,26 @@ def make_tree(root_xml,root_astng):
         #print root_astng.expr,root_astng.globals,root_astng.locals
         current_xml_node.set("expr_type",root_astng.expr.__class__.__name__)
     elif(isinstance(root_astng, ExtSlice)):
+        #L[::2]
         print root_astng.dims
     elif(isinstance(root_astng, For)):
-        print root_astng.body,root_astng.iter,root_astng.target,root_astng.orelse
-    elif(isinstance(root_astng, Name)):
-        current_xml_node.set("name", root_astng.name)
+        #print root_astng.body,root_astng.iter,root_astng.target,root_astng.orelse
+        current_xml_node.set("iter",root_astng.iter.__class__.__name__)
     elif(isinstance(root_astng, Getattr)):
         current_xml_node.set("attrname", root_astng.attrname)
         current_xml_node.set("expr", root_astng.expr.as_string())
+    elif(isinstance(root_astng, Global)):
+        pass
+        #print root_astng.names, root_astng.root(), root_astng.fromlineno
+        #current_xml_node.set("name", root_astng.name)
+    elif(isinstance(root_astng, If)):
+        #print root_astng.test, root_astng.body, root_astng.orelse
+        current_xml_node.set("test",root_astng.test.__class__.__name__)
+    elif(isinstance(root_astng, IfExp)):
+        print root_astng.test, root_astng.body, root_astng.orelse
+        #current_xml_node.set("test",root_astng.test.__class__.__name__)
+    elif(isinstance(root_astng, Name)):
+        current_xml_node.set("name", root_astng.name)
     root_xml.append(current_xml_node)
     for child in root_astng.get_children():
         make_tree(current_xml_node, child)
