@@ -18,7 +18,7 @@
           </Tuple>
         </Assign>
         <While fromlineno="5" tolineno="7">
-          <Compare fromlineno="5" tolineno="5" op="('&lt;', &lt;Name(max) l.5 [Tests.05-fibonacci] at Ox934fc8c&gt;)">
+          <Compare fromlineno="5" tolineno="5" op="('&lt;', &lt;Name(max) l.5 [Tests.05-fibonacci] at Ox884dd0c&gt;)">
             <Name fromlineno="5" tolineno="5" name="a"/>
             <Name fromlineno="5" tolineno="5" name="max"/>
           </Compare>
@@ -42,13 +42,13 @@
           </Assign>
         </While>
       </Function>
-      <For fromlineno="9" tolineno="10">
+      <For fromlineno="9" tolineno="10" iter="CallFunc">
         <AssName fromlineno="9" tolineno="9" name="n"/>
-        <CallFunc fromlineno="9" tolineno="9" func="Name(fibonacci)">
+        <CallFunc fromlineno="9" tolineno="9" type="Name">
           <Name fromlineno="9" tolineno="9" name="fibonacci"/>
           <Const fromlineno="9" tolineno="9" type="int">100</Const>
         </CallFunc>
-        <Print fromlineno="10" tolineno="10">
+        <Print fromlineno="10" tolineno="10" dest_type="NoneType">
           <Name fromlineno="10" tolineno="10" name="n"/>
         </Print>
       </For>
@@ -59,7 +59,7 @@
       </From>
       <Assign fromlineno="5" tolineno="5" value="urlopen('http://python.org')">
         <AssName fromlineno="5" tolineno="5" name="u"/>
-        <CallFunc fromlineno="5" tolineno="5" func="Name(urlopen)">
+        <CallFunc fromlineno="5" tolineno="5" type="Name">
           <Name fromlineno="5" tolineno="5" name="urlopen"/>
           <Const fromlineno="5" tolineno="5" type="str">'http://python.org'</Const>
         </CallFunc>
@@ -68,21 +68,21 @@
         <AssName fromlineno="6" tolineno="6" name="words"/>
         <Dict fromlineno="6" tolineno="6"/>
       </Assign>
-      <For fromlineno="8" tolineno="14">
+      <For fromlineno="8" tolineno="14" iter="Name">
         <AssName fromlineno="8" tolineno="8" name="line"/>
         <Name fromlineno="8" tolineno="8" name="u"/>
         <Assign fromlineno="9" tolineno="9" value="line.strip(' \n')">
           <AssName fromlineno="9" tolineno="9" name="line"/>
-          <CallFunc fromlineno="9" tolineno="9" func="Getattr(strip)">
+          <CallFunc fromlineno="9" tolineno="9" type="Getattr">
             <Getattr fromlineno="9" tolineno="9" attrname="strip" expr="line">
               <Name fromlineno="9" tolineno="9" name="line"/>
             </Getattr>
             <Const fromlineno="9" tolineno="9" type="str">' \n'</Const>
           </CallFunc>
         </Assign>
-        <For fromlineno="10" tolineno="14">
+        <For fromlineno="10" tolineno="14" iter="CallFunc">
           <AssName fromlineno="10" tolineno="10" name="word"/>
-          <CallFunc fromlineno="10" tolineno="10" func="Getattr(split)">
+          <CallFunc fromlineno="10" tolineno="10" type="Getattr">
             <Getattr fromlineno="10" tolineno="10" attrname="split" expr="line">
               <Name fromlineno="10" tolineno="10" name="line"/>
             </Getattr>
@@ -92,18 +92,18 @@
             <AugAssign fromlineno="12" tolineno="12" target="words[word]" value="1">
               <Subscript fromlineno="12" tolineno="12">
                 <Name fromlineno="12" tolineno="12" name="words"/>
-                <Index fromlineno="12" tolineno="12">
+                <Index fromlineno="12" tolineno="12" value_type="Name">
                   <Name fromlineno="12" tolineno="12" name="word"/>
                 </Index>
               </Subscript>
               <Const fromlineno="12" tolineno="12" type="int">1</Const>
             </AugAssign>
-            <ExceptHandler fromlineno="13" tolineno="14">
+            <ExceptHandler fromlineno="13" tolineno="14" type="Name">
               <Name fromlineno="13" tolineno="13" name="KeyError"/>
               <Assign fromlineno="14" tolineno="14" value="1">
                 <Subscript fromlineno="14" tolineno="14">
                   <Name fromlineno="14" tolineno="14" name="words"/>
-                  <Index fromlineno="14" tolineno="14">
+                  <Index fromlineno="14" tolineno="14" value_type="Name">
                     <Name fromlineno="14" tolineno="14" name="word"/>
                   </Index>
                 </Subscript>
@@ -115,36 +115,36 @@
       </For>
       <Assign fromlineno="19" tolineno="19" value="words.items()">
         <AssName fromlineno="19" tolineno="19" name="pairs"/>
-        <CallFunc fromlineno="19" tolineno="19" func="Getattr(items)">
+        <CallFunc fromlineno="19" tolineno="19" type="Getattr">
           <Getattr fromlineno="19" tolineno="19" attrname="items" expr="words">
             <Name fromlineno="19" tolineno="19" name="words"/>
           </Getattr>
         </CallFunc>
       </Assign>
       <Discard fromlineno="21" tolineno="21">
-        <CallFunc fromlineno="21" tolineno="21" func="Getattr(sort)">
+        <CallFunc fromlineno="21" tolineno="21" type="Getattr">
           <Getattr fromlineno="21" tolineno="21" attrname="sort" expr="pairs">
             <Name fromlineno="21" tolineno="21" name="pairs"/>
           </Getattr>
-          <Keyword fromlineno="21" tolineno="21">
+          <Keyword fromlineno="21" tolineno="21" value_type="Lambda">
             <Lambda fromlineno="21" tolineno="21">
               <Arguments fromlineno="21" tolineno="21" format_args="x">
                 <AssName fromlineno="21" tolineno="21" name="x"/>
               </Arguments>
               <Subscript fromlineno="21" tolineno="21">
                 <Name fromlineno="21" tolineno="21" name="x"/>
-                <Index fromlineno="21" tolineno="21">
+                <Index fromlineno="21" tolineno="21" value_type="Const">
                   <Const fromlineno="21" tolineno="21" type="int">1</Const>
                 </Index>
               </Subscript>
             </Lambda>
           </Keyword>
-          <Keyword fromlineno="21" tolineno="21">
+          <Keyword fromlineno="21" tolineno="21" value_type="Const">
             <Const fromlineno="21" tolineno="21" type="bool">True</Const>
           </Keyword>
         </CallFunc>
       </Discard>
-      <For fromlineno="23" tolineno="24">
+      <For fromlineno="23" tolineno="24" iter="Subscript">
         <AssName fromlineno="23" tolineno="23" name="p"/>
         <Subscript fromlineno="23" tolineno="23">
           <Name fromlineno="23" tolineno="23" name="pairs"/>
@@ -152,16 +152,16 @@
             <Const fromlineno="23" tolineno="23" type="int">10</Const>
           </Slice>
         </Subscript>
-        <Print fromlineno="24" tolineno="24">
+        <Print fromlineno="24" tolineno="24" dest_type="NoneType">
           <Subscript fromlineno="24" tolineno="24">
             <Name fromlineno="24" tolineno="24" name="p"/>
-            <Index fromlineno="24" tolineno="24">
+            <Index fromlineno="24" tolineno="24" value_type="Const">
               <Const fromlineno="24" tolineno="24" type="int">0</Const>
             </Index>
           </Subscript>
           <Subscript fromlineno="24" tolineno="24">
             <Name fromlineno="24" tolineno="24" name="p"/>
-            <Index fromlineno="24" tolineno="24">
+            <Index fromlineno="24" tolineno="24" value_type="Const">
               <Const fromlineno="24" tolineno="24" type="int">1</Const>
             </Index>
           </Subscript>
@@ -177,18 +177,18 @@
             <AssName fromlineno="4" tolineno="4" name="key"/>
           </Arguments>
           <TryExcept fromlineno="6" tolineno="9">
-            <Return fromlineno="7" tolineno="7">
+            <Return fromlineno="7" tolineno="7" value_type="Subscript">
               <Subscript fromlineno="7" tolineno="7">
                 <Name fromlineno="7" tolineno="7" name="self"/>
-                <Index fromlineno="7" tolineno="7">
+                <Index fromlineno="7" tolineno="7" value_type="Name">
                   <Name fromlineno="7" tolineno="7" name="key"/>
                 </Index>
               </Subscript>
             </Return>
-            <ExceptHandler fromlineno="8" tolineno="9">
+            <ExceptHandler fromlineno="8" tolineno="9" type="Name">
               <Name fromlineno="8" tolineno="8" name="KeyError"/>
               <AssName fromlineno="8" tolineno="8" name="k"/>
-              <Raise fromlineno="9" tolineno="9">
+              <Raise fromlineno="9" tolineno="9" type="Name" inst_type="Name">
                 <Name fromlineno="9" tolineno="9" name="AttributeError"/>
                 <Name fromlineno="9" tolineno="9" name="k"/>
               </Raise>
@@ -204,7 +204,7 @@
           <Assign fromlineno="14" tolineno="14" value="value">
             <Subscript fromlineno="14" tolineno="14">
               <Name fromlineno="14" tolineno="14" name="self"/>
-              <Index fromlineno="14" tolineno="14">
+              <Index fromlineno="14" tolineno="14" value_type="Name">
                 <Name fromlineno="14" tolineno="14" name="key"/>
               </Index>
             </Subscript>
@@ -220,15 +220,15 @@
             <Delete fromlineno="18" tolineno="18">
               <Subscript fromlineno="18" tolineno="18">
                 <Name fromlineno="18" tolineno="18" name="self"/>
-                <Index fromlineno="18" tolineno="18">
+                <Index fromlineno="18" tolineno="18" value_type="Name">
                   <Name fromlineno="18" tolineno="18" name="key"/>
                 </Index>
               </Subscript>
             </Delete>
-            <ExceptHandler fromlineno="19" tolineno="20">
+            <ExceptHandler fromlineno="19" tolineno="20" type="Name">
               <Name fromlineno="19" tolineno="19" name="KeyError"/>
               <AssName fromlineno="19" tolineno="19" name="k"/>
-              <Raise fromlineno="20" tolineno="20">
+              <Raise fromlineno="20" tolineno="20" type="Name" inst_type="Name">
                 <Name fromlineno="20" tolineno="20" name="AttributeError"/>
                 <Name fromlineno="20" tolineno="20" name="k"/>
               </Raise>
@@ -239,7 +239,7 @@
           <Arguments fromlineno="22" tolineno="22" format_args="self">
             <AssName fromlineno="22" tolineno="22" name="self"/>
           </Arguments>
-          <Return fromlineno="23" tolineno="23">
+          <Return fromlineno="23" tolineno="23" value_type="BinOp">
             <BinOp fromlineno="23" tolineno="23" op="+" left="((self.__class__.__name__) + ('(')) + (dict.__repr__(self))" right="')'">
               <BinOp fromlineno="23" tolineno="23" op="+" left="(self.__class__.__name__) + ('(')" right="dict.__repr__(self)">
                 <BinOp fromlineno="23" tolineno="23" op="+" left="self.__class__.__name__" right="'('">
@@ -250,7 +250,7 @@
                   </Getattr>
                   <Const fromlineno="23" tolineno="23" type="str">'('</Const>
                 </BinOp>
-                <CallFunc fromlineno="23" tolineno="23" func="Getattr(__repr__)">
+                <CallFunc fromlineno="23" tolineno="23" type="Getattr">
                   <Getattr fromlineno="23" tolineno="23" attrname="__repr__" expr="dict">
                     <Name fromlineno="23" tolineno="23" name="dict"/>
                   </Getattr>
@@ -264,9 +264,9 @@
       </Class>
       <Assign fromlineno="25" tolineno="25" value="Entity(a=1)">
         <AssName fromlineno="25" tolineno="25" name="d"/>
-        <CallFunc fromlineno="25" tolineno="25" func="Name(Entity)">
+        <CallFunc fromlineno="25" tolineno="25" type="Name">
           <Name fromlineno="25" tolineno="25" name="Entity"/>
-          <Keyword fromlineno="25" tolineno="25">
+          <Keyword fromlineno="25" tolineno="25" value_type="Const">
             <Const fromlineno="25" tolineno="25" type="int">1</Const>
           </Keyword>
         </CallFunc>
@@ -279,24 +279,24 @@
       </Assign>
       <Assert fromlineno="27" tolineno="27" class="BoolOp" test="(d.a == d['a']) and (d.b_100 == d['b_100'])">
         <BoolOp fromlineno="27" tolineno="27" op="and" values="d.a == d['a'],d.b_100 == d['b_100'],">
-          <Compare fromlineno="27" tolineno="27" op="('==', &lt;Subscript() l.27 [Tests.06-alt_dict] at Ox935a7ac&gt;)">
+          <Compare fromlineno="27" tolineno="27" op="('==', &lt;Subscript() l.27 [Tests.06-alt_dict] at Ox885882c&gt;)">
             <Getattr fromlineno="27" tolineno="27" attrname="a" expr="d">
               <Name fromlineno="27" tolineno="27" name="d"/>
             </Getattr>
             <Subscript fromlineno="27" tolineno="27">
               <Name fromlineno="27" tolineno="27" name="d"/>
-              <Index fromlineno="27" tolineno="27">
+              <Index fromlineno="27" tolineno="27" value_type="Const">
                 <Const fromlineno="27" tolineno="27" type="str">'a'</Const>
               </Index>
             </Subscript>
           </Compare>
-          <Compare fromlineno="27" tolineno="27" op="('==', &lt;Subscript() l.27 [Tests.06-alt_dict] at Ox935a8ac&gt;)">
+          <Compare fromlineno="27" tolineno="27" op="('==', &lt;Subscript() l.27 [Tests.06-alt_dict] at Ox885892c&gt;)">
             <Getattr fromlineno="27" tolineno="27" attrname="b_100" expr="d">
               <Name fromlineno="27" tolineno="27" name="d"/>
             </Getattr>
             <Subscript fromlineno="27" tolineno="27">
               <Name fromlineno="27" tolineno="27" name="d"/>
-              <Index fromlineno="27" tolineno="27">
+              <Index fromlineno="27" tolineno="27" value_type="Const">
                 <Const fromlineno="27" tolineno="27" type="str">'b_100'</Const>
               </Index>
             </Subscript>
@@ -312,12 +312,12 @@
             <AssName fromlineno="3" tolineno="3" name="x"/>
           </Arguments>
           <IfExp fromlineno="3" tolineno="3">
-            <Compare fromlineno="3" tolineno="3" op="('&gt;', &lt;Const(int) l.3 [Tests.09-factorial] at Ox934f78c&gt;)">
+            <Compare fromlineno="3" tolineno="3" op="('&gt;', &lt;Const(int) l.3 [Tests.09-factorial] at Ox884d78c&gt;)">
               <Name fromlineno="3" tolineno="3" name="x"/>
               <Const fromlineno="3" tolineno="3" type="int">1</Const>
             </Compare>
             <BinOp fromlineno="3" tolineno="3" op="*" left="factorial((x) - (1))" right="x">
-              <CallFunc fromlineno="3" tolineno="3" func="Name(factorial)">
+              <CallFunc fromlineno="3" tolineno="3" type="Name">
                 <Name fromlineno="3" tolineno="3" name="factorial"/>
                 <BinOp fromlineno="3" tolineno="3" op="-" left="x" right="1">
                   <Name fromlineno="3" tolineno="3" name="x"/>
@@ -349,7 +349,7 @@
           <AssName fromlineno="10" tolineno="10" name="lock"/>
         </Arguments>
         <Discard fromlineno="11" tolineno="11">
-          <CallFunc fromlineno="11" tolineno="11" func="Getattr(acquire)">
+          <CallFunc fromlineno="11" tolineno="11" type="Getattr">
             <Getattr fromlineno="11" tolineno="11" attrname="acquire" expr="lock">
               <Name fromlineno="11" tolineno="11" name="lock"/>
             </Getattr>
@@ -360,7 +360,7 @@
             <Yield fromlineno="13" tolineno="13"/>
           </Discard>
           <Discard fromlineno="15" tolineno="15">
-            <CallFunc fromlineno="15" tolineno="15" func="Getattr(release)">
+            <CallFunc fromlineno="15" tolineno="15" type="Getattr">
               <Getattr fromlineno="15" tolineno="15" attrname="release" expr="lock">
                 <Name fromlineno="15" tolineno="15" name="lock"/>
               </Getattr>
@@ -370,16 +370,16 @@
       </Function>
       <Assign fromlineno="18" tolineno="18" value="Lock()">
         <AssName fromlineno="18" tolineno="18" name="myLock"/>
-        <CallFunc fromlineno="18" tolineno="18" func="Name(Lock)">
+        <CallFunc fromlineno="18" tolineno="18" type="Name">
           <Name fromlineno="18" tolineno="18" name="Lock"/>
         </CallFunc>
       </Assign>
       <With fromlineno="21" tolineno="23">
-        <CallFunc fromlineno="21" tolineno="21" func="Name(locked)">
+        <CallFunc fromlineno="21" tolineno="21" type="Name">
           <Name fromlineno="21" tolineno="21" name="locked"/>
           <Name fromlineno="21" tolineno="21" name="myLock"/>
         </CallFunc>
-        <Print fromlineno="23" tolineno="23">
+        <Print fromlineno="23" tolineno="23" dest_type="NoneType">
           <Const fromlineno="23" tolineno="23" type="str">'\xd0\x9e\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd1\x8f\xd0\xb5\xd0\xbc\xd1\x8b\xd0\xb9 \xd0\xb1\xd0\xbb\xd0\xbe\xd0\xba \xd0\xba\xd0\xbe\xd0\xb4\xd0\xb0. \xd0\x91\xd0\xbb\xd0\xbe\xd0\xba\xd0\xb8\xd1\x80\xd0\xbe\xd0\xb2\xd0\xba\xd0\xb0 \xd0\xb1\xd1\x83\xd0\xb4\xd0\xb5\xd1\x82 \xd0\xbe\xd1\x81\xd0\xb2\xd0\xbe\xd0\xb1\xd0\xbe\xd0\xb6\xd0\xb4\xd0\xb5\xd0\xbd\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbb\xd1\x8e\xd0\xb1\xd0\xbe\xd0\xbc \xd0\xb2\xd1\x8b\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb5 \xd0\xb8\xd0\xb7 \xd1\x8d\xd1\x82\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xb1\xd0\xbb\xd0\xbe\xd0\xba\xd0\xb0.'</Const>
         </Print>
       </With>
@@ -430,22 +430,22 @@
       </Assign>
       <Assign fromlineno="10" tolineno="10" value="list(zip(, *matrix))">
         <AssName fromlineno="10" tolineno="10" name="matrix_t"/>
-        <CallFunc fromlineno="10" tolineno="10" func="Name(list)">
+        <CallFunc fromlineno="10" tolineno="10" type="Name">
           <Name fromlineno="10" tolineno="10" name="list"/>
-          <CallFunc fromlineno="10" tolineno="10" func="Name(zip)">
+          <CallFunc fromlineno="10" tolineno="10" type="Name">
             <Name fromlineno="10" tolineno="10" name="zip"/>
             <Name fromlineno="10" tolineno="10" name="matrix"/>
           </CallFunc>
         </CallFunc>
       </Assign>
       <Discard fromlineno="12" tolineno="12">
-        <CallFunc fromlineno="12" tolineno="12" func="Name(pprint)">
+        <CallFunc fromlineno="12" tolineno="12" type="Name">
           <Name fromlineno="12" tolineno="12" name="pprint"/>
           <Name fromlineno="12" tolineno="12" name="matrix"/>
         </CallFunc>
       </Discard>
       <Discard fromlineno="13" tolineno="13">
-        <CallFunc fromlineno="13" tolineno="13" func="Name(pprint)">
+        <CallFunc fromlineno="13" tolineno="13" type="Name">
           <Name fromlineno="13" tolineno="13" name="pprint"/>
           <Name fromlineno="13" tolineno="13" name="matrix_t"/>
         </CallFunc>
@@ -499,9 +499,9 @@
           </Arguments>
           <Assign fromlineno="18" tolineno="18" value="tuple(map(type, dt))">
             <AssName fromlineno="18" tolineno="18" name="cls"/>
-            <CallFunc fromlineno="18" tolineno="18" func="Name(tuple)">
+            <CallFunc fromlineno="18" tolineno="18" type="Name">
               <Name fromlineno="18" tolineno="18" name="tuple"/>
-              <CallFunc fromlineno="18" tolineno="18" func="Name(map)">
+              <CallFunc fromlineno="18" tolineno="18" type="Name">
                 <Name fromlineno="18" tolineno="18" name="map"/>
                 <Name fromlineno="18" tolineno="18" name="type"/>
                 <Name fromlineno="18" tolineno="18" name="dt"/>
@@ -515,15 +515,15 @@
                 <Getattr fromlineno="22" tolineno="22" attrname="function_map" expr="self">
                   <Name fromlineno="22" tolineno="22" name="self"/>
                 </Getattr>
-                <Index fromlineno="22" tolineno="22">
+                <Index fromlineno="22" tolineno="22" value_type="Name">
                   <Name fromlineno="22" tolineno="22" name="cls"/>
                 </Index>
               </Subscript>
             </Assign>
-            <ExceptHandler fromlineno="23" tolineno="27">
+            <ExceptHandler fromlineno="23" tolineno="27" type="Name">
               <Name fromlineno="23" tolineno="23" name="KeyError"/>
-              <If fromlineno="24" tolineno="27">
-                <Compare fromlineno="24" tolineno="24" op="('is not', &lt;Const(NoneType) l.24 [Tests.03-override] at Ox9366cec&gt;)">
+              <If fromlineno="24" tolineno="27" test="Compare">
+                <Compare fromlineno="24" tolineno="24" op="('is not', &lt;Const(NoneType) l.24 [Tests.03-override] at Ox8864d6c&gt;)">
                   <Getattr fromlineno="24" tolineno="24" attrname="default" expr="self">
                     <Name fromlineno="24" tolineno="24" name="self"/>
                   </Getattr>
@@ -535,8 +535,8 @@
                     <Name fromlineno="25" tolineno="25" name="self"/>
                   </Getattr>
                 </Assign>
-                <Raise fromlineno="27" tolineno="27">
-                  <CallFunc fromlineno="27" tolineno="27" func="Name(CannotResolve)">
+                <Raise fromlineno="27" tolineno="27" type="CallFunc" inst_type="NoneType">
+                  <CallFunc fromlineno="27" tolineno="27" type="Name">
                     <Name fromlineno="27" tolineno="27" name="CannotResolve"/>
                     <BinOp fromlineno="27" tolineno="27" op="%" left="self.emess" right="(self.name, cls)">
                       <Getattr fromlineno="27" tolineno="27" attrname="emess" expr="self">
@@ -554,8 +554,8 @@
               </If>
             </ExceptHandler>
           </TryExcept>
-          <Return fromlineno="28" tolineno="28">
-            <CallFunc fromlineno="28" tolineno="28" func="Name(x)">
+          <Return fromlineno="28" tolineno="28" value_type="CallFunc">
+            <CallFunc fromlineno="28" tolineno="28" type="Name">
               <Name fromlineno="28" tolineno="28" name="x"/>
               <Name fromlineno="28" tolineno="28" name="dt"/>
             </CallFunc>
@@ -576,10 +576,10 @@
           </Assign>
           <Assign fromlineno="33" tolineno="33" value="sys._getframe(1).f_locals.get(name, Resolver(name))">
             <AssName fromlineno="33" tolineno="33" name="fr"/>
-            <CallFunc fromlineno="33" tolineno="33" func="Getattr(get)">
+            <CallFunc fromlineno="33" tolineno="33" type="Getattr">
               <Getattr fromlineno="33" tolineno="33" attrname="get" expr="sys._getframe(1).f_locals">
                 <Getattr fromlineno="33" tolineno="33" attrname="f_locals" expr="sys._getframe(1)">
-                  <CallFunc fromlineno="33" tolineno="33" func="Getattr(_getframe)">
+                  <CallFunc fromlineno="33" tolineno="33" type="Getattr">
                     <Getattr fromlineno="33" tolineno="33" attrname="_getframe" expr="sys">
                       <Name fromlineno="33" tolineno="33" name="sys"/>
                     </Getattr>
@@ -588,7 +588,7 @@
                 </Getattr>
               </Getattr>
               <Name fromlineno="33" tolineno="33" name="name"/>
-              <CallFunc fromlineno="33" tolineno="33" func="Name(Resolver)">
+              <CallFunc fromlineno="33" tolineno="33" type="Name">
                 <Name fromlineno="33" tolineno="33" name="Resolver"/>
                 <Name fromlineno="33" tolineno="33" name="name"/>
               </CallFunc>
@@ -599,17 +599,17 @@
               <Getattr fromlineno="38" tolineno="38" attrname="function_map" expr="fr">
                 <Name fromlineno="38" tolineno="38" name="fr"/>
               </Getattr>
-              <Index fromlineno="38" tolineno="38">
+              <Index fromlineno="38" tolineno="38" value_type="Name">
                 <Name fromlineno="38" tolineno="38" name="dt"/>
               </Index>
             </Subscript>
             <Name fromlineno="38" tolineno="38" name="func"/>
           </Assign>
-          <Return fromlineno="40" tolineno="40">
+          <Return fromlineno="40" tolineno="40" value_type="Name">
             <Name fromlineno="40" tolineno="40" name="fr"/>
           </Return>
         </Function>
-        <Return fromlineno="41" tolineno="41">
+        <Return fromlineno="41" tolineno="41" value_type="Name">
           <Name fromlineno="41" tolineno="41" name="closure"/>
         </Return>
       </Function>
@@ -625,10 +625,10 @@
         </Assign>
         <Assign fromlineno="44" tolineno="44" value="sys._getframe(1).f_locals.get(name, Resolver(name))">
           <AssName fromlineno="44" tolineno="44" name="fr"/>
-          <CallFunc fromlineno="44" tolineno="44" func="Getattr(get)">
+          <CallFunc fromlineno="44" tolineno="44" type="Getattr">
             <Getattr fromlineno="44" tolineno="44" attrname="get" expr="sys._getframe(1).f_locals">
               <Getattr fromlineno="44" tolineno="44" attrname="f_locals" expr="sys._getframe(1)">
-                <CallFunc fromlineno="44" tolineno="44" func="Getattr(_getframe)">
+                <CallFunc fromlineno="44" tolineno="44" type="Getattr">
                   <Getattr fromlineno="44" tolineno="44" attrname="_getframe" expr="sys">
                     <Name fromlineno="44" tolineno="44" name="sys"/>
                   </Getattr>
@@ -637,7 +637,7 @@
               </Getattr>
             </Getattr>
             <Name fromlineno="44" tolineno="44" name="name"/>
-            <CallFunc fromlineno="44" tolineno="44" func="Name(Resolver)">
+            <CallFunc fromlineno="44" tolineno="44" type="Name">
               <Name fromlineno="44" tolineno="44" name="Resolver"/>
               <Name fromlineno="44" tolineno="44" name="name"/>
             </CallFunc>
@@ -649,7 +649,7 @@
           </AssAttr>
           <Name fromlineno="45" tolineno="45" name="func"/>
         </Assign>
-        <Return fromlineno="46" tolineno="46">
+        <Return fromlineno="46" tolineno="46" value_type="Name">
           <Name fromlineno="46" tolineno="46" name="fr"/>
         </Return>
       </Function>
@@ -658,13 +658,13 @@
           <Name fromlineno="48" tolineno="48" name="overdef"/>
         </Decorators>
         <Arguments fromlineno="48" tolineno="48" format_args=", *dt, **mp"/>
-        <Print fromlineno="50" tolineno="50">
+        <Print fromlineno="50" tolineno="50" dest_type="NoneType">
           <Const fromlineno="50" tolineno="50" type="str">'Default call'</Const>
         </Print>
       </Function>
       <Function fromlineno="52" tolineno="53">
         <Decorators fromlineno="51" tolineno="51">
-          <CallFunc fromlineno="51" tolineno="51" func="Name(overload)">
+          <CallFunc fromlineno="51" tolineno="51" type="Name">
             <Name fromlineno="51" tolineno="51" name="overload"/>
             <Name fromlineno="51" tolineno="51" name="int"/>
           </CallFunc>
@@ -672,7 +672,7 @@
         <Arguments fromlineno="52" tolineno="52" format_args="x">
           <AssName fromlineno="52" tolineno="52" name="x"/>
         </Arguments>
-        <Return fromlineno="53" tolineno="53">
+        <Return fromlineno="53" tolineno="53" value_type="BinOp">
           <BinOp fromlineno="53" tolineno="53" op="+" left="x" right="1">
             <Name fromlineno="53" tolineno="53" name="x"/>
             <Const fromlineno="53" tolineno="53" type="int">1</Const>
@@ -681,7 +681,7 @@
       </Function>
       <Function fromlineno="55" tolineno="56">
         <Decorators fromlineno="54" tolineno="54">
-          <CallFunc fromlineno="54" tolineno="54" func="Name(overload)">
+          <CallFunc fromlineno="54" tolineno="54" type="Name">
             <Name fromlineno="54" tolineno="54" name="overload"/>
             <Name fromlineno="54" tolineno="54" name="str"/>
           </CallFunc>
@@ -689,7 +689,7 @@
         <Arguments fromlineno="55" tolineno="55" format_args="x">
           <AssName fromlineno="55" tolineno="55" name="x"/>
         </Arguments>
-        <Return fromlineno="56" tolineno="56">
+        <Return fromlineno="56" tolineno="56" value_type="BinOp">
           <BinOp fromlineno="56" tolineno="56" op="+" left="x" right="'1'">
             <Name fromlineno="56" tolineno="56" name="x"/>
             <Const fromlineno="56" tolineno="56" type="str">'1'</Const>
@@ -698,7 +698,7 @@
       </Function>
       <Function fromlineno="58" tolineno="59">
         <Decorators fromlineno="57" tolineno="57">
-          <CallFunc fromlineno="57" tolineno="57" func="Name(overload)">
+          <CallFunc fromlineno="57" tolineno="57" type="Name">
             <Name fromlineno="57" tolineno="57" name="overload"/>
             <Name fromlineno="57" tolineno="57" name="str"/>
             <Name fromlineno="57" tolineno="57" name="int"/>
@@ -708,30 +708,30 @@
           <AssName fromlineno="58" tolineno="58" name="x"/>
           <AssName fromlineno="58" tolineno="58" name="y"/>
         </Arguments>
-        <Return fromlineno="59" tolineno="59">
+        <Return fromlineno="59" tolineno="59" value_type="BinOp">
           <BinOp fromlineno="59" tolineno="59" op="+" left="x" right="str(y)">
             <Name fromlineno="59" tolineno="59" name="x"/>
-            <CallFunc fromlineno="59" tolineno="59" func="Name(str)">
+            <CallFunc fromlineno="59" tolineno="59" type="Name">
               <Name fromlineno="59" tolineno="59" name="str"/>
               <Name fromlineno="59" tolineno="59" name="y"/>
             </CallFunc>
           </BinOp>
         </Return>
       </Function>
-      <Print fromlineno="60" tolineno="60">
-        <CallFunc fromlineno="60" tolineno="60" func="Name(f)">
+      <Print fromlineno="60" tolineno="60" dest_type="NoneType">
+        <CallFunc fromlineno="60" tolineno="60" type="Name">
           <Name fromlineno="60" tolineno="60" name="f"/>
           <Const fromlineno="60" tolineno="60" type="int">1</Const>
         </CallFunc>
       </Print>
-      <Print fromlineno="61" tolineno="61">
-        <CallFunc fromlineno="61" tolineno="61" func="Name(f)">
+      <Print fromlineno="61" tolineno="61" dest_type="NoneType">
+        <CallFunc fromlineno="61" tolineno="61" type="Name">
           <Name fromlineno="61" tolineno="61" name="f"/>
           <Const fromlineno="61" tolineno="61" type="str">'1'</Const>
         </CallFunc>
       </Print>
       <Discard fromlineno="62" tolineno="62">
-        <CallFunc fromlineno="62" tolineno="62" func="Name(f)">
+        <CallFunc fromlineno="62" tolineno="62" type="Name">
           <Name fromlineno="62" tolineno="62" name="f"/>
           <Const fromlineno="62" tolineno="62" type="int">2</Const>
           <Const fromlineno="62" tolineno="62" type="int">2</Const>
@@ -772,8 +772,8 @@
             </AssAttr>
             <Name fromlineno="12" tolineno="12" name="func"/>
           </Assign>
-          <If fromlineno="13" tolineno="22">
-            <Compare fromlineno="13" tolineno="13" op="('is', &lt;Const(NoneType) l.13 [Tests.07-functor] at Ox9378a8c&gt;)">
+          <If fromlineno="13" tolineno="22" test="Compare">
+            <Compare fromlineno="13" tolineno="13" op="('is', &lt;Const(NoneType) l.13 [Tests.07-functor] at Ox8876b0c&gt;)">
               <Name fromlineno="13" tolineno="13" name="code"/>
               <Const fromlineno="13" tolineno="13" type="NoneType">None</Const>
             </Compare>
@@ -793,19 +793,19 @@
             <Assign fromlineno="16" tolineno="16" value="inspect.getargspec(func)[0]">
               <AssName fromlineno="16" tolineno="16" name="rparams"/>
               <Subscript fromlineno="16" tolineno="16">
-                <CallFunc fromlineno="16" tolineno="16" func="Getattr(getargspec)">
+                <CallFunc fromlineno="16" tolineno="16" type="Getattr">
                   <Getattr fromlineno="16" tolineno="16" attrname="getargspec" expr="inspect">
                     <Name fromlineno="16" tolineno="16" name="inspect"/>
                   </Getattr>
                   <Name fromlineno="16" tolineno="16" name="func"/>
                 </CallFunc>
-                <Index fromlineno="16" tolineno="16">
+                <Index fromlineno="16" tolineno="16" value_type="Const">
                   <Const fromlineno="16" tolineno="16" type="int">0</Const>
                 </Index>
               </Subscript>
             </Assign>
             <Discard fromlineno="17" tolineno="17">
-              <CallFunc fromlineno="17" tolineno="17" func="Getattr(extend)">
+              <CallFunc fromlineno="17" tolineno="17" type="Getattr">
                 <Getattr fromlineno="17" tolineno="17" attrname="extend" expr="self.code">
                   <Getattr fromlineno="17" tolineno="17" attrname="code" expr="self">
                     <Name fromlineno="17" tolineno="17" name="self"/>
@@ -826,7 +826,7 @@
               </CallFunc>
             </Discard>
             <Discard fromlineno="18" tolineno="18">
-              <CallFunc fromlineno="18" tolineno="18" func="Getattr(append)">
+              <CallFunc fromlineno="18" tolineno="18" type="Getattr">
                 <Getattr fromlineno="18" tolineno="18" attrname="append" expr="self.code">
                   <Getattr fromlineno="18" tolineno="18" attrname="code" expr="self">
                     <Name fromlineno="18" tolineno="18" name="self"/>
@@ -836,7 +836,7 @@
                   <Getattr fromlineno="18" tolineno="18" attrname="CALL_FUNCTION" expr="byteplay">
                     <Name fromlineno="18" tolineno="18" name="byteplay"/>
                   </Getattr>
-                  <CallFunc fromlineno="18" tolineno="18" func="Name(len)">
+                  <CallFunc fromlineno="18" tolineno="18" type="Name">
                     <Name fromlineno="18" tolineno="18" name="len"/>
                     <Name fromlineno="18" tolineno="18" name="rparams"/>
                   </CallFunc>
@@ -854,7 +854,7 @@
             <AssAttr fromlineno="24" tolineno="24" attrname="ocode" expr="self">
               <Name fromlineno="24" tolineno="24" name="self"/>
             </AssAttr>
-            <CallFunc fromlineno="24" tolineno="24" func="Getattr(from_code)">
+            <CallFunc fromlineno="24" tolineno="24" type="Getattr">
               <Getattr fromlineno="24" tolineno="24" attrname="from_code" expr="bp.Code">
                 <Getattr fromlineno="24" tolineno="24" attrname="Code" expr="bp">
                   <Name fromlineno="24" tolineno="24" name="bp"/>
@@ -880,14 +880,14 @@
               <Slice fromlineno="26" tolineno="26"/>
             </Subscript>
           </Assign>
-          <If fromlineno="27" tolineno="33">
-            <CallFunc fromlineno="27" tolineno="27" func="Name(isinstance)">
+          <If fromlineno="27" tolineno="33" test="CallFunc">
+            <CallFunc fromlineno="27" tolineno="27" type="Name">
               <Name fromlineno="27" tolineno="27" name="isinstance"/>
               <Name fromlineno="27" tolineno="27" name="obj"/>
               <Name fromlineno="27" tolineno="27" name="FastFunctor"/>
             </CallFunc>
             <Discard fromlineno="30" tolineno="30">
-              <CallFunc fromlineno="30" tolineno="30" func="Getattr(extend)">
+              <CallFunc fromlineno="30" tolineno="30" type="Getattr">
                 <Getattr fromlineno="30" tolineno="30" attrname="extend" expr="code">
                   <Name fromlineno="30" tolineno="30" name="code"/>
                 </Getattr>
@@ -897,7 +897,7 @@
               </CallFunc>
             </Discard>
             <Discard fromlineno="33" tolineno="33">
-              <CallFunc fromlineno="33" tolineno="33" func="Getattr(append)">
+              <CallFunc fromlineno="33" tolineno="33" type="Getattr">
                 <Getattr fromlineno="33" tolineno="33" attrname="append" expr="code">
                   <Name fromlineno="33" tolineno="33" name="code"/>
                 </Getattr>
@@ -911,7 +911,7 @@
             </Discard>
           </If>
           <Discard fromlineno="35" tolineno="35">
-            <CallFunc fromlineno="35" tolineno="35" func="Getattr(append)">
+            <CallFunc fromlineno="35" tolineno="35" type="Getattr">
               <Getattr fromlineno="35" tolineno="35" attrname="append" expr="code">
                 <Name fromlineno="35" tolineno="35" name="code"/>
               </Getattr>
@@ -923,15 +923,15 @@
               </Tuple>
             </CallFunc>
           </Discard>
-          <Return fromlineno="37" tolineno="37">
-            <CallFunc fromlineno="37" tolineno="37" func="Getattr(__class__)">
+          <Return fromlineno="37" tolineno="37" value_type="CallFunc">
+            <CallFunc fromlineno="37" tolineno="37" type="Getattr">
               <Getattr fromlineno="37" tolineno="37" attrname="__class__" expr="self">
                 <Name fromlineno="37" tolineno="37" name="self"/>
               </Getattr>
               <Getattr fromlineno="37" tolineno="37" attrname="ofunc" expr="self">
                 <Name fromlineno="37" tolineno="37" name="self"/>
               </Getattr>
-              <Keyword fromlineno="37" tolineno="37">
+              <Keyword fromlineno="37" tolineno="37" value_type="Name">
                 <Name fromlineno="37" tolineno="37" name="code"/>
               </Keyword>
             </CallFunc>
@@ -941,9 +941,9 @@
           <Arguments fromlineno="38" tolineno="38" format_args="self, *dt, **mp">
             <AssName fromlineno="38" tolineno="38" name="self"/>
           </Arguments>
-          <Return fromlineno="39" tolineno="39">
-            <CallFunc fromlineno="39" tolineno="39" func="CallFunc()">
-              <CallFunc fromlineno="39" tolineno="39" func="Getattr(fast)">
+          <Return fromlineno="39" tolineno="39" value_type="CallFunc">
+            <CallFunc fromlineno="39" tolineno="39" type="CallFunc">
+              <CallFunc fromlineno="39" tolineno="39" type="Getattr">
                 <Getattr fromlineno="39" tolineno="39" attrname="fast" expr="self">
                   <Name fromlineno="39" tolineno="39" name="self"/>
                 </Getattr>
@@ -957,8 +957,8 @@
           <Arguments fromlineno="40" tolineno="40" format_args="self">
             <AssName fromlineno="40" tolineno="40" name="self"/>
           </Arguments>
-          <If fromlineno="41" tolineno="59">
-            <Compare fromlineno="41" tolineno="41" op="('is', &lt;Const(NoneType) l.41 [Tests.07-functor] at Ox937dfac&gt;)">
+          <If fromlineno="41" tolineno="59" test="Compare">
+            <Compare fromlineno="41" tolineno="41" op="('is', &lt;Const(NoneType) l.41 [Tests.07-functor] at Ox88bf04c&gt;)">
               <Getattr fromlineno="41" tolineno="41" attrname="func" expr="self">
                 <Name fromlineno="41" tolineno="41" name="self"/>
               </Getattr>
@@ -988,7 +988,7 @@
             </Assign>
             <Assign fromlineno="45" tolineno="54" value="byteplay.Code(code, oc.freevars, oc.args, oc.varargs, oc.varkwargs, oc.newlocals, ('&lt;just_code_%s&gt;') % (id(self)), ('&lt;auto_gen_%s&gt;') % (id(self)), 0, 'auto_generated code')">
               <AssName fromlineno="45" tolineno="45" name="bin_code"/>
-              <CallFunc fromlineno="45" tolineno="54" func="Getattr(Code)">
+              <CallFunc fromlineno="45" tolineno="54" type="Getattr">
                 <Getattr fromlineno="45" tolineno="45" attrname="Code" expr="byteplay">
                   <Name fromlineno="45" tolineno="45" name="byteplay"/>
                 </Getattr>
@@ -1010,14 +1010,14 @@
                 </Getattr>
                 <BinOp fromlineno="51" tolineno="51" op="%" left="'&lt;just_code_%s&gt;'" right="id(self)">
                   <Const fromlineno="51" tolineno="51" type="str">'&lt;just_code_%s&gt;'</Const>
-                  <CallFunc fromlineno="51" tolineno="51" func="Name(id)">
+                  <CallFunc fromlineno="51" tolineno="51" type="Name">
                     <Name fromlineno="51" tolineno="51" name="id"/>
                     <Name fromlineno="51" tolineno="51" name="self"/>
                   </CallFunc>
                 </BinOp>
                 <BinOp fromlineno="52" tolineno="52" op="%" left="'&lt;auto_gen_%s&gt;'" right="id(self)">
                   <Const fromlineno="52" tolineno="52" type="str">'&lt;auto_gen_%s&gt;'</Const>
-                  <CallFunc fromlineno="52" tolineno="52" func="Name(id)">
+                  <CallFunc fromlineno="52" tolineno="52" type="Name">
                     <Name fromlineno="52" tolineno="52" name="id"/>
                     <Name fromlineno="52" tolineno="52" name="self"/>
                   </CallFunc>
@@ -1030,16 +1030,16 @@
               <AssAttr fromlineno="56" tolineno="56" attrname="func" expr="self">
                 <Name fromlineno="56" tolineno="56" name="self"/>
               </AssAttr>
-              <CallFunc fromlineno="56" tolineno="56" func="Getattr(function)">
+              <CallFunc fromlineno="56" tolineno="56" type="Getattr">
                 <Getattr fromlineno="56" tolineno="56" attrname="function" expr="new">
                   <Name fromlineno="56" tolineno="56" name="new"/>
                 </Getattr>
-                <CallFunc fromlineno="56" tolineno="56" func="Getattr(to_code)">
+                <CallFunc fromlineno="56" tolineno="56" type="Getattr">
                   <Getattr fromlineno="56" tolineno="56" attrname="to_code" expr="bin_code">
                     <Name fromlineno="56" tolineno="56" name="bin_code"/>
                   </Getattr>
                 </CallFunc>
-                <CallFunc fromlineno="56" tolineno="56" func="Name(globals)">
+                <CallFunc fromlineno="56" tolineno="56" type="Name">
                   <Name fromlineno="56" tolineno="56" name="globals"/>
                 </CallFunc>
               </CallFunc>
@@ -1048,7 +1048,7 @@
               <AssAttr fromlineno="59" tolineno="59" attrname="func" expr="self">
                 <Name fromlineno="59" tolineno="59" name="self"/>
               </AssAttr>
-              <CallFunc fromlineno="59" tolineno="59" func="Getattr(update_wrapper)">
+              <CallFunc fromlineno="59" tolineno="59" type="Getattr">
                 <Getattr fromlineno="59" tolineno="59" attrname="update_wrapper" expr="functools">
                   <Name fromlineno="59" tolineno="59" name="functools"/>
                 </Getattr>
@@ -1061,7 +1061,7 @@
               </CallFunc>
             </Assign>
           </If>
-          <Return fromlineno="60" tolineno="60">
+          <Return fromlineno="60" tolineno="60" value_type="Getattr">
             <Getattr fromlineno="60" tolineno="60" attrname="func" expr="self">
               <Name fromlineno="60" tolineno="60" name="self"/>
             </Getattr>

@@ -16,6 +16,7 @@ from logilab.astng import builder
 from logilab.astng.node_classes import *
 from logilab.astng.scoped_nodes import *
 from logilab.astng.manager import astng_wrapper, ASTNGManager
+from logilab.astng.manager import Project
 from pylint.pyreverse.main import PyreverseCommand
  
 if __name__ == '__main__':
@@ -97,7 +98,12 @@ def make_tree(root_xml,root_astng):
         #isn't very interesting
         pass
     elif(isinstance(root_astng, CallFunc)):
-        current_xml_node.set("func",str(root_astng.func))
+        #print root_astng.root(),root_astng.fromlineno,root_astng.func
+        current_xml_node.set("type",str(root_astng.func.__class__.__name__))
+    elif(isinstance(root_astng, Class)):
+        pass
+        #print root_astng.locals_type, root_astng.implements, root_astng.instance_attrs_type
+        #current_xml_node.set("func",str(root_astng.func))
     elif(isinstance(root_astng, Compare)):
         #0 of ops is operation, !=, for example
         #FIXME ops is list of tuples!!!!!
@@ -150,6 +156,12 @@ def make_tree(root_xml,root_astng):
     elif(isinstance(root_astng, For)):
         #print root_astng.body,root_astng.iter,root_astng.target,root_astng.orelse
         current_xml_node.set("iter",root_astng.iter.__class__.__name__)
+    elif(isinstance(root_astng, Function)):
+        #print root_astng.name,root_astng.locals
+        current_xml_node.set("name", root_astng.name)
+    elif(isinstance(root_astng, GenExpr)):
+        #print root_astng.generators,root_astng.locals,root_astng.as_string()
+        current_xml_node.set("elt_type", root_astng.elt.__class__.__name__)
     elif(isinstance(root_astng, Getattr)):
         current_xml_node.set("attrname", root_astng.attrname)
         current_xml_node.set("expr", root_astng.expr.as_string())
@@ -163,8 +175,81 @@ def make_tree(root_xml,root_astng):
     elif(isinstance(root_astng, IfExp)):
         print root_astng.test, root_astng.body, root_astng.orelse
         #current_xml_node.set("test",root_astng.test.__class__.__name__)
+    elif(isinstance(root_astng, Index)):
+        #print root_astng.value
+        current_xml_node.set("value_type",root_astng.value.__class__.__name__)
+    elif(isinstance(root_astng, Keyword)):
+        #print root_astng.value
+        current_xml_node.set("value_type",root_astng.value.__class__.__name__)
+    elif(isinstance(root_astng, Lambda)):
+        #print root_astng.type, root_astng.args,root_astng.locals,root_astng.body
+        current_xml_node.set("type",root_astng.type)
+    elif(isinstance(root_astng, List)):
+        #print root_astng.elts
+        pass
+    elif(isinstance(root_astng, ListComp)):
+        #print root_astng.elt, root_astng.generators
+        current_xml_node.set("elt_type",root_astng.elt.__class__.__name__)
+    elif(isinstance(root_astng, Pass)):
+         pass
+    elif(isinstance(root_astng, Print)):
+        #print root_astng.dest,root_astng.values
+        current_xml_node.set("dest_type",root_astng.dest.__class__.__name__)
+    elif(isinstance(root_astng, Project)):
+        #print "Name - ",root_astng.name
+        #print "Keys ",root_astng.keys
+        #print "Items ",root_astng.items
+        #print "Modules ", root_astng.modules
+        #print "Has_key", root_astng.has_key
+        #print "Values ",root_astng.values
+        #print "Path ",root_astng.path
+        #print "Locals ",root_astng.locals
+        current_xml_node.set("name",root_astng.name)
+        current_xml_node.set("path",root_astng.path)
+    elif(isinstance(root_astng, Raise)):
+        #print root_astng.type,root_astng.inst,root_astng.tback
+        current_xml_node.set("type",root_astng.type.__class__.__name__)
+        current_xml_node.set("inst_type",root_astng.inst.__class__.__name__)
+    elif(isinstance(root_astng, Return)):
+        #print root_astng.value
+        current_xml_node.set("value_type",root_astng.value.__class__.__name__)
+        #current_xml_node.set("inst_type",root_astng.inst.__class__.__name__)
+    elif(isinstance(root_astng, Slice)):
+        #print root_astng.lower, root_astng.upper, root_astng.step
+        current_xml_node.set("lower_type",root_astng.lower.__class__.__name__)
+        current_xml_node.set("upper_type",root_astng.upper.__class__.__name__)
+        current_xml_node.set("step_type",root_astng.step.__class__.__name__)
+    elif(isinstance(root_astng, Subscript)):
+        #print root_astng.value, root_astng.slice, root_astng.as_string()
+        current_xml_node.set("value_type",root_astng.value.__class__.__name__)
+        current_xml_node.set("slice_type",root_astng.slice.__class__.__name__)
+    elif(isinstance(root_astng, TryExcept)):
+        pass
+        #print root_astng.body, root_astng.handlers, root_astng.orelse
+    elif(isinstance(root_astng, TryFinally)):
+        pass
+        #print root_astng.body, root_astng.finalbody
+        #current_xml_node.set("value_type",root_astng.value.__class__.__name__)
+        #current_xml_node.set("slice_type",root_astng.slice.__class__.__name__)
+    elif(isinstance(root_astng, Tuple)):
+        pass
+        #print root_astng.elts
+    elif(isinstance(root_astng, UnaryOp)):
+        #print root_astng.operand,root_astng.as_string()
+        current_xml_node.set("operand_type",root_astng.operand.__class__.__name__)
+    elif(isinstance(root_astng, While)):
+        #print root_astng.test,root_astng.body,root_astng.orelse
+        current_xml_node.set("test_type",root_astng.test.__class__.__name__)
+    elif(isinstance(root_astng, With)):
+        #print root_astng.expr,root_astng.vars,root_astng.body
+        pass
+    elif(isinstance(root_astng, Yield)):
+        #print root_astng.value
+        current_xml_node.set("value_type",root_astng.value.__class__.__name__)
     elif(isinstance(root_astng, Name)):
         current_xml_node.set("name", root_astng.name)
+    else:
+        print root_astng.__class__.__name__
     root_xml.append(current_xml_node)
     for child in root_astng.get_children():
         make_tree(current_xml_node, child)
@@ -176,6 +261,8 @@ def link_imports(root_astng,linker):
         linker.visit_from(root_astng)
     elif(isinstance(root_astng, Module)):
         linker.visit_module(root_astng)
+    elif(isinstance(root_astng, Class)):
+        linker.visit_class(root_astng)
     for child in root_astng.get_children():
         link_imports(child, linker)
 
