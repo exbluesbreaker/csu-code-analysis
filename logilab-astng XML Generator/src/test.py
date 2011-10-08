@@ -22,6 +22,10 @@ from pylint.pyreverse.main import PyreverseCommand
 if __name__ == '__main__':
     pass
 
+def write_to_namespace(node, name,type):
+    if(hasattr(node, "namespace")):
+        node.namespace[type].append(name)
+
 def make_tree(root_xml,root_astng):
     ''' Create tag with name of node class'''
     current_xml_node = etree.Element(root_astng.__class__.__name__)
@@ -29,6 +33,13 @@ def make_tree(root_xml,root_astng):
     if(isinstance(root_astng, Module)):
         '''Set number of source code lines in module'''
         current_xml_node.set("num_lines",str(root_astng.tolineno))
+        ''' Init namespace for module'''
+        xml_namespace = etree.Element("Namespace")
+        current_xml_node.append(xml_namespace)
+        if(hasattr(root_astng, 'namespace')):
+            print "Error Node Module allready have namespace"
+        else:
+                    root_astng.namespace = {'func': [], 'class': []}
     else:
                 if(hasattr(root_astng, 'fromlineno')):
                     current_xml_node.set("fromlineno",str(root_astng.fromlineno))
@@ -101,7 +112,9 @@ def make_tree(root_xml,root_astng):
         #print root_astng.root(),root_astng.fromlineno,root_astng.func
         current_xml_node.set("type",str(root_astng.func.__class__.__name__))
     elif(isinstance(root_astng, Class)):
-        pass
+        current_xml_node.set("name",root_astng.name)
+        '''Namespace'''
+        write_to_namespace(root_astng.parent, root_astng.name,'class')
         #print root_astng.locals_type, root_astng.implements, root_astng.instance_attrs_type
         #current_xml_node.set("func",str(root_astng.func))
     elif(isinstance(root_astng, Compare)):
@@ -159,6 +172,8 @@ def make_tree(root_xml,root_astng):
     elif(isinstance(root_astng, Function)):
         #print root_astng.name,root_astng.locals
         current_xml_node.set("name", root_astng.name)
+        '''Namespace'''
+        write_to_namespace(root_astng.parent, root_astng.name,'func')
     elif(isinstance(root_astng, GenExpr)):
         #print root_astng.generators,root_astng.locals,root_astng.as_string()
         current_xml_node.set("elt_type", root_astng.elt.__class__.__name__)
@@ -250,9 +265,22 @@ def make_tree(root_xml,root_astng):
         current_xml_node.set("name", root_astng.name)
     else:
         print root_astng.__class__.__name__
-    root_xml.append(current_xml_node)
     for child in root_astng.get_children():
         make_tree(current_xml_node, child)
+    '''Namespace'''
+    if(isinstance(root_astng, Module)):
+        '''Write namespace to XML'''
+        for name in root_astng.namespace['func']:
+            sub = etree.Element("Name")
+            sub.set("name",name)
+            sub.set("type","func")
+            xml_namespace.append(sub)
+        for name in root_astng.namespace['class']:
+            sub = etree.Element("Name")
+            sub.set("name",name)
+            sub.set("type","class")
+            xml_namespace.append(sub)
+    root_xml.append(current_xml_node)
 #FIXME - faster get modules
 def link_imports(root_astng,linker):
     if(isinstance(root_astng, Import)):
