@@ -18,13 +18,23 @@ from logilab.astng.scoped_nodes import *
 from logilab.astng.manager import astng_wrapper, ASTNGManager
 from logilab.astng.manager import Project
 from pylint.pyreverse.main import PyreverseCommand
+from logilab.common.modutils import get_module_part, is_relative, \
+     is_standard_module
+
+
  
 if __name__ == '__main__':
     pass
 
-def write_to_namespace(node, name,type):
+main_prj = None
+
+def write_to_namespace(node, names,type):
     if(hasattr(node, "namespace")):
-        node.namespace[type].append(name)
+        if(isinstance(names, list)):
+            for name in names:
+                node.namespace[type].append(name)
+        else:
+            node.namespace[type].append(names)
 
 ''' Init namespaces, make local namespaces for modules and make local resolving '''
 def make_local_namespaces(root_astng):
@@ -36,7 +46,8 @@ def make_local_namespaces(root_astng):
     if(isinstance(root_astng, Assign)):
         for target in root_astng.targets:
             if(isinstance(target, AssName)):
-                write_to_namespace(root_astng.parent, (target.name,'vars'),'unknown')
+                '''ROOT?'''
+                write_to_namespace(root_astng.root(), (target.name,'vars'),'unknown')
     elif(isinstance(root_astng, Class)):
         write_to_namespace(root_astng.parent, (root_astng.name,'class'),'locals')
     elif(isinstance(root_astng, Function)):
@@ -47,36 +58,59 @@ def make_local_namespaces(root_astng):
             for key in root_astng.root().namespace.keys():
                     try:
                         namespace_name = root_astng.root().namespace[key].index(root_astng.name)
-                        root_astng.resolve = namespace_name
+                        root_astng.name_type = namespace_name[1]
+                        root_astng.name_source = key
                     except ValueError:
-                        root_astng.root().unresolved+=1 # name is not in namespace
+                        continue
+            if(not hasattr(root_astng, "name_type")):
+                root_astng.root().unresolved+=1 # name is not in namespace
     for child in root_astng.get_children():
         make_local_namespaces(child)
         
 ''' Make namespaces for modules and make resolving '''
 def make_namespaces(root_astng):
+    #if(hasattr(root_astng, "full_modname")):
+     #   if(main_prj.locals.has_key(root_astng.full_modname)):
+      #      print root_astng.full_modname
     if(isinstance(root_astng, Import)):
         for name in root_astng.names:
             if (name[1]):
                 '''FIXME detect type of imported name - class or func'''
-                write_to_namespace(root_astng.parent, (name[1],),'imports')
-                print root_astng.find_
+                write_to_namespace(root_astng.parent, (name[1],'mod_name'),'imports')
             else:
-                write_to_namespace(root_astng.parent, (name[0],),'imports')
+                write_to_namespace(root_astng.parent, (name[0],'mod_name'),'imports')
     elif(isinstance(root_astng, From)):
+        #print root_astng.as_string()
         for name in root_astng.names:
-            if (name[1]):
-                write_to_namespace(root_astng.parent, (name[1],),'imports')
-            else:
-                write_to_namespace(root_astng.parent, (name[0],),'imports')
+            if(hasattr(root_astng, "full_modname")):
+                try:
+                    target_module = main_prj.get_module(root_astng.full_modname)
+                    if(name[0] == '*'):
+                        write_to_namespace(root_astng.parent, target_module.namespace['locals'],'imports')
+                        write_to_namespace(root_astng.parent, target_module.namespace['unknown'],'imports')
+                    '''FIXME ASNAME'''
+                    for key in target_module.namespace.keys():
+                        #print root_astng.as_string(),name,target_module.name,target_module.namespace[key]
+                        for target_name in target_module.namespace[key]:
+                            if(name[0]==target_name[0]):
+                                print 'BINGO!'
+                                write_to_namespace(root_astng.parent, target_name,'imports')
+                except KeyError:
+                    pass
+                    #root_astng.root.unresolved +=1
+            '''FIXME import module name not name in module'''
+            #if (name[1]):
+             #   write_to_namespace(root_astng.parent, (name[1],'mod_name'),'imports')
+            #else:
+             #   write_to_namespace(root_astng.parent, (name[0],'mod_name'),'imports')
     elif(isinstance(root_astng, Name)):
         ''' FIXME - not just root(class func)!'''
         if(hasattr(root_astng.root(), "namespace")):
             for key in root_astng.root().namespace.keys():
-                    try:
-                        namespace_name = root_astng.root().namespace[key].index(root_astng.name)
-                    except ValueError:
-                        root_astng.root().unresolved+=1 # name is not in namespace
+                for target_name in root_astng.root().namespace[key]:
+                            if(root_astng.name==target_name[0]):
+                                root_astng.name_type = target_name[1]
+                                root_astng.name_source = key
     for child in root_astng.get_children():
         make_namespaces(child)
         
@@ -321,14 +355,6 @@ def make_tree(root_xml,root_astng):
     #    #print root_astng.value
     #    current_xml_node.set("value_type",root_astng.value.__class__.__name__)
     elif(isinstance(root_astng, Name)):
-        ''' Namespace '''
-        if(hasattr(root_astng.root(), "namespace")):
-            for key in root_astng.root().namespace.keys():
-                    try:
-                        namespace_name = root_astng.root().namespace[key].index(root_astng.name)
-                        current_xml_node.set("namespace", key)
-                    except ValueError:
-                        root_astng.root().unresolved+=1 # name is not in namespace
                 #===============================================================
                 # for name in root_astng.namespace[key]:
                 #    sub = etree.Element("Name")
@@ -337,6 +363,11 @@ def make_tree(root_xml,root_astng):
                 # xml_namespace.append(sub)
                 #===============================================================
         current_xml_node.set("name", root_astng.name)
+        if(hasattr(root_astng, "name_type")):
+            current_xml_node.set("type", root_astng.name_type)            
+            current_xml_node.set("source", root_astng.name_source)
+        else:
+            current_xml_node.set("source", "unknown")
     #===========================================================================
     # else:
     #    print root_astng.__class__.__name__
@@ -347,11 +378,13 @@ def make_tree(root_xml,root_astng):
     if(isinstance(root_astng, Module)):
         '''Write namespace to XML'''
         for key in root_astng.namespace.keys():
+            xml_source = etree.Element(key)
             for name in root_astng.namespace[key]:
                 sub = etree.Element("Name")
                 sub.set("name",name[0])
-                sub.set("type",key)
-                xml_namespace.append(sub)
+                sub.set("type",name[1])
+                xml_source.append(sub)
+            xml_namespace.append(xml_source)
         current_xml_node.set("unresolved", str(root_astng.unresolved))
     root_xml.append(current_xml_node)
 #FIXME - faster get modules
@@ -366,6 +399,47 @@ def link_imports(root_astng,linker):
         linker.visit_class(root_astng)
     for child in root_astng.get_children():
         link_imports(child, linker)
+
+class MyLogilabLinker(Linker):
+    def _imported_module(self, node, mod_path, relative):
+        """notify an imported module, used to analyze dependencies
+        """
+        module = node.root()
+        context_name = module.name
+        if relative:
+            mod_path = '%s.%s' % ('.'.join(context_name.split('.')[:-1]),
+                                  mod_path)
+        if self.compute_module(context_name, mod_path):
+            # handle dependencies
+            if not hasattr(module, 'depends'):
+                module.depends = []
+            mod_paths = module.depends
+            node.full_modname = mod_path
+            if not mod_path in mod_paths:
+                mod_paths.append(mod_path)
+    def visit_from(self, node):
+        """visit an astng.From node
+        
+        resolve module dependencies
+        """
+        basename = node.modname
+        context_file = node.root().file
+        if context_file is not None:
+            relative = is_relative(basename, context_file)
+        else:
+            relative = False
+        for name in node.names:
+            if name[0] == '*':
+                fullname = basename
+            else:
+                fullname = '%s.%s' % (basename, name[0])
+                if fullname.find('.') > -1:
+                    try:
+                        # XXX: don't use get_module_part, missing package precedence
+                        fullname = get_module_part(fullname)
+                    except ImportError:
+                        continue
+            self._imported_module(node, fullname, relative)
 
 class LogilabXMLGenerator(ConfigurationMixIn):
     """"""
@@ -386,7 +460,7 @@ class LogilabXMLGenerator(ConfigurationMixIn):
             return
         project = self.manager.project_from_files(args, astng_wrapper)
         self.project = project 
-        linker = Linker(project, tag=True)
+        linker = MyLogilabLinker(project, tag=True)
         link_imports(project, linker)
         """handler = DiadefsHandler(self.config)
         diadefs = handler.get_diadefs(project, linker)
@@ -397,6 +471,7 @@ class LogilabXMLGenerator(ConfigurationMixIn):
 
 pc = LogilabXMLGenerator(sys.argv[1:])
 xml_root = etree.Element("PythonSourceTree")
+main_prj = pc.project
 make_local_namespaces(pc.project)
 make_namespaces(pc.project)
 make_tree(xml_root,pc.project)
