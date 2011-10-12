@@ -32,9 +32,11 @@ def write_to_namespace(node, names,type):
     if(hasattr(node, "namespace")):
         if(isinstance(names, list)):
             for name in names:
-                node.namespace[type].append(name)
+                if(not name in node.namespace[type]):
+                    node.namespace[type].append(name)
         else:
-            node.namespace[type].append(names)
+            if(not names in node.namespace[type]):
+                node.namespace[type].append(names)
 
 ''' Init namespaces, make local namespaces for modules and make local resolving '''
 def make_local_namespaces(root_astng):
@@ -42,7 +44,7 @@ def make_local_namespaces(root_astng):
         print "Error Node Module allready have namespace"
     else:
         root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
-        root_astng.unresolved = 0
+        root_astng.unresolved = []
     if(isinstance(root_astng, Assign)):
         for target in root_astng.targets:
             if(isinstance(target, AssName)):
@@ -54,6 +56,7 @@ def make_local_namespaces(root_astng):
         write_to_namespace(root_astng.parent, (root_astng.name,'func'),'locals')
     elif(isinstance(root_astng, Name)):
         ''' FIXME - not just root(class func)!'''
+        '''FIXME func arguments is not unresolved!!!'''
         if(hasattr(root_astng.root(), "namespace")):
             for key in root_astng.root().namespace.keys():
                     try:
@@ -62,8 +65,6 @@ def make_local_namespaces(root_astng):
                         root_astng.name_source = key
                     except ValueError:
                         continue
-            if(not hasattr(root_astng, "name_type")):
-                root_astng.root().unresolved+=1 # name is not in namespace
     for child in root_astng.get_children():
         make_local_namespaces(child)
         
@@ -105,12 +106,17 @@ def make_namespaces(root_astng):
              #   write_to_namespace(root_astng.parent, (name[0],'mod_name'),'imports')
     elif(isinstance(root_astng, Name)):
         ''' FIXME - not just root(class func)!'''
-        if(hasattr(root_astng.root(), "namespace")):
-            for key in root_astng.root().namespace.keys():
-                for target_name in root_astng.root().namespace[key]:
-                            if(root_astng.name==target_name[0]):
-                                root_astng.name_type = target_name[1]
-                                root_astng.name_source = key
+        '''If name allready resolved'''
+        if(not hasattr(root_astng, "name_type")):
+            if(hasattr(root_astng.root(), "namespace")):
+                for key in root_astng.root().namespace.keys():
+                    for target_name in root_astng.root().namespace[key]:
+                        if(root_astng.name==target_name[0]):
+                            root_astng.name_type = target_name[1]
+                            root_astng.name_source = key
+        if(not hasattr(root_astng, "name_type")):
+            if(not root_astng.name in root_astng.root().unresolved):
+                root_astng.root().unresolved.append(root_astng.name) # name is not in namespace
     for child in root_astng.get_children():
         make_namespaces(child)
         
@@ -124,6 +130,8 @@ def make_tree(root_xml,root_astng):
         ''' Init namespace for module'''
         xml_namespace = etree.Element("Namespace")
         current_xml_node.append(xml_namespace)
+        xml_unresolved = etree.Element("Unresolved")
+        current_xml_node.append(xml_unresolved)
     else:
                 if(hasattr(root_astng, 'fromlineno')):
                     current_xml_node.set("fromlineno",str(root_astng.fromlineno))
@@ -376,7 +384,7 @@ def make_tree(root_xml,root_astng):
         make_tree(current_xml_node, child)
     '''Namespace'''
     if(isinstance(root_astng, Module)):
-        '''Write namespace to XML'''
+        '''Write namespace to XML namespace'''
         for key in root_astng.namespace.keys():
             xml_source = etree.Element(key)
             for name in root_astng.namespace[key]:
@@ -385,7 +393,12 @@ def make_tree(root_xml,root_astng):
                 sub.set("type",name[1])
                 xml_source.append(sub)
             xml_namespace.append(xml_source)
-        current_xml_node.set("unresolved", str(root_astng.unresolved))
+        '''Write namespace to XML unresolved'''
+        current_xml_node.set("unresolved", str(len(root_astng.unresolved)))
+        for name in root_astng.unresolved:
+                sub = etree.Element("Name")
+                sub.set("name",name)
+                xml_unresolved.append(sub)
     root_xml.append(current_xml_node)
 #FIXME - faster get modules
 def link_imports(root_astng,linker):
