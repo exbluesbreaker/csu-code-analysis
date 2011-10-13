@@ -33,34 +33,58 @@ def write_to_namespace(node, names,type):
         if(isinstance(names, list)):
             for name in names:
                 if(not name in node.namespace[type]):
+                    '''Unknown name now resolved(import)'''
+                    if((type != 'unknown') and (name in node.namespace['unknown'])):
+                        node.namespace['unknown'].remove(name)
                     node.namespace[type].append(name)
         else:
             if(not names in node.namespace[type]):
+                '''Unknown name now resolved(import)'''
+                if((type != 'unknown') and (names in node.namespace['unknown'])):
+                    node.namespace['unknown'].remove(names)
                 node.namespace[type].append(names)
 
 ''' Init namespaces, make local namespaces for modules and make local resolving '''
 def make_local_namespaces(root_astng):
-    if(hasattr(root_astng, 'namespace')):
-        print "Error Node Module allready have namespace"
-    else:
-        root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
-        root_astng.unresolved = []
-    if(isinstance(root_astng, Assign)):
+    if(isinstance(root_astng, Module)):
+        if(hasattr(root_astng, 'namespace')):
+            print "Error Node Module allready have namespace"
+        else:
+            root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
+            root_astng.unresolved = []
+    elif(isinstance(root_astng, Assign)):
         for target in root_astng.targets:
             if(isinstance(target, AssName)):
                 '''ROOT?'''
-                write_to_namespace(root_astng.root(), (target.name,'vars'),'unknown')
+                write_to_namespace(root_astng.frame(), (target.name,'vars'),'unknown')
     elif(isinstance(root_astng, Class)):
-        write_to_namespace(root_astng.parent, (root_astng.name,'class'),'locals')
+        write_to_namespace(root_astng.frame(), (root_astng.name,'class'),'locals')
+        if(hasattr(root_astng, 'namespace')):
+            print "Error Node Class allready have namespace"
+        else:
+            root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
+            root_astng.unresolved = []
     elif(isinstance(root_astng, Function)):
-        write_to_namespace(root_astng.parent, (root_astng.name,'func'),'locals')
+        write_to_namespace(root_astng.frame(), (root_astng.name,'func'),'locals')
+        if(hasattr(root_astng, 'namespace')):
+            print "Error Node Function allready have namespace"
+        else:
+            root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
+            root_astng.unresolved = []
+    elif(isinstance(root_astng, Lambda)):
+        #write_to_namespace(root_astng.frame(), (root_astng.name,'lambda'),'locals')
+        if(hasattr(root_astng, 'namespace')):
+            print "Error Node Lambda allready have namespace"
+        else:
+            root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
+            root_astng.unresolved = []
     elif(isinstance(root_astng, Name)):
-        ''' FIXME - not just root(class func)!'''
+        ''' For NodeNG frame returns first parent frame node(module, class, func)!'''
         '''FIXME func arguments is not unresolved!!!'''
-        if(hasattr(root_astng.root(), "namespace")):
-            for key in root_astng.root().namespace.keys():
+        if(hasattr(root_astng.frame(), "namespace")):
+            for key in root_astng.frame().namespace.keys():
                     try:
-                        namespace_name = root_astng.root().namespace[key].index(root_astng.name)
+                        namespace_name = root_astng.frame().namespace[key].index(root_astng.name)
                         root_astng.name_type = namespace_name[1]
                         root_astng.name_source = key
                     except ValueError:
@@ -77,9 +101,9 @@ def make_namespaces(root_astng):
         for name in root_astng.names:
             if (name[1]):
                 '''FIXME detect type of imported name - class or func'''
-                write_to_namespace(root_astng.parent, (name[1],'mod_name'),'imports')
+                write_to_namespace(root_astng.frame(), (name[1],'mod_name'),'imports')
             else:
-                write_to_namespace(root_astng.parent, (name[0],'mod_name'),'imports')
+                write_to_namespace(root_astng.frame(), (name[0],'mod_name'),'imports')
     elif(isinstance(root_astng, From)):
         #print root_astng.as_string()
         for name in root_astng.names:
@@ -87,15 +111,17 @@ def make_namespaces(root_astng):
                 try:
                     target_module = main_prj.get_module(root_astng.full_modname)
                     if(name[0] == '*'):
-                        write_to_namespace(root_astng.parent, target_module.namespace['locals'],'imports')
-                        write_to_namespace(root_astng.parent, target_module.namespace['unknown'],'imports')
-                    '''FIXME ASNAME'''
-                    for key in target_module.namespace.keys():
-                        #print root_astng.as_string(),name,target_module.name,target_module.namespace[key]
-                        for target_name in target_module.namespace[key]:
-                            if(name[0]==target_name[0]):
-                                print 'BINGO!'
-                                write_to_namespace(root_astng.parent, target_name,'imports')
+                        write_to_namespace(root_astng.frame(), target_module.namespace['locals'],'imports')
+                        write_to_namespace(root_astng.frame(), target_module.namespace['unknown'],'imports')
+                    else:
+                        for key in target_module.namespace.keys():
+                            for target_name in target_module.namespace[key]:
+                                if(name[0]==target_name[0]):
+                                    ''' name[1] is asname '''
+                                    if(name[1]):
+                                        write_to_namespace(root_astng.frame(), name[1],'imports')
+                                    else:
+                                        write_to_namespace(root_astng.frame(), name[0],'imports')
                 except KeyError:
                     pass
                     #root_astng.root.unresolved +=1
@@ -105,18 +131,17 @@ def make_namespaces(root_astng):
             #else:
              #   write_to_namespace(root_astng.parent, (name[0],'mod_name'),'imports')
     elif(isinstance(root_astng, Name)):
-        ''' FIXME - not just root(class func)!'''
         '''If name allready resolved'''
         if(not hasattr(root_astng, "name_type")):
-            if(hasattr(root_astng.root(), "namespace")):
-                for key in root_astng.root().namespace.keys():
-                    for target_name in root_astng.root().namespace[key]:
+            if(hasattr(root_astng.frame(), "namespace")):
+                for key in root_astng.frame().namespace.keys():
+                    for target_name in root_astng.frame().namespace[key]:
                         if(root_astng.name==target_name[0]):
                             root_astng.name_type = target_name[1]
                             root_astng.name_source = key
         if(not hasattr(root_astng, "name_type")):
-            if(not root_astng.name in root_astng.root().unresolved):
-                root_astng.root().unresolved.append(root_astng.name) # name is not in namespace
+            if(not root_astng.name in root_astng.frame().unresolved):
+                root_astng.frame().unresolved.append(root_astng.name) # name is not in namespace
     for child in root_astng.get_children():
         make_namespaces(child)
         
