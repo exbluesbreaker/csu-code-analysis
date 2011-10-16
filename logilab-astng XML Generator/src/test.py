@@ -28,6 +28,8 @@ if __name__ == '__main__':
 
 main_prj = None
 
+
+
 def write_to_namespace(node, names,type):
     if(hasattr(node, "namespace")):
         if(isinstance(names, list)):
@@ -58,14 +60,16 @@ def make_local_namespaces(root_astng):
                 '''ROOT?'''
                 write_to_namespace(root_astng.frame(), (target.name,'vars'),'unknown')
     elif(isinstance(root_astng, Class)):
-        write_to_namespace(root_astng.frame(), (root_astng.name,'class'),'locals')
+        ''' Frame for class is class itself'''
+        write_to_namespace(root_astng.parent.frame(), (root_astng.name,'class'),'locals')
         if(hasattr(root_astng, 'namespace')):
             print "Error Node Class allready have namespace"
         else:
             root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
             root_astng.unresolved = []
     elif(isinstance(root_astng, Function)):
-        write_to_namespace(root_astng.frame(), (root_astng.name,'func'),'locals')
+        ''' Frame for func is func itself'''
+        write_to_namespace(root_astng.parent.frame(), (root_astng.name,'func'),'locals')
         if(hasattr(root_astng, 'namespace')):
             print "Error Node Function allready have namespace"
         else:
