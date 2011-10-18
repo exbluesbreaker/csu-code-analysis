@@ -4,6 +4,14 @@ Created on 19.08.2011
 
 @author: bluesbreaker
 '''
+
+from os.path import splitext, join, abspath, isdir, dirname, exists, basename
+from distutils.sysconfig import get_config_var, get_python_lib, get_python_version
+
+from logilab.common.modutils import file_from_modpath
+
+STD_LIB_DIR = join(get_config_var("LIBDIR"), "python%s" % get_python_version())
+
 import logilab.astng
 from logilab.common.configuration import ConfigurationMixIn
 from pylint.pyreverse.utils import insert_default_options
@@ -27,8 +35,8 @@ if __name__ == '__main__':
     pass
 
 main_prj = None
-
-
+bad_import = 0
+good_import = 0
 
 def write_to_namespace(node, names,type):
     if(hasattr(node, "namespace")):
@@ -57,7 +65,6 @@ def make_local_namespaces(root_astng):
     elif(isinstance(root_astng, Assign)):
         for target in root_astng.targets:
             if(isinstance(target, AssName)):
-                '''ROOT?'''
                 write_to_namespace(root_astng.frame(), (target.name,'vars'),'unknown')
     elif(isinstance(root_astng, Class)):
         ''' Frame for class is class itself'''
@@ -123,9 +130,9 @@ def make_namespaces(root_astng):
                                 if(name[0]==target_name[0]):
                                     ''' name[1] is asname '''
                                     if(name[1]):
-                                        write_to_namespace(root_astng.frame(), name[1],'imports')
+                                        write_to_namespace(root_astng.frame(), (name[1],target_name[1]),'imports')
                                     else:
-                                        write_to_namespace(root_astng.frame(), name[0],'imports')
+                                        write_to_namespace(root_astng.frame(), (name[0],target_name[1]),'imports')
                 except KeyError:
                     pass
                     #root_astng.root.unresolved +=1
@@ -152,15 +159,16 @@ def make_namespaces(root_astng):
 def make_tree(root_xml,root_astng):
     ''' Create tag with name of node class'''
     current_xml_node = etree.Element(root_astng.__class__.__name__)
-    '''Set parameters, related with position in source code'''
-    if(isinstance(root_astng, Module)):
-        '''Set number of source code lines in module'''
-        current_xml_node.set("num_lines",str(root_astng.tolineno))
-        ''' Init namespace for module'''
+    ''' Init namespace for frames'''
+    if(isinstance(root_astng, Module) or isinstance(root_astng, Class) or isinstance(root_astng, Function)):
         xml_namespace = etree.Element("Namespace")
         current_xml_node.append(xml_namespace)
         xml_unresolved = etree.Element("Unresolved")
         current_xml_node.append(xml_unresolved)
+    '''Set parameters, related with position in source code'''
+    if(isinstance(root_astng, Module)):
+        '''Set number of source code lines in module'''
+        current_xml_node.set("num_lines",str(root_astng.tolineno))
     else:
                 if(hasattr(root_astng, 'fromlineno')):
                     current_xml_node.set("fromlineno",str(root_astng.fromlineno))
@@ -188,8 +196,9 @@ def make_tree(root_xml,root_astng):
             current_xml_node.append(sub)
         current_xml_node.set("name",root_astng.name)
     #===========================================================================
-    # elif(isinstance(root_astng, AssName)):
-    #    current_xml_node.set("name",root_astng.name)
+    elif(isinstance(root_astng, AssName)):
+        #print root_astng.as_string()
+        current_xml_node.set("name",root_astng.name)
     # elif(isinstance(root_astng, DelName)):
     #    ##What is it?
     #    current_xml_node.set("unknown","true")
@@ -412,7 +421,7 @@ def make_tree(root_xml,root_astng):
     for child in root_astng.get_children():
         make_tree(current_xml_node, child)
     '''Namespace'''
-    if(isinstance(root_astng, Module)):
+    if(isinstance(root_astng, Module) or isinstance(root_astng, Class) or isinstance(root_astng, Function)):
         '''Write namespace to XML namespace'''
         for key in root_astng.namespace.keys():
             xml_source = etree.Element(key)
@@ -442,6 +451,53 @@ def link_imports(root_astng,linker):
     for child in root_astng.get_children():
         link_imports(child, linker)
 
+
+
+''' Changed from logilab version'''
+def is_standard_module(modname, std_path=(STD_LIB_DIR,)):
+    """try to guess if a module is a standard python module (by default,
+    see `std_path` parameter's description)
+
+    :type modname: str
+    :param modname: name of the module we are interested in
+
+    :type std_path: list(str) or tuple(str)
+    :param std_path: list of path considered has standard
+
+
+    :rtype: bool
+    :return:
+      true if the module:
+      - is located on the path listed in one of the directory in `std_path`
+      - is a built-in module
+    """
+    global bad_import,good_import
+    modname = modname.split('.')[0]
+    try:
+        filename = file_from_modpath([modname])
+    except ImportError, ex:
+        # import failed, i'm probably not so wrong by supposing it's
+        # not standard...
+        print modname
+        bad_import+=1
+        return 0
+    # modules which are not living in a file are considered standard
+    # (sys and __builtin__ for instance)
+    good_import+=1
+    if filename is None:
+        return 1
+    filename = abspath(filename)
+    for path in std_path:
+        path = abspath(path)
+        if filename.startswith(path):
+            pfx_len = len(path)
+            if filename[pfx_len+1:pfx_len+14] != 'site-packages':
+                return 1
+            return 0
+    return False
+
+
+
 class MyLogilabLinker(Linker):
     def _imported_module(self, node, mod_path, relative):
         """notify an imported module, used to analyze dependencies
@@ -464,6 +520,7 @@ class MyLogilabLinker(Linker):
         
         resolve module dependencies
         """
+        global bad_import
         basename = node.modname
         context_file = node.root().file
         if context_file is not None:
@@ -480,8 +537,19 @@ class MyLogilabLinker(Linker):
                         # XXX: don't use get_module_part, missing package precedence
                         fullname = get_module_part(fullname)
                     except ImportError:
+                        print node.root().name,node.fromlineno, node.as_string() 
+                        bad_import+=1
                         continue
             self._imported_module(node, fullname, relative)
+    '''Not changed'''
+    def compute_module(self, context_name, mod_path):
+        """return true if the module should be added to dependencies"""
+        package_dir = dirname(self.project.path)
+        if context_name == mod_path:
+            return 0
+        elif is_standard_module(mod_path, (package_dir,)):
+            return 1
+        return 0
 
 class LogilabXMLGenerator(ConfigurationMixIn):
     """"""
@@ -511,6 +579,7 @@ class LogilabXMLGenerator(ConfigurationMixIn):
         else:
             writer.DotWriter(self.config).write(diadefs)"""    
 
+
 pc = LogilabXMLGenerator(sys.argv[1:])
 xml_root = etree.Element("PythonSourceTree")
 main_prj = pc.project
@@ -521,3 +590,4 @@ handle = etree.tostring(xml_root, pretty_print=True, encoding='utf-8', xml_decla
 applic = open(sys.argv[-1], "w")
 applic.writelines(handle)
 applic.close()
+print "bad - ",bad_import,"good - ",good_import
