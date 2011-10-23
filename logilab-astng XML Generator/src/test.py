@@ -35,8 +35,15 @@ if __name__ == '__main__':
     pass
 
 main_prj = None
-bad_import = 0
-good_import = 0
+bad_from_imports = 0
+bad_imports = 0
+good_imports = 0
+'''Number of from m import *'''
+from_allimports = 0
+'''Number of from m import name'''
+from_imports = 0
+'''From imports of module'''
+from_modname_imports = 0
 
 def write_to_namespace(node, names,type):
     if(hasattr(node, "namespace")):
@@ -78,6 +85,7 @@ def make_local_namespaces(root_astng):
         ''' Frame for func is func itself'''
         write_to_namespace(root_astng.parent.frame(), (root_astng.name,'func'),'locals')
         if(hasattr(root_astng, 'namespace')):
+            print root_astng.namespace
             print "Error Node Function allready have namespace"
         else:
             root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
@@ -108,6 +116,7 @@ def make_namespaces(root_astng):
     #if(hasattr(root_astng, "full_modname")):
      #   if(main_prj.locals.has_key(root_astng.full_modname)):
       #      print root_astng.full_modname
+    global from_allimports,from_imports
     if(isinstance(root_astng, Import)):
         for name in root_astng.names:
             if (name[1]):
@@ -122,17 +131,26 @@ def make_namespaces(root_astng):
                 try:
                     target_module = main_prj.get_module(root_astng.full_modname)
                     if(name[0] == '*'):
+                        from_allimports+=1
                         write_to_namespace(root_astng.frame(), target_module.namespace['locals'],'imports')
                         write_to_namespace(root_astng.frame(), target_module.namespace['unknown'],'imports')
                     else:
-                        for key in target_module.namespace.keys():
-                            for target_name in target_module.namespace[key]:
-                                if(name[0]==target_name[0]):
-                                    ''' name[1] is asname '''
-                                    if(name[1]):
-                                        write_to_namespace(root_astng.frame(), (name[1],target_name[1]),'imports')
-                                    else:
-                                        write_to_namespace(root_astng.frame(), (name[0],target_name[1]),'imports')
+                        from_imports+=1
+                        '''Import of modname (not name from module)'''
+                        if(hasattr(root_astng,'modname_import')):
+                            if(name[1]):
+                                write_to_namespace(root_astng.frame(), (name[1],'mod_name'),'imports')
+                            else:
+                                write_to_namespace(root_astng.frame(), (name[0],'mod_name'),'imports')
+                        else:
+                            for key in target_module.namespace.keys():
+                                for target_name in target_module.namespace[key]:
+                                    if(name[0]==target_name[0]):
+                                        ''' name[1] is asname '''
+                                        if(name[1]):
+                                            write_to_namespace(root_astng.frame(), (name[1],target_name[1]),'imports')
+                                        else:
+                                            write_to_namespace(root_astng.frame(), (name[0],target_name[1]),'imports')
                 except KeyError:
                     pass
                     #root_astng.root.unresolved +=1
@@ -314,9 +332,9 @@ def make_tree(root_xml,root_astng):
     # elif(isinstance(root_astng, GenExpr)):
     #    #print root_astng.generators,root_astng.locals,root_astng.as_string()
     #    current_xml_node.set("elt_type", root_astng.elt.__class__.__name__)
-    # elif(isinstance(root_astng, Getattr)):
-    #    current_xml_node.set("attrname", root_astng.attrname)
-    #    current_xml_node.set("expr", root_astng.expr.as_string())
+    elif(isinstance(root_astng, Getattr)):
+        current_xml_node.set("attrname", root_astng.attrname)
+        current_xml_node.set("expr", root_astng.expr.as_string())
     # elif(isinstance(root_astng, Global)):
     #    pass
     #    #print root_astng.names, root_astng.root(), root_astng.fromlineno
@@ -471,19 +489,19 @@ def is_standard_module(modname, std_path=(STD_LIB_DIR,)):
       - is located on the path listed in one of the directory in `std_path`
       - is a built-in module
     """
-    global bad_import,good_import
+    global bad_imports,good_imports
     modname = modname.split('.')[0]
     try:
         filename = file_from_modpath([modname])
     except ImportError, ex:
         # import failed, i'm probably not so wrong by supposing it's
         # not standard...
-        print modname
-        bad_import+=1
+        print "Unresolved Import, module name - ", modname
+        bad_imports+=1
         return 0
     # modules which are not living in a file are considered standard
     # (sys and __builtin__ for instance)
-    good_import+=1
+    good_imports+=1
     if filename is None:
         return 1
     filename = abspath(filename)
@@ -520,7 +538,7 @@ class MyLogilabLinker(Linker):
         
         resolve module dependencies
         """
-        global bad_import
+        global bad_from_imports, from_modname_imports
         basename = node.modname
         context_file = node.root().file
         if context_file is not None:
@@ -535,10 +553,14 @@ class MyLogilabLinker(Linker):
                 if fullname.find('.') > -1:
                     try:
                         # XXX: don't use get_module_part, missing package precedence
-                        fullname = get_module_part(fullname)
+                        mod_fullname = get_module_part(fullname,context_file)
+                        if(mod_fullname == fullname):
+                            from_modname_imports+=1;
+                            node.modname_import = True;
+                        fullname = mod_fullname
                     except ImportError:
-                        print node.root().name,node.fromlineno, node.as_string() 
-                        bad_import+=1
+                        print "Unresolved From -", node.as_string(),"File -",node.root().name,"Lineno - ",node.fromlineno 
+                        bad_from_imports+=1
                         continue
             self._imported_module(node, fullname, relative)
     '''Not changed'''
@@ -590,4 +612,5 @@ handle = etree.tostring(xml_root, pretty_print=True, encoding='utf-8', xml_decla
 applic = open(sys.argv[-1], "w")
 applic.writelines(handle)
 applic.close()
-print "bad - ",bad_import,"good - ",good_import
+print "bad imports - ",bad_imports,"bad from imports - ",bad_from_imports,"good - ",good_imports
+print "from imports - ",from_imports,"from * imports - ",from_allimports, "from imports of module - ", from_modname_imports
