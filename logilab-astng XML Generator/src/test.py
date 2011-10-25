@@ -49,17 +49,48 @@ def write_to_namespace(node, names,type):
     if(hasattr(node, "namespace")):
         if(isinstance(names, list)):
             for name in names:
-                if(not name in node.namespace[type]):
-                    '''Unknown name now resolved(import)'''
-                    if((type != 'unknown') and (name in node.namespace['unknown'])):
-                        node.namespace['unknown'].remove(name)
-                    node.namespace[type].append(name)
+               if(not name in node.namespace[type]):
+                   node.namespace[type].append(name)
         else:
             if(not names in node.namespace[type]):
-                '''Unknown name now resolved(import)'''
-                if((type != 'unknown') and (names in node.namespace['unknown'])):
-                    node.namespace['unknown'].remove(names)
                 node.namespace[type].append(names)
+
+def find_in_namespace(namespace,name):
+    for key in namespace.keys():
+        for target_name in namespace[key]:
+            if(name==target_name[0]):
+                name_type = target_name[1]
+                name_source = key
+                return name_type,name_source
+    return None
+'''FIXME Support for builtin namespace'''
+def find_in_all_namespaces(node,name,scope='local'):
+    current_frame = node.frame()
+    def_type = find_in_namespace(current_frame.namespace,name)
+    if(def_type):
+        if(isinstance(current_frame, Module)):
+            return 'global', def_type[0], def_type[1]
+        else:
+            return scope, def_type[0], def_type[1]
+    else:
+        if(isinstance(current_frame, Module)):
+            return None
+        return find_in_all_namespaces(current_frame.parent.frame(), name, 'nonlocal')
+
+'''Write local variable to local namespace of some frame'''
+def add_local_name(node,name):
+    if(isinstance(node.statement(), Function)):
+        '''Function argument'''
+        write_to_namespace(node.frame(),(name,'argument'),'this_module') 
+    elif(isinstance(node.statement(), (Assign,For,AugAssign))):
+        if(isinstance(node.frame(), Class)):
+            '''Field of class'''
+            write_to_namespace( node.frame(),(name,'field'),'this_module')
+        else:
+            '''Variable in module or func'''
+            write_to_namespace( node.frame(),(name,'var'),'this_module')
+    else:
+        print node.statement().__class__.__name__, node.name, node.statement().as_string()
 
 ''' Init namespaces, make local namespaces for modules and make local resolving '''
 def make_local_namespaces(root_astng):
@@ -67,47 +98,52 @@ def make_local_namespaces(root_astng):
         if(hasattr(root_astng, 'namespace')):
             print "Error Node Module allready have namespace"
         else:
-            root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
+            root_astng.namespace = {'this_module':[],'unknown': [],'imports':[]}
             root_astng.unresolved = []
-    elif(isinstance(root_astng, Assign)):
-        for target in root_astng.targets:
-            if(isinstance(target, AssName)):
-                write_to_namespace(root_astng.frame(), (target.name,'vars'),'unknown')
+    elif(isinstance(root_astng, AssName)):
+        '''Find'''
+        add_local_name(root_astng,root_astng.name)
     elif(isinstance(root_astng, Class)):
         ''' Frame for class is class itself'''
-        write_to_namespace(root_astng.parent.frame(), (root_astng.name,'class'),'locals')
+        write_to_namespace(root_astng.parent.frame(), (root_astng.name,'class'),'this_module')
         if(hasattr(root_astng, 'namespace')):
             print "Error Node Class allready have namespace"
         else:
-            root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
+            root_astng.namespace = {'this_module':[],'unknown': [],'imports':[],'global':[]}
             root_astng.unresolved = []
     elif(isinstance(root_astng, Function)):
         ''' Frame for func is func itself'''
-        write_to_namespace(root_astng.parent.frame(), (root_astng.name,'func'),'locals')
+        write_to_namespace(root_astng.parent.frame(), (root_astng.name,'func'),'this_module')
         if(hasattr(root_astng, 'namespace')):
             print root_astng.namespace
             print "Error Node Function allready have namespace"
         else:
-            root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
+            root_astng.namespace = {'this_module':[],'unknown': [],'imports':[],'global':[]}
             root_astng.unresolved = []
     elif(isinstance(root_astng, Lambda)):
-        #write_to_namespace(root_astng.frame(), (root_astng.name,'lambda'),'locals')
+        #write_to_namespace(root_astng.frame(), (root_astng.name,'lambda'),'this_module')
         if(hasattr(root_astng, 'namespace')):
             print "Error Node Lambda allready have namespace"
         else:
-            root_astng.namespace = {'locals':[],'unknown': [],'imports':[]}
+            root_astng.namespace = {'this_module':[],'unknown': [],'imports':[],'global':[]}
             root_astng.unresolved = []
     elif(isinstance(root_astng, Name)):
         ''' For NodeNG frame returns first parent frame node(module, class, func)!'''
         '''FIXME func arguments is not unresolved!!!'''
         if(hasattr(root_astng.frame(), "namespace")):
-            for key in root_astng.frame().namespace.keys():
-                    try:
-                        namespace_name = root_astng.frame().namespace[key].index(root_astng.name)
-                        root_astng.name_type = namespace_name[1]
-                        root_astng.name_source = key
-                    except ValueError:
-                        continue
+            def_type = find_in_namespace(root_astng.frame().namespace, root_astng.name)
+            if(def_type):
+                root_astng.name_scope = 'local'
+                root_astng.name_type = def_type[0]
+                root_astng.name_source = def_type[1]
+    elif(isinstance(root_astng, Global)):
+        for name in root_astng.names:
+            '''Find name in global namespace'''
+            '''def_typr is tuple 1 is type, 2 is source'''
+            def_type = find_in_namespace(root_astng.root().namespace, name)
+            if(not def_type):
+                write_to_namespace(root_astng.root(), (name,def_type[0]), 'this_file')
+            write_to_namespace(root_astng.frame(), (name,def_type[0]), 'global')
     for child in root_astng.get_children():
         make_local_namespaces(child)
         
@@ -132,7 +168,7 @@ def make_namespaces(root_astng):
                     target_module = main_prj.get_module(root_astng.full_modname)
                     if(name[0] == '*'):
                         from_allimports+=1
-                        write_to_namespace(root_astng.frame(), target_module.namespace['locals'],'imports')
+                        write_to_namespace(root_astng.frame(), target_module.namespace['this_module'],'imports')
                         write_to_namespace(root_astng.frame(), target_module.namespace['unknown'],'imports')
                     else:
                         from_imports+=1
@@ -163,14 +199,14 @@ def make_namespaces(root_astng):
         '''If name allready resolved'''
         if(not hasattr(root_astng, "name_type")):
             if(hasattr(root_astng.frame(), "namespace")):
-                for key in root_astng.frame().namespace.keys():
-                    for target_name in root_astng.frame().namespace[key]:
-                        if(root_astng.name==target_name[0]):
-                            root_astng.name_type = target_name[1]
-                            root_astng.name_source = key
-        if(not hasattr(root_astng, "name_type")):
-            if(not root_astng.name in root_astng.frame().unresolved):
-                root_astng.frame().unresolved.append(root_astng.name) # name is not in namespace
+                def_name = find_in_all_namespaces(root_astng,root_astng.name)
+                if(def_name):
+                    root_astng.name_scope = def_name[0]
+                    root_astng.name_type = def_name[1]
+                    root_astng.name_source = def_name[2]
+                else:
+                    if(not root_astng.name in root_astng.frame().unresolved):
+                        root_astng.frame().unresolved.append(root_astng.name) # name is not in namespace
     for child in root_astng.get_children():
         make_namespaces(child)
         
@@ -215,6 +251,7 @@ def make_tree(root_xml,root_astng):
         current_xml_node.set("name",root_astng.name)
     #===========================================================================
     elif(isinstance(root_astng, AssName)):
+        #print root_astng.statement(),root_astng.name
         #print root_astng.as_string()
         current_xml_node.set("name",root_astng.name)
     # elif(isinstance(root_astng, DelName)):
@@ -223,9 +260,9 @@ def make_tree(root_xml,root_astng):
     # elif(isinstance(root_astng, Arguments)):
     #    '''Represent format of arguments'''
     #    current_xml_node.set("format_args",root_astng.format_args())
-    # elif(isinstance(root_astng, AssAttr)):
-    #    current_xml_node.set("attrname",root_astng.attrname)
-    #    current_xml_node.set("expr",root_astng.expr.as_string())
+    elif(isinstance(root_astng, AssAttr)):
+        current_xml_node.set("attrname",root_astng.attrname)
+        current_xml_node.set("expr",root_astng.expr.as_string())
     # elif(isinstance(root_astng, Assert)):
     #    #Type of assert (what is checked?). It may be just name or compare
     #    current_xml_node.set("class",root_astng.test.__class__.__name__)
@@ -236,10 +273,6 @@ def make_tree(root_xml,root_astng):
         #Targets is list
         #current_xml_node.set("targets",str(root_astng.targets))
         current_xml_node.set("value",root_astng.value.as_string())
-        ''' Namespace '''
-        for target in root_astng.targets:
-            if(isinstance(target, AssName)):
-                write_to_namespace(root_astng.parent, (target.name,'vars'),'locals')
     #===========================================================================
     # elif(isinstance(root_astng, AugAssign)):
     #    #+= Assign
@@ -283,9 +316,9 @@ def make_tree(root_xml,root_astng):
     #    #FIXME How it can be displayed
     #    #print root_astng.root(),root_astng.fromlineno,root_astng.target, root_astng.iter, root_astng.ifs
     #    #current_xml_node.set("op",str(root_astng.ops[0]))
-    # elif(isinstance(root_astng, Const)):
-    #    current_xml_node.set("type",root_astng.name)
-    #    current_xml_node.text = str(root_astng.as_string())
+    elif(isinstance(root_astng, Const)):
+        current_xml_node.set("type",root_astng.name)
+        current_xml_node.text = str(root_astng.as_string())
     # elif(isinstance(root_astng, Continue)):
     #    pass
     # elif(isinstance(root_astng, Decorators)):
@@ -335,10 +368,9 @@ def make_tree(root_xml,root_astng):
     elif(isinstance(root_astng, Getattr)):
         current_xml_node.set("attrname", root_astng.attrname)
         current_xml_node.set("expr", root_astng.expr.as_string())
-    # elif(isinstance(root_astng, Global)):
-    #    pass
-    #    #print root_astng.names, root_astng.root(), root_astng.fromlineno
-    #    #current_xml_node.set("name", root_astng.name)
+    elif(isinstance(root_astng, Global)):
+        print root_astng.names, root_astng.root(), root_astng.fromlineno
+        #current_xml_node.set("name", root_astng.name)
     # elif(isinstance(root_astng, If)):
     #    #print root_astng.test, root_astng.body, root_astng.orelse
     #    current_xml_node.set("test",root_astng.test.__class__.__name__)
@@ -430,6 +462,7 @@ def make_tree(root_xml,root_astng):
         if(hasattr(root_astng, "name_type")):
             current_xml_node.set("type", root_astng.name_type)            
             current_xml_node.set("source", root_astng.name_source)
+            current_xml_node.set("scope", root_astng.name_scope)
         else:
             current_xml_node.set("source", "unknown")
     #===========================================================================
