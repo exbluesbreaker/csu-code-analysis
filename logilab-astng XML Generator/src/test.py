@@ -34,6 +34,11 @@ from logilab.common.modutils import get_module_part, is_relative, \
 if __name__ == '__main__':
     pass
 
+'''FIXME Unknown imports?'''
+'''FIXME class parent is not in namespace of class?'''
+'''FIXME name in except construction is not unresolved'''
+'''i is not unknown in (byteplay.LOAD_FAST,i) for i in rparams'''
+
 main_prj = None
 bad_from_imports = 0
 bad_imports = 0
@@ -61,11 +66,16 @@ def find_in_namespace(namespace,name):
             if(name==target_name[0]):
                 name_type = target_name[1]
                 name_source = key
-                return name_type,name_source
+                return name_type,name_source, key
     return None
 '''FIXME Support for builtin namespace'''
+'''FIXME Correct support of name defined as global'''
 def find_in_all_namespaces(node,name,scope='local'):
     current_frame = node.frame()
+    if(isinstance(current_frame, Class)):
+        ''' Fields and methods not visible for class's methods
+            and class's namespace will be ignored'''
+        return find_in_all_namespaces(current_frame.parent.frame(), name, 'nonlocal')
     def_type = find_in_namespace(current_frame.namespace,name)
     if(def_type):
         if(isinstance(current_frame, Module)):
@@ -606,6 +616,7 @@ class MyLogilabLinker(Linker):
             return 1
         return 0
 
+'''FIXME Bad name - no XML generated here'''
 class LogilabXMLGenerator(ConfigurationMixIn):
     """"""
     
