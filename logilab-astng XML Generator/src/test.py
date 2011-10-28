@@ -43,6 +43,9 @@ main_prj = None
 bad_from_imports = 0
 bad_imports = 0
 good_imports = 0
+'''Names, which not found in namespace of module, from which import is'''
+unknown_name_from_module = 0
+
 '''Number of from m import *'''
 from_allimports = 0
 '''Number of from m import name'''
@@ -92,13 +95,15 @@ def add_local_name(node,name):
     if(isinstance(node.statement(), Function)):
         '''Function argument'''
         write_to_namespace(node.frame(),(name,'argument'),'this_module') 
-    elif(isinstance(node.statement(), (Assign,For,AugAssign))):
+    elif(isinstance(node.statement(), (Assign,For,AugAssign,Discard))):
         if(isinstance(node.frame(), Class)):
             '''Field of class'''
             write_to_namespace( node.frame(),(name,'field'),'this_module')
         else:
             '''Variable in module or func'''
             write_to_namespace( node.frame(),(name,'var'),'this_module')
+    elif(isinstance(node.statement(), ExceptHandler)):
+        write_to_namespace(node.frame(),(name,'except_argument'),'this_module') 
     else:
         print node.statement().__class__.__name__, node.name, node.statement().as_string()
 
@@ -108,17 +113,21 @@ def make_local_namespaces(root_astng):
         if(hasattr(root_astng, 'namespace')):
             print "Error Node Module allready have namespace"
         else:
+            '''Init namespace for module'''
             root_astng.namespace = {'this_module':[],'unknown': [],'imports':[]}
             root_astng.unresolved = []
     elif(isinstance(root_astng, AssName)):
-        '''Find'''
+        ''' Find type of name (field,argument, var etc.) 
+            and add it to namespace, if it needed '''
         add_local_name(root_astng,root_astng.name)
     elif(isinstance(root_astng, Class)):
-        ''' Frame for class is class itself'''
+        ''' Frame for class is class itself, and Class 
+            name must be added to higher level namespace'''
         write_to_namespace(root_astng.parent.frame(), (root_astng.name,'class'),'this_module')
         if(hasattr(root_astng, 'namespace')):
             print "Error Node Class allready have namespace"
         else:
+            '''Init namespace for class'''
             root_astng.namespace = {'this_module':[],'unknown': [],'imports':[],'global':[]}
             root_astng.unresolved = []
     elif(isinstance(root_astng, Function)):
@@ -128,6 +137,7 @@ def make_local_namespaces(root_astng):
             print root_astng.namespace
             print "Error Node Function allready have namespace"
         else:
+            '''Init namespace for function'''
             root_astng.namespace = {'this_module':[],'unknown': [],'imports':[],'global':[]}
             root_astng.unresolved = []
     elif(isinstance(root_astng, Lambda)):
@@ -135,6 +145,7 @@ def make_local_namespaces(root_astng):
         if(hasattr(root_astng, 'namespace')):
             print "Error Node Lambda allready have namespace"
         else:
+            '''Init namespace for lambda'''
             root_astng.namespace = {'this_module':[],'unknown': [],'imports':[],'global':[]}
             root_astng.unresolved = []
     elif(isinstance(root_astng, Name)):
@@ -162,7 +173,7 @@ def make_namespaces(root_astng):
     #if(hasattr(root_astng, "full_modname")):
      #   if(main_prj.locals.has_key(root_astng.full_modname)):
       #      print root_astng.full_modname
-    global from_allimports,from_imports
+    global from_allimports,from_imports, unknown_name_from_module
     if(isinstance(root_astng, Import)):
         for name in root_astng.names:
             if (name[1]):
@@ -189,22 +200,41 @@ def make_namespaces(root_astng):
                             else:
                                 write_to_namespace(root_astng.frame(), (name[0],'mod_name'),'imports')
                         else:
+                            found = False
                             for key in target_module.namespace.keys():
                                 for target_name in target_module.namespace[key]:
                                     if(name[0]==target_name[0]):
                                         ''' name[1] is asname '''
                                         if(name[1]):
                                             write_to_namespace(root_astng.frame(), (name[1],target_name[1]),'imports')
+                                            found = True
+                                            break
                                         else:
                                             write_to_namespace(root_astng.frame(), (name[0],target_name[1]),'imports')
+                                            found = True
+                                            break
+                                if(found):
+                                    break
+                            '''Names, which was imported with From construction, but can't be resolved 
+                               (this name not found in target namespace)'''
+                            if(not found):
+                                if(name[1]):
+                                    write_to_namespace(root_astng.frame(), (name[1],'unknown_name'),'imports')
+                                else:
+                                    write_to_namespace(root_astng.frame(), (name[0],'unknown_name'),'imports')
+                                unknown_name_from_module +=  1
+                                
                 except KeyError:
                     pass
                     #root_astng.root.unresolved +=1
-            '''FIXME import module name not name in module'''
-            #if (name[1]):
-             #   write_to_namespace(root_astng.parent, (name[1],'mod_name'),'imports')
-            #else:
-             #   write_to_namespace(root_astng.parent, (name[0],'mod_name'),'imports')
+            else:
+                ''' Source module for import not found,
+                    but imported name will be added to namespace, if it not * import'''
+                if(name[0] != '*'):
+                     if(name[1]):
+                         write_to_namespace(root_astng.frame(), (name[1],'unknown_name'),'imports')
+                     else:
+                         write_to_namespace(root_astng.frame(), (name[0],'unknown_name'),'imports')
     elif(isinstance(root_astng, Name)):
         '''If name allready resolved'''
         if(not hasattr(root_astng, "name_type")):
@@ -658,3 +688,4 @@ applic.writelines(handle)
 applic.close()
 print "bad imports - ",bad_imports,"bad from imports - ",bad_from_imports,"good - ",good_imports
 print "from imports - ",from_imports,"from * imports - ",from_allimports, "from imports of module - ", from_modname_imports
+print "not found in from imports - ", unknown_name_from_module
