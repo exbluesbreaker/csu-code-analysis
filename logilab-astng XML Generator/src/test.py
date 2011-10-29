@@ -87,6 +87,10 @@ def find_in_all_namespaces(node,name,scope='local'):
             return scope, def_type[0], def_type[1]
     else:
         if(isinstance(current_frame, Module)):
+            ''' Find builtin name '''
+            for builtin_name in (dir(__builtins__)):
+                if(builtin_name == name):
+                    return 'builtin','builtin_name','__builtins__'
             return None
         return find_in_all_namespaces(current_frame.parent.frame(), name, 'nonlocal')
 
