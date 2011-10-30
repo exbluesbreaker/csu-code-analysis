@@ -28,6 +28,7 @@ from logilab.astng.manager import Project
 from pylint.pyreverse.main import PyreverseCommand
 from logilab.common.modutils import get_module_part, is_relative, \
      is_standard_module
+import imp
 
 
  
@@ -62,6 +63,18 @@ def write_to_namespace(node, names,type):
         else:
             if(not names in node.namespace[type]):
                 node.namespace[type].append(names)
+                
+'''Function, which compares namespace from ASTNG module node and
+   from dir(module_name) after importing of this module.
+   Function try to find all names from "real" module names in generated in ASTNG namespace.
+   Returns number of names, which was not found'''                
+def compare_namespaces(module_node):
+    '''try to import modname'''
+    '''FIXME Error recovery'''
+    module = __import__(module_node.name)
+    '''List of real "names" - names, which is in namespace after import modname'''
+    names_list = dir(module)
+    print len(names_list)
 
 def find_in_namespace(namespace,name):
     for key in namespace.keys():
@@ -532,6 +545,9 @@ def make_tree(root_xml,root_astng):
                 sub = etree.Element("Name")
                 sub.set("name",name)
                 xml_unresolved.append(sub)
+    '''Check namespaces'''
+    if(isinstance(root_astng, Module)):
+        compare_namespaces(root_astng)
     root_xml.append(current_xml_node)
 #FIXME - faster get modules
 def link_imports(root_astng,linker):
