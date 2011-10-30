@@ -64,17 +64,6 @@ def write_to_namespace(node, names,type):
             if(not names in node.namespace[type]):
                 node.namespace[type].append(names)
                 
-'''Function, which compares namespace from ASTNG module node and
-   from dir(module_name) after importing of this module.
-   Function try to find all names from "real" module names in generated in ASTNG namespace.
-   Returns number of names, which was not found'''                
-def compare_namespaces(module_node):
-    '''try to import modname'''
-    '''FIXME Error recovery'''
-    module = __import__(module_node.name)
-    '''List of real "names" - names, which is in namespace after import modname'''
-    names_list = dir(module)
-    print len(names_list)
 
 def find_in_namespace(namespace,name):
     for key in namespace.keys():
@@ -106,6 +95,30 @@ def find_in_all_namespaces(node,name,scope='local'):
                     return 'builtin','builtin_name','__builtins__'
             return None
         return find_in_all_namespaces(current_frame.parent.frame(), name, 'nonlocal')
+
+'''Function, which compares namespace from ASTNG module node and
+   from dir(module_name) after importing of this module.
+   Function try to find all names from "real" module names in generated in ASTNG namespace.
+   Returns number of names, which was not found'''                
+def compare_namespaces(module_node):
+    '''try to import modname'''
+    '''FIXME Error recovery'''
+    path = None
+    module_node.real_unresolved = []
+    '''Find_module not support hierarchical names'''
+    for part in module_node.name.split('.'):
+        try:
+            module = imp.load_module(part, *imp.find_module(part,path))
+        except ImportError:
+            return None
+        if(hasattr(module, '__path__')):
+            path = module.__path__
+    '''List of real "names" - names, which is in namespace after import modname'''
+    names_list = dir(module)
+    for name in names_list:
+        if(not find_in_all_namespaces(module_node, name)):
+            module_node.real_unresolved.append(name)
+            
 
 '''Write local variable to local namespace of some frame'''
 def add_local_name(node,name):
@@ -276,6 +289,8 @@ def make_tree(root_xml,root_astng):
         current_xml_node.append(xml_namespace)
         xml_unresolved = etree.Element("Unresolved")
         current_xml_node.append(xml_unresolved)
+        xml_real_unresolved = etree.Element("Real_Unresolved")
+        current_xml_node.append(xml_real_unresolved)
     '''Set parameters, related with position in source code'''
     if(isinstance(root_astng, Module)):
         '''Set number of source code lines in module'''
@@ -548,6 +563,11 @@ def make_tree(root_xml,root_astng):
     '''Check namespaces'''
     if(isinstance(root_astng, Module)):
         compare_namespaces(root_astng)
+        current_xml_node.set("real_unresolved", str(len(root_astng.real_unresolved)))
+        for name in root_astng.real_unresolved:
+                sub = etree.Element("Name")
+                sub.set("name",name)
+                xml_real_unresolved.append(sub)
     root_xml.append(current_xml_node)
 #FIXME - faster get modules
 def link_imports(root_astng,linker):
