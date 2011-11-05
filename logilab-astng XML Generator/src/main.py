@@ -104,7 +104,7 @@ def compare_namespaces(module_node):
     '''try to import modname'''
     '''FIXME Error recovery'''
     path = None
-    module_node.real_unresolved = []
+    module_node.unresolved = []
     try:
         module = importlib.import_module(module_node.name)
     except ImportError:
@@ -113,7 +113,7 @@ def compare_namespaces(module_node):
     for name in names_list:
         if not name in module_node:
         #if(not find_in_all_namespaces(module_node, name)):
-            module_node.real_unresolved.append(name)
+            module_node.unresolved.append(name)
             
 
 '''Write local variable to local namespace of some frame'''
@@ -566,13 +566,22 @@ def make_tree(root_xml,root_astng):
                 sub.set("name",key)
                 sub.text = str(root_astng[key])
                 xml_namespace.append(sub)
-        '''Write unresolved names to XML'''
+        '''Write unresolved names to XML'''    
         #current_xml_node.set("unresolved", str(len(root_astng.unresolved)))
         #for name in root_astng.unresolved:
          #       sub = etree.Element("Name")
           #      sub.set("name",name)
            #     xml_unresolved.append(sub)
-    root_xml.append(current_xml_node)
+    if(isinstance(root_astng, Module)):
+        compare_namespaces(root_astng)
+        current_xml_node.set("unresolved",str(len(root_astng.unresolved)))
+        for name in root_astng.unresolved:
+            sub = etree.Element("Name")
+            sub.set("name",name)
+            xml_unresolved.append(sub)
+    '''Temporary many info may be dropped'''
+    if(isinstance(root_astng, (Module,Project))):
+        root_xml.append(current_xml_node)
 #FIXME - faster get modules
 def link_imports(root_astng,linker):
     if(isinstance(root_astng, Import)):
@@ -721,11 +730,13 @@ class LogilabXMLGenerator(ConfigurationMixIn):
 
 
 pc = LogilabXMLGenerator(sys.argv[1:])
-xml_root = etree.Element("PythonSourceTree")
+main_xml_root = etree.Element("PythonSourceTree")
+ns_xml_root = etree.Element("PythonNamespaces")
 main_prj = pc.project
-make_tree(xml_root,pc.project)
-handle = etree.tostring(xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)       
-applic = open(sys.argv[-1], "w")
+make_tree(main_xml_root,pc.project)
+handle = etree.tostring(main_xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
+main_file = "./"+sys.argv[-1]+".xml"    
+applic = open(main_file, "w")
 applic.writelines(handle)
 applic.close()
 print "bad imports - ",bad_imports,"bad from imports - ",bad_from_imports,"good - ",good_imports
