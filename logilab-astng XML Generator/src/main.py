@@ -5,30 +5,26 @@ Created on 19.08.2011
 @author: bluesbreaker
 '''
 
-from os.path import splitext, join, abspath, isdir, dirname, exists, basename
-from distutils.sysconfig import get_config_var, get_python_lib, get_python_version
+from os.path import join, abspath, dirname
+from distutils.sysconfig import get_config_var, get_python_version
 
 from logilab.common.modutils import file_from_modpath
 
 STD_LIB_DIR = join(get_config_var("LIBDIR"), "python%s" % get_python_version())
 
-import logilab.astng
 from logilab.common.configuration import ConfigurationMixIn
 from pylint.pyreverse.utils import insert_default_options
 from logilab.astng.inspector import Linker
-from pylint.pyreverse.diadefslib import DiadefsHandler
-from pylint.pyreverse import writer
 from lxml import etree
-from logilab.astng import builder
 '''import all names of nodes'''
 from logilab.astng.node_classes import *
 from logilab.astng.scoped_nodes import *
 from logilab.astng.manager import astng_wrapper, ASTNGManager
 from logilab.astng.manager import Project
-from pylint.pyreverse.main import PyreverseCommand
 from logilab.common.modutils import get_module_part, is_relative, \
      is_standard_module
 import importlib
+from logilab.astng.utils import LocalsVisitor
 
 
  
@@ -275,6 +271,180 @@ def make_namespaces(root_astng):
                         root_astng.frame().unresolved.append(root_astng.name) # name is not in namespace
     for child in root_astng.get_children():
         make_namespaces(child)
+
+
+class ReflexionModelVisitor(LocalsVisitor):
+    '''Reflexion_model_call_dependencies will be dictionary.
+    Key contains (<high-level model source>,<high-level model target>) tuple for call , value for this key contains list of actual calls tuples
+    tuple -('source_module,target_module,call_name,fromlineno,col_offset')'''
+    rm_call_deps = {}
+    '''Mapping is just list of modules, which must be in high-level model
+       If package given - all submodules and subpackages will be associated with it in extracted source model'''
+    _mapping = None
+    
+    def __init__(self,mapping):
+        LocalsVisitor.__init__(self)
+        self._mapping = mapping
+        
+    def _get_hm_module(self,source_module):
+        for module in self._mapping:
+            try:
+                if(module.index(source_module)==0):
+                    return module
+            except ValueError:
+                continue
+        return None
+    
+    def visit(self, node):
+        """launch the visit starting from the given node"""
+        if self._visited.has_key(node):
+            return
+        self._visited[node] = 1 # FIXME: use set ?
+        methods = self.get_callbacks(node)
+        if methods[0] is not None:
+            methods[0](node)
+        for child in node.get_children():
+            self.visit(child)
+    
+
+    
+    def visit_callfunc(self, node):
+        call_in_module = None # that was called in target module
+        target_module = None
+        if(isinstance(node.func,Getattr)):
+            call = list(node.get_children())[0]
+            attrname = call.attrname
+            expr = call.expr.as_string()
+            while(not isinstance(call, Name) and not isinstance(call,Const)):
+                call = list(call.get_children())[0]
+            '''Something like "abcd".join() will be ignored'''
+            if(isinstance(call, Const)):
+                return
+            '''Now call must be Name node'''
+            lookup_result = call.lookup(call.name)
+            if(isinstance(lookup_result[0],Module)):
+                '''TODO Local imports!!!!'''
+                '''Only module-scoped names are interesting
+                   Other names are local exactly'''
+                for assign in lookup_result[1]:
+                        '''Only imported names are interesting '''
+                        if(isinstance(assign,From)):
+                            for name in assign.names:
+                                try:
+                                    if(name[1]):
+                                        if(expr.index(name[1])==0):
+                                            call_in_module = name[0]+expr[len(name[1])+1:]+'.'+attrname
+                                            if(not hasattr(assign, 'full_modname')):
+                                                '''All not in-project imports will be ignored'''
+                                                return
+                                            target_module = assign.full_modname
+                                            break
+                                    else:
+                                        if(expr.index(name[0])==0):
+                                            call_in_module = expr+'.'+attrname
+                                            if(not hasattr(assign, 'full_modname')):
+                                                '''All not in-project imports will be ignored'''
+                                                return
+                                            target_module = assign.full_modname
+                                            break
+                                except ValueError:
+                                    continue
+                            if(call_in_module is not None):
+                                break
+                        elif(isinstance(assign,Import)):
+                            for name in assign.names:
+                                try:
+                                    if(name[1]):
+                                        if(expr.index(name[1])==0):
+                                            '''TODO Fix this shit'''
+                                            call_in_module = expr[len(name[1])+1:]
+                                            if(len(call_in_module)>0):
+                                                call_in_module+='.'
+                                            call_in_module+=attrname
+                                            if(not hasattr(assign, 'full_modname')):
+                                                '''All not in-project imports will be ignored'''
+                                                return
+                                            target_module = assign.full_modname
+                                            break
+                                    else:
+                                        if(expr.index(name[0])==0):
+                                            '''TODO Fix this shit too'''
+                                            call_in_module = expr[len(name[0])+1:]
+                                            if(len(call_in_module)>0):
+                                                call_in_module+='.'
+                                            call_in_module+=attrname
+                                            if(not hasattr(assign, 'full_modname')):
+                                                '''All not in-project imports will be ignored'''
+                                                return
+                                            target_module = assign.full_modname
+                                            break
+                                except ValueError:
+                                    continue
+                            if(call_in_module is not None):
+                                break
+        elif(isinstance(node.func,Name)):
+            lookup_result = node.func.lookup(node.func.name)
+            if(isinstance(lookup_result[0],Module)):
+                '''TODO Local imports!!!!'''
+                '''Only module-scoped names are interesting
+                   Other names are local exactly'''
+                call_in_module = None # that was called in target module
+                target_module = None
+                for assign in lookup_result[1]:
+                        '''Only imported names are interesting '''
+                        if(isinstance(assign,From)):
+                            for name in assign.names:
+                                try:
+                                    if(name[1]):
+                                        if(node.func.name == name[1]):
+                                            call_in_module = name[0]
+                                            if(not hasattr(assign, 'full_modname')):
+                                                '''All not in-project imports will be ignored'''
+                                                return
+                                            target_module = assign.full_modname
+                                            break
+                                    else:
+                                        if(node.func.name == name[0]):
+                                            call_in_module = name[0]
+                                            if(not hasattr(assign, 'full_modname')):
+                                                '''All not in-project imports will be ignored'''
+                                                return
+                                            target_module = assign.full_modname
+                                            break
+                                except ValueError:
+                                    continue
+                            if(call_in_module is not None):
+                                break
+        
+        if((target_module is not None)and(call_in_module is not None)):
+            source_hm = self._get_hm_module(node.root().name)
+            target_hm = self._get_hm_module(target_module)
+            if((source_hm is not None)and(target_hm is not None)):
+                    if(self.rm_call_deps.has_key(source_hm+','+target_hm)):
+                        self.rm_call_deps[source_hm+','+target_hm].append((node.root().name,target_module,call_in_module,node.fromlineno))
+                    else:
+                        self.rm_call_deps[source_hm+','+target_hm] = [(node.root().name,target_module,call_in_module,node.fromlineno)]             
+
+class ReflexionModelXMLGenerator():
+    def generate(self,project_name,rm_call_deps):
+        root_tag = etree.Element(project_name)
+        rm_tag = etree.Element("Reflexion_model")
+        root_tag.append(rm_tag)
+        for dependency in rm_call_deps.keys():
+            dep_tag = etree.Element("Dependency")
+            dep_tag.set("dep",dependency)
+            for call in rm_call_deps[dependency]:
+                call_tag = etree.Element("Call")
+                call_tag.set("source_module",call[0])
+                call_tag.set("target_module",call[1])
+                call_tag.set("called_object",call[2])
+                call_tag.set("source_fromlineno",str(call[3]))
+                dep_tag.append(call_tag)
+            rm_tag.append(dep_tag)
+        return root_tag
+
+class XMLGeneratorVisitor(LocalsVisitor):
+    pass        
         
 def make_tree(root_xml,root_astng):
     ''' Create tag with name of node class'''
@@ -362,9 +532,9 @@ def make_tree(root_xml,root_astng):
     # elif(isinstance(root_astng, Break)):
     #    #isn't very interesting
     #    pass
-    # elif(isinstance(root_astng, CallFunc)):
-    #    #print root_astng.root(),root_astng.fromlineno,root_astng.func
-    #    current_xml_node.set("type",str(root_astng.func.__class__.__name__))
+    elif(isinstance(root_astng, CallFunc)):
+        #print root_astng.root(),root_astng.fromlineno,root_astng.func
+        current_xml_node.set("type",str(root_astng.func.__class__.__name__))
     #===========================================================================
     elif(isinstance(root_astng, Class)):
         current_xml_node.set("name",root_astng.name)
@@ -536,6 +706,11 @@ def make_tree(root_xml,root_astng):
                 sub.set("type","function_name")
             elif(isinstance(assign, Import)):
                 sub.set("type","mod_name")
+                for name in assign.names:
+                    subsub = etree.Element("ImportName", name=name[0])
+                    if (name[1]):
+                        subsub.set("asname",name[1]) 
+                sub.append(subsub)
             elif(isinstance(assign, From)):
                 sub.set("type","import_name")
             elif(isinstance(assign, AssName)):
@@ -573,15 +748,14 @@ def make_tree(root_xml,root_astng):
           #      sub.set("name",name)
            #     xml_unresolved.append(sub)
     if(isinstance(root_astng, Module)):
-        compare_namespaces(root_astng)
-        current_xml_node.set("unresolved",str(len(root_astng.unresolved)))
+        #compare_namespaces(root_astng)
+        '''current_xml_node.set("unresolved",str(len(root_astng.unresolved)))
         for name in root_astng.unresolved:
             sub = etree.Element("Name")
             sub.set("name",name)
-            xml_unresolved.append(sub)
-    '''Temporary many info may be dropped'''
-    if(isinstance(root_astng, (Module,Project))):
-        root_xml.append(current_xml_node)
+            xml_unresolved.append(sub)'''
+        pass
+    root_xml.append(current_xml_node)
 #FIXME - faster get modules
 def link_imports(root_astng,linker):
     if(isinstance(root_astng, Import)):
@@ -651,12 +825,13 @@ class MyLogilabLinker(Linker):
         if relative:
             mod_path = '%s.%s' % ('.'.join(context_name.split('.')[:-1]),
                                   mod_path)
+        '''Save fullname for target module'''
+        node.full_modname = mod_path
         if self.compute_module(context_name, mod_path):
             # handle dependencies
             if not hasattr(module, 'depends'):
                 module.depends = []
             mod_paths = module.depends
-            node.full_modname = mod_path
             if not mod_path in mod_paths:
                 mod_paths.append(mod_path)
     def visit_from(self, node):
@@ -721,6 +896,28 @@ class LogilabXMLGenerator(ConfigurationMixIn):
         self.project = project 
         linker = MyLogilabLinker(project, tag=True)
         link_imports(project, linker)
+        '''FIXME get from file through command line'''
+        mapping = ['SCons.Job',
+                   'SCons.Node.FS',
+                   'SCons.Action',
+                   'SCons.Builder',
+                   'SCons.SConf',
+                   'SCons.Scanner',
+                   'SCons.Script',
+                   'SCons.Taskmaster',
+                   'SCons.Util',
+                   'SCons.Variables',
+                   'SCons.Environment',
+                   'SCons.Executor']
+        rm_linker = ReflexionModelVisitor(mapping)
+        rm_linker.visit(project)
+        xml_writer = ReflexionModelXMLGenerator()
+        xml_root = xml_writer.generate("SCons", rm_linker.rm_call_deps)
+        handle = etree.tostring(xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
+        applic = open("SCons_rm.xml", "w")
+        applic.writelines(handle)
+        applic.close()
+        
         """handler = DiadefsHandler(self.config)
         diadefs = handler.get_diadefs(project, linker)
         if self.config.output_format == "vcg":
@@ -730,15 +927,15 @@ class LogilabXMLGenerator(ConfigurationMixIn):
 
 
 pc = LogilabXMLGenerator(sys.argv[1:])
-main_xml_root = etree.Element("PythonSourceTree")
-ns_xml_root = etree.Element("PythonNamespaces")
-main_prj = pc.project
-make_tree(main_xml_root,pc.project)
-handle = etree.tostring(main_xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
-main_file = "./"+sys.argv[-1]+".xml"    
-applic = open(main_file, "w")
-applic.writelines(handle)
-applic.close()
-print "bad imports - ",bad_imports,"bad from imports - ",bad_from_imports,"good - ",good_imports
-print "from imports - ",from_imports,"from * imports - ",from_allimports, "from imports of module - ", from_modname_imports
-print "not found in from imports - ", unknown_name_from_module
+#main_xml_root = etree.Element("PythonSourceTree")
+#ns_xml_root = etree.Element("PythonNamespaces")
+#main_prj = pc.project
+#make_tree(main_xml_root,pc.project)
+#handle = etree.tostring(main_xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
+#main_file = "./"+sys.argv[-1]+".xml"    
+#applic = open(main_file, "w")
+#applic.writelines(handle)
+#applic.close()
+#print "bad imports - ",bad_imports,"bad from imports - ",bad_from_imports,"good - ",good_imports
+#print "from imports - ",from_imports,"from * imports - ",from_allimports, "from imports of module - ", from_modname_imports
+#print "not found in from imports - ", unknown_name_from_module
