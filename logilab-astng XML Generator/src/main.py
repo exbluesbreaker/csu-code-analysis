@@ -335,7 +335,7 @@ class ReflexionModelVisitor(LocalsVisitor):
                 graph.add_edge(pydot.Edge(node_dict[div_source], node_dict[div_target],color='blue'))
             for absc_source,absc_target in self._reflexion_model['abscences']:
                 graph.add_edge(pydot.Edge(node_dict[absc_source], node_dict[absc_target],color='red'))
-            graph.write_png(name+'_sm.png')
+            graph.write_png(name+'_reflexion_model.png')
         
     
     def visit(self, node):
@@ -486,15 +486,15 @@ class ReflexionModelXMLGenerator():
             rm_tag.append(dep_tag)
         return root_tag
     
-class ReflexionModelDotGenerator():
-    def generate(self,nodes,rm_call_deps):
+class HighLevelModelDotGenerator():
+    def generate(self,nodes,deps):
         graph = pydot.Dot(graph_type='digraph')
         node_dict = {}
         for node in nodes:
             dot_node = pydot.Node(node)
             graph.add_node(dot_node)
             node_dict[node] = dot_node
-        for source, target in rm_call_deps.keys():
+        for source, target in deps:
             graph.add_edge(pydot.Edge(node_dict[source], node_dict[target]))
         return graph
 
@@ -990,9 +990,9 @@ class LogilabXMLGenerator(ConfigurationMixIn):
 #        applic = open("SCons_rm.xml", "w")
 #        applic.writelines(handle)
 #        applic.close()
-        #dot_writer = ReflexionModelDotGenerator()
-        #graph = dot_writer.generate(mapping, rm_linker._sm_call_deps)
-        #graph.write_png('SCons_sm.png')
+        dot_writer = HighLevelModelDotGenerator()
+        graph = dot_writer.generate(mapping, hm_model)
+        graph.write_png('SCons_high-level_model.png')
         
         """handler = DiadefsHandler(self.config)
         diadefs = handler.get_diadefs(project, linker)
