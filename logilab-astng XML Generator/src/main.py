@@ -275,17 +275,29 @@ def make_namespaces(root_astng):
 
 
 class ReflexionModelVisitor(LocalsVisitor):
-    '''Reflexion_model_call_dependencies will be dictionary.
+    _project = None
+    '''Source_model_call_dependencies will be dictionary.
     Key contains (<high-level model source>,<high-level model target>) tuple for call , value for this key contains list of actual calls tuples
     tuple -('source_module,target_module,call_name,fromlineno,col_offset')'''
-    rm_call_deps = {}
+    _sm_call_deps = {}
     '''Mapping is just list of modules, which must be in high-level model
        If package given - all submodules and subpackages will be associated with it in extracted source model'''
     _mapping = None
+    _hm_model = None
+    '''Reflexion model is dictionary 
+    (for details see 
+    G.C. Murphy, D. Notkin, K. Sullivan / 
+    Software Reflexion models: Bridging the gap between source and high-level models)
+       "convergences" - dictionary of related source model calls
+       "divergences" - dictionary of related source model calls
+       "abscences" - list of related high-level model dependencies'''
+    _reflexion_model = None
     
-    def __init__(self,mapping):
+    def __init__(self,project,mapping,hm_model):
         LocalsVisitor.__init__(self)
+        self._project = project
         self._mapping = mapping
+        self._hm_model = hm_model
         
     def _get_hm_module(self,source_module):
         for module in self._mapping:
@@ -296,11 +308,41 @@ class ReflexionModelVisitor(LocalsVisitor):
                 continue
         return None
     
+    def compute_rm(self):
+        '''Extract source model'''
+        self.visit(self._project)
+        self._reflexion_model = {'convergences':{},'divergences':{},'abscences':[]}
+        temp = set(list(self._sm_call_deps.keys())) | set(self._hm_model)
+        for relation in (set(self._sm_call_deps.keys()) | set(self._hm_model)):
+            if((relation in self._sm_call_deps.keys()) and (relation in self._hm_model)):
+                self._reflexion_model['convergences'][relation] = self._sm_call_deps[relation]
+            elif((relation in self._sm_call_deps.keys()) and (relation not in self._hm_model)):
+                self._reflexion_model['divergences'][relation] = self._sm_call_deps[relation]
+            else:
+                self._reflexion_model['abscences'].append(relation)
+        
+    def write_rm_to_png(self,name):
+        if(self._reflexion_model is not None):
+            graph = pydot.Dot(graph_type='digraph')
+            node_dict = {}
+            for node in self._mapping:
+                dot_node = pydot.Node(node)
+                graph.add_node(dot_node)
+                node_dict[node] = dot_node
+            for conv_source,conv_target in self._reflexion_model['convergences'].keys():
+                graph.add_edge(pydot.Edge(node_dict[conv_source], node_dict[conv_target],color='green'))
+            for div_source,div_target in self._reflexion_model['divergences'].keys():
+                graph.add_edge(pydot.Edge(node_dict[div_source], node_dict[div_target],color='blue'))
+            for absc_source,absc_target in self._reflexion_model['abscences']:
+                graph.add_edge(pydot.Edge(node_dict[absc_source], node_dict[absc_target],color='red'))
+            graph.write_png(name+'_sm.png')
+        
+    
     def visit(self, node):
         """launch the visit starting from the given node"""
         if self._visited.has_key(node):
             return
-        self._visited[node] = 1 # FIXME: use set ?
+        self._visited[node] = 1 
         methods = self.get_callbacks(node)
         if methods[0] is not None:
             methods[0](node)
@@ -421,10 +463,10 @@ class ReflexionModelVisitor(LocalsVisitor):
             source_hm = self._get_hm_module(node.root().name)
             target_hm = self._get_hm_module(target_module)
             if((source_hm is not None)and(target_hm is not None)and(source_hm!=target_hm)):
-                    if(self.rm_call_deps.has_key((source_hm,target_hm))):
-                        self.rm_call_deps[(source_hm,target_hm)].append((node.root().name,target_module,call_in_module,node.fromlineno))
+                    if(self._sm_call_deps.has_key((source_hm,target_hm))):
+                        self._sm_call_deps[(source_hm,target_hm)].append((node.root().name,target_module,call_in_module,node.fromlineno))
                     else:
-                        self.rm_call_deps[(source_hm,target_hm)] = [(node.root().name,target_module,call_in_module,node.fromlineno)]             
+                        self._sm_call_deps[(source_hm,target_hm)] = [(node.root().name,target_module,call_in_module,node.fromlineno)]             
 
 class ReflexionModelXMLGenerator():
     def generate(self,project_name,rm_call_deps):
@@ -922,17 +964,35 @@ class LogilabXMLGenerator(ConfigurationMixIn):
                    'SCons.Variables',
                    'SCons.Environment',
                    'SCons.Executor']
-        rm_linker = ReflexionModelVisitor(mapping)
-        rm_linker.visit(project)
-        xml_writer = ReflexionModelXMLGenerator()
-        xml_root = xml_writer.generate("SCons", rm_linker.rm_call_deps)
-        handle = etree.tostring(xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
-        applic = open("SCons_rm.xml", "w")
-        applic.writelines(handle)
-        applic.close()
-        dot_writer = ReflexionModelDotGenerator()
-        graph = dot_writer.generate(mapping, rm_linker.rm_call_deps)
-        graph.write_png('SCons_sm.png')
+        hm_model = [('SCons.Script','SCons.Taskmaster'),
+                    ('SCons.Taskmaster','SCons.SConf'),
+                    ('SCons.Taskmaster','SCons.Builder'),
+                    ('SCons.SConf','SCons.Environment'),
+                    ('SCons.SConf','SCons.Util'),
+                    ('SCons.Builder','SCons.Executor'),
+                    ('SCons.Builder','SCons.Variables'),
+                    ('SCons.Builder','SCons.Scanner'),
+                    ('SCons.Builder','SCons.Util'),
+                    ('SCons.Builder','SCons.Environment'),
+                    ('SCons.Scanner','SCons.Action'),
+                    ('SCons.Executor','SCons.Action'),
+                    ('SCons.Action','SCons.Util'),
+                    ('SCons.Action','SCons.Variables'),
+                    ('SCons.Action','SCons.Job'),
+                    ('SCons.Job','SCons.Util'),
+                    ('SCons.Job','SCons.Node.FS')]
+        rm_linker = ReflexionModelVisitor(project,mapping,hm_model)
+        rm_linker.compute_rm()
+        rm_linker.write_rm_to_png("SCons")
+#        xml_writer = ReflexionModelXMLGenerator()
+#        xml_root = xml_writer.generate("SCons", rm_linker._sm_call_deps)
+#        handle = etree.tostring(xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
+#        applic = open("SCons_rm.xml", "w")
+#        applic.writelines(handle)
+#        applic.close()
+        #dot_writer = ReflexionModelDotGenerator()
+        #graph = dot_writer.generate(mapping, rm_linker._sm_call_deps)
+        #graph.write_png('SCons_sm.png')
         
         """handler = DiadefsHandler(self.config)
         diadefs = handler.get_diadefs(project, linker)
