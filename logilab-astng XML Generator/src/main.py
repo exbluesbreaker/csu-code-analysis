@@ -25,6 +25,7 @@ from logilab.common.modutils import get_module_part, is_relative, \
      is_standard_module
 import importlib
 from logilab.astng.utils import LocalsVisitor
+import pydot
 
 
  
@@ -289,7 +290,7 @@ class ReflexionModelVisitor(LocalsVisitor):
     def _get_hm_module(self,source_module):
         for module in self._mapping:
             try:
-                if(module.index(source_module)==0):
+                if(source_module.index(module)==0):
                     return module
             except ValueError:
                 continue
@@ -419,21 +420,21 @@ class ReflexionModelVisitor(LocalsVisitor):
         if((target_module is not None)and(call_in_module is not None)):
             source_hm = self._get_hm_module(node.root().name)
             target_hm = self._get_hm_module(target_module)
-            if((source_hm is not None)and(target_hm is not None)):
-                    if(self.rm_call_deps.has_key(source_hm+','+target_hm)):
-                        self.rm_call_deps[source_hm+','+target_hm].append((node.root().name,target_module,call_in_module,node.fromlineno))
+            if((source_hm is not None)and(target_hm is not None)and(source_hm!=target_hm)):
+                    if(self.rm_call_deps.has_key((source_hm,target_hm))):
+                        self.rm_call_deps[(source_hm,target_hm)].append((node.root().name,target_module,call_in_module,node.fromlineno))
                     else:
-                        self.rm_call_deps[source_hm+','+target_hm] = [(node.root().name,target_module,call_in_module,node.fromlineno)]             
+                        self.rm_call_deps[(source_hm,target_hm)] = [(node.root().name,target_module,call_in_module,node.fromlineno)]             
 
 class ReflexionModelXMLGenerator():
     def generate(self,project_name,rm_call_deps):
         root_tag = etree.Element(project_name)
         rm_tag = etree.Element("Reflexion_model")
         root_tag.append(rm_tag)
-        for dependency in rm_call_deps.keys():
+        for source,target in rm_call_deps.keys():
             dep_tag = etree.Element("Dependency")
-            dep_tag.set("dep",dependency)
-            for call in rm_call_deps[dependency]:
+            dep_tag.set("dep",source+","+target)
+            for call in rm_call_deps[(source,target)]:
                 call_tag = etree.Element("Call")
                 call_tag.set("source_module",call[0])
                 call_tag.set("target_module",call[1])
@@ -442,6 +443,18 @@ class ReflexionModelXMLGenerator():
                 dep_tag.append(call_tag)
             rm_tag.append(dep_tag)
         return root_tag
+    
+class ReflexionModelDotGenerator():
+    def generate(self,nodes,rm_call_deps):
+        graph = pydot.Dot(graph_type='digraph')
+        node_dict = {}
+        for node in nodes:
+            dot_node = pydot.Node(node)
+            graph.add_node(dot_node)
+            node_dict[node] = dot_node
+        for source, target in rm_call_deps.keys():
+            graph.add_edge(pydot.Edge(node_dict[source], node_dict[target]))
+        return graph
 
 class XMLGeneratorVisitor(LocalsVisitor):
     pass        
@@ -917,6 +930,9 @@ class LogilabXMLGenerator(ConfigurationMixIn):
         applic = open("SCons_rm.xml", "w")
         applic.writelines(handle)
         applic.close()
+        dot_writer = ReflexionModelDotGenerator()
+        graph = dot_writer.generate(mapping, rm_linker.rm_call_deps)
+        graph.write_png('SCons_sm.png')
         
         """handler = DiadefsHandler(self.config)
         diadefs = handler.get_diadefs(project, linker)
