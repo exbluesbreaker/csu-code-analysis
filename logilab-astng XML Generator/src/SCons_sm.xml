@@ -1,0 +1,265 @@
+<?xml version='1.0' encoding='utf-8'?>
+<SCons>
+  <Reflexion_model>
+    <Dependency dep="SCons.Variables,SCons.Util">
+      <Call source_module="SCons.Variables" target_module="SCons.Util" called_object="is_List" source_fromlineno="61" source_scope="class_method" source_object="Variables.__init__"/>
+      <Call source_module="SCons.Variables" target_module="SCons.Util" called_object="is_List" source_fromlineno="84" source_scope="class_method" source_object="Variables._do_add"/>
+      <Call source_module="SCons.Variables" target_module="SCons.Util" called_object="is_Tuple" source_fromlineno="84" source_scope="class_method" source_object="Variables._do_add"/>
+      <Call source_module="SCons.Variables" target_module="SCons.Util" called_object="is_List" source_fromlineno="122" source_scope="class_method" source_object="Variables.Add"/>
+      <Call source_module="SCons.Variables" target_module="SCons.Util" called_object="is_String" source_fromlineno="126" source_scope="class_method" source_object="Variables.Add"/>
+      <Call source_module="SCons.Variables" target_module="SCons.Util" called_object="to_String" source_fromlineno="256" source_scope="class_method" source_object="Variables.Save"/>
+      <Call source_module="SCons.Variables" target_module="SCons.Util" called_object="to_String" source_fromlineno="260" source_scope="class_method" source_object="Variables.Save"/>
+      <Call source_module="SCons.Variables.ListVariable" target_module="SCons.Util" called_object="is_List" source_fromlineno="123" source_scope="function" source_object="ListVariable"/>
+    </Dependency>
+    <Dependency dep="SCons.Action,SCons.Util">
+      <Call source_module="SCons.Action" target_module="SCons.Util" called_object="get_environment_var" source_fromlineno="373" source_scope="function" source_object="_do_create_action"/>
+      <Call source_module="SCons.Action" target_module="SCons.Util" called_object="AddMethod" source_fromlineno="497" source_scope="class_method" source_object="_ActionAction.__init__"/>
+      <Call source_module="SCons.Action" target_module="SCons.Util" called_object="flatten_sequence" source_fromlineno="644" source_scope="function" source_object="_subproc"/>
+      <Call source_module="SCons.Action" target_module="SCons.Util" called_object="to_String" source_fromlineno="934" source_scope="class_method" source_object="LazyAction.__init__"/>
+      <Call source_module="SCons.Action" target_module="SCons.Util" called_object="flatten_sequence" source_fromlineno="1113" source_scope="class_method" source_object="ListAction.presub_lines"/>
+      <Call source_module="SCons.Action" target_module="SCons.Util" called_object="OrderedDict" source_fromlineno="1142" source_scope="class_method" source_object="ListAction.get_varlist"/>
+    </Dependency>
+    <Dependency dep="SCons.Script,SCons.SConf">
+      <Call source_module="SCons.Script.Main" target_module="SCons.SConf" called_object="SetBuildType" source_fromlineno="853" source_scope="function" source_object="_main"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.SConf" called_object="SetBuildType" source_fromlineno="855" source_scope="function" source_object="_main"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.SConf" called_object="SetCacheMode" source_fromlineno="856" source_scope="function" source_object="_main"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.SConf" called_object="SetProgressDisplay" source_fromlineno="857" source_scope="function" source_object="_main"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.SConf" called_object="CreateConfigHBuilder" source_fromlineno="947" source_scope="function" source_object="_main"/>
+    </Dependency>
+    <Dependency dep="SCons.Script,SCons.Node.FS">
+      <Call source_module="SCons.Script.SConsOptions" target_module="SCons.Node.FS" called_object="set_duplicate" source_fromlineno="160" source_scope="class_method" source_object="SConsValues.set_option"/>
+      <Call source_module="SCons.Script.SConsOptions" target_module="SCons.Node.FS" called_object="set_diskcheck" source_fromlineno="170" source_scope="class_method" source_object="SConsValues.set_option"/>
+      <Call source_module="SCons.Script.SConsOptions" target_module="SCons.Node.FS" called_object="set_duplicate" source_fromlineno="649" source_scope="function" source_object="opt_duplicate"/>
+    </Dependency>
+    <Dependency dep="SCons.Builder,SCons.Util">
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="splitext" source_fromlineno="125" source_scope="function" source_object="match_splitext"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="Selector.__init__" source_fromlineno="135" source_scope="class_method" source_object="DictCmdGenerator.__init__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="Selector.__call__" source_fromlineno="169" source_scope="class_method" source_object="DictCmdGenerator.__call__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="Selector.__call__" source_fromlineno="181" source_scope="class_method" source_object="CallableSelector.__call__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="Selector.__call__" source_fromlineno="195" source_scope="class_method" source_object="DictEmitter.__call__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="252" source_scope="function" source_object="Builder"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_String" source_fromlineno="261" source_scope="function" source_object="Builder"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="get_environment_var" source_fromlineno="266" source_scope="function" source_object="Builder"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="270" source_scope="function" source_object="Builder"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_List" source_fromlineno="272" source_scope="function" source_object="Builder"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="to_String" source_fromlineno="329" source_scope="class_method" source_object="EmitterProxy.__init__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_String" source_fromlineno="337" source_scope="class_method" source_object="EmitterProxy.__call__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_List" source_fromlineno="341" source_scope="class_method" source_object="EmitterProxy.__call__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="383" source_scope="class_method" source_object="BuilderBase.__init__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="386" source_scope="class_method" source_object="BuilderBase.__init__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_List" source_fromlineno="425" source_scope="class_method" source_object="BuilderBase.__init__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_List" source_fromlineno="465" source_scope="class_method" source_object="BuilderBase._adjustixes"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_String" source_fromlineno="469" source_scope="class_method" source_object="BuilderBase._adjustixes"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="adjustixes" source_fromlineno="470" source_scope="class_method" source_object="BuilderBase._adjustixes"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_String" source_fromlineno="617" source_scope="function" source_object="prependDirIfRelative"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_List" source_fromlineno="620" source_scope="class_method" source_object="BuilderBase.__call__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_List" source_fromlineno="659" source_scope="class_method" source_object="BuilderBase.set_src_suffix"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="flatten" source_fromlineno="731" source_scope="class_method" source_object="BuilderBase.src_builder_sources"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_String" source_fromlineno="732" source_scope="class_method" source_object="BuilderBase.src_builder_sources"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="is_String" source_fromlineno="786" source_scope="class_method" source_object="BuilderBase.get_src_builders"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="Proxy.__init__" source_fromlineno="851" source_scope="class_method" source_object="CompositeBuilder.__init__"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Util" called_object="Delegate" source_fromlineno="857" source_scope="class" source_object="CompositeBuilder"/>
+    </Dependency>
+    <Dependency dep="SCons.SConf,SCons.Job">
+      <Call source_module="SCons.SConf" target_module="SCons.Job" called_object="Jobs" source_fromlineno="495" source_scope="class_method" source_object="SConfBase.BuildNodes"/>
+    </Dependency>
+    <Dependency dep="SCons.Node.FS,SCons.Util">
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="Delegate" source_fromlineno="410" source_scope="class" source_object="EntryProxy"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="splitext" source_fromlineno="419" source_scope="class_method" source_object="EntryProxy.__get_filebase"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="splitext" source_fromlineno="424" source_scope="class_method" source_object="EntryProxy.__get_suffix"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="splitext" source_fromlineno="435" source_scope="class_method" source_object="EntryProxy.__get_base_path"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="Proxy.__getattr__" source_fromlineno="499" source_scope="class_method" source_object="EntryProxy.__getattr__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="silent_intern" source_fromlineno="536" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="silent_intern" source_fromlineno="537" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="splitext" source_fromlineno="537" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="silent_intern" source_fromlineno="542" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="silent_intern" source_fromlineno="543" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="silent_intern" source_fromlineno="545" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="silent_intern" source_fromlineno="547" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="silent_intern" source_fromlineno="549" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="silent_intern" source_fromlineno="551" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="MD5signature" source_fromlineno="1641" source_scope="class_method" source_object="Dir.get_csig"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="MD5signature" source_fromlineno="2299" source_scope="class_method" source_object="File.get_content_hash"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="MD5filesignature" source_fromlineno="2302" source_scope="class_method" source_object="File.get_content_hash"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="MD5signature" source_fromlineno="2785" source_scope="class_method" source_object="File.get_csig"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="MD5filesignature" source_fromlineno="2926" source_scope="class_method" source_object="File.get_cachedir_csig"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="MD5signature" source_fromlineno="2945" source_scope="class_method" source_object="File.get_cachedir_bsig"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="MD5collect" source_fromlineno="2947" source_scope="class_method" source_object="File.get_cachedir_bsig"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="is_String" source_fromlineno="3040" source_scope="class_method" source_object="FileFinder.find_file"/>
+      <Call source_module="SCons.Node.FS" target_module="SCons.Util" called_object="is_List" source_fromlineno="3122" source_scope="function" source_object="invalidate_node_memos"/>
+    </Dependency>
+    <Dependency dep="SCons.Script,SCons.Util">
+      <Call source_module="SCons.Script.Main" target_module="SCons.Util" called_object="is_List" source_fromlineno="108" source_scope="class_method" source_object="Progressor.__init__"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Util" called_object="is_List" source_fromlineno="261" source_scope="class_method" source_object="BuildTask.failed"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Util" called_object="print_tree" source_fromlineno="415" source_scope="class_method" source_object="TreePrinter.display"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Util" called_object="Unbuffered" source_fromlineno="894" source_scope="function" source_object="_main"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Util" called_object="Unbuffered" source_fromlineno="896" source_scope="function" source_object="_main"/>
+    </Dependency>
+    <Dependency dep="SCons.Builder,SCons.Action">
+      <Call source_module="SCons.Builder" target_module="SCons.Action" called_object="CommandGeneratorAction" source_fromlineno="246" source_scope="function" source_object="Builder"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Action" called_object="CommandGeneratorAction" source_fromlineno="254" source_scope="function" source_object="Builder"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Action" called_object="Action" source_fromlineno="257" source_scope="function" source_object="Builder"/>
+    </Dependency>
+    <Dependency dep="SCons.Script,SCons.Variables">
+      <Call source_module="SCons.Script" target_module="SCons.Variables" called_object="Variables" source_fromlineno="274" source_scope="function" source_object="Variables"/>
+    </Dependency>
+    <Dependency dep="SCons.SConf,SCons.Builder">
+      <Call source_module="SCons.SConf" target_module="SCons.Builder" called_object="Builder" source_fromlineno="119" source_scope="function" source_object="CreateConfigHBuilder"/>
+      <Call source_module="SCons.SConf" target_module="SCons.Builder" called_object="Builder" source_fromlineno="588" source_scope="class_method" source_object="SConfBase.TryAction"/>
+      <Call source_module="SCons.SConf" target_module="SCons.Builder" called_object="Builder" source_fromlineno="707" source_scope="class_method" source_object="SConfBase._startup"/>
+    </Dependency>
+    <Dependency dep="SCons.Scanner,SCons.Util">
+      <Call source_module="SCons.Scanner" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="57" source_scope="function" source_object="Scanner"/>
+      <Call source_module="SCons.Scanner" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="172" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Scanner" target_module="SCons.Util" called_object="is_String" source_fromlineno="242" source_scope="class_method" source_object="Base.get_skeys"/>
+      <Call source_module="SCons.Scanner" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="247" source_scope="class_method" source_object="Base.select"/>
+      <Call source_module="SCons.Scanner" target_module="SCons.Util" called_object="silent_intern" source_fromlineno="403" source_scope="class_method" source_object="ClassicCPP.find_include"/>
+      <Call source_module="SCons.Scanner.Fortran" target_module="SCons.Util" called_object="unique" source_fromlineno="102" source_scope="class_method" source_object="F90Scanner.scan"/>
+      <Call source_module="SCons.Scanner.C" target_module="SCons.Util" called_object="UniqueList" source_fromlineno="50" source_scope="class_method" source_object="SConsCPPScanner.initialize_result"/>
+      <Call source_module="SCons.Scanner.C" target_module="SCons.Util" called_object="is_Sequence" source_fromlineno="72" source_scope="function" source_object="dictify_CPPDEFINES"/>
+      <Call source_module="SCons.Scanner.C" target_module="SCons.Util" called_object="is_Sequence" source_fromlineno="75" source_scope="function" source_object="dictify_CPPDEFINES"/>
+      <Call source_module="SCons.Scanner.C" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="80" source_scope="function" source_object="dictify_CPPDEFINES"/>
+      <Call source_module="SCons.Scanner.Prog" target_module="SCons.Util" called_object="is_String" source_fromlineno="53" source_scope="function" source_object="scan"/>
+      <Call source_module="SCons.Scanner.Prog" target_module="SCons.Util" called_object="flatten" source_fromlineno="56" source_scope="function" source_object="scan"/>
+      <Call source_module="SCons.Scanner.Prog" target_module="SCons.Util" called_object="is_List" source_fromlineno="60" source_scope="function" source_object="scan"/>
+      <Call source_module="SCons.Scanner.Prog" target_module="SCons.Util" called_object="is_List" source_fromlineno="67" source_scope="function" source_object="scan"/>
+      <Call source_module="SCons.Scanner.Prog" target_module="SCons.Util" called_object="is_String" source_fromlineno="85" source_scope="function" source_object="scan"/>
+      <Call source_module="SCons.Scanner.LaTeX" target_module="SCons.Util" called_object="is_List" source_fromlineno="59" source_scope="function" source_object="modify_env_var"/>
+      <Call source_module="SCons.Scanner.LaTeX" target_module="SCons.Util" called_object="is_List" source_fromlineno="71" source_scope="function" source_object="modify_env_var"/>
+      <Call source_module="SCons.Scanner.LaTeX" target_module="SCons.Util" called_object="unique" source_fromlineno="162" source_scope="class" source_object="LaTeX"/>
+    </Dependency>
+    <Dependency dep="SCons.SConf,SCons.Util">
+      <Call source_module="SCons.SConf" target_module="SCons.Util" called_object="is_List" source_fromlineno="566" source_scope="class_method" source_object="SConfBase.TryBuild"/>
+      <Call source_module="SCons.SConf" target_module="SCons.Util" called_object="Unbuffered" source_fromlineno="690" source_scope="class_method" source_object="SConfBase._startup"/>
+      <Call source_module="SCons.SConf" target_module="SCons.Util" called_object="Null" source_fromlineno="886" source_scope="function" source_object="SConf"/>
+      <Call source_module="SCons.SConf" target_module="SCons.Util" called_object="is_List" source_fromlineno="917" source_scope="function" source_object="createIncludesFromHeaders"/>
+      <Call source_module="SCons.SConf" target_module="SCons.Util" called_object="is_List" source_fromlineno="991" source_scope="function" source_object="CheckLib"/>
+      <Call source_module="SCons.SConf" target_module="SCons.Util" called_object="is_List" source_fromlineno="1018" source_scope="function" source_object="CheckLibWithHeader"/>
+    </Dependency>
+    <Dependency dep="SCons.Builder,SCons.Executor">
+      <Call source_module="SCons.Builder" target_module="SCons.Executor" called_object="GetBatchExecutor" source_fromlineno="581" source_scope="class_method" source_object="BuilderBase._execute"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Executor" called_object="Executor" source_fromlineno="588" source_scope="class_method" source_object="BuilderBase._execute"/>
+      <Call source_module="SCons.Builder" target_module="SCons.Executor" called_object="AddBatchExecutor" source_fromlineno="591" source_scope="class_method" source_object="BuilderBase._execute"/>
+    </Dependency>
+    <Dependency dep="SCons.Environment,SCons.SConf">
+      <Call source_module="SCons.Environment" target_module="SCons.SConf" called_object="SConf" source_fromlineno="1852" source_scope="class_method" source_object="Base.Configure"/>
+    </Dependency>
+    <Dependency dep="SCons.Environment,SCons.Builder">
+      <Call source_module="SCons.Environment" target_module="SCons.Builder" called_object="is_a_Builder" source_fromlineno="154" source_scope="function" source_object="_set_BUILDERS"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Builder" called_object="Builder" source_fromlineno="1784" source_scope="class_method" source_object="Base.Alias"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Builder" called_object="Builder" source_fromlineno="1801" source_scope="class_method" source_object="Base.Alias"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Builder" called_object="Builder" source_fromlineno="1824" source_scope="class_method" source_object="Base.Builder"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Builder" called_object="Builder" source_fromlineno="1867" source_scope="class_method" source_object="Base.Command"/>
+    </Dependency>
+    <Dependency dep="SCons.Environment,SCons.Action">
+      <Call source_module="SCons.Environment" target_module="SCons.Action" called_object="_subproc" source_fromlineno="587" source_scope="class_method" source_object="SubstitutionEnvironment.backtick"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Action" called_object="Action" source_fromlineno="1731" source_scope="class_method" source_object="Base.Action"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Action" called_object="Action" source_fromlineno="1735" source_scope="class_method" source_object="Base.AddPreAction"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Action" called_object="Action" source_fromlineno="1745" source_scope="class_method" source_object="Base.AddPostAction"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Action" called_object="Action" source_fromlineno="1779" source_scope="class_method" source_object="Base.Alias"/>
+    </Dependency>
+    <Dependency dep="SCons.Script,SCons.Job">
+      <Call source_module="SCons.Script.Main" target_module="SCons.Job" called_object="Jobs" source_fromlineno="1171" source_scope="function" source_object="_build_targets"/>
+    </Dependency>
+    <Dependency dep="SCons.Script,SCons.Taskmaster">
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.prepare" source_fromlineno="167" source_scope="class_method" source_object="BuildTask.prepare"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.needs_execute" source_fromlineno="170" source_scope="class_method" source_object="BuildTask.needs_execute"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.execute" source_fromlineno="182" source_scope="class_method" source_object="BuildTask.execute"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.executed" source_fromlineno="196" source_scope="class_method" source_object="BuildTask.do_failed"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.fail_continue" source_fromlineno="198" source_scope="class_method" source_object="BuildTask.do_failed"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.fail_stop" source_fromlineno="202" source_scope="class_method" source_object="BuildTask.do_failed"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.executed" source_fromlineno="227" source_scope="class_method" source_object="BuildTask.executed"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.executed" source_fromlineno="229" source_scope="class_method" source_object="BuildTask.executed"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.postprocess" source_fromlineno="294" source_scope="class_method" source_object="BuildTask.postprocess"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="OutOfDateTask.make_ready" source_fromlineno="298" source_scope="class_method" source_object="BuildTask.make_ready"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="Taskmaster" source_fromlineno="1163" source_scope="function" source_object="_build_targets"/>
+      <Call source_module="SCons.Script.Main" target_module="SCons.Taskmaster" called_object="dump_stats" source_fromlineno="1326" source_scope="function" source_object="main"/>
+    </Dependency>
+    <Dependency dep="SCons.SConf,SCons.Taskmaster">
+      <Call source_module="SCons.SConf" target_module="SCons.Taskmaster" called_object="Task.failed" source_fromlineno="244" source_scope="class_method" source_object="SConfBuildTask.failed"/>
+      <Call source_module="SCons.SConf" target_module="SCons.Taskmaster" called_object="Taskmaster" source_fromlineno="493" source_scope="class_method" source_object="SConfBase.BuildNodes"/>
+    </Dependency>
+    <Dependency dep="SCons.SConf,SCons.Node.FS">
+      <Call source_module="SCons.SConf" target_module="SCons.Node.FS" called_object="FS" source_fromlineno="395" source_scope="class_method" source_object="SConfBase.__init__"/>
+    </Dependency>
+    <Dependency dep="SCons.Variables,SCons.Environment">
+      <Call source_module="SCons.Variables" target_module="SCons.Environment" called_object="is_valid_construction_var" source_fromlineno="127" source_scope="class_method" source_object="Variables.Add"/>
+    </Dependency>
+    <Dependency dep="SCons.SConf,SCons.Action">
+      <Call source_module="SCons.SConf" target_module="SCons.Action" called_object="Action" source_fromlineno="117" source_scope="function" source_object="CreateConfigHBuilder"/>
+      <Call source_module="SCons.SConf" target_module="SCons.Action" called_object="Action" source_fromlineno="705" source_scope="class_method" source_object="SConfBase._startup"/>
+    </Dependency>
+    <Dependency dep="SCons.Environment,SCons.Util">
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="100" source_scope="function" source_object="apply_tools"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="254" source_scope="class_method" source_object="BuilderWrapper.__call__"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="256" source_scope="class_method" source_object="BuilderWrapper.__call__"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="flatten" source_fromlineno="458" source_scope="class_method" source_object="SubstitutionEnvironment.arg2nodes"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="462" source_scope="class_method" source_object="SubstitutionEnvironment.arg2nodes"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="469" source_scope="class_method" source_object="SubstitutionEnvironment.arg2nodes"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="475" source_scope="class_method" source_object="SubstitutionEnvironment.arg2nodes"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="483" source_scope="class_method" source_object="SubstitutionEnvironment.arg2nodes"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="519" source_scope="class_method" source_object="SubstitutionEnvironment.subst_kw"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="538" source_scope="class_method" source_object="SubstitutionEnvironment.subst_path"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="to_String_for_subst" source_fromlineno="551" source_scope="function" source_object="s"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="558" source_scope="class_method" source_object="SubstitutionEnvironment.subst_path"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="560" source_scope="class_method" source_object="SubstitutionEnvironment.subst_path"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="585" source_scope="class_method" source_object="SubstitutionEnvironment.backtick"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="CLVar" source_fromlineno="649" source_scope="class_method" source_object="SubstitutionEnvironment.ParseFlags"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="CLVar" source_fromlineno="650" source_scope="class_method" source_object="SubstitutionEnvironment.ParseFlags"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="CLVar" source_fromlineno="651" source_scope="class_method" source_object="SubstitutionEnvironment.ParseFlags"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="CLVar" source_fromlineno="653" source_scope="class_method" source_object="SubstitutionEnvironment.ParseFlags"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="CLVar" source_fromlineno="655" source_scope="class_method" source_object="SubstitutionEnvironment.ParseFlags"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="CLVar" source_fromlineno="656" source_scope="class_method" source_object="SubstitutionEnvironment.ParseFlags"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="CLVar" source_fromlineno="659" source_scope="class_method" source_object="SubstitutionEnvironment.ParseFlags"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="668" source_scope="function" source_object="do_parse"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="801" source_scope="class_method" source_object="SubstitutionEnvironment.MergeFlags"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="949" source_scope="class_method" source_object="Base.__init__"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1078" source_scope="class_method" source_object="Base._gsm"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1190" source_scope="class_method" source_object="Base.Append"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="1197" source_scope="class_method" source_object="Base.Append"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="1207" source_scope="class_method" source_object="Base._canonicalize"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="AppendPath" source_fromlineno="1229" source_scope="class_method" source_object="Base.AppendENVPath"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1245" source_scope="class_method" source_object="Base.AppendUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="1249" source_scope="class_method" source_object="Base.AppendUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="1250" source_scope="class_method" source_object="Base.AppendUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1252" source_scope="class_method" source_object="Base.AppendUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1254" source_scope="class_method" source_object="Base.AppendUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1263" source_scope="class_method" source_object="Base.AppendUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1392" source_scope="class_method" source_object="Base.Detect"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1457" source_scope="class_method" source_object="Base.ParseConfig"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="LogicalLines(fp).readlines" source_fromlineno="1479" source_scope="class_method" source_object="Base.ParseDepends"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="LogicalLines" source_fromlineno="1479" source_scope="class_method" source_object="Base.ParseDepends"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1557" source_scope="class_method" source_object="Base.Prepend"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="1564" source_scope="class_method" source_object="Base.Prepend"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="PrependPath" source_fromlineno="1587" source_scope="class_method" source_object="Base.PrependENVPath"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1603" source_scope="class_method" source_object="Base.PrependUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="1607" source_scope="class_method" source_object="Base.PrependUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Dict" source_fromlineno="1608" source_scope="class_method" source_object="Base.PrependUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1610" source_scope="class_method" source_object="Base.PrependUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1612" source_scope="class_method" source_object="Base.PrependUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1621" source_scope="class_method" source_object="Base.PrependUnique"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="1686" source_scope="class_method" source_object="Base.Tool"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="1702" source_scope="class_method" source_object="Base.WhereIs"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="1709" source_scope="class_method" source_object="Base.WhereIs"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="WhereIs" source_fromlineno="1712" source_scope="class_method" source_object="Base.WhereIs"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="1726" source_scope="function" source_object="subst_string"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1755" source_scope="class_method" source_object="Base.Alias"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Sequence" source_fromlineno="1882" source_scope="class_method" source_object="Base.Dir"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Sequence" source_fromlineno="1911" source_scope="class_method" source_object="Base.Entry"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_Sequence" source_fromlineno="1939" source_scope="class_method" source_object="Base.File"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="flatten" source_fromlineno="1952" source_scope="class_method" source_object="Base.Flatten"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="1956" source_scope="class_method" source_object="Base.GetBuildPath"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="2012" source_scope="class_method" source_object="Base.Scanner"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_List" source_fromlineno="2085" source_scope="class_method" source_object="Base.Split"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="is_String" source_fromlineno="2087" source_scope="class_method" source_object="Base.Split"/>
+      <Call source_module="SCons.Environment" target_module="SCons.Util" called_object="uniquer_hashables" source_fromlineno="2156" source_scope="class_method" source_object="Base.FindInstalledFiles"/>
+    </Dependency>
+    <Dependency dep="SCons.Scanner,SCons.Node.FS">
+      <Call source_module="SCons.Scanner" target_module="SCons.Node.FS" called_object="find_file" source_fromlineno="344" source_scope="class_method" source_object="Classic.find_include"/>
+      <Call source_module="SCons.Scanner" target_module="SCons.Node.FS" called_object="_my_normcase" source_fromlineno="348" source_scope="class_method" source_object="Classic.sort_key"/>
+      <Call source_module="SCons.Scanner" target_module="SCons.Node.FS" called_object="find_file" source_fromlineno="401" source_scope="class_method" source_object="ClassicCPP.find_include"/>
+      <Call source_module="SCons.Scanner" target_module="SCons.Node.FS" called_object="_my_normcase" source_fromlineno="407" source_scope="class_method" source_object="ClassicCPP.sort_key"/>
+      <Call source_module="SCons.Scanner.C" target_module="SCons.Node.FS" called_object="find_file" source_fromlineno="55" source_scope="class_method" source_object="SConsCPPScanner.find_include_file"/>
+    </Dependency>
+  </Reflexion_model>
+</SCons>

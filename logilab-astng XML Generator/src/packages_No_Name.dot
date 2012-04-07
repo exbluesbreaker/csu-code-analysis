@@ -1,9 +1,0 @@
-digraph "packages_No_Name" {
-charset="utf-8"
-rankdir=BT
-"3" [shape="box", label="simple"];
-"4" [shape="box", label="simple.pack.module1"];
-"5" [shape="box", label="simple.pack"];
-"6" [shape="box", label="simple.simple"];
-"6" -> "4" [arrowtail="none", arrowhead="open"];
-}
