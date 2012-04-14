@@ -33,7 +33,7 @@ class ReflexionModelRunner(ConfigurationMixIn):
         rm_linker.compute_rm()
         rm_linker.write_rm_to_png("SCons")
         xml_writer = SourceModelXMLGenerator()
-        xml_root = xml_writer.generate("SCons", rm_linker._sm_call_deps)
+        xml_root = xml_writer.generate("SCons", rm_linker.sm_call_deps,rm_linker.ignored_modules)
         xml_writer.write_to_file("SCons_sm.xml")
         dot_writer = HighLevelModelDotGenerator()
         graph = dot_writer.generate(mapping, hm_model)
