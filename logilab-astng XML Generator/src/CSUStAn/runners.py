@@ -28,7 +28,7 @@ class ReflexionModelRunner(ConfigurationMixIn):
         project = self.manager.project_from_files([project_name], astng_wrapper)
         self.project = project 
         linker = NamesCheckLinker(project, tag=True)
-        linker.visit(project)
+        linker.link_imports(project)
         rm_linker = ReflexionModelVisitor(project,mapping,hm_model)
         rm_linker.compute_rm()
         rm_linker.write_rm_to_png("SCons")
