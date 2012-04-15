@@ -4,6 +4,147 @@ Created on 02.04.2012
 @author: bluesbreaker
 '''
 
+from logilab.astng.node_classes import *
+from logilab.astng.scoped_nodes import *
+from logilab.astng.manager import Project
+from logilab.common.modutils import file_from_modpath, get_module_part, is_relative, is_standard_module
+from logilab.astng.inspector import Linker
+from distutils.sysconfig import get_config_var, get_python_version
+from os.path import join, abspath, dirname
+from lxml import etree
+
+
+
+STD_LIB_DIR = join(get_config_var("LIBDIR"), "python%s" % get_python_version())
+
+
+'''Collect some info about importss'''
+class NamesCheckLinker(Linker):
+    '''From and Import will have full_modname field, if it is in-project import'''
+    bad_from_imports = 0
+    bad_imports = 0
+    good_imports = 0
+    '''Number of from m import *'''
+    from_allimports = 0
+    '''Number of from m import name'''
+    from_imports = 0
+    '''From imports of module'''
+    from_modname_imports = 0
+    ''' Changed version of similiar function logilab.common.modutils.is_standard_module'''
+    def is_standard_module(self,modname, std_path=(STD_LIB_DIR,)):
+        """try to guess if a module is a standard python module (by default,
+        see `std_path` parameter's description)
+        :type modname: str
+        :param modname: name of the module we are interested in
+        
+        :type std_path: list(str) or tuple(str)
+        :param std_path: list of path considered has standard
+        
+        :rtype: bool
+        :return:
+        true if the module:
+        - is located on the path listed in one of the directory in `std_path`
+        - is a built-in module"""
+        modname = modname.split('.')[0]
+        try:
+            filename = file_from_modpath([modname])
+        except ImportError, ex:
+            # import failed, i'm probably not so wrong by supposing it's
+            # not standard...
+            print "Unresolved Import, module name - ", modname
+            self.bad_imports += 1
+            return 0
+        # modules which are not living in a file are considered standard
+        # (sys and __builtin__ for instance)
+        self.good_imports += 1
+        if filename is None:
+            return 1
+        filename = abspath(filename)
+        for path in std_path:
+            path = abspath(path)
+            if filename.startswith(path):
+                pfx_len = len(path)
+                if filename[pfx_len + 1:pfx_len + 14] != 'site-packages':
+                    return 1
+                return 0
+        return False
+
+
+
+    def _imported_module(self, node, mod_path, relative):
+        """notify an imported module, used to analyze dependencies
+        """
+        module = node.root()
+        context_name = module.name
+        if relative:
+            mod_path = '%s.%s' % ('.'.join(context_name.split('.')[:-1]),
+                                  mod_path)
+        '''Save fullname for target module'''
+        node.full_modname = mod_path
+        if self.compute_module(context_name, mod_path):
+            # handle dependencies
+            if not hasattr(module, 'depends'):
+                module.depends = []
+            mod_paths = module.depends
+            if not mod_path in mod_paths:
+                mod_paths.append(mod_path)
+    
+    def link_imports(self,root_astng):
+        if(isinstance(root_astng, Import)):
+            self.visit_import(root_astng)
+        elif(isinstance(root_astng, From)):
+            self.visit_from(root_astng)
+        elif(isinstance(root_astng, Module)):
+            self.visit_module(root_astng)
+        elif(isinstance(root_astng, Class)):
+            self.visit_class(root_astng)
+        for child in root_astng.get_children():
+            self.link_imports(child)
+        
+    
+    def visit_from(self, node):
+        """visit an astng.From node
+        
+        resolve module dependencies
+        """
+        basename = node.modname
+        context_file = node.root().file
+        if context_file is not None:
+            relative = is_relative(basename, context_file)
+        else:
+            relative = False
+        for name in node.names:
+            if name[0] == '*':
+                fullname = basename
+            else:
+                fullname = '%s.%s' % (basename, name[0])
+                if fullname.find('.') > -1:
+                    try:
+                        # XXX: don't use get_module_part, missing package precedence
+                        mod_fullname = get_module_part(fullname,context_file)
+                        if(mod_fullname == fullname):
+                            self.from_modname_imports+=1;
+                            node.modname_import = True;
+                        fullname = mod_fullname
+                    except ImportError:
+                        print "Unresolved From -", node.as_string(),"File -",node.root().name,"Lineno - ",node.fromlineno 
+                        self.bad_from_imports+=1
+                        continue
+            self._imported_module(node, fullname, relative)
+    '''Not changed'''
+    def compute_module(self, context_name, mod_path):
+        """return true if the module should be added to dependencies"""
+        package_dir = dirname(self.project.path)
+        if context_name == mod_path:
+            return 0
+        elif is_standard_module(mod_path, (package_dir,)):
+            return 1
+        return 0
+
+''' Check names in project, trying to resolve it and summarizing information'''
+class NamesChecker():
+    pass
+
 def make_tree(root_xml,root_astng):
     ''' Create tag with name of node class'''
     current_xml_node = etree.Element(root_astng.__class__.__name__)
