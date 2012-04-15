@@ -95,7 +95,7 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
                 graph.add_edge(pydot.Edge(node_dict[div_source], node_dict[div_target],color='blue'))
             for absc_source,absc_target in self.reflexion_model['abscences']:
                 graph.add_edge(pydot.Edge(node_dict[absc_source], node_dict[absc_target],color='red'))
-            graph.write_png(name+'reflexion_model.png')
+            graph.write_png(name+'_reflexion_model.png')
         
     
     def visit(self, node):
