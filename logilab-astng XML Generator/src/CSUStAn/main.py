@@ -64,7 +64,10 @@ mapping = ['SCons.Job',
                    'SCons.Util',
                    'SCons.Variables',
                    'SCons.Environment',
-                   'SCons.Executor']
+                   'SCons.Executor',
+                   'SCons.Tool.packaging',
+                   'SCons.Tool',
+                   'SCons.Platform']
 hm_model = [('SCons.Script', 'SCons.Taskmaster'),
                     ('SCons.Taskmaster', 'SCons.SConf'),
                     ('SCons.Taskmaster', 'SCons.Builder'),
