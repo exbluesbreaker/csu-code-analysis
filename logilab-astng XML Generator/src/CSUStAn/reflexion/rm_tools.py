@@ -10,6 +10,7 @@ from logilab.astng.scoped_nodes import Module, Class, Function
 from logilab.astng.utils import LocalsVisitor
 from CSUStAn.Exceptions import CSUStAnException
 import pydot
+import re
 from lxml import etree
 
 class RMHandler(object):
@@ -23,8 +24,8 @@ class RMHandler(object):
     value for this key contains list of actual calls tuples
     tuple contains concrete data about call, which may be interesting'''
     sm_call_deps = {}
-    '''Some data for compute mapping'''
-    _mapping = None
+    ''' Mapping handler'''
+    _mapper = None
     '''High-level model for reflexion model'''
     _hm_model = None
     '''Reflexion model dictionary 
@@ -53,9 +54,9 @@ class RMHandler(object):
                 self.reflexion_model['abscences'].append(relation)
                 
     
-    def __init__(self,project,mapping,hm_model):
+    def __init__(self,project,mapper,hm_model):
         self._project = project
-        self._mapping = mapping
+        self._mapper = mapper
         self._hm_model = hm_model
         
 class ReflexionModelVisitor(LocalsVisitor,RMHandler):
@@ -64,18 +65,12 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
     """List of modules, which have ignored, according to given mapping"""
     ignored_modules = []
     
-    def __init__(self,project,mapping,hm_model):
+    def __init__(self,project,mapper,hm_model):
         LocalsVisitor.__init__(self)
-        RMHandler.__init__(self,project,mapping,hm_model)
+        RMHandler.__init__(self,project,mapper,hm_model)
         
     def _get_hm_module(self,source_module):
-        for module in self._mapping:
-            try:
-                if(source_module.index(module)==0):
-                    return module
-            except ValueError:
-                continue
-        return None
+        return self._mapper.map(source_module)
     
     def extract_sm(self):
         '''Extract source model'''
@@ -85,7 +80,7 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
         if(self.reflexion_model is not None):
             graph = pydot.Dot(graph_type='digraph')
             node_dict = {}
-            for node in self._mapping:
+            for node in self._mapper.get_hm_entities():
                 dot_node = pydot.Node(node)
                 graph.add_node(dot_node)
                 node_dict[node] = dot_node
@@ -252,7 +247,40 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
                     self.sm_call_deps[(source_hm,target_hm)].append((node.root().name,target_module,call_in_module,node.fromlineno,source_scope,source_object))
                 else:
                     self.sm_call_deps[(source_hm,target_hm)] = [(node.root().name,target_module,call_in_module,node.fromlineno,source_scope,source_object)]
-                    
+
+class RMMapper():
+    """Return high-level entity for given source entity"""
+    _mapping = None
+    def map(self,sorce_entity):
+        pass
+    """Return high-level entities"""
+    def get_hm_entities(self):
+        pass
+    
+class RegexMapper(RMMapper):
+    """Use regular expressions based mapping"""
+    """Regex must be passed as unicode string, simple string - for direct mapping"""
+    """Mapping example:
+            {'A': ['Package1.module1', 'Package1.module2']
+             'B':[u'Package1\.pack2.*']} """
+    def __init__(self,**kwargs):
+        for key in kwargs:
+            if(key=='mapping'):
+                if(not isinstance(kwargs[key],dict)):
+                    raise TypeError('Mapping must be dictionary!')
+                self._mapping = kwargs[key]
+    def map(self,source_entity):
+        for rule in self._mapping:
+            for regex in self._mapping[rule]:
+                if(isinstance(regex, unicode)):
+                    if(re.match(regex, source_entity) is not None):
+                        return rule
+                else:
+                    if(regex == source_entity):
+                        return rule
+        return None
+    def get_hm_entities(self):
+        return self._mapping.keys()
                                  
 class SourceModelXMLGenerator():
     """Generate Calls XML  for given source model"""

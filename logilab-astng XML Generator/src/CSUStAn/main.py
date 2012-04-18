@@ -7,6 +7,7 @@ Created on 19.08.2011
 
 import importlib
 from CSUStAn.runners import ReflexionModelRunner
+from CSUStAn.reflexion.rm_tools import RegexMapper
 
 if __name__ == '__main__':
     pass
@@ -53,21 +54,21 @@ def compare_namespaces(module_node):
 
 
     
-mapping = ['SCons.Job',
-                   'SCons.Node.FS',
-                   'SCons.Action',
-                   'SCons.Builder',
-                   'SCons.SConf',
-                   'SCons.Scanner',
-                   'SCons.Script',
-                   'SCons.Taskmaster',
-                   'SCons.Util',
-                   'SCons.Variables',
-                   'SCons.Environment',
-                   'SCons.Executor',
-                   'SCons.Tool.packaging',
-                   'SCons.Tool',
-                   'SCons.Platform']
+scons_map = {'SCons.Job':['SCons.Job'],
+                   'SCons.Node.FS':['SCons.Node.FS'],
+                   'SCons.Action':['SCons.Action'],
+                   'SCons.Builder':['SCons.Builder'],
+                   'SCons.SConf':['SCons.SConf'],
+                   'SCons.Scanner':[u'SCons\.Scanner.*'],
+                   'SCons.Script':[u'SCons\.Script.*'],
+                   'SCons.Taskmaster':['SCons.Taskmaster'],
+                   'SCons.Util':['SCons.Util'],
+                   'SCons.Variables':[u'SCons\.Variables.*'],
+                   'SCons.Environment':['SCons.Environment'],
+                   'SCons.Executor':['SCons.Executor'],
+                   'SCons.Tool.packaging':[u'SCons\.Tool\.packaging.*'],
+                   'SCons.Tool':[u'SCons\.Tool(?!\.packaging)'],
+                   'SCons.Platform':[u'SCons\.Platform.*']}
 hm_model = [('SCons.Script', 'SCons.Taskmaster'),
                     ('SCons.Taskmaster', 'SCons.SConf'),
                     ('SCons.Taskmaster', 'SCons.Builder'),
@@ -86,7 +87,8 @@ hm_model = [('SCons.Script', 'SCons.Taskmaster'),
                     ('SCons.Job', 'SCons.Util'),
                     ('SCons.Job', 'SCons.Node.FS')]
 
-pc = ReflexionModelRunner('SCons',hm_model,mapping)
+mapper = RegexMapper(mapping=scons_map)
+pc = ReflexionModelRunner('SCons',hm_model,mapper)
 #pc = ReflexionModelRunner(sys.argv[1:])
 #main_xml_root = etree.Element("PythonSourceTree")
 #ns_xml_root = etree.Element("PythonNamespaces")
