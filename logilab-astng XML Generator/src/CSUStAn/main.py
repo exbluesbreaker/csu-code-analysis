@@ -54,46 +54,95 @@ def compare_namespaces(module_node):
 
 
     
-scons_map = {'SCons.Job':['SCons.Job'],
-                   'SCons.Node.FS':['SCons.Node.FS'],
-                   'SCons.Action':['SCons.Action'],
-                   'SCons.Builder':['SCons.Builder'],
-                   'SCons.SConf':['SCons.SConf'],
-                   'SCons.Scanner':[u'SCons\.Scanner.*'],
-                   'SCons.Script':[u'SCons\.Script.*'],
-                   'SCons.Taskmaster':['SCons.Taskmaster'],
-                   'SCons.Util':['SCons.Util'],
-                   'SCons.Variables':[u'SCons\.Variables.*'],
-                   'SCons.Environment':['SCons.Environment'],
-                   'SCons.Executor':['SCons.Executor'],
-                   'SCons.Tool.packaging':[u'SCons\.Tool\.packaging.*'],
-                   'SCons.Tool':[u'SCons\.Tool(?!\.packaging)'],
-                   'SCons.Platform':[u'SCons\.Platform.*']}
-hm_model = [('SCons.Script', 'SCons.Taskmaster'),
-                    ('SCons.Taskmaster', 'SCons.SConf'),
-                    ('SCons.Taskmaster', 'SCons.Builder'),
-                    ('SCons.SConf', 'SCons.Environment'),
-                    ('SCons.SConf', 'SCons.Util'),
-                    ('SCons.Builder', 'SCons.Executor'),
-                    ('SCons.Builder', 'SCons.Variables'),
-                    ('SCons.Builder', 'SCons.Scanner'),
-                    ('SCons.Builder', 'SCons.Util'),
-                    ('SCons.Builder', 'SCons.Environment'),
-                    ('SCons.Scanner', 'SCons.Action'),
-                    ('SCons.Executor', 'SCons.Action'),
-                    ('SCons.Action', 'SCons.Util'),
-                    ('SCons.Action', 'SCons.Variables'),
-                    ('SCons.Action', 'SCons.Job'),
-                    ('SCons.Job', 'SCons.Util'),
-                    ('SCons.Job', 'SCons.Node.FS')]
+scons_map = {'Job':['SCons.Job'],
+                   'Node.FS':['SCons.Node.FS'],
+                   'Action':['SCons.Action'],
+                   'Builder':['SCons.Builder'],
+                   'SConf':['SCons.SConf'],
+                   'Scanner':[u'SCons\.Scanner.*'],
+                   'Script':[u'SCons\.Script.*'],
+                   'Taskmaster':['SCons.Taskmaster'],
+                   'Util':['SCons.Util'],
+                   'Variables':[u'SCons\.Variables.*'],
+                   'Environment':['SCons.Environment'],
+                   'Executor':['SCons.Executor'],
+                   'Tool.packaging':[u'SCons\.Tool\.packaging.*'],
+                   'Tool':[u'SCons\.Tool(?!\.packaging)'],
+                   'Platform':[u'SCons\.Platform.*']}
+scons_hm_model = [('Script', 'Taskmaster'),
+                    ('Taskmaster', 'SConf'),
+                    ('Taskmaster', 'Builder'),
+                    ('SConf', 'Environment'),
+                    ('SConf', 'Util'),
+                    ('Builder', 'Executor'),
+                    ('Builder', 'Variables'),
+                    ('Builder', 'Scanner'),
+                    ('Builder', 'Util'),
+                    ('Builder', 'Environment'),
+                    ('Scanner', 'Action'),
+                    ('Executor', 'Action'),
+                    ('Action', 'Util'),
+                    ('Action', 'Variables'),
+                    ('Action', 'Job'),
+                    ('Job', 'Util'),
+                    ('Job', 'Node.FS')]
 
-mapper = RegexMapper(mapping=scons_map)
-pc = ReflexionModelRunner('SCons',hm_model,mapper)
-#pc = ReflexionModelRunner(sys.argv[1:])
+logilab_map = {'TreePostProcessing':['logilab.astng.inspector','logilab.astng.inference'],
+               'Manager':['logilab.astng.manager'],
+               'Nodes':[u'logilab\.astng\.node.*','logilab.astng.scoped_nodes','logilab.astng.bases','logilab.astng.mixins'],
+               'PrivateNodes':[u'logilab\.astng\._nodes.*','logilab.astng.patchcomptransformer'],
+               'Builder':[u'logilab\.astng\..*build.*'],
+               'NodesHandling':['logilab.astng.protocols'],
+               'TreesHandling':['logilab.astng.utils','logilab.common.tree','logilab.common.visitor'],
+               'DatabaseHandling':[u'logilab\.common\..*db.*','logilab.common.sqlgen','logilab.common.table'],
+               'Cache':['logilab.common.cache'],
+               'ChangelogHandling':['logilab.common.changelog'],
+               'CommandLineHandling':[u'logilab\.common\.cl.*','logilab.common.optik_ext','logilab.common.optik_ext'],
+               'Configuration':['logilab.common.configuration'],
+               'CORBAUtils':['logilab.common.corbautils'],
+               'Daemon':['logilab.common.daemon'],
+               'Date':['logilab.common.date'],
+               'Debugger':['logilab.common.debugger'],
+               'Decorators':['logilab.common.decorators','logilab.common.deprecation'],
+               'FileUtils':['logilab.common.fileutils'],
+               'Output':['logilab.common.graph','logilab.common.html','logilab.common.pdf_ext','logilab.common.vcgutils'],
+               'Logging':['logilab.common.logging_ext'],
+               'SourceHandling':['logilab.common.interface','logilab.common.modutils'],
+               'Proc':['logilab.common.proc'],
+               'Remote':['logilab.common.pyro_ext','logilab.xmlrpcutils'],
+               'Test':['logilab.common.pytest','logilab.testlib'],
+               'TextProcessing':['logilab.common.textutils'],
+               'Sphinx':['logilab.common.sphinx_ext','logilab.common.sphinxutils'],
+               'Ureports':[u'logilab\.common\.ureports.*']}
+
+logilab_hm_model = [('Manager', 'TreePostProcessing'),
+                    ('Manager', 'Cache'),
+                    ('Manager', 'Configuration'),
+                    ('Manager', 'Output'),
+                    ('Manager', 'Daemon'),
+                    ('Manager', 'CommandLineHandling'),
+                    ('Manager', 'Builder'),
+                    ('Builder', 'TreesHandling'),
+                    ('Builder', 'SourceHandling'),
+                    ('Builder', 'TextProcessing'),
+                    ('TreesHandling', 'NodesHandling'),
+                    ('NodesHandling', 'Nodes'),
+                    ('TreesHandling', 'Nodes'),
+                    ('Nodes', 'PrivateNodes'),
+                    ('Daemon', 'Proc'),
+                    ('Proc', 'Daemon'),
+                    ('Sphinx', 'DatabaseHandling')
+                    ]
+
+scons_mapper = RegexMapper(mapping=scons_map)
+scons_runner = ReflexionModelRunner('SCons',scons_hm_model,scons_mapper)
+logilab_mapper = RegexMapper(mapping=logilab_map)
+scons_runner = ReflexionModelRunner('logilab',logilab_hm_model,logilab_mapper)
+#scons_runner = ReflexionModelRunner(sys.argv[1:])
 #main_xml_root = etree.Element("PythonSourceTree")
 #ns_xml_root = etree.Element("PythonNamespaces")
-#main_prj = pc.project
-#make_tree(main_xml_root,pc.project)
+#main_prj = scons_runner.project
+#make_tree(main_xml_root,scons_runner.project)
 #handle = etree.tostring(main_xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
 #main_file = "./"+sys.argv[-1]+".xml"    
 #applic = open(main_file, "w")

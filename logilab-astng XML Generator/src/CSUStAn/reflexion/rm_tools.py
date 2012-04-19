@@ -23,7 +23,7 @@ class RMHandler(object):
     Key contains (<high-level model source>,<high-level model target>) tuple for call, 
     value for this key contains list of actual calls tuples
     tuple contains concrete data about call, which may be interesting'''
-    sm_call_deps = {}
+    sm_call_deps = None
     ''' Mapping handler'''
     _mapper = None
     '''High-level model for reflexion model'''
@@ -58,6 +58,7 @@ class RMHandler(object):
         self._project = project
         self._mapper = mapper
         self._hm_model = hm_model
+        self.sm_call_deps = {}
         
 class ReflexionModelVisitor(LocalsVisitor,RMHandler):
     """Visit ASTNG project and compute reflexion model for it"""
