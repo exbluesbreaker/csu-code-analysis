@@ -110,7 +110,7 @@ logilab_map = {'TreePostProcessing':['logilab.astng.inspector','logilab.astng.in
                'SourceHandling':['logilab.common.interface','logilab.common.modutils'],
                'Proc':['logilab.common.proc'],
                'Remote':['logilab.common.pyro_ext','logilab.common.xmlrpcutils'],
-               'Test':['logilab.common.pytest','logilab.testlib'],
+               'Test':['logilab.common.pytest','logilab.common.testlib'],
                'TextProcessing':['logilab.common.textutils'],
                'Sphinx':['logilab.common.sphinx_ext','logilab.common.sphinxutils'],
                'Ureports':[u'logilab\.common\.ureports.*']}
