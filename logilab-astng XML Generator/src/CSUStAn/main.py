@@ -97,7 +97,7 @@ logilab_map = {'TreePostProcessing':['logilab.astng.inspector','logilab.astng.in
                'DatabaseHandling':[u'logilab\.common\..*db.*','logilab.common.sqlgen','logilab.common.table'],
                'Cache':['logilab.common.cache'],
                'ChangelogHandling':['logilab.common.changelog'],
-               'CommandLineHandling':[u'logilab\.common\.cl.*','logilab.common.optik_ext','logilab.common.optik_ext'],
+               'CommandLineHandling':[u'logilab\.common\.cl.*','logilab.common.optik_ext','logilab.common.optparser'],
                'Configuration':['logilab.common.configuration'],
                'CORBAUtils':['logilab.common.corbautils'],
                'Daemon':['logilab.common.daemon'],
@@ -109,7 +109,7 @@ logilab_map = {'TreePostProcessing':['logilab.astng.inspector','logilab.astng.in
                'Logging':['logilab.common.logging_ext'],
                'SourceHandling':['logilab.common.interface','logilab.common.modutils'],
                'Proc':['logilab.common.proc'],
-               'Remote':['logilab.common.pyro_ext','logilab.xmlrpcutils'],
+               'Remote':['logilab.common.pyro_ext','logilab.common.xmlrpcutils'],
                'Test':['logilab.common.pytest','logilab.testlib'],
                'TextProcessing':['logilab.common.textutils'],
                'Sphinx':['logilab.common.sphinx_ext','logilab.common.sphinxutils'],
@@ -134,8 +134,8 @@ logilab_hm_model = [('Manager', 'TreePostProcessing'),
                     ('Sphinx', 'DatabaseHandling')
                     ]
 
-scons_mapper = RegexMapper(mapping=scons_map)
-scons_runner = ReflexionModelRunner('SCons',scons_hm_model,scons_mapper)
+#scons_mapper = RegexMapper(mapping=scons_map)
+#scons_runner = ReflexionModelRunner('SCons',scons_hm_model,scons_mapper)
 logilab_mapper = RegexMapper(mapping=logilab_map)
 scons_runner = ReflexionModelRunner('logilab',logilab_hm_model,logilab_mapper)
 #scons_runner = ReflexionModelRunner(sys.argv[1:])
