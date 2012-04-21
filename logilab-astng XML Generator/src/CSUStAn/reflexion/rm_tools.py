@@ -86,9 +86,9 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
                 graph.add_node(dot_node)
                 node_dict[node] = dot_node
             for conv_source,conv_target in self.reflexion_model['convergences'].keys():
-                graph.add_edge(pydot.Edge(node_dict[conv_source], node_dict[conv_target],color='green'))
+                graph.add_edge(pydot.Edge(node_dict[conv_source], node_dict[conv_target],color='green',label=str(len(self.reflexion_model['convergences'][conv_source,conv_target]))))
             for div_source,div_target in self.reflexion_model['divergences'].keys():
-                graph.add_edge(pydot.Edge(node_dict[div_source], node_dict[div_target],color='blue'))
+                graph.add_edge(pydot.Edge(node_dict[div_source], node_dict[div_target],color='blue',label=str(len(self.reflexion_model['divergences'][div_source,div_target]))))
             for absc_source,absc_target in self.reflexion_model['abscences']:
                 graph.add_edge(pydot.Edge(node_dict[absc_source], node_dict[absc_target],color='red'))
             graph.write_png(name+'_reflexion_model.png')
