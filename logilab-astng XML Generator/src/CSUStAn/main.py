@@ -89,8 +89,7 @@ scons_hm_model = [('Script', 'Taskmaster'),
 
 logilab_map = {'TreePostProcessing':['logilab.astng.inspector','logilab.astng.inference'],
                'Manager':['logilab.astng.manager'],
-               'Nodes':[u'logilab\.astng\.node.*','logilab.astng.scoped_nodes','logilab.astng.bases','logilab.astng.mixins'],
-               'PrivateNodes':[u'logilab\.astng\._nodes.*','logilab.astng.patchcomptransformer'],
+               'Nodes':[u'logilab\.astng\..*node.*','logilab.astng.bases','logilab.astng.mixins','logilab.astng.patchcomptransformer'],
                'Builder':[u'logilab\.astng\..*build.*'],
                'NodesHandling':['logilab.astng.protocols'],
                'TreesHandling':['logilab.astng.utils','logilab.common.tree','logilab.common.visitor'],
@@ -116,21 +115,15 @@ logilab_map = {'TreePostProcessing':['logilab.astng.inspector','logilab.astng.in
                'Ureports':[u'logilab\.common\.ureports.*']}
 
 logilab_hm_model = [('Manager', 'TreePostProcessing'),
-                    ('Manager', 'Cache'),
                     ('Manager', 'Configuration'),
                     ('Manager', 'Output'),
                     ('Manager', 'Daemon'),
-                    ('Manager', 'CommandLineHandling'),
                     ('Manager', 'Builder'),
-                    ('Builder', 'TreesHandling'),
+                    ('Builder', 'FileUtils'),
                     ('Builder', 'SourceHandling'),
-                    ('Builder', 'TextProcessing'),
                     ('TreesHandling', 'NodesHandling'),
                     ('NodesHandling', 'Nodes'),
                     ('TreesHandling', 'Nodes'),
-                    ('Nodes', 'PrivateNodes'),
-                    ('Daemon', 'Proc'),
-                    ('Proc', 'Daemon'),
                     ('Sphinx', 'DatabaseHandling')
                     ]
 
