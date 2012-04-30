@@ -82,7 +82,7 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
             graph = pydot.Dot(graph_type='digraph')
             node_dict = {}
             for node in self._mapper.get_hm_entities():
-                dot_node = pydot.Node(node)
+                dot_node = pydot.Node(node, shape='record')
                 graph.add_node(dot_node)
                 node_dict[node] = dot_node
             for conv_source,conv_target in self.reflexion_model['convergences'].keys():
