@@ -127,35 +127,37 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
             '''Now call must be Name node'''
             lookup_result = call.lookup(call.name)
             if(isinstance(lookup_result[0],Module)):
-                '''TODO Local imports!!!!'''
+                '''TODO Local imports(imports in function or class)'''
                 '''Only module-scoped names are interesting
                    Other names are local exactly'''
                 for assign in lookup_result[1]:
                         '''Only imported names are interesting '''
                         if(isinstance(assign,From)):
+                            if(not hasattr(assign, 'full_modnames')):
+                                '''All not in-project imports will be ignored'''
+                                return
+                            full_modname_iter = iter(assign.full_modnames)
                             for name in assign.names:
                                 try:
                                     if(name[1]):
                                         if(expr.index(name[1])==0):
                                             call_in_module = name[0]+expr[len(name[1])+1:]+'.'+attrname
-                                            if(not hasattr(assign, 'full_modname')):
-                                                '''All not in-project imports will be ignored'''
-                                                return
-                                            target_module = assign.full_modname
+                                            target_module = full_modname_iter.next()
                                             break
                                     else:
                                         if(expr.index(name[0])==0):
                                             call_in_module = expr+'.'+attrname
-                                            if(not hasattr(assign, 'full_modname')):
-                                                '''All not in-project imports will be ignored'''
-                                                return
-                                            target_module = assign.full_modname
+                                            target_module = full_modname_iter.next()
                                             break
                                 except ValueError:
                                     continue
                             if(call_in_module is not None):
                                 break
                         elif(isinstance(assign,Import)):
+                            if(not hasattr(assign, 'full_modnames')):
+                                '''All not in-project imports will be ignored'''
+                                return
+                            full_modname_iter = iter(assign.full_modnames)
                             for name in assign.names:
                                 try:
                                     if(name[1]):
@@ -165,10 +167,7 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
                                             if(len(call_in_module)>0):
                                                 call_in_module+='.'
                                             call_in_module+=attrname
-                                            if(not hasattr(assign, 'full_modname')):
-                                                '''All not in-project imports will be ignored'''
-                                                return
-                                            target_module = assign.full_modname
+                                            target_module = full_modname_iter.next()
                                             break
                                     else:
                                         if(expr.index(name[0])==0):
@@ -177,10 +176,7 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
                                             if(len(call_in_module)>0):
                                                 call_in_module+='.'
                                             call_in_module+=attrname
-                                            if(not hasattr(assign, 'full_modname')):
-                                                '''All not in-project imports will be ignored'''
-                                                return
-                                            target_module = assign.full_modname
+                                            target_module = full_modname_iter.next()
                                             break
                                 except ValueError:
                                     continue
@@ -197,23 +193,21 @@ class ReflexionModelVisitor(LocalsVisitor,RMHandler):
                 for assign in lookup_result[1]:
                         '''Only imported names are interesting '''
                         if(isinstance(assign,From)):
+                            if(not hasattr(assign, 'full_modnames')):
+                                '''All not in-project imports will be ignored'''
+                                return
+                            full_modname_iter = iter(assign.full_modnames)
                             for name in assign.names:
                                 try:
                                     if(name[1]):
                                         if(node.func.name == name[1]):
                                             call_in_module = name[0]
-                                            if(not hasattr(assign, 'full_modname')):
-                                                '''All not in-project imports will be ignored'''
-                                                return
-                                            target_module = assign.full_modname
+                                            target_module = full_modname_iter.next()
                                             break
                                     else:
                                         if(node.func.name == name[0]):
                                             call_in_module = name[0]
-                                            if(not hasattr(assign, 'full_modname')):
-                                                '''All not in-project imports will be ignored'''
-                                                return
-                                            target_module = assign.full_modname
+                                            target_module = full_modname_iter.next()
                                             break
                                 except ValueError:
                                     continue

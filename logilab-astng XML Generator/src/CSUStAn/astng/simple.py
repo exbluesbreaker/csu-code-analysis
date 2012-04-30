@@ -79,8 +79,12 @@ class NamesCheckLinker(Linker):
         if relative:
             mod_path = '%s.%s' % ('.'.join(context_name.split('.')[:-1]),
                                   mod_path)
-        '''Save fullname for target module'''
-        node.full_modname = mod_path
+        '''Save fullname for target modules'''
+        if(hasattr(node, 'full_modnames')):
+            node.full_modnames.append(mod_path)
+        else:
+            node.full_modnames = [mod_path]
+            
         if self.compute_module(context_name, mod_path):
             # handle dependencies
             if not hasattr(module, 'depends'):

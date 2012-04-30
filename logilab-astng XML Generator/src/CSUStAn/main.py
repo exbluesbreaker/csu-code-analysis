@@ -130,7 +130,7 @@ logilab_hm_model = [('Manager', 'TreePostProcessing'),
 #scons_mapper = RegexMapper(mapping=scons_map)
 #scons_runner = ReflexionModelRunner('SCons',scons_hm_model,scons_mapper)
 logilab_mapper = RegexMapper(mapping=logilab_map)
-scons_runner = ReflexionModelRunner('logilab',logilab_hm_model,logilab_mapper)
+logilab_runner = ReflexionModelRunner('logilab',logilab_hm_model,logilab_mapper)
 #scons_runner = ReflexionModelRunner(sys.argv[1:])
 #main_xml_root = etree.Element("PythonSourceTree")
 #ns_xml_root = etree.Element("PythonNamespaces")
