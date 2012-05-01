@@ -5,6 +5,7 @@ Created on 01.05.2012
 '''
 import sys
 import pydot
+from operator import itemgetter
 from pylint.pyreverse import main
 
 trace_file = None
@@ -49,10 +50,23 @@ if __name__ == '__main__':
     #trace_file = open('trace.log','w')
     sys.settrace(trace_modules)
     main.Run(sys.argv[1:])
+    # for multi-threading
     no_more_edges = True
+    calls = []
     for call in dot_edges:
-        count = dot_edges[(call[0],call[1])]
-        edge = pydot.Edge(dot_nodes[call[0]],dot_nodes[call[1]],label=str(count)) 
-        graph.add_edge(edge)
+        calls.append((dot_edges[(call[0],call[1])],call[0],call[1]))
+    #sorting key - count 
+    calls = sorted(calls,key=itemgetter(0))
+    num = 0
+    for cluster in range(1,8):
+        bound = calls[len(calls)*cluster/7-1]
+        while((num < len(calls)) and (calls[num]<=bound)):
+            edge = pydot.Edge(calls[num][1], 
+                              calls[num][2], 
+                              label=str(calls[num][0]), 
+                              penwidth=str(cluster))
+            graph.add_edge(edge)
+            num+=1
+
     graph.write_png('test.png')
     #trace_file.close()
