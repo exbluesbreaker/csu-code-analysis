@@ -64,7 +64,7 @@ if __name__ == '__main__':
             edge = pydot.Edge(calls[num][1], 
                               calls[num][2], 
                               label=str(calls[num][0]), 
-                              penwidth=str(cluster))
+                              penwidth=str(cluster),arrowsize=str(1+cluster*1.0/7))
             graph.add_edge(edge)
             num+=1
 
