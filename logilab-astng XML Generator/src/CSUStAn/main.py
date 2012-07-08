@@ -6,7 +6,8 @@ Created on 19.08.2011
 '''
 
 import importlib
-from CSUStAn.runners import ReflexionModelRunner
+import sys
+from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner
 from CSUStAn.reflexion.rm_tools import RegexMapper
 
 if __name__ == '__main__':
@@ -35,7 +36,8 @@ def compare_namespaces(module_node):
     except ImportError:
         return None
     names_list = dir(module)
-    for name in names_list:
+    for name in names_list:#scons_mapper = RegexMapper(mapping=scons_map)
+#scons_runne
         if not name in module_node:
         #if(not find_in_all_namespaces(module_node, name)):
             module_node.unresolved.append(name)
@@ -47,7 +49,8 @@ def compare_namespaces(module_node):
 
 
 
-
+#scons_mapper = RegexMapper(mapping=scons_map)
+#scons_runne
 
 
 
@@ -127,20 +130,7 @@ logilab_hm_model = [('Manager', 'TreePostProcessing'),
                     ('Sphinx', 'DatabaseHandling')
                     ]
 
-#scons_mapper = RegexMapper(mapping=scons_map)
-#scons_runner = ReflexionModelRunner('SCons',scons_hm_model,scons_mapper)
-logilab_mapper = RegexMapper(mapping=logilab_map)
-logilab_runner = ReflexionModelRunner('logilab',logilab_hm_model,logilab_mapper)
-#scons_runner = ReflexionModelRunner(sys.argv[1:])
-#main_xml_root = etree.Element("PythonSourceTree")
-#ns_xml_root = etree.Element("PythonNamespaces")
-#main_prj = scons_runner.project
-#make_tree(main_xml_root,scons_runner.project)
-#handle = etree.tostring(main_xml_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
-#main_file = "./"+sys.argv[-1]+".xml"    
-#applic = open(main_file, "w")
-#applic.writelines(handle)
-#applic.close()
-#print "bad imports - ",bad_imports,"bad from imports - ",bad_from_imports,"good - ",good_imports
-#print "from imports - ",from_imports,"from * imports - ",from_allimports, "from imports of module - ", from_modname_imports
-#print "not found in from imports - ", unknown_name_from_module
+#logilab_mapper = RegexMapper(mapping=logilab_map)
+#logilab_runner = ReflexionModelRunner('logilab',logilab_hm_model,logilab_mapper)
+
+runner = ClassIRRunner(sys.argv[1:]) 
