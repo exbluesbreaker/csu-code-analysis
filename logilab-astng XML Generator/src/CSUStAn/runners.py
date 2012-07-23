@@ -80,7 +80,7 @@ class ClassIRRunner(ConfigurationMixIn):
                 for arg in meth.args.args:
                     # ignore self arg
                     if not arg.name == 'self':
-                        meth_node.append(etree.Element('Argument',name=arg.name))
+                        meth_node.append(etree.Element('Arg',name=arg.name))
                         node.append(meth_node)
             print obj.fig_id, obj.attrs, obj.methods
         for rel in diadefs[1].relationships['specialization']:
