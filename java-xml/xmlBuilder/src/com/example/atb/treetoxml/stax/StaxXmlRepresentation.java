@@ -10,6 +10,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import com.example.atb.core.ContentAssistant;
 import com.example.atb.core.TraversalHandler;
 import com.sun.source.tree.Tree.Kind;
 import com.sun.tools.javac.code.BoundKind;
@@ -46,7 +47,7 @@ public class StaxXmlRepresentation implements TraversalHandler {
 	public void onStartNode(JCTree node, String name, Position position) {
 		try {
 			writeOffset();
-			this.writer.writeStartElement(name);
+			this.writer.writeStartElement(ContentAssistant.getNodeName(ContentAssistant.getTagNameByTreeElementKind(node.getKind())));
 			this.writer.writeAttribute("line", String.valueOf(position.getLineNumber()));
 			this.writer.writeAttribute("col", String.valueOf(position.getColumnNumber()));
 			this.offset++;
