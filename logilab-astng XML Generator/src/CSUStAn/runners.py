@@ -16,6 +16,12 @@ from CSUStAn.astng.simple import NamesCheckLinker
 from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGenerator,SourceModelXMLGenerator
 from lxml import etree
 
+# must be refactored
+from logilab.astng.node_classes import *
+from logilab.astng.scoped_nodes import *
+import re
+from sets import Set
+
 '''Entry points for different ASTNG processing'''
 
 class ReflexionModelRunner(ConfigurationMixIn):
@@ -49,6 +55,9 @@ class ClassIRRunner(ConfigurationMixIn):
     
     options = OPTIONS
     
+    _good_gettatr = 0
+    _bad_gettatr = 0
+    
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
         insert_default_options()
@@ -56,6 +65,27 @@ class ClassIRRunner(ConfigurationMixIn):
         self.register_options_provider(self.manager)
         args = self.load_command_line_configuration()
         self.run(args)
+    
+    def _process_node(self,node,attrs,duck_dict=None):
+        if(duck_dict is None):
+            duck_dict = {}
+        if isinstance(node, Getattr):
+            if(node.expr.as_string()=="self"):
+                if(node.attrname not in attrs):
+                    #print node.attrname,node.parent, node.fromlineno, node.root()
+                    #print attrs
+                    self._bad_gettatr+=1
+                else:
+                    self._good_gettatr+=1
+                # if additional info about attr's field may be obtained
+                if isinstance(node.parent, Getattr):
+                    # Create new entry, if it needed
+                    if(not duck_dict.has_key(node.attrname)):
+                        duck_dict[node.attrname] = Set([])
+                    duck_dict[node.attrname].add(node.parent.attrname)
+        for child in node.get_children():
+            duck_dict = self._process_node(child,attrs,duck_dict)
+        return duck_dict
 
     def run(self, args):
         """checking arguments and run project"""
@@ -75,16 +105,33 @@ class ClassIRRunner(ConfigurationMixIn):
             root.append(node)
             for attr in obj.attrs:
                 node.append(etree.Element('Attr',name=attr))
+            # drop type specification, if it exists
+            attr_names = [re.search('[^ :]*',s).group(0) for s in obj.attrs]
+            attr_names+= [m.name for m in obj.methods]
+            duck_dict = None
             for meth in obj.methods:
                 meth_node = etree.Element('Method',name=meth.name)
+                # This is needed for some native libs(pyx)
+                if(meth.args.args == None):
+                    continue
                 for arg in meth.args.args:
                     # ignore self arg
                     if not arg.name == 'self':
                         meth_node.append(etree.Element('Arg',name=arg.name))
-                        node.append(meth_node)
-            print obj.fig_id, obj.attrs, obj.methods
+                node.append(meth_node)
+                duck_dict =  self._process_node(meth,attr_names,duck_dict)
+            duck_node = etree.Element("Duck")
+            node.append(duck_node)
+            if(duck_dict is None):
+                continue
+            for attr in duck_dict.keys():
+                duck_attr_node = etree.Element('Attr',name=attr)
+                for sub_attr in duck_dict[attr]:
+                    duck_attr_node.append(etree.Element('SubAttr',name=sub_attr))
+                duck_node.append(duck_attr_node)
         for rel in diadefs[1].relationships['specialization']:
             mapper[rel.from_object].append(etree.Element('Parent',name=rel.to_object.title,id=str(rel.to_object.fig_id)))
         f = open('test.xml','w')
         f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
+        print self._good_gettatr,self._bad_gettatr
