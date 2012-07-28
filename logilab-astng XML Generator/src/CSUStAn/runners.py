@@ -79,10 +79,15 @@ class ClassIRRunner(ConfigurationMixIn):
                     self._good_gettatr+=1
                 # if additional info about attr's field may be obtained
                 if isinstance(node.parent, Getattr):
-                    # Create new entry, if it needed
+                    #init dict for attr
                     if(not duck_dict.has_key(node.attrname)):
-                        duck_dict[node.attrname] = Set([])
-                    duck_dict[node.attrname].add(node.parent.attrname)
+                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([])}
+                    if isinstance(node.parent.parent,CallFunc):
+                        #we get info about attr's method
+                        duck_dict[node.attrname]['methods'].add(node.parent.attrname)
+                    else:
+                        #we get info about attr's attr
+                        duck_dict[node.attrname]['attrs'].add(node.parent.attrname)
         for child in node.get_children():
             duck_dict = self._process_node(child,attrs,duck_dict)
         return duck_dict
@@ -119,6 +124,7 @@ class ClassIRRunner(ConfigurationMixIn):
                     if not arg.name == 'self':
                         meth_node.append(etree.Element('Arg',name=arg.name))
                 node.append(meth_node)
+                # check self access in method and generate information about class attrs 
                 duck_dict =  self._process_node(meth,attr_names,duck_dict)
             duck_node = etree.Element("Duck")
             node.append(duck_node)
@@ -126,8 +132,10 @@ class ClassIRRunner(ConfigurationMixIn):
                 continue
             for attr in duck_dict.keys():
                 duck_attr_node = etree.Element('Attr',name=attr)
-                for sub_attr in duck_dict[attr]:
+                for sub_attr in duck_dict[attr]['attrs']:
                     duck_attr_node.append(etree.Element('SubAttr',name=sub_attr))
+                for sub_attr in duck_dict[attr]['methods']:
+                    duck_attr_node.append(etree.Element('SubMethod',name=sub_attr))
                 duck_node.append(duck_attr_node)
         for rel in diadefs[1].relationships['specialization']:
             mapper[rel.from_object].append(etree.Element('Parent',name=rel.to_object.title,id=str(rel.to_object.fig_id)))
