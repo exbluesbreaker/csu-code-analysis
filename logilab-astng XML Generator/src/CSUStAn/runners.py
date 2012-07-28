@@ -52,6 +52,7 @@ class ReflexionModelRunner(ConfigurationMixIn):
         graph.write_png(project_name+'_high-level_model.png')
 
 class ClassIRRunner(ConfigurationMixIn):
+    # generate XML, describing classes of project
     
     options = OPTIONS
     
@@ -151,3 +152,47 @@ class ClassIRRunner(ConfigurationMixIn):
         print self._good_gettatr,self._bad_gettatr
         print self._all_ducks
         print self._all_classes
+
+class FieldCandidateFinder(ConfigurationMixIn):
+    # scan classes description for candidate for class's field
+    
+    options = OPTIONS
+    _successes = 0
+    _fails = 0
+    
+    def __init__(self, args):
+        ConfigurationMixIn.__init__(self, usage=__doc__)
+        self.run(args)
+
+    def run(self, args):
+        if(len(args)!=1):
+            print "usage <> <file name>"
+            exit(0)
+        tree = etree.parse(args[0])
+        classes = [node for node in tree.iter("Class")]
+        ducks = [node for node in tree.iter("Duck")]
+        status = 0
+        for duck in ducks:
+            status +=1
+            print status
+            duck_attrs = [node for node in duck.iter("SubAttr")]
+            duck_methods = [node for node in duck.iter("SubMethod")]
+            # ignore empty ducks
+            if((not duck_attrs) and (not duck_methods)):
+                continue
+            for class_node in classes:
+                class_attrs = [re.search('[^ :]*',node.get("name")).group(0) for node in class_node.iter("Attr")]
+                class_methods = [node.get("name") for node in class_node.iter("Method")]
+                if(all(attr in class_attrs for attr in duck_attrs) and all(method in class_methods for method in duck_methods)):
+                    print "         "
+                    print class_attrs
+                    print duck_attrs
+                    print class_methods
+                    print duck_methods
+                    self._successes += 1
+                else:
+                    self._fails += 1
+        print self._successes, self._fails
+        #for class_node in classes:
+            
+        
