@@ -57,6 +57,10 @@ class ClassIRRunner(ConfigurationMixIn):
     
     _good_gettatr = 0
     _bad_gettatr = 0
+    # numbers of "ducks" in project (for complexity estimation)
+    _all_ducks = 0
+    # numbers of classes in project (for complexity estimation)
+    _all_classes = 0
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
@@ -105,6 +109,7 @@ class ClassIRRunner(ConfigurationMixIn):
         mapper = {}
         root = etree.Element("Classes")
         for obj in diadefs[1].objects:
+            self._all_classes +=1
             node = etree.Element("Class",name=obj.title,id=str(obj.fig_id))
             mapper[obj] = node
             root.append(node)
@@ -131,6 +136,7 @@ class ClassIRRunner(ConfigurationMixIn):
             if(duck_dict is None):
                 continue
             for attr in duck_dict.keys():
+                self._all_ducks += 1
                 duck_attr_node = etree.Element('Attr',name=attr)
                 for sub_attr in duck_dict[attr]['attrs']:
                     duck_attr_node.append(etree.Element('SubAttr',name=sub_attr))
@@ -143,3 +149,5 @@ class ClassIRRunner(ConfigurationMixIn):
         f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
         print self._good_gettatr,self._bad_gettatr
+        print self._all_ducks
+        print self._all_classes
