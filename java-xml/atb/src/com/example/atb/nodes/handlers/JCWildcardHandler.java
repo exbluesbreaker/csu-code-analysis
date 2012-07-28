@@ -13,7 +13,8 @@ public class JCWildcardHandler extends JCTreeHandler {
     @Override
     protected void execute(JCTree node) {
         JCWildcard wildCard = JCWildcard.class.cast(node);
-        walker.handle(wildCard.kind, "nodename.kind");
+        // в этом нет необходимости, сам wildcard возвращает свой внутренний тип
+//        walker.handle(wildCard.kind, "nodename.kind");
         walker.handle(wildCard.inner, "nodename.inner");
     }
 
