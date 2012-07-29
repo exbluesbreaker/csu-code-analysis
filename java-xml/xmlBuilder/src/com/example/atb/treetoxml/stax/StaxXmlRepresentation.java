@@ -10,10 +10,13 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.example.atb.core.ContentAssistant;
 import com.example.atb.core.TraversalHandler;
 import com.sun.source.tree.Tree.Kind;
 import com.sun.tools.javac.code.BoundKind;
+import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Type;
 import com.sun.tools.javac.tree.JCTree;
@@ -76,12 +79,26 @@ public class StaxXmlRepresentation implements TraversalHandler {
 
 	@Override
 	public void onStartNodesList(List<? extends JCTree> nodesList, String name) {
-		
+		try {
+			writeOffset();
+			this.writer.writeStartElement(name);
+			this.offset++;
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void onEndNodesList(List<? extends JCTree> nodesList, String name) {
-		
+		try {
+			this.offset--;
+			writeOffset();
+			this.writer.writeEndElement();
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -116,7 +133,42 @@ public class StaxXmlRepresentation implements TraversalHandler {
 
 	@Override
 	public void onLiteral(Object value, Kind valueType) {
-		
+		String type = null;
+		switch (valueType) {
+		case INT_LITERAL:
+			type = "int";
+			break;
+		case DOUBLE_LITERAL:
+			type = "double";
+			break;
+		case LONG_LITERAL:
+			type = "long";
+			break;
+		case CHAR_LITERAL:
+			type = "char";
+			break;
+		case STRING_LITERAL:
+			type = "string";
+			break;
+		case BOOLEAN_LITERAL:
+			type = "boolean";
+			break;
+		case FLOAT_LITERAL:
+			type = "float";
+			break;
+		case NULL_LITERAL:
+			type = "null";
+			break;
+		default:
+			type = "undefined";
+		}
+		try {
+			this.writer.writeAttribute("type", type);
+			this.writer.writeAttribute("value", String.valueOf(value));
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -126,12 +178,28 @@ public class StaxXmlRepresentation implements TraversalHandler {
 
 	@Override
 	public void onFlags(long flags) {
-		
+		try {
+		String[] flagArray = StringUtils.split(Flags.toString(flags));
+		for (String flagName : flagArray){
+			writeOffset();
+			this.writer.writeStartElement("modifier");
+			this.writer.writeAttribute("name", flagName);
+			this.writer.writeEndElement();
+		}
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void onPrimitiveType(TypeKind typeKind) {
-		
+		try {
+			this.writer.writeAttribute("name", String.valueOf(typeKind).toLowerCase());
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

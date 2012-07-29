@@ -10,6 +10,10 @@ public class MyClass {
         System.out.println(MyClass.A);
     }
     
+    public int bar(String a, boolean b, int c){
+    	return 1;
+    }
+    
     private static class MyClass2 {
         
         public void foo() {
