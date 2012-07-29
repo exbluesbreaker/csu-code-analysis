@@ -138,11 +138,11 @@ class ClassIRRunner(ConfigurationMixIn):
                 continue
             for attr in duck_dict.keys():
                 self._all_ducks += 1
-                duck_attr_node = etree.Element('Attr',name=attr)
+                duck_attr_node = etree.Element('DuckAttr',name=attr)
                 for sub_attr in duck_dict[attr]['attrs']:
-                    duck_attr_node.append(etree.Element('SubAttr',name=sub_attr))
+                    duck_attr_node.append(etree.Element('ProbAttr',name=sub_attr))
                 for sub_attr in duck_dict[attr]['methods']:
-                    duck_attr_node.append(etree.Element('SubMethod',name=sub_attr))
+                    duck_attr_node.append(etree.Element('ProbMethod',name=sub_attr))
                 duck_node.append(duck_attr_node)
         for rel in diadefs[1].relationships['specialization']:
             mapper[rel.from_object].append(etree.Element('Parent',name=rel.to_object.title,id=str(rel.to_object.fig_id)))
@@ -159,39 +159,55 @@ class FieldCandidateFinder(ConfigurationMixIn):
     options = OPTIONS
     _successes = 0
     _fails = 0
+    _tree = None
+    _complete_signatures = {}
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
         self.run(args)
+        
+    def _compute_signature(self,id,curr_node=None):
+        if(curr_node is None):
+            curr_node = self._tree.xpath("//Class[@id="+id+"]")[0]
+        self._complete_signatures[id]['Attrs'] |= Set([re.search('[^ :]*',attr.get("name")).group(0) for attr in curr_node.iter("Attr")])
+        self._complete_signatures[id]['Methods'] |= Set([meth.get("name") for meth in curr_node.iter("Method")])
+        parents = [self._tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in curr_node.iter("Parent")]
+        for parent in parents:
+            self._compute_signature(id,parent)
 
     def run(self, args):
         if(len(args)!=1):
             print "usage <> <file name>"
             exit(0)
-        tree = etree.parse(args[0])
-        classes = [node for node in tree.iter("Class")]
-        ducks = [node for node in tree.iter("Duck")]
+        self._tree = etree.parse(args[0])
+        self._classes = [node for node in self._tree.iter("Class")]
+        ducks = [node for node in self._tree.iter("DuckAttr")]
+        # prepare data about classes attrs and methods
+        status = 0
+        for node in self._classes:
+            status +=1
+            print "Complete ",status," class signatures"
+            self._complete_signatures[node.get("id")]={'Attrs':Set([]),'Methods':Set([])}
+            self._compute_signature(node.get("id"))
         status = 0
         for duck in ducks:
             status +=1
-            print status
-            duck_attrs = [node for node in duck.iter("SubAttr")]
-            duck_methods = [node for node in duck.iter("SubMethod")]
+            print "Complete ",status," ducks"
+            duck_attrs = [node.get('name') for node in duck.iter("ProbAttr")]
+            duck_methods = [node.get('name') for node in duck.iter("ProbMethod")]
             # ignore empty ducks
             if((not duck_attrs) and (not duck_methods)):
                 continue
-            for class_node in classes:
-                class_attrs = [re.search('[^ :]*',node.get("name")).group(0) for node in class_node.iter("Attr")]
-                class_methods = [node.get("name") for node in class_node.iter("Method")]
-                if(all(attr in class_attrs for attr in duck_attrs) and all(method in class_methods for method in duck_methods)):
-                    print "         "
-                    print class_attrs
-                    print duck_attrs
-                    print class_methods
-                    print duck_methods
+            max_matches = 0
+            for id in self._complete_signatures.keys():
+                if(all(attr in self._complete_signatures[id]['Attrs'] for attr in duck_attrs) and all(method in self._complete_signatures[id]['Methods'] for method in duck_methods)):
                     self._successes += 1
                 else:
                     self._fails += 1
+                num_matches = sum(attr in self._complete_signatures[id]['Attrs'] for attr in duck_attrs)+sum(method in self._complete_signatures[id]['Methods'] for method in duck_methods)
+                if(num_matches >  max_matches):
+                    max_matches = num_matches
+            #print "Max matches - ",max_matches," from ",len(duck_attrs)+len(duck_methods)
         print self._successes, self._fails
         #for class_node in classes:
             
