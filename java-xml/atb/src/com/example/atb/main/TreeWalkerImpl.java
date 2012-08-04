@@ -221,7 +221,7 @@ public class TreeWalkerImpl implements TreeWalker {
 	}
 
 	protected void onHandleList(List<? extends JCTree> nodesList, String name) {
-		if (nodesList == null) {
+		if (nodesList == null || nodesList.size() == 0) {
 			onNullNodesList(name);
 		} else {
 			onStartNodesList(nodesList, name);

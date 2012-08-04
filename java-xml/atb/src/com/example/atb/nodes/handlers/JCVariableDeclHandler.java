@@ -1,5 +1,8 @@
 package com.example.atb.nodes.handlers;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.example.atb.core.TreeWalker;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
@@ -15,8 +18,14 @@ public class JCVariableDeclHandler extends JCTreeHandler {
         JCVariableDecl decl = JCVariableDecl.class.cast(node);
         walker.handle(decl.name, "nodename.name");
         walker.handle(decl.mods, "nodename.modifiers");
-        walker.handle(decl.vartype, "nodename.type");
-        walker.handle(decl.init, "nodename.init");
+        List<JCTree> varTypeList = new LinkedList<JCTree>();
+        if (decl.vartype != null)
+        	varTypeList.add(decl.vartype);
+        walker.handle(varTypeList, "vartype");
+        List<JCTree> initList = new LinkedList<JCTree>();
+        if (decl.init != null)
+        	initList.add(decl.init);
+        walker.handle(initList, "init");
     }
 
 }
