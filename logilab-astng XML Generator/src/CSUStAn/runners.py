@@ -184,15 +184,19 @@ class FieldCandidateFinder(ConfigurationMixIn):
         ducks = [node for node in self._tree.iter("DuckAttr")]
         # prepare data about classes attrs and methods
         status = 0
+        classes_num = len(self._classes)
         for node in self._classes:
             status +=1
-            print "Complete ",status," class signatures"
-            self._complete_signatures[node.get("id")]={'Attrs':Set([]),'Methods':Set([])}
+            print "Complete ",status,"/",classes_num," class signatures"
+            # ProbUsed will be true, if this class will be detect as candidate for duck field
+            self._complete_signatures[node.get("id")]={'Attrs':Set([]),'Methods':Set([]),'ProbUsed' : False}
             self._compute_signature(node.get("id"))
         status = 0
+        found_ducks = 0
+        ducks_num = len(ducks)
         for duck in ducks:
             status +=1
-            print "Complete ",status," ducks"
+            print "Complete ",status,"/",ducks_num," ducks" 
             duck_attrs = [node.get('name') for node in duck.iter("ProbAttr")]
             duck_methods = [node.get('name') for node in duck.iter("ProbMethod")]
             # ignore empty ducks
@@ -202,13 +206,23 @@ class FieldCandidateFinder(ConfigurationMixIn):
             for id in self._complete_signatures.keys():
                 if(all(attr in self._complete_signatures[id]['Attrs'] for attr in duck_attrs) and all(method in self._complete_signatures[id]['Methods'] for method in duck_methods)):
                     self._successes += 1
+                    found_ducks+=1
+                    self._complete_signatures[id]['ProbUsed']=True
+                    break
                 else:
                     self._fails += 1
                 num_matches = sum(attr in self._complete_signatures[id]['Attrs'] for attr in duck_attrs)+sum(method in self._complete_signatures[id]['Methods'] for method in duck_methods)
                 if(num_matches >  max_matches):
                     max_matches = num_matches
             #print "Max matches - ",max_matches," from ",len(duck_attrs)+len(duck_methods)
-        print self._successes, self._fails
+        prob_used_classes = 0
+        for id in self._complete_signatures.keys():
+            if  self._complete_signatures[id]['ProbUsed']== True:
+                prob_used_classes+=1
+        print "Numbers of ducks: ",len(ducks)
+        print "Found ducks: ",found_ducks, " percentage: ",round(100*float(found_ducks)/len(ducks),1), " %"
+        print "Numbers of classes: ",len(self._complete_signatures.keys())
+        print "Probably used (as field) classes: ",prob_used_classes," percentage: ",round(100*float(prob_used_classes)/len(self._complete_signatures.keys()),1), " %"
         #for class_node in classes:
             
         
