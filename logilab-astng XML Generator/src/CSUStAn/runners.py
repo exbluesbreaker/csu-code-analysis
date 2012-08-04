@@ -203,14 +203,14 @@ class FieldCandidateFinder(ConfigurationMixIn):
             if((not duck_attrs) and (not duck_methods)):
                 continue
             max_matches = 0
+            duck_found = False
             for id in self._complete_signatures.keys():
                 if(all(attr in self._complete_signatures[id]['Attrs'] for attr in duck_attrs) and all(method in self._complete_signatures[id]['Methods'] for method in duck_methods)):
                     self._successes += 1
-                    found_ducks+=1
+                    if(not duck_found):
+                        found_ducks+=1
+                        duck_found = True
                     self._complete_signatures[id]['ProbUsed']=True
-                    break
-                else:
-                    self._fails += 1
                 num_matches = sum(attr in self._complete_signatures[id]['Attrs'] for attr in duck_attrs)+sum(method in self._complete_signatures[id]['Methods'] for method in duck_methods)
                 if(num_matches >  max_matches):
                     max_matches = num_matches
