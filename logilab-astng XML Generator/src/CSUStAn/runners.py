@@ -20,6 +20,7 @@ from lxml import etree
 from logilab.astng.node_classes import *
 from logilab.astng.scoped_nodes import *
 import re
+import pydot
 from sets import Set
 
 '''Entry points for different ASTNG processing'''
@@ -62,9 +63,11 @@ class ClassIRRunner(ConfigurationMixIn):
     _all_ducks = 0
     # numbers of classes in project (for complexity estimation)
     _all_classes = 0
+    _process_candidates = False
     
-    def __init__(self, args):
+    def __init__(self, args,process_candidates=False):
         ConfigurationMixIn.__init__(self, usage=__doc__)
+        self._process_candidates = process_candidates
         insert_default_options()
         self.manager = ASTNGManager()
         self.register_options_provider(self.manager)
@@ -131,11 +134,12 @@ class ClassIRRunner(ConfigurationMixIn):
                         meth_node.append(etree.Element('Arg',name=arg.name))
                 node.append(meth_node)
                 # check self access in method and generate information about class attrs 
-                duck_dict =  self._process_node(meth,attr_names,duck_dict)
-            duck_node = etree.Element("Duck")
-            node.append(duck_node)
+                if(self._process_candidates):
+                    duck_dict =  self._process_node(meth,attr_names,duck_dict)
             if(duck_dict is None):
                 continue
+            duck_node = etree.Element("Duck")
+            node.append(duck_node)
             for attr in duck_dict.keys():
                 self._all_ducks += 1
                 duck_attr_node = etree.Element('DuckAttr',name=attr)
@@ -152,8 +156,23 @@ class ClassIRRunner(ConfigurationMixIn):
         print self._good_gettatr,self._bad_gettatr
         print self._all_ducks
         print self._all_classes
+        
+class ClassIRHandler:
+    # Process XML class IR
+    _tree = None
+    _classes = None
+    def __init__(self, args):
+        if(len(args)!=1):
+            print "usage <> <file name>"
+            exit(0)
+        self._tree = etree.parse(args[0])
+        self._classes = [node for node in self._tree.iter("Class")] 
+    def get_methods(self,node):
+        return Set([meth.get("name") for meth in node.iter("Method")])
+    def get_parents(self,node):
+        return [self._tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in node.iter("Parent")]
 
-class FieldCandidateFinder(ConfigurationMixIn):
+class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
     # scan classes description for candidate for class's field
     
     options = OPTIONS
@@ -164,23 +183,19 @@ class FieldCandidateFinder(ConfigurationMixIn):
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
+        ClassIRHandler.__init__(self, usage=__doc__)
         self.run(args)
         
     def _compute_signature(self,id,curr_node=None):
         if(curr_node is None):
             curr_node = self._tree.xpath("//Class[@id="+id+"]")[0]
         self._complete_signatures[id]['Attrs'] |= Set([re.search('[^ :]*',attr.get("name")).group(0) for attr in curr_node.iter("Attr")])
-        self._complete_signatures[id]['Methods'] |= Set([meth.get("name") for meth in curr_node.iter("Method")])
-        parents = [self._tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in curr_node.iter("Parent")]
+        self._complete_signatures[id]['Methods'] |= self.get_methods(curr_node)
+        parents = self.get_parents(curr_node)
         for parent in parents:
             self._compute_signature(id,parent)
 
     def run(self, args):
-        if(len(args)!=1):
-            print "usage <> <file name>"
-            exit(0)
-        self._tree = etree.parse(args[0])
-        self._classes = [node for node in self._tree.iter("Class")]
         ducks = [node for node in self._tree.iter("DuckAttr")]
         # prepare data about classes attrs and methods
         status = 0
@@ -224,5 +239,74 @@ class FieldCandidateFinder(ConfigurationMixIn):
         print "Numbers of classes: ",len(self._complete_signatures.keys())
         print "Probably used (as field) classes: ",prob_used_classes," percentage: ",round(100*float(prob_used_classes)/len(self._complete_signatures.keys()),1), " %"
         #for class_node in classes:
-            
+
+class ClassHierarchyVisualizer(ConfigurationMixIn,ClassIRHandler):
+    # generate dot from XML classes IR
+    
+    options = OPTIONS
+    
+    def __init__(self, args):
+        ConfigurationMixIn.__init__(self, usage=__doc__)
+        ClassIRHandler.__init__(self, args)
+        self.run()
+    
+    def run(self):
+        graph = pydot.Dot(graph_type='digraph')
+        for class_node in [pydot.Node(node.get("name")) for node in self._classes]:
+            graph.add_node(class_node)
+#        node_dict = {}
+#        for node in nodes:
+#            dot_node = pydot.Node(node)
+#            graph.add_node(dot_node)
+#            node_dict[node] = dot_node
+#        for source, target in deps:
+#            graph.add_edge(pydot.Edge(node_dict[source], node_dict[target]))
+        graph.write('classes.dot')
+        
+class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
+    # search for probable inheritance mistakes
+    
+    options = OPTIONS
+    _methods = {}
+    
+    def __init__(self, args):
+        ConfigurationMixIn.__init__(self, usage=__doc__)
+        ClassIRHandler.__init__(self, args)
+        self.run()
+    
+    def run(self):
+        status = 0
+        classes_num = len(self._classes)
+        for node in self._classes:
+            print "Complete ",status,"/",classes_num," classes"
+            # ProbUsed will be true, if this class will be detect as candidate for duck field
+            #self._complete_signatures[node.get("id")]={'Attrs':Set([]),'Methods':Set([]),'ProbUsed' : False}
+            for method in self.get_methods(node):
+                if self._assign_method(node,method):
+                    if self._methods.has_key(method):
+                        self._methods[method].append(node.get("id"))
+                    else:
+                        self._methods[method]=[node.get("id")]
+            status +=1
+        methods_num = len(self._methods.keys())
+        status = 0
+        count = 0
+        for method in self._methods.keys():
+            print "Complete ",status,"/",methods_num," method names"
+            if(len(self._methods[method])>1):
+                print method,self._methods[method]
+                count+=1
+            status +=1
+        print count
+                
+                
+    def _assign_method(self,node,method,main=True):
+        if((not main) and (method in self.get_methods(node))):
+            return False
+        for parent in self.get_parents(node):
+            if(not self._assign_method(parent, method, False)):
+                return False            
+        return True
+        
+       
         
