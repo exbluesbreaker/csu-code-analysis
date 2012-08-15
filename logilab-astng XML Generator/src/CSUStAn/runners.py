@@ -252,8 +252,29 @@ class ClassHierarchyVisualizer(ConfigurationMixIn,ClassIRHandler):
     
     def run(self):
         graph = pydot.Dot(graph_type='digraph')
-        for class_node in [pydot.Node(node.get("name")) for node in self._classes]:
+        dot_classes = {} 
+        #setup classes
+        for node in self._classes:
+            class_text = node.get("name")
+            attrs = [a for a in node.iter("Attr")]
+            if(len(attrs)>0):
+                class_text += "|Attrs|"
+            for attr in attrs:
+                class_text += attr.get("name")+"\l"
+            methods = [m for m in node.iter("Method")]
+            if(len(methods)>0):
+                class_text += "|Methods|"
+            for method in methods:
+                class_text += method.get("name")+"\l"
+            class_node = pydot.Node(node.get("id"),label="{"+class_text+"}",shape='record')
+            dot_classes[node.get("id")] = class_node
             graph.add_node(class_node)
+        #setup relations
+        for node in self._classes:
+            parents = [parent for parent in node.iter("Parent")]
+            for parent in parents:
+                edge = pydot.Edge(dot_classes[node.get("id")], dot_classes[parent.get("id")])
+                graph.add_edge(edge)
 #        node_dict = {}
 #        for node in nodes:
 #            dot_node = pydot.Node(node)
@@ -261,7 +282,7 @@ class ClassHierarchyVisualizer(ConfigurationMixIn,ClassIRHandler):
 #            node_dict[node] = dot_node
 #        for source, target in deps:
 #            graph.add_edge(pydot.Edge(node_dict[source], node_dict[target]))
-        graph.write('classes.dot')
+        graph.write_svg('classes.svg')
         
 class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
     # search for probable inheritance mistakes
