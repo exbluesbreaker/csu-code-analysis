@@ -28,8 +28,10 @@
       <xs:element name="Arg" type="Argument" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="modifier" type="xs:string"/>
   </xs:complexType>
   <xs:complexType name="Attribute">
     <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="modifier" type="xs:string"/>
   </xs:complexType>
 </xs:schema>

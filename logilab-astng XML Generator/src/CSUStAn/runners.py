@@ -118,13 +118,13 @@ class ClassIRRunner(ConfigurationMixIn):
             mapper[obj] = node
             root.append(node)
             for attr in obj.attrs:
-                node.append(etree.Element('Attr',name=attr))
+                node.append(etree.Element('Attr',name=attr,modifier='public'))
             # drop type specification, if it exists
             attr_names = [re.search('[^ :]*',s).group(0) for s in obj.attrs]
             attr_names+= [m.name for m in obj.methods]
             duck_dict = None
             for meth in obj.methods:
-                meth_node = etree.Element('Method',name=meth.name)
+                meth_node = etree.Element('Method',name=meth.name,modifier='public')
                 # This is needed for some native libs(pyx)
                 if(meth.args.args == None):
                     continue
