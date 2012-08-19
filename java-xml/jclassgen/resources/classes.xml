@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Classes>
+    <Class name="com.example.MyClass$1" id="2">
+        <Method name="toArray">
+            <Arg name="a"/>
+        </Method>
+        <Method name="toArray"/>
+        <Method name="subList">
+            <Arg name="fromIndex"/>
+            <Arg name="toIndex"/>
+        </Method>
+        <Method name="size"/>
+        <Method name="set">
+            <Arg name="index"/>
+            <Arg name="element"/>
+        </Method>
+        <Method name="retainAll">
+            <Arg name="c"/>
+        </Method>
+        <Method name="removeAll">
+            <Arg name="c"/>
+        </Method>
+        <Method name="remove">
+            <Arg name="index"/>
+        </Method>
+        <Method name="remove">
+            <Arg name="o"/>
+        </Method>
+        <Method name="listIterator">
+            <Arg name="index"/>
+        </Method>
+        <Method name="listIterator"/>
+        <Method name="lastIndexOf">
+            <Arg name="o"/>
+        </Method>
+        <Method name="iterator"/>
+        <Method name="isEmpty"/>
+        <Method name="indexOf">
+            <Arg name="o"/>
+        </Method>
+        <Method name="get">
+            <Arg name="index"/>
+        </Method>
+        <Method name="containsAll">
+            <Arg name="c"/>
+        </Method>
+        <Method name="contains">
+            <Arg name="o"/>
+        </Method>
+        <Method name="clear"/>
+        <Method name="addAll">
+            <Arg name="index"/>
+            <Arg name="c"/>
+        </Method>
+        <Method name="addAll">
+            <Arg name="c"/>
+        </Method>
+        <Method name="add">
+            <Arg name="index"/>
+            <Arg name="element"/>
+        </Method>
+        <Method name="add">
+            <Arg name="e"/>
+        </Method>
+    </Class>
+    <Class name="com.example.MyClass2" id="3">
+        <Method name="foo"/>
+    </Class>
+    <Class name="com.example.MyClass" id="1">
+        <Attr name="A"/>
+        <Attr name="sb"/>
+        <Attr name="x"/>
+        <Method name="bar">
+            <Arg name="a"/>
+            <Arg name="b"/>
+            <Arg name="c"/>
+        </Method>
+        <Parent name="java.util.ArrayList"/>
+    </Class>
+</Classes>
