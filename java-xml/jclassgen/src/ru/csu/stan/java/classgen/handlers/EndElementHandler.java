@@ -20,7 +20,9 @@ public class EndElementHandler implements IStaxHandler{
 			event.getName().toString().equals("extends") || 
 			event.getName().toString().equals("implements") ||
 			event.getName().toString().equals("import") ||
-			event.getName().toString().equals("block")){
+			event.getName().toString().equals("block") ||
+			event.getName().toString().equals("new_class") ||
+			event.getName().toString().equals("arguments") ){
 			context.finish();
 			context.setPreviousState();
 		}

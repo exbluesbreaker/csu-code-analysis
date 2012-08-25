@@ -27,22 +27,24 @@ import ru.csu.stan.java.classgen.util.ClassContext;
  *
  */
 public class Main {
-
-	private static String[] input = {"../test/src/com/example/MyClass.java.stax.xml",};
-//		"../test/src/java/lang/LinkedList.java.stax.xml"};
+	
+	private static final String HELP = "USAGE: Main <input file> <output file>";
 	
 	/**
 	 * Точка входа
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ObjectFactory factory = new ObjectFactory();
-		Classes result = factory.createClasses();
-		HandlerFactory handlers = HandlerFactory.getInstance();
-		XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
-		try{
-			for (String filename : input){
-				File f = new File(filename);
+		if (args != null && args.length > 0 && args.length < 3){
+			final String input = args[0];
+			final String output = args[1];
+			System.out.println("Start working with " + input + " as input file");
+			ObjectFactory factory = new ObjectFactory();
+			Classes result = factory.createClasses();
+			HandlerFactory handlers = HandlerFactory.getInstance();
+			XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
+			try{
+				File f = new File(input);
 				XMLEventReader reader = xmlFactory.createXMLEventReader(new FileInputStream(f));
 				ClassContext context = ClassContext.getInstance(result, factory);
 				try{
@@ -56,25 +58,27 @@ public class Main {
 					reader.close();
 				}
 			}
+			catch (FileNotFoundException e) {
+				System.out.println("File not found!");
+				e.printStackTrace();
+			}
+			catch (XMLStreamException e) {
+				System.out.println("Wrong XML");
+				e.printStackTrace();
+			}
+			try {
+				JAXBContext context = JAXBContext.newInstance("ru.csu.stan.java.classgen.jaxb");
+				Marshaller marshaller = context.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				System.out.println("Writing result to " + output);
+				marshaller.marshal(result, new File(output));
+			} 
+			catch (JAXBException e) {
+				e.printStackTrace();
+			}
 		}
-		catch (FileNotFoundException e) {
-			System.out.println("File not found!");
-			e.printStackTrace();
-		}
-		catch (XMLStreamException e) {
-			System.out.println("Wrong XML");
-			e.printStackTrace();
-		}
-		try {
-			JAXBContext context = JAXBContext.newInstance("ru.csu.stan.java.classgen.jaxb");
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			marshaller.marshal(result, new File("resources/classes.xml"));
-		} 
-		catch (JAXBException e) {
-			e.printStackTrace();
-		}
-		
+		else
+			System.out.println(HELP);
 	}
 
 }

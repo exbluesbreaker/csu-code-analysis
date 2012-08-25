@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class MyClass extends ArrayList{
+public class MyClass extends ArrayList<Object>{
     
     public final static String A = "asdasd";
     private StringBuffer sb = new StringBuffer();

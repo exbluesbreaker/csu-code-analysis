@@ -39,6 +39,12 @@ public class StartElementHandler implements IStaxHandler {
 		if (event.getName().toString().equals("block")){
 			context.setEmptyState();
 		}
+		if (event.getName().toString().equals("new_class")){
+			context.setNewClassState();
+		}
+		if (event.getName().toString().equals("arguments")){
+			context.setEmptyState();
+		}
 		@SuppressWarnings("unchecked")
 		Iterator<Attribute> it =event.getAttributes();
 		context.processTag(event.getName().toString(), it);

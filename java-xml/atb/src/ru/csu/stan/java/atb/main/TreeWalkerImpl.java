@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.lang.model.type.TypeKind;
+import javax.tools.JavaFileObject;
 
 import ru.csu.stan.java.atb.core.BypassException;
 import ru.csu.stan.java.atb.core.ContentAssistant;
@@ -195,6 +196,11 @@ public class TreeWalkerImpl implements TreeWalker {
 			onSymbolEnd(symbol, innerName);
 		}
 	}
+	
+	@Override
+	public void handleSourceFile(JavaFileObject javaFile) {
+		onSourceFile(javaFile);
+	}
 
 	protected void onHandleNode(JCTree node, String name) {
 		if (node == null) {
@@ -334,6 +340,12 @@ public class TreeWalkerImpl implements TreeWalker {
 	protected void onErrorOcured(Exception e) {
 		for (TraversalHandler handler : handlers) {
 			handler.onErrorOcured(e);
+		}
+	}
+	
+	protected void onSourceFile(JavaFileObject file) {
+		for (TraversalHandler handler : handlers) {
+			handler.onSourceFile(file);
 		}
 	}
 
