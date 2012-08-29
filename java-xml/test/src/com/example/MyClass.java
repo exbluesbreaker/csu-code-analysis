@@ -160,7 +160,7 @@ public class MyClass extends ArrayList<Object>{
     	return 1;
     }
     
-    private static class MyClass2 {
+    public static class MyClass2 {
         
         public void foo() {
             System.out.println(MyClass.A);

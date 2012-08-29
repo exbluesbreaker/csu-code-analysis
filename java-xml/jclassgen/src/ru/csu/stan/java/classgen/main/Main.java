@@ -3,6 +3,7 @@ package ru.csu.stan.java.classgen.main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -14,9 +15,15 @@ import javax.xml.stream.events.XMLEvent;
 
 import ru.csu.stan.java.classgen.handlers.HandlerFactory;
 import ru.csu.stan.java.classgen.handlers.IStaxHandler;
+import ru.csu.stan.java.classgen.jaxb.Class;
 import ru.csu.stan.java.classgen.jaxb.Classes;
 import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
+import ru.csu.stan.java.classgen.jaxb.ParentClass;
 import ru.csu.stan.java.classgen.util.ClassContext;
+import ru.csu.stan.java.classgen.util.ClassIdGenerator;
+import ru.csu.stan.java.classgen.util.CompilationUnit;
+import ru.csu.stan.java.classgen.util.ImportRegistry;
+import ru.csu.stan.java.classgen.util.PackageRegistry;
 
 /**
  * Генератор универсального классового представления
@@ -43,10 +50,10 @@ public class Main {
 			Classes result = factory.createClasses();
 			HandlerFactory handlers = HandlerFactory.getInstance();
 			XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
+			ClassContext context = ClassContext.getInstance(result, factory);
 			try{
 				File f = new File(input);
 				XMLEventReader reader = xmlFactory.createXMLEventReader(new FileInputStream(f));
-				ClassContext context = ClassContext.getInstance(result, factory);
 				try{
 					while (reader.hasNext()){
 						XMLEvent nextEvent = reader.nextEvent();
@@ -66,9 +73,29 @@ public class Main {
 				System.out.println("Wrong XML");
 				e.printStackTrace();
 			}
+			
+			System.out.println("Resolving parent classes");
+			ImportRegistry imports = context.getImpReg();
+			PackageRegistry packages = context.getPackageReg();
+			for (Class clazz : result.getClazz()){
+				CompilationUnit unit = imports.findUnitByClass(clazz.getName());
+				Set<String> starImports = unit.getStarImports();
+				for (String starImport : starImports){
+					Set<String> starClasses = packages.getPackageClasses(starImport.substring(0, starImport.length()-2));
+					
+				}
+			}
+			
+			System.out.println("Generating IDs for classes");
+			for (Class clazz : result.getClazz()){
+				if (clazz.getParent() != null)
+					for (ParentClass parent : clazz.getParent())
+						parent.setId(ClassIdGenerator.getInstance().getClassId(parent.getName()));
+			}
+			
 			try {
-				JAXBContext context = JAXBContext.newInstance("ru.csu.stan.java.classgen.jaxb");
-				Marshaller marshaller = context.createMarshaller();
+				JAXBContext jcontext = JAXBContext.newInstance("ru.csu.stan.java.classgen.jaxb");
+				Marshaller marshaller = jcontext.createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 				System.out.println("Writing result to " + output);
 				marshaller.marshal(result, new File(output));

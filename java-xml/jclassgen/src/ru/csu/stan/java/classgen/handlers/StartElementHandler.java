@@ -45,6 +45,9 @@ public class StartElementHandler implements IStaxHandler {
 		if (event.getName().toString().equals("arguments")){
 			context.setEmptyState();
 		}
+		if (event.getName().toString().equals("compilation_unit")){
+			context.setCompilationUnitState();
+		}
 		@SuppressWarnings("unchecked")
 		Iterator<Attribute> it =event.getAttributes();
 		context.processTag(event.getName().toString(), it);
