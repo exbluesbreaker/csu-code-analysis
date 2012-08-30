@@ -22,6 +22,7 @@ public class PackageRegistry{
 	public boolean addClassToPackage(String className, String packageName){
 		if (!internal.containsKey(packageName))
 			internal.put(packageName, new HashSet<String>());
+		allClasses.add(packageName + '.' + className);
 		return internal.get(packageName).add(className);
 	}
 	
@@ -33,6 +34,15 @@ public class PackageRegistry{
 	}
 	
 	public boolean isClassInRegistry(String className){
-		return false;
+		return allClasses.contains(className);
+	}
+	
+	public Set<String> getClassesByPrefixAndPostfix(String prefix, String postfix){
+		Set<String> result = new HashSet<String>();
+		String newPrefix = prefix.substring(0, prefix.lastIndexOf(".*"));
+		for (String className : allClasses)
+			if (className.startsWith(newPrefix) && className.endsWith(postfix))
+				result.add(className);
+		return result;
 	}
 }

@@ -166,6 +166,8 @@ public class MyClass extends ArrayList<Object>{
             System.out.println(MyClass.A);
         }
         
+        public static class MyClass3 {}
+        
     }
     
 

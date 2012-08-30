@@ -187,6 +187,7 @@ public class ClassContext {
 				break;
 			case COMPILATION_UNIT:
 				imported.clear();
+				currentUnit.setPackageName(currentPackage);
 				currentPackage = null;
 				impReg.addCompilationUni(currentUnit);
 				currentUnit = new CompilationUnit();

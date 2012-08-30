@@ -3,6 +3,9 @@ package ru.csu.stan.java.classgen.main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
@@ -78,12 +81,53 @@ public class Main {
 			ImportRegistry imports = context.getImpReg();
 			PackageRegistry packages = context.getPackageReg();
 			for (Class clazz : result.getClazz()){
-				CompilationUnit unit = imports.findUnitByClass(clazz.getName());
-				Set<String> starImports = unit.getStarImports();
-				for (String starImport : starImports){
-					Set<String> starClasses = packages.getPackageClasses(starImport.substring(0, starImport.length()-2));
-					
+				// формируем новый список родителей
+				List<ParentClass> newParents = new LinkedList<ParentClass>();
+				for (ParentClass parent : clazz.getParent()){
+					// все по простому: родитель нормально импортирован из проекта
+					if (packages.isClassInRegistry(parent.getName()))
+						newParents.add(parent);
+					// всякие сложности
+					else{
+						CompilationUnit unit = imports.findUnitByClass(clazz.getName());
+						boolean found = false;
+						for (String starImport : unit.getStarImports()){
+							// отбрасываем ".*"
+							Set<String> classesFromStarPackage = packages.getPackageClasses(starImport.substring(0, starImport.length()-3));
+							for (String cl: classesFromStarPackage)
+								if (cl.endsWith(parent.getName()) && cl.charAt(cl.lastIndexOf(parent.getName())) == '.'){
+									parent.setName(cl);
+									newParents.add(parent);
+									found = true;
+									break;
+								}
+							if (found)
+								break;
+						}
+						if (!found){
+							String localClassName = clazz.getName().substring(unit.getPackageName().length()-1);
+							if (localClassName.indexOf('.') > 0){
+								Set<String> sameThings = new HashSet<String>();
+								for (String imp : unit.getImports())
+									sameThings.addAll(packages.getClassesByPrefixAndPostfix(imp, parent.getName()));
+								if (sameThings.size() > 1){
+									String fullParentName = resolvePreviousParentName(result.getClazz(), unit.getPackageName(), localClassName, parent.getName(), sameThings);
+									if (fullParentName != null && !fullParentName.isEmpty()){
+										parent.setName(fullParentName);
+										newParents.add(parent);
+									}
+								}
+								if (sameThings.size() == 1){
+									parent.setName(sameThings.iterator().next());
+									newParents.add(parent);
+								}
+							}
+						}
+					}
 				}
+				// задаем новых отфильтрованых родителей
+				clazz.getParent().clear();
+				clazz.getParent().addAll(newParents);
 			}
 			
 			System.out.println("Generating IDs for classes");
@@ -107,5 +151,34 @@ public class Main {
 		else
 			System.out.println(HELP);
 	}
+	
+	private static String resolvePreviousParentName(List<Class> classes, String packageName, String localClassName, String parentName, Set<String> candidates){
+		if (localClassName.lastIndexOf('.') == -1)
+			return null;
+		String newLocalName = localClassName.substring(0, localClassName.lastIndexOf('.'));
+		String searchClass = packageName + '.' + newLocalName;
+		for (Class cl : classes)
+			if (cl.getName().equals(searchClass))
+				for (ParentClass parentCl : cl.getParent()){
+					String newParentName = parentName;
+					if (parentCl.getName().lastIndexOf('.') > 0)
+						newParentName = parentCl.getName().substring(parentCl.getName().lastIndexOf('.')+1, parentCl.getName().length()-1) + '.' + newParentName;
+					else
+						newParentName = parentCl.getName() + '.' + newParentName;
+					Set<String> sameEndings = searchForEnding(candidates, newParentName);
+					if (sameEndings.size() > 1)
+						return resolvePreviousParentName(classes, packageName, newLocalName, newParentName, sameEndings);
+					if (sameEndings.size() == 1)
+						return sameEndings.iterator().next();
+				}
+		return null;
+	}
 
+	private static Set<String> searchForEnding(Set<String> strings, String ending){
+		Set<String> result = new HashSet<String>();
+		for (String str : strings)
+			if (str.endsWith(ending))
+				result.add(str);
+		return result;
+	}
 }

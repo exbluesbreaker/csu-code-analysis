@@ -1,11 +1,15 @@
 package com.example.util;
 
-import com.example.MyClass;
-
+import com.example.*;
 
 public class OtherClass extends MyClass {
 	
-	public static class AnotherOtherClass extends MyClass.MyClass2{
+	public static class AnotherOtherClass extends MyClass2{
+		
+		public static class AndNowSomethingCompletelyDifferent extends MyClass3{
+		}
 		
 	}
+	
+	
 }

@@ -7,7 +7,16 @@ public class CompilationUnit {
 
 	private Set<String> imports = new HashSet<String>();
 	private Set<String> classes = new HashSet<String>();
+	private String packageName;
 	
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
+
 	public void addImport(String importName){
 		imports.add(importName);
 	}
@@ -30,5 +39,9 @@ public class CompilationUnit {
 	
 	public boolean hasClass(String className){
 		return classes.contains(className);
+	}
+	
+	public Set<String> getImports(){
+		return imports;
 	}
 }

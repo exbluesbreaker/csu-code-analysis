@@ -1,12 +1,10 @@
 package ru.csu.stan.java.atb.treetoxml;
 
-import javax.xml.stream.*;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.stax.StAXResult;
 
 public class XMLWriter {
 
