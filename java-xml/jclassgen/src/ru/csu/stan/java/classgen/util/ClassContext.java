@@ -187,7 +187,7 @@ public class ClassContext {
 				break;
 			case COMPILATION_UNIT:
 				imported.clear();
-				currentUnit.setPackageName(currentPackage);
+				currentUnit.setPackageName(currentPackage.substring(0, currentPackage.length()-1));
 				currentPackage = null;
 				impReg.addCompilationUni(currentUnit);
 				currentUnit = new CompilationUnit();
@@ -260,7 +260,10 @@ public class ClassContext {
 		if ("method".equals(name))
 		{
 			currentMethod = factory.createMethod();
-			currentMethod.setName(getNameAttr(attrs));
+			String nameAttr = getNameAttr(attrs);
+			if ("<init>".equals(nameAttr))
+				nameAttr = classStack.peek().getName().substring(classStack.peek().getName().lastIndexOf('.')+1);
+			currentMethod.setName(nameAttr);
 		}
 	}
 	

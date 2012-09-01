@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -93,33 +95,38 @@ public class Main {
 						boolean found = false;
 						for (String starImport : unit.getStarImports()){
 							// отбрасываем ".*"
-							Set<String> classesFromStarPackage = packages.getPackageClasses(starImport.substring(0, starImport.length()-3));
-							for (String cl: classesFromStarPackage)
-								if (cl.endsWith(parent.getName()) && cl.charAt(cl.lastIndexOf(parent.getName())) == '.'){
-									parent.setName(cl);
-									newParents.add(parent);
-									found = true;
-									break;
-								}
-							if (found)
+							String fullName = findFullParentNameInPackage(starImport.substring(0, starImport.length()-2), parent.getName(), packages);
+							if (fullName != null){
+								found = true;
+								parent.setName(fullName);
+								newParents.add(parent);
 								break;
+							}
 						}
 						if (!found){
-							String localClassName = clazz.getName().substring(unit.getPackageName().length()-1);
-							if (localClassName.indexOf('.') > 0){
-								Set<String> sameThings = new HashSet<String>();
-								for (String imp : unit.getImports())
-									sameThings.addAll(packages.getClassesByPrefixAndPostfix(imp, parent.getName()));
-								if (sameThings.size() > 1){
-									String fullParentName = resolvePreviousParentName(result.getClazz(), unit.getPackageName(), localClassName, parent.getName(), sameThings);
-									if (fullParentName != null && !fullParentName.isEmpty()){
-										parent.setName(fullParentName);
+							String fullName = findFullParentNameInPackage(unit.getPackageName(), parent.getName(), packages);
+							if (fullName != null){
+								found = true;
+								parent.setName(fullName);
+								newParents.add(parent);
+							}
+							if (!found){
+								String localClassName = clazz.getName().substring(unit.getPackageName().length()+1);
+								if (localClassName.indexOf('.') > 0){
+									Set<String> sameThings = new HashSet<String>();
+									for (String imp : unit.getImports())
+										sameThings.addAll(packages.getClassesByPrefixAndPostfix(imp, parent.getName()));
+									if (sameThings.size() > 1){
+										String fullParentName = resolvePreviousParentName(result.getClazz(), unit.getPackageName(), localClassName, parent.getName(), sameThings);
+										if (fullParentName != null && !fullParentName.isEmpty()){
+											parent.setName(fullParentName);
+											newParents.add(parent);
+										}
+									}
+									if (sameThings.size() == 1){
+										parent.setName(sameThings.iterator().next());
 										newParents.add(parent);
 									}
-								}
-								if (sameThings.size() == 1){
-									parent.setName(sameThings.iterator().next());
-									newParents.add(parent);
 								}
 							}
 						}
@@ -180,5 +187,15 @@ public class Main {
 			if (str.endsWith(ending))
 				result.add(str);
 		return result;
+	}
+	
+	private static String findFullParentNameInPackage(String packageName, String localName, PackageRegistry packages){
+		Map<String, Set<String>> classesFromStarPackage = packages.getPackageClasses(packageName);
+		for (Entry<String, Set<String>> pkg: classesFromStarPackage.entrySet())
+			for (String cl : pkg.getValue())
+				if (cl.equals(localName)){
+					return pkg.getKey() + '.' + cl;
+				}
+		return null;
 	}
 }

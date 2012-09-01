@@ -7,7 +7,7 @@ Created on 19.08.2011
 
 import importlib
 import sys
-from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner
+from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, PotentialSiblingsCounter, ClassHierarchyVisualizer
 from CSUStAn.reflexion.rm_tools import RegexMapper
 
 if __name__ == '__main__':
@@ -133,4 +133,6 @@ logilab_hm_model = [('Manager', 'TreePostProcessing'),
 #logilab_mapper = RegexMapper(mapping=logilab_map)
 #logilab_runner = ReflexionModelRunner('logilab',logilab_hm_model,logilab_mapper)
 
-runner = ClassIRRunner(sys.argv[1:]) 
+#runner = ClassIRRunner(sys.argv[1:])
+#runner =  ClassHierarchyVisualizer(sys.argv[1:])
+runner =  PotentialSiblingsCounter(sys.argv[1:])

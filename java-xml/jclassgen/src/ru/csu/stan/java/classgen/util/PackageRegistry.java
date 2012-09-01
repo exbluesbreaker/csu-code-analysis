@@ -11,11 +11,11 @@ public class PackageRegistry{
 	private Map<String, Set<String>> internal = new HashMap<String, Set<String>>();
 	private Set<String> allClasses = new HashSet<String>();
 	
-	public Set<String> getPackageClasses(String packageName){
-		Set<String> result = new HashSet<String>();
+	public Map<String, Set<String>> getPackageClasses(String packageName){
+		Map<String, Set<String>> result = new HashMap<String, Set<String>>();
 		for (Entry<String, Set<String>> internalEntry : internal.entrySet())
-			if (internalEntry.getKey().indexOf(packageName) > 0)
-				result.addAll(internalEntry.getValue());
+			if (internalEntry.getKey().startsWith(packageName))
+				result.put(internalEntry.getKey(), internalEntry.getValue());
 		return result;
 	}
 
