@@ -2,7 +2,7 @@ package com.example.util;
 
 import com.example.*;
 
-public class OtherClass extends MyClass {
+public class OtherClass extends MyClass implements IAction {
 	
 	public static class AnotherOtherClass extends MyClass2{
 		

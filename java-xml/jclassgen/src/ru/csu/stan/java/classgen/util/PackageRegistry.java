@@ -39,7 +39,11 @@ public class PackageRegistry{
 	
 	public Set<String> getClassesByPrefixAndPostfix(String prefix, String postfix){
 		Set<String> result = new HashSet<String>();
-		String newPrefix = prefix.substring(0, prefix.lastIndexOf(".*"));
+		String newPrefix;
+		if (prefix.lastIndexOf(".*") > 0)
+			newPrefix = prefix.substring(0, prefix.lastIndexOf(".*"));
+		else
+			newPrefix = prefix;
 		for (String className : allClasses)
 			if (className.startsWith(newPrefix) && className.endsWith(postfix))
 				result.add(className);

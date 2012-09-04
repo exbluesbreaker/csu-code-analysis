@@ -27,11 +27,16 @@ public class EndElementHandler implements IStaxHandler{
 			context.finish();
 			context.setPreviousState();
 		}
+		
 		if (event.getName().toString().equals("variable"))
 		{
 			context.finishVar();
 			context.setPreviousVarState();
 		}
+		
+		if (event.getName().toString().equals("identifier"))
+			context.finishIdentifier();
+		
 		return context;
 	}
 

@@ -15,7 +15,6 @@ import ru.csu.stan.java.atb.core.ContentAssistant;
 import ru.csu.stan.java.atb.core.Messages;
 import ru.csu.stan.java.atb.core.TraversalHandler;
 import ru.csu.stan.java.atb.core.TreeWalker;
-import ru.csu.stan.java.atb.core.TraversalHandler.Position;
 import ru.csu.stan.java.atb.nodes.handlers.JCAnnotationHandler;
 import ru.csu.stan.java.atb.nodes.handlers.JCArrayAccessHandler;
 import ru.csu.stan.java.atb.nodes.handlers.JCArrayTypeTreeHandler;
@@ -68,6 +67,7 @@ import ru.csu.stan.java.atb.nodes.handlers.LetExprHandler;
 import ru.csu.stan.java.atb.nodes.handlers.TypeBoundKindHandler;
 import ru.csu.stan.java.atb.symbols.handlers.SymbolHandler;
 
+import com.sun.source.tree.Tree.Kind;
 import com.sun.tools.javac.code.BoundKind;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Type;
@@ -124,7 +124,7 @@ import com.sun.tools.javac.tree.JCTree.TypeBoundKind;
 import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Position.LineMap;
 
-public class TreeWalkerImpl implements TreeWalker {
+public class TreeWalkerImpl implements TreeWalker, TraversalHandler {
 
 	private final LineMap lineMap;
 	private final JCTree root;
@@ -210,9 +210,9 @@ public class TreeWalkerImpl implements TreeWalker {
 					.getStartPosition());
 			onStartNode(node, name, position);
 			if (JCLiteral.class.isInstance(node)) {
-				onLiteral(JCLiteral.class.cast(node));
+				onLiteral(JCLiteral.class.cast(node).getValue(), JCLiteral.class.cast(node).getKind());
 			} else if (JCSkip.class.isInstance(node)) {
-				onEmptyElement();
+				onEmptyStatement();
 			} else if (TypeBoundKind.class.isInstance(node)) {
 				onBoundKind(TypeBoundKind.class.cast(node).kind);
 			} else {
@@ -240,110 +240,128 @@ public class TreeWalkerImpl implements TreeWalker {
 		}
 	}
 
-	protected void onType(Type type, String name) {
+	@Override
+	public void onType(Type type, String name) {
 		for (TraversalHandler handler : handlers) {
 			handler.onType(type, name);
 		}
 	}
 
-	protected void onName(Name nameElement, String name) {
+	@Override
+	public void onName(Name nameElement, String name) {
 		for (TraversalHandler handler : handlers) {
 			handler.onName(nameElement, name);
 		}
 	}
 
-	protected void onSymbolStart(Symbol symbol, String name) {
+	@Override
+	public void onSymbolStart(Symbol symbol, String name) {
 		for (TraversalHandler handler : handlers) {
 			handler.onSymbolStart(symbol, name);
 		}
 	}
 
-	protected void onSymbolEnd(Symbol symbol, String name) {
+	@Override
+	public void onSymbolEnd(Symbol symbol, String name) {
 		for (TraversalHandler handler : handlers) {
 			handler.onSymbolEnd(symbol, name);
 		}
 	}
 
-	protected void onNullSymbol(String name) {
+	@Override
+	public void onNullSymbol(String name) {
 		for (TraversalHandler handler : handlers) {
 			handler.onNullSymbol(name);
 		}
 	}
 
-	protected void onStartNode(JCTree node, String name, Position position) {
+	@Override
+	public void onStartNode(JCTree node, String name, Position position) {
 		for (TraversalHandler handler : handlers) {
 			handler.onStartNode(node, name, position);
 		}
 	}
 
-	protected void onEndNode(JCTree node, String name, Position position) {
+	@Override
+	public void onEndNode(JCTree node, String name, Position position) {
 		for (TraversalHandler handler : handlers) {
 			handler.onEndNode(node, name, position);
 		}
 	}
 
-	protected void onNullNode(String name) {
+	@Override
+	public void onNullNode(String name) {
 		for (TraversalHandler handler : handlers) {
 			handler.onNullNode(name);
 		}
 	}
 
-	protected void onStartNodesList(List<? extends JCTree> nodesList,
+	@Override
+	public void onStartNodesList(List<? extends JCTree> nodesList,
 			String name) {
 		for (TraversalHandler handler : handlers) {
 			handler.onStartNodesList(nodesList, name);
 		}
 	}
 
-	protected void onEndNodesList(List<? extends JCTree> nodesList, String name) {
+	@Override
+	public void onEndNodesList(List<? extends JCTree> nodesList, String name) {
 		for (TraversalHandler handler : handlers) {
 			handler.onEndNodesList(nodesList, name);
 		}
 	}
 
-	protected void onNullNodesList(String name) {
+	@Override
+	public void onNullNodesList(String name) {
 		for (TraversalHandler handler : handlers) {
 			handler.onNullNodesList(name);
 		}
 	}
 
-	protected void onLiteral(JCLiteral literal) {
+	@Override
+	public void onLiteral(Object value, Kind valueType) {
 		for (TraversalHandler handler : handlers) {
-			handler.onLiteral(literal.value, literal.getKind());
+			handler.onLiteral(value, valueType);
 		}
 	}
 
-	protected void onEmptyElement() {
+	@Override
+	public void onEmptyStatement() {
 		for (TraversalHandler handler : handlers) {
 			handler.onEmptyStatement();
 		}
 	}
 
-	protected void onFlags(long flags) {
+	@Override
+	public void onFlags(long flags) {
 		for (TraversalHandler handler : handlers) {
 			handler.onFlags(flags);
 		}
 	}
 
-	protected void onPrimitiveType(TypeKind primitiveType) {
+	@Override
+	public void onPrimitiveType(TypeKind primitiveType) {
 		for (TraversalHandler handler : handlers) {
 			handler.onPrimitiveType(primitiveType);
 		}
 	}
 
-	protected void onBoundKind(BoundKind boundKind) {
+	@Override
+	public void onBoundKind(BoundKind boundKind) {
 		for (TraversalHandler handler : handlers) {
 			handler.onBoundKind(boundKind);
 		}
 	}
 
-	protected void onErrorOcured(Exception e) {
+	@Override
+	public void onErrorOcured(Exception e) {
 		for (TraversalHandler handler : handlers) {
 			handler.onErrorOcured(e);
 		}
 	}
 	
-	protected void onSourceFile(JavaFileObject file) {
+	@Override
+	public void onSourceFile(JavaFileObject file) {
 		for (TraversalHandler handler : handlers) {
 			handler.onSourceFile(file);
 		}

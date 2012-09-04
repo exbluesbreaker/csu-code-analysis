@@ -171,8 +171,8 @@ public class ClassContext {
 			case PARENT:
 //				if (!imported.containsKey(currentParent.getName().substring(currentParent.getName().lastIndexOf('.')+1, currentParent.getName().length())))
 //					currentParent.setId(ClassIdGenerator.getInstance().getClassId(currentParent.getName()));
-				classStack.peek().getParent().add(currentParent);
-				currentParent = null;
+//				classStack.peek().getParent().add(currentParent);
+//				currentParent = null;
 				break;
 			case IMPORT:
 				if (currentImport.indexOf('*') < 0)
@@ -200,6 +200,13 @@ public class ClassContext {
 		ContextState state = stateStack.peek();
 		if (state == ContextState.FIELD || state == ContextState.ARGUMENT)
 			finish();
+	}
+	
+	public void finishIdentifier(){
+		if (stateStack.peek() == ContextState.PARENT){
+			classStack.peek().getParent().add(currentParent);
+			currentParent = factory.createParentClass();
+		}
 	}
 	
 	private void processPackageTag(String name, Iterator<Attribute> attrs){

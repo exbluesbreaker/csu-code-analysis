@@ -44,7 +44,7 @@ public class StaxXmlRepresentation implements TraversalHandler {
 		XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		File f = new File(filename);
 		FileOutputStream stream = new FileOutputStream(f);
-		representation.writer = factory.createXMLStreamWriter(stream);
+		representation.writer = factory.createXMLStreamWriter(stream, "UTF-8");
 		return representation;
 	}
 	
@@ -166,7 +166,8 @@ public class StaxXmlRepresentation implements TraversalHandler {
 		}
 		try {
 			this.writer.writeAttribute("type", type);
-			this.writer.writeAttribute("value", String.valueOf(value));
+			// TODO здесь могут быть любые значения, даже \u0000
+			this.writer.writeAttribute("value", "");//String.valueOf(value));
 		} catch (XMLStreamException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
