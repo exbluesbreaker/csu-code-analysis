@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.lang.model.type.TypeKind;
+import javax.tools.JavaFileObject;
 
 import ru.csu.stan.java.atb.core.TraversalHandler;
 
@@ -303,6 +304,12 @@ public class XMLRepresentation implements TraversalHandler {
 	@Override
 	public String toString() {
 		return content.toString();
+	}
+
+	@Override
+	public void onSourceFile(JavaFileObject sourceFile) {
+		// nothing to do
+		
 	}
 
 }

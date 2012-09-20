@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class MyClass extends ArrayList{
+public class MyClass extends ArrayList<Object>{
     
     public final static String A = "asdasd";
     private StringBuffer sb = new StringBuffer();
@@ -160,11 +160,13 @@ public class MyClass extends ArrayList{
     	return 1;
     }
     
-    private static class MyClass2 {
+    public static class MyClass2 {
         
         public void foo() {
             System.out.println(MyClass.A);
         }
+        
+        public static class MyClass3 {}
         
     }
     

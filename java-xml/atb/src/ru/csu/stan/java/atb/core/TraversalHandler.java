@@ -3,6 +3,7 @@ package ru.csu.stan.java.atb.core;
 import java.util.List;
 
 import javax.lang.model.type.TypeKind;
+import javax.tools.JavaFileObject;
 
 import com.sun.source.tree.Tree.Kind;
 import com.sun.tools.javac.code.BoundKind;
@@ -101,6 +102,12 @@ public interface TraversalHandler {
      * Событие, возникающее при ошибке.
      */
     public void onErrorOcured(Exception e);
+    
+    /**
+     * Событие, возникающее при обработке файла с исходным кодом.
+     * Нужно чтобы отразить файл в представлении, то есть, не является стартовым.
+     */
+    public void onSourceFile(JavaFileObject sourceFile);
     
     /**
      * Интерфейс, описывающий позицию конструкции в исходном тексте.

@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Stack;
 
 import javax.xml.stream.events.Attribute;
-
 import ru.csu.stan.java.classgen.jaxb.Argument;
 import ru.csu.stan.java.classgen.jaxb.Classes;
 import ru.csu.stan.java.classgen.jaxb.Method;
@@ -24,6 +23,8 @@ public class ClassContext {
 	private Classes root;
 	private String currentPackage;
 	private String currentImport;
+	private String currentNewClass;
+	private CompilationUnit currentUnit = new CompilationUnit();
 	private Stack<ru.csu.stan.java.classgen.jaxb.Class> classStack = new Stack<ru.csu.stan.java.classgen.jaxb.Class>();
 	private Stack<Integer> classInnersCount = new Stack<Integer>();
 	private ru.csu.stan.java.classgen.jaxb.Attribute currentAttribute;
@@ -33,6 +34,18 @@ public class ClassContext {
 	private ObjectFactory factory;
 	private Map<String, String> imported = new HashMap<String, String>();
 	private Stack<ContextState> stateStack = new Stack<ContextState>();
+	
+	private PackageRegistry packageReg = new PackageRegistry();
+	
+	public PackageRegistry getPackageReg() {
+		return packageReg;
+	}
+
+	private ImportRegistry impReg = new ImportRegistry();
+	
+	public ImportRegistry getImpReg() {
+		return impReg;
+	}
 	
 	private ClassContext() {}
 	
@@ -78,6 +91,14 @@ public class ClassContext {
 		stateStack.push(ContextState.IMPORT);
 	}
 	
+	public void setNewClassState(){
+		stateStack.push(ContextState.NEW_CLASS);
+	}
+	
+	public void setCompilationUnitState(){
+		stateStack.push(ContextState.COMPILATION_UNIT);
+	}
+	
 	public void setStateForVar(){
 		ContextState state = stateStack.peek();
 		if (state == ContextState.CLASS)
@@ -119,7 +140,12 @@ public class ClassContext {
 			case IMPORT:
 				processImportTag(name, attrs);
 				break;
+			case NEW_CLASS:
+				processNewClass(name, attrs);
+				break;
 			case EMPTY:
+				break;
+			default:
 				break;
 		}
 	}
@@ -143,13 +169,28 @@ public class ClassContext {
 				currentArgument = null;
 				break;
 			case PARENT:
-				if (!imported.containsKey(currentParent.getName().substring(currentParent.getName().lastIndexOf('.')+1, currentParent.getName().length())))
-					currentParent.setId(ClassIdGenerator.getInstance().getClassId(currentParent.getName()));
-				classStack.peek().getParent().add(currentParent);
-				currentParent = null;
+//				if (!imported.containsKey(currentParent.getName().substring(currentParent.getName().lastIndexOf('.')+1, currentParent.getName().length())))
+//					currentParent.setId(ClassIdGenerator.getInstance().getClassId(currentParent.getName()));
+//				classStack.peek().getParent().add(currentParent);
+//				currentParent = null;
 				break;
 			case IMPORT:
-				imported.put(currentImport.substring(currentImport.lastIndexOf('.')+1, currentImport.length()), currentImport);
+				if (currentImport.indexOf('*') < 0)
+					imported.put(currentImport.substring(currentImport.lastIndexOf('.')+1, currentImport.length()), currentImport);
+				else
+					imported.put(currentImport, currentImport);
+				currentUnit.addImport(currentImport);
+				currentImport = null;
+				break;
+			case NEW_CLASS:
+				currentNewClass = null;
+				break;
+			case COMPILATION_UNIT:
+				imported.clear();
+				currentUnit.setPackageName(currentPackage.substring(0, currentPackage.length()-1));
+				currentPackage = null;
+				impReg.addCompilationUni(currentUnit);
+				currentUnit = new CompilationUnit();
 			default:
 				break;
 		}
@@ -159,6 +200,13 @@ public class ClassContext {
 		ContextState state = stateStack.peek();
 		if (state == ContextState.FIELD || state == ContextState.ARGUMENT)
 			finish();
+	}
+	
+	public void finishIdentifier(){
+		if (stateStack.peek() == ContextState.PARENT){
+			classStack.peek().getParent().add(currentParent);
+			currentParent = factory.createParentClass();
+		}
 	}
 	
 	private void processPackageTag(String name, Iterator<Attribute> attrs){
@@ -181,9 +229,27 @@ public class ClassContext {
 				classInnersCount.push(Integer.valueOf(innerCount));
 			}
 			else
-				newClass.setName(currentPackage + nameAttr);
-			imported.put(nameAttr, newClass.getName());
+			{
+				if (!classStack.isEmpty())
+					newClass.setName(classStack.peek().getName() + "." + nameAttr);
+				else
+					newClass.setName(currentPackage + nameAttr);
+			}
+			if (currentNewClass != null)
+			{
+				ParentClass parent = factory.createParentClass();
+				if (!imported.containsKey(currentNewClass))
+					parent.setName(currentNewClass);
+				else
+					parent.setName(imported.get(currentNewClass));
+//				parent.setId(ClassIdGenerator.getInstance().getClassId(parent.getName()));
+				newClass.getParent().add(parent);
+			}
+			imported.put(newClass.getName().substring(currentPackage.length()), newClass.getName());
+			packageReg.addClassToPackage(newClass.getName().substring(currentPackage.length()), currentPackage.substring(0, currentPackage.length()-1));
 			newClass.setId(ClassIdGenerator.getInstance().getClassId(newClass.getName()));
+			currentUnit.addClass(newClass.getName());
+			System.out.println("Found class '" + newClass.getName() + "'");
 			classStack.push(newClass);
 			classInnersCount.push(0);
 		}
@@ -201,7 +267,10 @@ public class ClassContext {
 		if ("method".equals(name))
 		{
 			currentMethod = factory.createMethod();
-			currentMethod.setName(getNameAttr(attrs));
+			String nameAttr = getNameAttr(attrs);
+			if ("<init>".equals(nameAttr))
+				nameAttr = classStack.peek().getName().substring(classStack.peek().getName().lastIndexOf('.')+1);
+			currentMethod.setName(nameAttr);
 		}
 	}
 	
@@ -220,7 +289,13 @@ public class ClassContext {
 			currentParent.setName(getNameAttr(attrs) + '.' + currentParent.getName());
 		if ("identifier".equals(name))
 			if (currentParent.getName() == null || "".equals(currentParent.getName()))
-				currentParent.setName(imported.get(getNameAttr(attrs)));
+			{
+				String nameAttr = getNameAttr(attrs);
+				if (imported.containsKey(nameAttr))
+					currentParent.setName(imported.get(nameAttr));
+				else
+					currentParent.setName(nameAttr);
+			}
 			else
 				currentParent.setName(getNameAttr(attrs) + '.' + currentParent.getName());
 	}
@@ -233,6 +308,16 @@ public class ClassContext {
 				currentImport = getNameAttr(attrs);
 			else
 				currentImport = getNameAttr(attrs) + '.' + currentImport;
+	}
+	
+	private void processNewClass(String name, Iterator<Attribute> attrs){
+		if ("new_class".equals(name))
+			currentNewClass = "";
+		if ("member_select".equals(name) || "identifier".equals(name))
+			if ("".equals(currentNewClass))
+				currentNewClass = getNameAttr(attrs);
+			else
+				currentNewClass = getNameAttr(attrs) + '.' + currentNewClass;
 	}
 	
 	private String getNameAttr(Iterator<Attribute> attrs){

@@ -20,15 +20,23 @@ public class EndElementHandler implements IStaxHandler{
 			event.getName().toString().equals("extends") || 
 			event.getName().toString().equals("implements") ||
 			event.getName().toString().equals("import") ||
-			event.getName().toString().equals("block")){
+			event.getName().toString().equals("block") ||
+			event.getName().toString().equals("new_class") ||
+			event.getName().toString().equals("arguments") || 
+			event.getName().toString().equals("compilation_unit") ){
 			context.finish();
 			context.setPreviousState();
 		}
+		
 		if (event.getName().toString().equals("variable"))
 		{
 			context.finishVar();
 			context.setPreviousVarState();
 		}
+		
+		if (event.getName().toString().equals("identifier"))
+			context.finishIdentifier();
+		
 		return context;
 	}
 

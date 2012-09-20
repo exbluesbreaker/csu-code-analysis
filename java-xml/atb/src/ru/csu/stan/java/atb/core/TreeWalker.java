@@ -3,6 +3,7 @@ package ru.csu.stan.java.atb.core;
 import java.util.List;
 
 import javax.lang.model.type.TypeKind;
+import javax.tools.JavaFileObject;
 
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Type;
@@ -49,5 +50,10 @@ public interface TreeWalker {
 	 * Обработка примитивного типа.
 	 */
 	void handlePrimitiveType(TypeKind typeKind);
+	
+	/**
+	 * Обработка Java-файла с исходным кодом.
+	 */
+	void handleSourceFile(JavaFileObject javaFile);
 
 }

@@ -17,6 +17,7 @@ public class JCCompilationUnitHandler extends JCTreeHandler {
     @Override
     public void execute(JCTree node) {
         JCCompilationUnit compUnit = JCCompilationUnit.class.cast(node);
+        walker.handleSourceFile(compUnit.sourcefile);
         walker.handleFlags(compUnit.flags);
         walker.handle(compUnit.packageAnnotations, "nodename.package_annotations");
         List<JCTree> packageList = new LinkedList<JCTree>();

@@ -29,7 +29,7 @@
 		<link>
 			<name>src/ru/csu/stan/java/classgen/jaxb/classes.xsd</name>
 			<type>1</type>
-			<location>/home/mz/git/csu-code-analysis/data/classes.xsd</location>
+			<locationURI>$%7BPARENT-2-PROJECT_LOC%7D/data/classes.xsd</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

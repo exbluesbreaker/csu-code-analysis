@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.util.List;
 
 import javax.lang.model.type.TypeKind;
+import javax.tools.JavaFileObject;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -43,7 +44,7 @@ public class StaxXmlRepresentation implements TraversalHandler {
 		XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		File f = new File(filename);
 		FileOutputStream stream = new FileOutputStream(f);
-		representation.writer = factory.createXMLStreamWriter(stream);
+		representation.writer = factory.createXMLStreamWriter(stream, "UTF-8");
 		return representation;
 	}
 	
@@ -165,7 +166,8 @@ public class StaxXmlRepresentation implements TraversalHandler {
 		}
 		try {
 			this.writer.writeAttribute("type", type);
-			this.writer.writeAttribute("value", String.valueOf(value));
+			// TODO здесь могут быть любые значения, даже \u0000
+			this.writer.writeAttribute("value", "");//String.valueOf(value));
 		} catch (XMLStreamException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -233,6 +235,9 @@ public class StaxXmlRepresentation implements TraversalHandler {
 		try {
 			writer.writeStartDocument();
 			this.writer.writeCharacters(NEW_LINE);
+			this.writer.writeCharacters(NEW_LINE);
+			writer.writeStartElement("project");
+			this.offset++;
 		} catch (XMLStreamException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -241,8 +246,22 @@ public class StaxXmlRepresentation implements TraversalHandler {
 	
 	public void endDocument(){
 		try {
+			this.offset--;
+			writeOffset();
+			writer.writeEndElement();
+			this.writer.writeCharacters(NEW_LINE);
 			writer.writeEndDocument();
 			writer.close();
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onSourceFile(JavaFileObject sourceFile) {
+		try {
+			writer.writeAttribute("filename", sourceFile.getName());
 		} catch (XMLStreamException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

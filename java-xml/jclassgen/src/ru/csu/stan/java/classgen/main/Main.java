@@ -3,6 +3,12 @@ package ru.csu.stan.java.classgen.main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -14,9 +20,15 @@ import javax.xml.stream.events.XMLEvent;
 
 import ru.csu.stan.java.classgen.handlers.HandlerFactory;
 import ru.csu.stan.java.classgen.handlers.IStaxHandler;
+import ru.csu.stan.java.classgen.jaxb.Class;
 import ru.csu.stan.java.classgen.jaxb.Classes;
 import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
+import ru.csu.stan.java.classgen.jaxb.ParentClass;
 import ru.csu.stan.java.classgen.util.ClassContext;
+import ru.csu.stan.java.classgen.util.ClassIdGenerator;
+import ru.csu.stan.java.classgen.util.CompilationUnit;
+import ru.csu.stan.java.classgen.util.ImportRegistry;
+import ru.csu.stan.java.classgen.util.PackageRegistry;
 
 /**
  * Генератор универсального классового представления
@@ -27,24 +39,26 @@ import ru.csu.stan.java.classgen.util.ClassContext;
  *
  */
 public class Main {
-
-	private static String[] input = {"../test/src/com/example/MyClass.java.stax.xml",};
-//		"../test/src/java/lang/LinkedList.java.stax.xml"};
+	
+	private static final String HELP = "USAGE: Main <input file> <output file>";
 	
 	/**
 	 * Точка входа
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ObjectFactory factory = new ObjectFactory();
-		Classes result = factory.createClasses();
-		HandlerFactory handlers = HandlerFactory.getInstance();
-		XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
-		try{
-			for (String filename : input){
-				File f = new File(filename);
+		if (args != null && args.length > 0 && args.length < 3){
+			final String input = args[0];
+			final String output = args[1];
+			System.out.println("Start working with " + input + " as input file");
+			ObjectFactory factory = new ObjectFactory();
+			Classes result = factory.createClasses();
+			HandlerFactory handlers = HandlerFactory.getInstance();
+			XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
+			ClassContext context = ClassContext.getInstance(result, factory);
+			try{
+				File f = new File(input);
 				XMLEventReader reader = xmlFactory.createXMLEventReader(new FileInputStream(f));
-				ClassContext context = ClassContext.getInstance(result, factory);
 				try{
 					while (reader.hasNext()){
 						XMLEvent nextEvent = reader.nextEvent();
@@ -56,25 +70,132 @@ public class Main {
 					reader.close();
 				}
 			}
+			catch (FileNotFoundException e) {
+				System.out.println("File not found!");
+				e.printStackTrace();
+			}
+			catch (XMLStreamException e) {
+				System.out.println("Wrong XML");
+				e.printStackTrace();
+			}
+			
+			System.out.println("Resolving parent classes");
+			ImportRegistry imports = context.getImpReg();
+			PackageRegistry packages = context.getPackageReg();
+			for (Class clazz : result.getClazz()){
+				// формируем новый список родителей
+				List<ParentClass> newParents = new LinkedList<ParentClass>();
+				for (ParentClass parent : clazz.getParent()){
+					// все по простому: родитель нормально импортирован из проекта
+					if (packages.isClassInRegistry(parent.getName()))
+						newParents.add(parent);
+					// всякие сложности
+					else{
+						CompilationUnit unit = imports.findUnitByClass(clazz.getName());
+						boolean found = false;
+						for (String starImport : unit.getStarImports()){
+							// отбрасываем ".*"
+							String fullName = findFullParentNameInPackage(starImport.substring(0, starImport.length()-2), parent.getName(), packages);
+							if (fullName != null){
+								found = true;
+								parent.setName(fullName);
+								newParents.add(parent);
+								break;
+							}
+						}
+						if (!found){
+							String fullName = findFullParentNameInPackage(unit.getPackageName(), parent.getName(), packages);
+							if (fullName != null){
+								found = true;
+								parent.setName(fullName);
+								newParents.add(parent);
+							}
+							if (!found){
+								String localClassName = clazz.getName().substring(unit.getPackageName().length()+1);
+								if (localClassName.indexOf('.') > 0){
+									Set<String> sameThings = new HashSet<String>();
+									for (String imp : unit.getImports())
+										sameThings.addAll(packages.getClassesByPrefixAndPostfix(imp, parent.getName()));
+									if (sameThings.size() > 1){
+										String fullParentName = resolvePreviousParentName(result.getClazz(), unit.getPackageName(), localClassName, parent.getName(), sameThings);
+										if (fullParentName != null && !fullParentName.isEmpty()){
+											parent.setName(fullParentName);
+											newParents.add(parent);
+										}
+									}
+									if (sameThings.size() == 1){
+										parent.setName(sameThings.iterator().next());
+										newParents.add(parent);
+									}
+								}
+							}
+						}
+					}
+				}
+				// задаем новых отфильтрованых родителей
+				clazz.getParent().clear();
+				clazz.getParent().addAll(newParents);
+			}
+			
+			System.out.println("Generating IDs for classes");
+			for (Class clazz : result.getClazz()){
+				if (clazz.getParent() != null)
+					for (ParentClass parent : clazz.getParent())
+						parent.setId(ClassIdGenerator.getInstance().getClassId(parent.getName()));
+			}
+			
+			try {
+				JAXBContext jcontext = JAXBContext.newInstance("ru.csu.stan.java.classgen.jaxb");
+				Marshaller marshaller = jcontext.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				System.out.println("Writing result to " + output);
+				marshaller.marshal(result, new File(output));
+			} 
+			catch (JAXBException e) {
+				e.printStackTrace();
+			}
 		}
-		catch (FileNotFoundException e) {
-			System.out.println("File not found!");
-			e.printStackTrace();
-		}
-		catch (XMLStreamException e) {
-			System.out.println("Wrong XML");
-			e.printStackTrace();
-		}
-		try {
-			JAXBContext context = JAXBContext.newInstance("ru.csu.stan.java.classgen.jaxb");
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			marshaller.marshal(result, new File("resources/classes.xml"));
-		} 
-		catch (JAXBException e) {
-			e.printStackTrace();
-		}
-		
+		else
+			System.out.println(HELP);
+	}
+	
+	private static String resolvePreviousParentName(List<Class> classes, String packageName, String localClassName, String parentName, Set<String> candidates){
+		if (localClassName.lastIndexOf('.') == -1)
+			return null;
+		String newLocalName = localClassName.substring(0, localClassName.lastIndexOf('.'));
+		String searchClass = packageName + '.' + newLocalName;
+		for (Class cl : classes)
+			if (cl.getName().equals(searchClass))
+				for (ParentClass parentCl : cl.getParent()){
+					String newParentName = parentName;
+					if (parentCl.getName().lastIndexOf('.') > 0)
+						newParentName = parentCl.getName().substring(parentCl.getName().lastIndexOf('.')+1, parentCl.getName().length()-1) + '.' + newParentName;
+					else
+						newParentName = parentCl.getName() + '.' + newParentName;
+					Set<String> sameEndings = searchForEnding(candidates, newParentName);
+					if (sameEndings.size() > 1)
+						return resolvePreviousParentName(classes, packageName, newLocalName, newParentName, sameEndings);
+					if (sameEndings.size() == 1)
+						return sameEndings.iterator().next();
+				}
+		return null;
 	}
 
+	private static Set<String> searchForEnding(Set<String> strings, String ending){
+		Set<String> result = new HashSet<String>();
+		for (String str : strings)
+			if (str.endsWith(ending))
+				result.add(str);
+		return result;
+	}
+	
+	private static String findFullParentNameInPackage(String packageName, String localName, PackageRegistry packages){
+		Map<String, Set<String>> classesFromStarPackage = packages.getPackageClasses(packageName);
+		for (Entry<String, Set<String>> pkg: classesFromStarPackage.entrySet())
+			for (String cl : pkg.getValue())
+				if (cl.equals(localName)){
+					return pkg.getKey() + '.' + cl;
+				}
+		return null;
+	}
 }
