@@ -8,11 +8,7 @@ Created on 19.08.2011
 import importlib
 import argparse
 import sys
-<<<<<<< HEAD
 from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter
-=======
-from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, PotentialSiblingsCounter, ClassHierarchyVisualizer
->>>>>>> 64c6974517fdc700c2dc9f0c0173208ab3352af5
 from CSUStAn.reflexion.rm_tools import RegexMapper
 
 if __name__ == '__main__':
@@ -118,13 +114,11 @@ logilab_hm_model = [('Manager', 'TreePostProcessing'),
                     ('Sphinx', 'DatabaseHandling')
                     ]
 
-<<<<<<< HEAD
 parser = argparse.ArgumentParser(add_help=True)
 parser.add_argument("-t", action="store", type=str, dest="type")
 parser.add_argument("-o", action="store", type=str, default="out.xml", dest="out_file")
 parser.add_argument("-i", action="store", type=str, default="in.xml", dest="in_file")
 parser.add_argument("-p", action="store", type=str, dest="project")
-parser.print_help()
 args = parser.parse_args()
 print args.type
 print args.project
@@ -135,11 +129,3 @@ elif(args.type=="PotentialSiblings"):
     runner = PotentialSiblingsCounter([args.in_file])
 elif(args.type=="VisualHierarchy"):
     runner = ClassHierarchyVisualizer([args.in_file])
-=======
-#logilab_mapper = RegexMapper(mapping=logilab_map)
-#logilab_runner = ReflexionModelRunner('logilab',logilab_hm_model,logilab_mapper)
-
-#runner = ClassIRRunner(sys.argv[1:])
-#runner =  ClassHierarchyVisualizer(sys.argv[1:])
-runner =  PotentialSiblingsCounter(sys.argv[1:])
->>>>>>> 64c6974517fdc700c2dc9f0c0173208ab3352af5

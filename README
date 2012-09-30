@@ -1,1 +1,40 @@
-Some Python tools for code analysis.
+Some tools for code analysis.
+
+USAGE
+
+1) logilab-astng XML Generator
+
+This is python utility for static analysis. Its main features:
+	- generation of universal class intermediate representation (XML) for Python projects(1)
+	- generation of visual representation of class hierarchy from universal class intermediate representation(2)
+	- search for potential siblings in class hierarchy from universal class intermediate representation(3)
+
+Project is on prototype stage and installation is not supported yet. For running you must need to add src directory of sources to PYTHONPATH environment variable and use CSUStan/main.py for run.
+
+Requirenments:
+	Python(>= 2.6 and < 3.0)
+	pylint
+	logilab-astng
+	pydot
+	lxml
+
+Command line for (1):
+	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t ClassIR -p <project (installed python package) under analysis>
+E.G.:
+	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t ClassIR -p logilab
+
+Result will be generated in test.xml file in current working directory.
+
+Command line for (2):
+	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t VisualHierarchy -i <path to XML file, which  contains universal class intermediate representation>
+E.G.:
+	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t VisualHierarchy -i test.xml
+
+Result will be generated in classes.svg file in current working directory.
+
+Command line for (3):
+	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t PotentialSiblings -i <path to XML file, which  contains universal class intermediate representation>
+E.G.:
+	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t PotentialSiblings -i test.xml
+
+Result will be shown at the end of command line output.

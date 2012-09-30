@@ -318,7 +318,7 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
                 print method,self._methods[method]
                 count+=1
             status +=1
-        print count
+        print count," method names of ",methods_num,"unique method names in project pretend to to be passed to common superclass"
                 
                 
     def _assign_method(self,node,method,main=True):
