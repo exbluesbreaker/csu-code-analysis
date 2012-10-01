@@ -115,7 +115,7 @@ logilab_hm_model = [('Manager', 'TreePostProcessing'),
                     ]
 
 parser = argparse.ArgumentParser(add_help=True)
-parser.add_argument("-t", action="store", type=str, dest="type")
+parser.add_argument("-t", action="store",required=True, type=str, dest="type")
 parser.add_argument("-o", action="store", type=str, default="out.xml", dest="out_file")
 parser.add_argument("-i", action="store", type=str, default="in.xml", dest="in_file")
 parser.add_argument("-p", action="store", type=str, dest="project")
@@ -129,3 +129,5 @@ elif(args.type=="PotentialSiblings"):
     runner = PotentialSiblingsCounter([args.in_file])
 elif(args.type=="VisualHierarchy"):
     runner = ClassHierarchyVisualizer([args.in_file])
+else:
+    print "Unknown type!"

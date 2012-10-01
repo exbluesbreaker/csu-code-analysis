@@ -315,7 +315,7 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
         for method in self._methods.keys():
             print "Complete ",status,"/",methods_num," method names"
             if(len(self._methods[method])>1):
-                print method,self._methods[method]
+                print "Method ",method," implemented in classes(id): ",self._methods[method]
                 count+=1
             status +=1
         print count," method names of ",methods_num,"unique method names in project pretend to to be passed to common superclass"
