@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<project name="jastgen" default="makeJar" basedir=".">
+	<description>
+		Java AST generator
+	</description>
+	
+    <property name="jarName" value="jastgen"/>
+    <property name="source" location="${basedir}/src"/>
+    <property name="build" location="${basedir}/build"/>
+	<path id="javac">
+		<pathelement location="../javac/javac.jar"/>
+	</path>
+	
+    <target name="build" depends="clean" description="Build binary files">
+        <mkdir dir="${build}"/>
+ 
+        <javac srcdir="${source}"
+               destdir="${build}"
+               debug="false"
+               deprecation="true"
+               optimize="true" >
+        	<classpath refid="javac"/>
+        </javac>
+ 
+        <copy todir="${build.classes}">
+            <fileset dir="${src.dir}" includes="**/*.*" excludes="**/*.java"/>
+        </copy>
+    </target>
+	
+	<target name="makeJar" depends="build" description="Make result JAR">
+		<jar jarfile="${basedir}/${jarName}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${build.classes}"/>
+        </jar>
+	</target>
+ 
+    <target name="clean" description="Remove build files">
+        <delete dir="${build.classes}"/>
+    	<delete file="${basedir}/${jarName}.jar"/>
+    </target>
+</project>

@@ -1,8 +1,10 @@
-Some tools for code analysis.
+  CSU tools for code analysis.
+
+Distributed under GNU GPLv2. See LICENSE file for details.
 
 USAGE
 
-1) logilab-astng XML Generator
+* 1) logilab-astng XML Generator
 
 This is python utility for static analysis. Its main features:
 	- generation of universal class intermediate representation (XML) for Python projects(1)
@@ -38,3 +40,29 @@ E.G.:
 	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t PotentialSiblings -i test.xml
 
 Result will be shown at the end of command line output.
+
+* 2) Java-XML
+
+This is Java util for static analysis. It analyse source code written in Java. It's main features:
+	- generation of universal class intermediate representation (XML) for Java projects(jclassgen)
+	- generation of abstract syntax tree XML representation (jxmlgen)
+
+Two other modules: javac & jastgen are utility and used for building AST.
+
+It is just prototype of the project, so unfortunately you can't automatically build, install and run it:( (at least for some future time). But you can use Eclipse to run it! 
+You'll need native git client and Eclipse IDE for Java Developers v3.4 or later with EGit plugin (http://www.eclipse.org/egit/).
+
+First, get local copy of git repository:
+ $ git clone https://github.com/exbluesbreaker/csu-code-analysis.git
+
+Second, run Eclipse and open Git Repositories view. Add here "an existing local GIT repository" from the directory where you've cloned remote repo. Open added repo, then Working Directory, then java-xml dir. Import following projects as existing project to your workspace using Import Project wizard:
+ - jastgen
+ - javac
+ - jclassgen
+ - jxmlgen
+
+To create an AST representation from the source code you need to run jxmlgen project with ru.csu.stan.java.ast.treetoxml.main.Launcher as main class. It takes 2 command line arguments: project_dir and output_file. project_dir is the path to your project's source code, output_file is the path where jxmlgen will store it's AST.
+
+To create an universal class intermediate representation from AST you need to run jclassgen project with ru.csu.stan.java.classgen.main.Main as main class. It takes 2 arguments too: input_file and output_file. input file is the path to AST XML representation generated from jastgen, output_file is the path where jclassgen will store it's XML output.
+
+You can use universal class XML representation with logilab-astng XML Generator then to perform some analysis on your project. For example, you can create a visual hierarchy of classes.

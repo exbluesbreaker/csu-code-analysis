@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<project name="" default="makeJars" basedir=".">
+	<description>
+		Java CSU Static Analysis Tool
+	</description>
+	
+    <property name="workingDir" value="."/>
+    <property name="buildDir" location="${workingDir}/../build"/>
+		
+    <target name="build" depends="clean" description="Build binary files">
+    	
+    	<ant></ant>
+    	
+        
+    </target>
+	
+	<target name="makeJars" depends="build" description="Make result JAR">
+		<jar jarfile="${basedir}/${jarName}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${build.classes}"/>
+        </jar>
+	</target>
+ 
+    <target name="clean" description="Remove build files">
+        <delete dir="${build.classes}"/>
+    	<delete file="${basedir}/${jarName}.jar"/>
+    </target>
+</project>
