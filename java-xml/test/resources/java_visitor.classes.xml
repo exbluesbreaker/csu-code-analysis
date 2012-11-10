@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Classes>
+    <Class name="com.example.visitors.ReflexionModelAnalyzer" id="1">
+        <Attr name="mapping"/>
+        <Method name="visitClass">
+            <Arg name="node"/>
+        </Method>
+        <Method name="visitAssignment">
+            <Arg name="node"/>
+        </Method>
+        <Method name="visitVariable">
+            <Arg name="node"/>
+        </Method>
+        <Parent name="com.example.visitors.NodeVisitor" id="2"/>
+    </Class>
+    <Class name="com.example.visitors.NodeVisitor" id="2">
+        <Method name="visitClass">
+            <Arg name="node"/>
+        </Method>
+        <Method name="visitAssignment">
+            <Arg name="node"/>
+        </Method>
+        <Method name="visitVariable">
+            <Arg name="node"/>
+        </Method>
+    </Class>
+    <Class name="com.example.visitors.Verificator" id="3">
+        <Attr name="specification"/>
+        <Method name="visitClass">
+            <Arg name="node"/>
+        </Method>
+        <Method name="visitAssignment">
+            <Arg name="node"/>
+        </Method>
+        <Method name="visitVariable">
+            <Arg name="node"/>
+        </Method>
+        <Parent name="com.example.visitors.NodeVisitor" id="2"/>
+    </Class>
+    <Class name="com.example.nodes.Node" id="4">
+        <Attr name="lineno"/>
+        <Attr name="strPos"/>
+        <Method name="accept">
+            <Arg name="visitor"/>
+        </Method>
+    </Class>
+    <Class name="com.example.nodes.AssignmentNode" id="5">
+        <Attr name="name"/>
+        <Method name="accept">
+            <Arg name="visitor"/>
+        </Method>
+        <Parent name="com.example.nodes.Node" id="4"/>
+    </Class>
+    <Class name="com.example.nodes.ClassNode" id="6">
+        <Attr name="name"/>
+        <Method name="accept">
+            <Arg name="visitor"/>
+        </Method>
+        <Parent name="com.example.nodes.Node" id="4"/>
+    </Class>
+    <Class name="com.example.nodes.VariableNode" id="7">
+        <Attr name="name"/>
+        <Method name="accept">
+            <Arg name="visitor"/>
+        </Method>
+        <Parent name="com.example.nodes.Node" id="4"/>
+    </Class>
+</Classes>

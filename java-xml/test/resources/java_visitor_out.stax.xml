@@ -1,0 +1,838 @@
+<?xml version="1.0" ?>
+
+<project>
+   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/java_src/com/example/visitors/ReflexionModelAnalyzer.java">
+      <package>
+         <member_select line="1" col="9" name="visitors">
+            <member_select line="1" col="9" name="example">
+               <identifier line="1" col="9" name="com">
+               </identifier>
+            </member_select>
+         </member_select>
+      </package>
+      <definitions>
+         <import line="3" col="1">
+            <member_select line="3" col="8" name="AssignmentNode">
+               <member_select line="3" col="8" name="nodes">
+                  <member_select line="3" col="8" name="example">
+                     <identifier line="3" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <import line="4" col="1">
+            <member_select line="4" col="8" name="ClassNode">
+               <member_select line="4" col="8" name="nodes">
+                  <member_select line="4" col="8" name="example">
+                     <identifier line="4" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <import line="5" col="1">
+            <member_select line="5" col="8" name="VariableNode">
+               <member_select line="5" col="8" name="nodes">
+                  <member_select line="5" col="8" name="example">
+                     <identifier line="5" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <class line="7" col="1" name="ReflexionModelAnalyzer">
+            <modifiers line="7" col="1">
+               <modifier name="public"></modifier>
+            </modifiers>
+            <extends>
+               <identifier line="7" col="45" name="NodeVisitor">
+               </identifier>
+            </extends>
+            <body>
+               <variable line="9" col="2" name="mapping">
+                  <modifiers line="9" col="2">
+                     <modifier name="public"></modifier>
+                  </modifiers>
+                  <vartype>
+                     <identifier line="9" col="9" name="Object">
+                     </identifier>
+                  </vartype>
+               </variable>
+               <method line="11" col="2" name="visitClass">
+                  <modifiers line="11" col="2">
+                     <modifier name="public"></modifier>
+                     <nodename.annotations>
+                        <annotation line="11" col="2">
+                           <identifier line="11" col="3" name="Override">
+                           </identifier>
+                        </annotation>
+                     </nodename.annotations>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="12" col="9" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="12" col="25" name="node">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="12" col="25" name="ClassNode">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="12" col="41">
+                     <nodename.statements>
+                        <expression_statement line="13" col="3">
+                           <method_invocation line="13" col="3">
+                              <member_select line="13" col="3" name="println">
+                                 <member_select line="13" col="3" name="out">
+                                    <identifier line="13" col="3" name="System">
+                                    </identifier>
+                                 </member_select>
+                              </member_select>
+                              <arguments>
+                                 <string_literal line="13" col="22" type="string" value="">
+                                 </string_literal>
+                              </arguments>
+                           </method_invocation>
+                        </expression_statement>
+                     </nodename.statements>
+                  </block>
+               </method>
+               <method line="16" col="2" name="visitAssignment">
+                  <modifiers line="16" col="2">
+                     <modifier name="public"></modifier>
+                     <nodename.annotations>
+                        <annotation line="16" col="2">
+                           <identifier line="16" col="3" name="Override">
+                           </identifier>
+                        </annotation>
+                     </nodename.annotations>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="17" col="9" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="17" col="30" name="node">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="17" col="30" name="AssignmentNode">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="17" col="51">
+                     <nodename.statements>
+                        <expression_statement line="18" col="3">
+                           <method_invocation line="18" col="3">
+                              <member_select line="18" col="3" name="println">
+                                 <member_select line="18" col="3" name="out">
+                                    <identifier line="18" col="3" name="System">
+                                    </identifier>
+                                 </member_select>
+                              </member_select>
+                              <arguments>
+                                 <string_literal line="18" col="22" type="string" value="">
+                                 </string_literal>
+                              </arguments>
+                           </method_invocation>
+                        </expression_statement>
+                     </nodename.statements>
+                  </block>
+               </method>
+               <method line="21" col="2" name="visitVariable">
+                  <modifiers line="21" col="2">
+                     <modifier name="public"></modifier>
+                     <nodename.annotations>
+                        <annotation line="21" col="2">
+                           <identifier line="21" col="3" name="Override">
+                           </identifier>
+                        </annotation>
+                     </nodename.annotations>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="22" col="9" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="22" col="28" name="node">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="22" col="28" name="VariableNode">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="22" col="47">
+                     <nodename.statements>
+                        <expression_statement line="23" col="3">
+                           <method_invocation line="23" col="3">
+                              <member_select line="23" col="3" name="println">
+                                 <member_select line="23" col="3" name="out">
+                                    <identifier line="23" col="3" name="System">
+                                    </identifier>
+                                 </member_select>
+                              </member_select>
+                              <arguments>
+                                 <string_literal line="23" col="22" type="string" value="">
+                                 </string_literal>
+                              </arguments>
+                           </method_invocation>
+                        </expression_statement>
+                     </nodename.statements>
+                  </block>
+               </method>
+            </body>
+         </class>
+      </definitions>
+   </compilation_unit>
+   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/java_src/com/example/visitors/NodeVisitor.java">
+      <package>
+         <member_select line="1" col="9" name="visitors">
+            <member_select line="1" col="9" name="example">
+               <identifier line="1" col="9" name="com">
+               </identifier>
+            </member_select>
+         </member_select>
+      </package>
+      <definitions>
+         <import line="3" col="1">
+            <member_select line="3" col="8" name="AssignmentNode">
+               <member_select line="3" col="8" name="nodes">
+                  <member_select line="3" col="8" name="example">
+                     <identifier line="3" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <import line="4" col="1">
+            <member_select line="4" col="8" name="ClassNode">
+               <member_select line="4" col="8" name="nodes">
+                  <member_select line="4" col="8" name="example">
+                     <identifier line="4" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <import line="5" col="1">
+            <member_select line="5" col="8" name="VariableNode">
+               <member_select line="5" col="8" name="nodes">
+                  <member_select line="5" col="8" name="example">
+                     <identifier line="5" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <class line="7" col="1" name="NodeVisitor">
+            <modifiers line="7" col="1">
+               <modifier name="public"></modifier>
+               <modifier name="abstract"></modifier>
+            </modifiers>
+            <body>
+               <method line="8" col="2" name="visitClass">
+                  <modifiers line="8" col="2">
+                     <modifier name="public"></modifier>
+                     <modifier name="abstract"></modifier>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="8" col="18" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="8" col="34" name="node">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="8" col="34" name="ClassNode">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+               </method>
+               <method line="9" col="2" name="visitAssignment">
+                  <modifiers line="9" col="2">
+                     <modifier name="public"></modifier>
+                     <modifier name="abstract"></modifier>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="9" col="18" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="9" col="39" name="node">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="9" col="39" name="AssignmentNode">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+               </method>
+               <method line="10" col="2" name="visitVariable">
+                  <modifiers line="10" col="2">
+                     <modifier name="public"></modifier>
+                     <modifier name="abstract"></modifier>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="10" col="18" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="10" col="37" name="node">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="10" col="37" name="VariableNode">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+               </method>
+            </body>
+         </class>
+      </definitions>
+   </compilation_unit>
+   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/java_src/com/example/visitors/Verificator.java">
+      <package>
+         <member_select line="1" col="9" name="visitors">
+            <member_select line="1" col="9" name="example">
+               <identifier line="1" col="9" name="com">
+               </identifier>
+            </member_select>
+         </member_select>
+      </package>
+      <definitions>
+         <import line="3" col="1">
+            <member_select line="3" col="8" name="AssignmentNode">
+               <member_select line="3" col="8" name="nodes">
+                  <member_select line="3" col="8" name="example">
+                     <identifier line="3" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <import line="4" col="1">
+            <member_select line="4" col="8" name="ClassNode">
+               <member_select line="4" col="8" name="nodes">
+                  <member_select line="4" col="8" name="example">
+                     <identifier line="4" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <import line="5" col="1">
+            <member_select line="5" col="8" name="VariableNode">
+               <member_select line="5" col="8" name="nodes">
+                  <member_select line="5" col="8" name="example">
+                     <identifier line="5" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <class line="7" col="1" name="Verificator">
+            <modifiers line="7" col="1">
+               <modifier name="public"></modifier>
+            </modifiers>
+            <extends>
+               <identifier line="7" col="34" name="NodeVisitor">
+               </identifier>
+            </extends>
+            <body>
+               <variable line="9" col="2" name="specification">
+                  <modifiers line="9" col="2">
+                     <modifier name="public"></modifier>
+                  </modifiers>
+                  <vartype>
+                     <identifier line="9" col="9" name="Object">
+                     </identifier>
+                  </vartype>
+               </variable>
+               <method line="11" col="2" name="visitClass">
+                  <modifiers line="11" col="2">
+                     <modifier name="public"></modifier>
+                     <nodename.annotations>
+                        <annotation line="11" col="2">
+                           <identifier line="11" col="3" name="Override">
+                           </identifier>
+                        </annotation>
+                     </nodename.annotations>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="12" col="9" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="12" col="25" name="node">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="12" col="25" name="ClassNode">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="12" col="41">
+                     <nodename.statements>
+                        <expression_statement line="13" col="3">
+                           <method_invocation line="13" col="3">
+                              <member_select line="13" col="3" name="println">
+                                 <member_select line="13" col="3" name="out">
+                                    <identifier line="13" col="3" name="System">
+                                    </identifier>
+                                 </member_select>
+                              </member_select>
+                              <arguments>
+                                 <string_literal line="13" col="22" type="string" value="">
+                                 </string_literal>
+                              </arguments>
+                           </method_invocation>
+                        </expression_statement>
+                     </nodename.statements>
+                  </block>
+               </method>
+               <method line="16" col="2" name="visitAssignment">
+                  <modifiers line="16" col="2">
+                     <modifier name="public"></modifier>
+                     <nodename.annotations>
+                        <annotation line="16" col="2">
+                           <identifier line="16" col="3" name="Override">
+                           </identifier>
+                        </annotation>
+                     </nodename.annotations>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="17" col="9" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="17" col="30" name="node">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="17" col="30" name="AssignmentNode">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="17" col="51">
+                     <nodename.statements>
+                        <expression_statement line="18" col="3">
+                           <method_invocation line="18" col="3">
+                              <member_select line="18" col="3" name="println">
+                                 <member_select line="18" col="3" name="out">
+                                    <identifier line="18" col="3" name="System">
+                                    </identifier>
+                                 </member_select>
+                              </member_select>
+                              <arguments>
+                                 <string_literal line="18" col="22" type="string" value="">
+                                 </string_literal>
+                              </arguments>
+                           </method_invocation>
+                        </expression_statement>
+                     </nodename.statements>
+                  </block>
+               </method>
+               <method line="21" col="2" name="visitVariable">
+                  <modifiers line="21" col="2">
+                     <modifier name="public"></modifier>
+                     <nodename.annotations>
+                        <annotation line="21" col="2">
+                           <identifier line="21" col="3" name="Override">
+                           </identifier>
+                        </annotation>
+                     </nodename.annotations>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="22" col="9" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="22" col="28" name="node">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="22" col="28" name="VariableNode">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="22" col="47">
+                     <nodename.statements>
+                        <expression_statement line="23" col="3">
+                           <method_invocation line="23" col="3">
+                              <member_select line="23" col="3" name="println">
+                                 <member_select line="23" col="3" name="out">
+                                    <identifier line="23" col="3" name="System">
+                                    </identifier>
+                                 </member_select>
+                              </member_select>
+                              <arguments>
+                                 <string_literal line="23" col="22" type="string" value="">
+                                 </string_literal>
+                              </arguments>
+                           </method_invocation>
+                        </expression_statement>
+                     </nodename.statements>
+                  </block>
+               </method>
+            </body>
+         </class>
+      </definitions>
+   </compilation_unit>
+   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/java_src/com/example/nodes/Node.java">
+      <package>
+         <member_select line="1" col="9" name="nodes">
+            <member_select line="1" col="9" name="example">
+               <identifier line="1" col="9" name="com">
+               </identifier>
+            </member_select>
+         </member_select>
+      </package>
+      <definitions>
+         <import line="3" col="1">
+            <member_select line="3" col="8" name="NodeVisitor">
+               <member_select line="3" col="8" name="visitors">
+                  <member_select line="3" col="8" name="example">
+                     <identifier line="3" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <class line="5" col="1" name="Node">
+            <modifiers line="5" col="1">
+               <modifier name="public"></modifier>
+               <modifier name="abstract"></modifier>
+            </modifiers>
+            <body>
+               <variable line="6" col="2" name="lineno">
+                  <modifiers line="6" col="2">
+                     <modifier name="public"></modifier>
+                  </modifiers>
+                  <vartype>
+                     <primitive_type line="6" col="9" name="int">
+                     </primitive_type>
+                  </vartype>
+               </variable>
+               <variable line="7" col="2" name="strPos">
+                  <modifiers line="7" col="2">
+                     <modifier name="public"></modifier>
+                  </modifiers>
+                  <vartype>
+                     <primitive_type line="7" col="9" name="int">
+                     </primitive_type>
+                  </vartype>
+               </variable>
+               <method line="9" col="2" name="accept">
+                  <modifiers line="9" col="2">
+                     <modifier name="public"></modifier>
+                     <modifier name="abstract"></modifier>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="9" col="18" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="9" col="30" name="visitor">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="9" col="30" name="NodeVisitor">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+               </method>
+            </body>
+         </class>
+      </definitions>
+   </compilation_unit>
+   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/java_src/com/example/nodes/AssignmentNode.java">
+      <package>
+         <member_select line="1" col="9" name="nodes">
+            <member_select line="1" col="9" name="example">
+               <identifier line="1" col="9" name="com">
+               </identifier>
+            </member_select>
+         </member_select>
+      </package>
+      <definitions>
+         <import line="3" col="1">
+            <member_select line="3" col="8" name="NodeVisitor">
+               <member_select line="3" col="8" name="visitors">
+                  <member_select line="3" col="8" name="example">
+                     <identifier line="3" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <class line="5" col="1" name="AssignmentNode">
+            <modifiers line="5" col="1">
+               <modifier name="public"></modifier>
+            </modifiers>
+            <extends>
+               <identifier line="5" col="37" name="Node">
+               </identifier>
+            </extends>
+            <body>
+               <variable line="7" col="2" name="name">
+                  <modifiers line="7" col="2">
+                     <modifier name="public"></modifier>
+                  </modifiers>
+                  <vartype>
+                     <identifier line="7" col="9" name="String">
+                     </identifier>
+                  </vartype>
+                  <init>
+                     <string_literal line="7" col="23" type="string" value="">
+                     </string_literal>
+                  </init>
+               </variable>
+               <method line="9" col="2" name="accept">
+                  <modifiers line="9" col="2">
+                     <modifier name="public"></modifier>
+                     <nodename.annotations>
+                        <annotation line="9" col="2">
+                           <identifier line="9" col="3" name="Override">
+                           </identifier>
+                        </annotation>
+                     </nodename.annotations>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="10" col="9" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="10" col="21" name="visitor">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="10" col="21" name="NodeVisitor">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="10" col="42">
+                     <nodename.statements>
+                        <expression_statement line="11" col="3">
+                           <method_invocation line="11" col="3">
+                              <member_select line="11" col="3" name="visitAssignment">
+                                 <identifier line="11" col="3" name="visitor">
+                                 </identifier>
+                              </member_select>
+                              <arguments>
+                                 <identifier line="11" col="27" name="this">
+                                 </identifier>
+                              </arguments>
+                           </method_invocation>
+                        </expression_statement>
+                     </nodename.statements>
+                  </block>
+               </method>
+            </body>
+         </class>
+      </definitions>
+   </compilation_unit>
+   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/java_src/com/example/nodes/ClassNode.java">
+      <package>
+         <member_select line="1" col="9" name="nodes">
+            <member_select line="1" col="9" name="example">
+               <identifier line="1" col="9" name="com">
+               </identifier>
+            </member_select>
+         </member_select>
+      </package>
+      <definitions>
+         <import line="3" col="1">
+            <member_select line="3" col="8" name="NodeVisitor">
+               <member_select line="3" col="8" name="visitors">
+                  <member_select line="3" col="8" name="example">
+                     <identifier line="3" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <class line="5" col="1" name="ClassNode">
+            <modifiers line="5" col="1">
+               <modifier name="public"></modifier>
+            </modifiers>
+            <extends>
+               <identifier line="5" col="32" name="Node">
+               </identifier>
+            </extends>
+            <body>
+               <variable line="7" col="2" name="name">
+                  <modifiers line="7" col="2">
+                     <modifier name="public"></modifier>
+                  </modifiers>
+                  <vartype>
+                     <identifier line="7" col="9" name="String">
+                     </identifier>
+                  </vartype>
+                  <init>
+                     <string_literal line="7" col="23" type="string" value="">
+                     </string_literal>
+                  </init>
+               </variable>
+               <method line="9" col="2" name="accept">
+                  <modifiers line="9" col="2">
+                     <modifier name="public"></modifier>
+                     <nodename.annotations>
+                        <annotation line="9" col="2">
+                           <identifier line="9" col="3" name="Override">
+                           </identifier>
+                        </annotation>
+                     </nodename.annotations>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="10" col="9" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="10" col="21" name="visitor">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="10" col="21" name="NodeVisitor">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="10" col="42">
+                     <nodename.statements>
+                        <expression_statement line="11" col="3">
+                           <method_invocation line="11" col="3">
+                              <member_select line="11" col="3" name="visitClass">
+                                 <identifier line="11" col="3" name="visitor">
+                                 </identifier>
+                              </member_select>
+                              <arguments>
+                                 <identifier line="11" col="22" name="this">
+                                 </identifier>
+                              </arguments>
+                           </method_invocation>
+                        </expression_statement>
+                     </nodename.statements>
+                  </block>
+               </method>
+            </body>
+         </class>
+      </definitions>
+   </compilation_unit>
+   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/java_src/com/example/nodes/VariableNode.java">
+      <package>
+         <member_select line="1" col="9" name="nodes">
+            <member_select line="1" col="9" name="example">
+               <identifier line="1" col="9" name="com">
+               </identifier>
+            </member_select>
+         </member_select>
+      </package>
+      <definitions>
+         <import line="3" col="1">
+            <member_select line="3" col="8" name="NodeVisitor">
+               <member_select line="3" col="8" name="visitors">
+                  <member_select line="3" col="8" name="example">
+                     <identifier line="3" col="8" name="com">
+                     </identifier>
+                  </member_select>
+               </member_select>
+            </member_select>
+         </import>
+         <class line="5" col="1" name="VariableNode">
+            <modifiers line="5" col="1">
+               <modifier name="public"></modifier>
+            </modifiers>
+            <extends>
+               <identifier line="5" col="35" name="Node">
+               </identifier>
+            </extends>
+            <body>
+               <variable line="7" col="2" name="name">
+                  <modifiers line="7" col="2">
+                     <modifier name="public"></modifier>
+                  </modifiers>
+                  <vartype>
+                     <identifier line="7" col="9" name="String">
+                     </identifier>
+                  </vartype>
+                  <init>
+                     <string_literal line="7" col="23" type="string" value="">
+                     </string_literal>
+                  </init>
+               </variable>
+               <method line="9" col="2" name="accept">
+                  <modifiers line="9" col="2">
+                     <modifier name="public"></modifier>
+                     <nodename.annotations>
+                        <annotation line="9" col="2">
+                           <identifier line="9" col="3" name="Override">
+                           </identifier>
+                        </annotation>
+                     </nodename.annotations>
+                  </modifiers>
+                  <resulttype>
+                     <primitive_type line="10" col="9" name="void">
+                     </primitive_type>
+                  </resulttype>
+                  <parameters>
+                     <variable line="10" col="21" name="visitor">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="10" col="21" name="NodeVisitor">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="10" col="42">
+                     <nodename.statements>
+                        <expression_statement line="11" col="3">
+                           <method_invocation line="11" col="3">
+                              <member_select line="11" col="3" name="visitVariable">
+                                 <identifier line="11" col="3" name="visitor">
+                                 </identifier>
+                              </member_select>
+                              <arguments>
+                                 <identifier line="11" col="25" name="this">
+                                 </identifier>
+                              </arguments>
+                           </method_invocation>
+                        </expression_statement>
+                     </nodename.statements>
+                  </block>
+               </method>
+            </body>
+         </class>
+      </definitions>
+   </compilation_unit>
+</project>

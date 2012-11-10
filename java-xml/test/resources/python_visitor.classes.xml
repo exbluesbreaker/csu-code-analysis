@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Classes>
+  <Class id="4" name="Node">
+    <Attr modifier="public" name="strPos"/>
+    <Attr modifier="public" name="lineno"/>
+    <Method modifier="public" name="accept">
+      <Arg name="visitor"/>
+    </Method>
+  </Class>
+  <Class id="5" name="VariableNode">
+    <Attr modifier="public" name="name"/>
+    <Method modifier="public" name="accept">
+      <Arg name="visitor"/>
+    </Method>
+    <Parent id="4" name="Node"/>
+  </Class>
+  <Class id="6" name="ClassNode">
+    <Attr modifier="public" name="name"/>
+    <Method modifier="public" name="accept">
+      <Arg name="visitor"/>
+    </Method>
+    <Parent id="4" name="Node"/>
+  </Class>
+  <Class id="7" name="AssignmentNode">
+    <Attr modifier="public" name="name"/>
+    <Method modifier="public" name="accept">
+      <Arg name="visitor"/>
+    </Method>
+    <Parent id="4" name="Node"/>
+  </Class>
+  <Class id="11" name="NodeVisitor">
+    <Method modifier="public" name="visit_variable">
+      <Arg name="node"/>
+    </Method>
+    <Method modifier="public" name="visit_assignment">
+      <Arg name="node"/>
+    </Method>
+    <Method modifier="public" name="visit_class">
+      <Arg name="node"/>
+    </Method>
+  </Class>
+  <Class id="12" name="Verificator">
+    <Attr modifier="public" name="specification"/>
+    <Method modifier="public" name="visit_assignment">
+      <Arg name="node"/>
+    </Method>
+    <Method modifier="public" name="visit_variable">
+      <Arg name="node"/>
+    </Method>
+    <Method modifier="public" name="visit_class">
+      <Arg name="node"/>
+    </Method>
+    <Parent id="11" name="NodeVisitor"/>
+  </Class>
+  <Class id="13" name="ReflexionModelAnalyzer">
+    <Attr modifier="public" name="mapping"/>
+    <Method modifier="public" name="visit_variable">
+      <Arg name="node"/>
+    </Method>
+    <Method modifier="public" name="visit_assignment">
+      <Arg name="node"/>
+    </Method>
+    <Method modifier="public" name="visit_class">
+      <Arg name="node"/>
+    </Method>
+    <Parent id="11" name="NodeVisitor"/>
+  </Class>
+</Classes>
