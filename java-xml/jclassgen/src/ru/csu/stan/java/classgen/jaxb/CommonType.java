@@ -16,12 +16,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ParentClass complex type.
+ * <p>Java class for CommonType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ParentClass">
+ * &lt;complexType name="CommonType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}integer" />
@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ParentClass")
-public class ParentClass {
+@XmlType(name = "CommonType")
+public class CommonType {
 
     @XmlAttribute
     protected BigInteger id;
