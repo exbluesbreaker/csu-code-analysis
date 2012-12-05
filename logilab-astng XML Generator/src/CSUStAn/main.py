@@ -130,10 +130,7 @@ elif(args.type=="PotentialSiblings"):
     runner = PotentialSiblingsCounter([args.in_file])
 elif(args.type=="VisualHierarchy"):
     runner = ClassHierarchyVisualizer([args.in_file])
-<<<<<<< HEAD
 elif(args.type=="FieldCandidates"):
     runner = FieldCandidateFinder([args.in_file])
-=======
 else:
     print "Unknown type!"
->>>>>>> b92ed6b3eed974413d20ff8e35184ba98e1a3de4
