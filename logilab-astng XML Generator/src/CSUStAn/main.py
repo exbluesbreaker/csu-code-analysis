@@ -119,15 +119,21 @@ parser.add_argument("-t", action="store",required=True, type=str, dest="type")
 parser.add_argument("-o", action="store", type=str, default="out.xml", dest="out_file")
 parser.add_argument("-i", action="store", type=str, default="in.xml", dest="in_file")
 parser.add_argument("-p", action="store", type=str, dest="project")
+parser.add_argument('--ducks', action='store_true', default=False, dest="process_ducks")
 args = parser.parse_args()
 print args.type
 print args.project
 if(args.type=="ClassIR"):
     sys.argv = ["main.py",args.project]
-    runner = ClassIRRunner([args.project])
+    runner = ClassIRRunner([args.project],args.process_ducks)
 elif(args.type=="PotentialSiblings"):
     runner = PotentialSiblingsCounter([args.in_file])
 elif(args.type=="VisualHierarchy"):
     runner = ClassHierarchyVisualizer([args.in_file])
+<<<<<<< HEAD
+elif(args.type=="FieldCandidates"):
+    runner = FieldCandidateFinder([args.in_file])
+=======
 else:
     print "Unknown type!"
+>>>>>>> b92ed6b3eed974413d20ff8e35184ba98e1a3de4

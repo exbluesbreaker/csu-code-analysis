@@ -183,7 +183,7 @@ class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
-        ClassIRHandler.__init__(self, usage=__doc__)
+        ClassIRHandler.__init__(self, args)
         self.run(args)
         
     def _compute_signature(self,id,curr_node=None):
