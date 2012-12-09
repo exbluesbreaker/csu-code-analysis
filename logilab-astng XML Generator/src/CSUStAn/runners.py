@@ -73,7 +73,8 @@ class ClassIRRunner(ConfigurationMixIn):
         self.register_options_provider(self.manager)
         args = self.load_command_line_configuration()
         self.run(args)
-        
+      
+    """ Extract information about class signature - attrs and methods, which it have """    
     def _compute_signature(self,node):
         if(hasattr(node, "csu_complete_signatures")):
             # node have been processed already
@@ -93,7 +94,8 @@ class ClassIRRunner(ConfigurationMixIn):
             node.csu_complete_signatures['Methods'] |= parent_signature['Methods']
         return node.csu_complete_signatures
     
-    def _process_node(self,node,attrs,duck_dict=None):
+    """ Extract information about class fields usage """
+    def _extract_duck_info(self,node,attrs,duck_dict=None):
         if(duck_dict is None):
             duck_dict = {}
         if isinstance(node, Getattr):
@@ -108,7 +110,7 @@ class ClassIRRunner(ConfigurationMixIn):
                 if isinstance(node.parent, Getattr):
                     #init dict for attr
                     if(not duck_dict.has_key(node.attrname)):
-                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([])}
+                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[]}
                     if isinstance(node.parent.parent,CallFunc):
                         #we get info about attr's method
                         duck_dict[node.attrname]['methods'].add(node.parent.attrname)
@@ -116,7 +118,7 @@ class ClassIRRunner(ConfigurationMixIn):
                         #we get info about attr's attr
                         duck_dict[node.attrname]['attrs'].add(node.parent.attrname)
         for child in node.get_children():
-            duck_dict = self._process_node(child,attrs,duck_dict)
+            duck_dict = self._extract_duck_info(child,attrs,duck_dict)
         return duck_dict
 
     def run(self, args):
@@ -129,40 +131,23 @@ class ClassIRRunner(ConfigurationMixIn):
         linker = Linker(project, tag=True)
         handler = DiadefsHandler(self.config)
         diadefs = handler.get_diadefs(project, linker)
-        mapper = {}
-        root = etree.Element("Classes")
         # Add inheritance information to nodes
+        # csu_parents will contain links to all parents of class
         for rel in diadefs[1].relationships['specialization']:
             if hasattr(rel.from_object, "csu_parents"):
                 rel.from_object.csu_parents.append(rel.to_object)
             else:
                 rel.from_object.csu_parents=[rel.to_object]
-        # First pass for collecting "duck" information about fields and XML nodes generation
+        # First pass for collecting "duck" information about fields 
         for obj in diadefs[1].objects:
             self._compute_signature(obj)
-            self._all_classes +=1
-            node = etree.Element("Class",name=obj.title,id=str(obj.fig_id))
-            mapper[obj] = node
-            root.append(node)
-            for attr in obj.attrs:
-                # drop type specification in attr name, if it exists
-                node.append(etree.Element('Attr',name=re.search('[^ :]*',attr).group(0),modifier='public'))
             attr_names = [re.search('[^ :]*',s).group(0) for s in obj.attrs]
             attr_names+= [m.name for m in obj.methods]
             duck_dict = None
             for meth in obj.methods:
-                meth_node = etree.Element('Method',name=meth.name,modifier='public')
-                # This is needed for some native libs(pyx)
-                if(meth.args.args == None):
-                    continue
-                for arg in meth.args.args:
-                    # ignore self arg
-                    if not arg.name == 'self':
-                        meth_node.append(etree.Element('Arg',name=arg.name))
-                node.append(meth_node)
                 # check self access in method and generate information about class attrs 
                 if(self._process_candidates):
-                    duck_dict =  self._process_node(meth,attr_names,duck_dict)
+                    duck_dict =  self._extract_duck_info(meth,attr_names,duck_dict)
             # add duck information to classes
             obj.ducks=duck_dict
         found_ducks = 0
@@ -182,6 +167,7 @@ class ClassIRRunner(ConfigurationMixIn):
                 duck_found = False
                 for field_candidate in diadefs[1].objects:
                     if(all(attr in field_candidate.csu_complete_signatures['Attrs'] for attr in duck_attrs) and all(method in field_candidate.csu_complete_signatures['Methods'] for method in duck_methods)):
+                        current_class.ducks[duck]['type'].append(field_candidate)
                         successes += 1
                         if(not duck_found):
                             found_ducks+=1
@@ -191,6 +177,33 @@ class ClassIRRunner(ConfigurationMixIn):
         #print "Found ducks: ",found_ducks, " percentage: ",round(100*float(found_ducks)/len(ducks),1), " %"
         #print "Numbers of classes: ",len(self._complete_signatures.keys())
         #print "Probably used (as field) classes: ",prob_used_classes," percentage: ",round(100*float(prob_used_classes)/len(self._complete_signatures.keys()),1), " %"
+        
+        # result XML generation
+        mapper = {}
+        root = etree.Element("Classes")
+        for obj in diadefs[1].objects:
+            self._all_classes +=1
+            node = etree.Element("Class",name=obj.title,id=str(obj.fig_id))
+            mapper[obj] = node
+            root.append(node)
+            for attr in obj.attrs:
+                # drop type specification in attr name, if it exists
+                attrname = re.search('[^ :]*',attr).group(0)
+                attr_node = etree.Element('Attr',name=attrname,modifier='public')
+                node.append(attr_node)
+                if(obj.ducks and (attrname in obj.ducks)):
+                    for prob_type in obj.ducks[attrname]['type']:
+                        attr_node.append(etree.Element('Type',name=prob_type.title,id=str(prob_type.fig_id)))       
+            for meth in obj.methods:
+                meth_node = etree.Element('Method',name=meth.name,modifier='public')
+                # This is needed for some native libs(pyx)
+                if(meth.args.args == None):
+                    continue
+                for arg in meth.args.args:
+                    # ignore self arg
+                    if not arg.name == 'self':
+                        meth_node.append(etree.Element('Arg',name=arg.name))
+                node.append(meth_node)
         for obj in diadefs[1].objects:    
             pass
         for rel in diadefs[1].relationships['specialization']:
