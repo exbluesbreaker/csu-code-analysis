@@ -73,6 +73,25 @@ class ClassIRRunner(ConfigurationMixIn):
         self.register_options_provider(self.manager)
         args = self.load_command_line_configuration()
         self.run(args)
+        
+    def _compute_signature(self,node):
+        if(hasattr(node, "csu_complete_signatures")):
+            # node have been processed already
+            return node.csu_complete_signatures
+        else:
+            node.csu_complete_signatures={}
+        node.csu_complete_signatures['Attrs'] = Set([re.search('[^ :]*',attr).group(0) for attr in node.attrs])
+        node.csu_complete_signatures['Methods'] = Set([meth.name for meth in node.methods])
+        # class without parents
+        if not hasattr(node, "csu_parents"):
+            node.csu_parents = []
+        parents = node.csu_parents
+        for parent in parents:
+            parent_signature = self._compute_signature(parent)
+            # append all parents signatures
+            node.csu_complete_signatures['Attrs'] |= parent_signature['Attrs']
+            node.csu_complete_signatures['Methods'] |= parent_signature['Methods']
+        return node.csu_complete_signatures
     
     def _process_node(self,node,attrs,duck_dict=None):
         if(duck_dict is None):
@@ -112,7 +131,15 @@ class ClassIRRunner(ConfigurationMixIn):
         diadefs = handler.get_diadefs(project, linker)
         mapper = {}
         root = etree.Element("Classes")
+        # Add inheritance information to nodes
+        for rel in diadefs[1].relationships['specialization']:
+            if hasattr(rel.from_object, "csu_parents"):
+                rel.from_object.csu_parents.append(rel.to_object)
+            else:
+                rel.from_object.csu_parents=[rel.to_object]
+        # First pass for collecting "duck" information about fields and XML nodes generation
         for obj in diadefs[1].objects:
+            self._compute_signature(obj)
             self._all_classes +=1
             node = etree.Element("Class",name=obj.title,id=str(obj.fig_id))
             mapper[obj] = node
@@ -136,26 +163,44 @@ class ClassIRRunner(ConfigurationMixIn):
                 # check self access in method and generate information about class attrs 
                 if(self._process_candidates):
                     duck_dict =  self._process_node(meth,attr_names,duck_dict)
-            if(duck_dict is None):
+            # add duck information to classes
+            obj.ducks=duck_dict
+        found_ducks = 0
+        number_of_ducks = 0
+        successes = 0
+        #Second pass  for processing "duck" information and generate information about types
+        for current_class in diadefs[1].objects:
+            if (current_class.ducks is None):
                 continue
-            duck_node = etree.Element("Duck")
-            node.append(duck_node)
-            for attr in duck_dict.keys():
-                self._all_ducks += 1
-                duck_attr_node = etree.Element('DuckAttr',name=attr)
-                for sub_attr in duck_dict[attr]['attrs']:
-                    duck_attr_node.append(etree.Element('ProbAttr',name=sub_attr))
-                for sub_attr in duck_dict[attr]['methods']:
-                    duck_attr_node.append(etree.Element('ProbMethod',name=sub_attr))
-                duck_node.append(duck_attr_node)
+            for duck in current_class.ducks.keys():
+                number_of_ducks += 1
+                duck_attrs = current_class.ducks[duck]['attrs']
+                duck_methods = current_class.ducks[duck]['methods']
+                # ignore empty ducks
+                if((not duck_attrs) and (not duck_methods)):
+                    continue
+                duck_found = False
+                for field_candidate in diadefs[1].objects:
+                    if(all(attr in field_candidate.csu_complete_signatures['Attrs'] for attr in duck_attrs) and all(method in field_candidate.csu_complete_signatures['Methods'] for method in duck_methods)):
+                        successes += 1
+                        if(not duck_found):
+                            found_ducks+=1
+                            duck_found = True
+        print found_ducks, number_of_ducks, successes
+        #print "Numbers of ducks: ",len(ducks)
+        #print "Found ducks: ",found_ducks, " percentage: ",round(100*float(found_ducks)/len(ducks),1), " %"
+        #print "Numbers of classes: ",len(self._complete_signatures.keys())
+        #print "Probably used (as field) classes: ",prob_used_classes," percentage: ",round(100*float(prob_used_classes)/len(self._complete_signatures.keys()),1), " %"
+        for obj in diadefs[1].objects:    
+            pass
         for rel in diadefs[1].relationships['specialization']:
             mapper[rel.from_object].append(etree.Element('Parent',name=rel.to_object.title,id=str(rel.to_object.fig_id)))
         f = open('test.xml','w')
         f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
-        print self._good_gettatr,self._bad_gettatr
-        print self._all_ducks
-        print self._all_classes
+        #print self._good_gettatr,self._bad_gettatr
+        #print self._all_ducks
+        #print self._all_classes
         
 class ClassIRHandler:
     # Process XML class IR
