@@ -64,6 +64,10 @@ class ClassIRRunner(ConfigurationMixIn):
     # numbers of classes in project (for complexity estimation)
     _all_classes = 0
     _process_candidates = False
+    _ducks_count = 0
+    _found_ducks = 0
+    _prob_used_classes = Set([])
+    _all_attrs_num = 0
     
     def __init__(self, args,process_candidates=False):
         ConfigurationMixIn.__init__(self, usage=__doc__)
@@ -110,6 +114,7 @@ class ClassIRRunner(ConfigurationMixIn):
                 if isinstance(node.parent, Getattr):
                     #init dict for attr
                     if(not duck_dict.has_key(node.attrname)):
+                        self._ducks_count +=1
                         duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[]}
                     if isinstance(node.parent.parent,CallFunc):
                         #we get info about attr's method
@@ -142,6 +147,7 @@ class ClassIRRunner(ConfigurationMixIn):
         for obj in diadefs[1].objects:
             self._compute_signature(obj)
             attr_names = [re.search('[^ :]*',s).group(0) for s in obj.attrs]
+            self._all_attrs_num += len(attr_names)
             attr_names+= [m.name for m in obj.methods]
             duck_dict = None
             for meth in obj.methods:
@@ -150,15 +156,12 @@ class ClassIRRunner(ConfigurationMixIn):
                     duck_dict =  self._extract_duck_info(meth,attr_names,duck_dict)
             # add duck information to classes
             obj.ducks=duck_dict
-        found_ducks = 0
-        number_of_ducks = 0
         successes = 0
         #Second pass  for processing "duck" information and generate information about types
         for current_class in diadefs[1].objects:
             if (current_class.ducks is None):
                 continue
             for duck in current_class.ducks.keys():
-                number_of_ducks += 1
                 duck_attrs = current_class.ducks[duck]['attrs']
                 duck_methods = current_class.ducks[duck]['methods']
                 # ignore empty ducks
@@ -169,14 +172,15 @@ class ClassIRRunner(ConfigurationMixIn):
                     if(all(attr in field_candidate.csu_complete_signatures['Attrs'] for attr in duck_attrs) and all(method in field_candidate.csu_complete_signatures['Methods'] for method in duck_methods)):
                         current_class.ducks[duck]['type'].append(field_candidate)
                         successes += 1
+                        self._prob_used_classes |= Set([field_candidate.fig_id])
                         if(not duck_found):
-                            found_ducks+=1
+                            self._found_ducks+=1
                             duck_found = True
-        print found_ducks, number_of_ducks, successes
-        #print "Numbers of ducks: ",len(ducks)
-        #print "Found ducks: ",found_ducks, " percentage: ",round(100*float(found_ducks)/len(ducks),1), " %"
-        #print "Numbers of classes: ",len(self._complete_signatures.keys())
-        #print "Probably used (as field) classes: ",prob_used_classes," percentage: ",round(100*float(prob_used_classes)/len(self._complete_signatures.keys()),1), " %"
+        print "Numbers of ducks: ", self._ducks_count
+        print "Found ducks: ",self._found_ducks, " percentage: ",round(100*float(self._found_ducks)/self._ducks_count,1), " %"
+        print "Numbers of all attributes in project: ", self._all_attrs_num, " percentage of found attrs: ",round(100*float(self._found_ducks)/self._all_attrs_num,1), " %"
+        print "Numbers of classes: ",len(diadefs[1].objects)
+        print "Probably used (as field) classes: ",len(self._prob_used_classes)," percentage: ",round(100*float(len(self._prob_used_classes))/len(diadefs[1].objects),1), " %"
         
         # result XML generation
         mapper = {}
