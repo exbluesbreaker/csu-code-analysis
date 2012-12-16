@@ -68,6 +68,8 @@ class ClassIRRunner(ConfigurationMixIn):
     _found_ducks = 0
     _prob_used_classes = Set([])
     _all_attrs_num = 0
+    _complex_ducks = 0
+    _assigned_ducks = 0
     
     def __init__(self, args,process_candidates=False):
         ConfigurationMixIn.__init__(self, usage=__doc__)
@@ -115,13 +117,30 @@ class ClassIRRunner(ConfigurationMixIn):
                     #init dict for attr
                     if(not duck_dict.has_key(node.attrname)):
                         self._ducks_count +=1
-                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[]}
+                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[],'complex_type':False,'assigned':False}
                     if isinstance(node.parent.parent,CallFunc):
                         #we get info about attr's method
                         duck_dict[node.attrname]['methods'].add(node.parent.attrname)
                     else:
                         #we get info about attr's attr
                         duck_dict[node.attrname]['attrs'].add(node.parent.attrname)
+                # attr of complex type (list, dict, tuple etc.)
+                elif isinstance(node.parent, Subscript):
+                    if(not duck_dict.has_key(node.attrname)):
+                        self._ducks_count +=1
+                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[],'complex_type':True,'assigned':False}
+                    else:
+                        duck_dict[node.attrname]['complex_type'] = True
+        elif isinstance(node, AssAttr):
+            if(node.expr.as_string()=="self"):
+                if(not duck_dict.has_key(node.attrname)):
+                    self._ducks_count +=1
+                    self._assigned_ducks +=1
+                    duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[],'complex_type':False,'assigned':True} 
+                else:
+                    if(not duck_dict[node.attrname]['assigned']):
+                        duck_dict[node.attrname]['assigned'] = True
+                        self._assigned_ducks+=1
         for child in node.get_children():
             duck_dict = self._extract_duck_info(child,attrs,duck_dict)
         return duck_dict
@@ -162,6 +181,8 @@ class ClassIRRunner(ConfigurationMixIn):
             if (current_class.ducks is None):
                 continue
             for duck in current_class.ducks.keys():
+                if(current_class.ducks[duck]['complex_type']):
+                    self._complex_ducks +=1
                 duck_attrs = current_class.ducks[duck]['attrs']
                 duck_methods = current_class.ducks[duck]['methods']
                 # ignore empty ducks
@@ -177,6 +198,8 @@ class ClassIRRunner(ConfigurationMixIn):
                             self._found_ducks+=1
                             duck_found = True
         print "Numbers of ducks: ", self._ducks_count
+        print "Numbers of ducks with assignment in class: ", self._assigned_ducks
+        print "Numbers of ducks with complex type: ", self._complex_ducks
         print "Found ducks: ",self._found_ducks, " percentage: ",round(100*float(self._found_ducks)/self._ducks_count,1), " %"
         print "Numbers of all attributes in project: ", self._all_attrs_num, " percentage of found attrs: ",round(100*float(self._found_ducks)/self._all_attrs_num,1), " %"
         print "Numbers of classes: ",len(diadefs[1].objects)
