@@ -54,7 +54,7 @@ class CSUDbg(Bdb):
     def get_used_classes(self):
         return self._used_classes_dict.copy()
     def get_classes_usage(self):
-        return self._project_classes, self._non_project_classes
+        return {"Project classes":self._project_classes, "Non-project classes":self._non_project_classes}
     def get_most_popular_classes(self):
         pass
     def _handle_obj(self,obj):
@@ -116,6 +116,6 @@ if __name__ == '__main__':
     # for multi-threading
     no_more_trace = True
     used_classes = dbg.get_used_classes()
-    print dbg.get_classes_usage()
     for key, value in sorted(used_classes.iteritems(), key=lambda (k,v): (v,k)):
         print "%s: %s" % (key, value)
+    print dbg.get_classes_usage()
