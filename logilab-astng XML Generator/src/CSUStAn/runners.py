@@ -13,6 +13,7 @@ from pylint.pyreverse.utils import insert_default_options
 from pylint.pyreverse.main import OPTIONS
 from pylint.pyreverse import writer
 from CSUStAn.astng.simple import NamesCheckLinker
+from CSUStAn.tracing.class_tracer import CSUDbg
 from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGenerator,SourceModelXMLGenerator
 from lxml import etree
 
@@ -484,6 +485,30 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
             if(not self._assign_method(parent, method, False)):
                 return False            
         return True
+
+class LogilabObjectTracer(ConfigurationMixIn):
+    
+    def __init__(self, args):
+        self._dbg = CSUDbg(project_mark='logilab')
+        self._dbg.set_trace()
+        ConfigurationMixIn.__init__(self, usage=__doc__)
+        insert_default_options()
+        self.manager = ASTNGManager()
+        self.register_options_provider(self.manager)
+        args = self.load_command_line_configuration()
+        self.run(args)
+        
+    def run(self, args):
+        """checking arguments and run project"""
+        if not args:
+            print self.help()
+            return
+        project = self.manager.project_from_files(args, astng_wrapper)
+        self.project = project
+        linker = Linker(project, tag=True)
+        handler = DiadefsHandler(self.config)
+        diadefs = handler.get_diadefs(project, linker)
+        self._dbg.disable_trace()
         
        
         

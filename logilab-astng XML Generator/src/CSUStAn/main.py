@@ -8,7 +8,7 @@ Created on 19.08.2011
 import importlib
 import argparse
 import sys
-from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter
+from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer
 from CSUStAn.reflexion.rm_tools import RegexMapper
 
 if __name__ == '__main__':
@@ -132,5 +132,8 @@ elif(args.type=="VisualHierarchy"):
     runner = ClassHierarchyVisualizer([args.in_file])
 elif(args.type=="FieldCandidates"):
     runner = FieldCandidateFinder([args.in_file])
+elif(args.type=="LogilabObjectTracer"):
+    sys.argv = ["main.py",args.project]
+    runner = LogilabObjectTracer([args.project])
 else:
     print "Unknown type!"

@@ -17,11 +17,12 @@ class CSUDbg(Bdb):
     _used_classes_dict = {}
     _project_classes = 0
     _non_project_classes = 0
+    _no_more_trace = False
     def __init__(self, project_mark, skip=None):
         Bdb.__init__(self, skip=skip)
         self._project_mark = project_mark
     def trace_dispatch(self,frame, event, arg):
-        if(no_more_trace):
+        if(self._no_more_trace):
             return
         for  var in frame.f_locals:
             obj = frame.f_locals[var]
@@ -34,16 +35,13 @@ class CSUDbg(Bdb):
                         self._used_classes_dict[full_name] = 1
                     else:
                         self._used_classes_dict[full_name] += 1
+                    if not isinstance(obj, Const):
+                        inspect.getmembers(obj)
                     #for attr in inspect.getmembers(obj):
-                    #    sub_obj = attr[1] 
-                     #   if inspect.isclass(sub_obj):
-                      #      try:
-                       #         print inspect.getfile(inspect.getmodule(sub_obj))
-                        #    except TypeError:
-                         #       continue
-                            #print sub_obj
-                          #  if self._handle_obj(sub_obj):
-                           #     print "Gotcha!"
+                    #    sub_obj = attr[1]
+                    #    if not (inspect.isbuiltin(sub_obj) or inspect.isclass(sub_obj)):
+                    #        if self._handle_obj(sub_obj):
+                    #            print "Gotcha!"
                 else:
                     self._non_project_classes += 1
                 #if isinstance(frame.f_locals[var], NodeNG):
@@ -61,6 +59,8 @@ class CSUDbg(Bdb):
             if(module.__name__.find(self._project_mark)!=-1):
                 return True
         return False 
+    def disable_trace(self):
+        self._no_more_trace = True
         
 
 trace_file = None
@@ -108,14 +108,14 @@ if __name__ == '__main__':
     #trace_file = open('trace.log','w')
     #sys.settrace(trace_modules)
     dbg = CSUDbg(project_mark='logilab')
-    print isinstance(dbg,object)
-    print dbg
+    test = CallFunc()
     dbg.set_trace()
     #test_func("Arg")
-    main.Run(sys.argv[1:])
+    #main.Run(sys.argv[1:])
     # for multi-threading
     no_more_trace = True
     used_classes = dbg.get_used_classes()
     for key, value in sorted(used_classes.iteritems(), key=lambda (k,v): (v,k)):
         print "%s: %s" % (key, value)
+    print len(used_classes.keys())
     print dbg.get_classes_usage()
