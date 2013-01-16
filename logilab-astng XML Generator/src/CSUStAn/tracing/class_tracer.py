@@ -25,13 +25,11 @@ class CSUDbg(Bdb):
             return
         for  var in frame.f_locals:
             obj = frame.f_locals[var]
-            if inspect.isclass(obj):
+            if not (inspect.isbuiltin(obj) or inspect.isclass(obj)):
                 #print inspect.getfile(frame.f_locals[var])
                 if self._handle_obj(obj):
                     self._project_classes += 1
-                    if obj.__name__ == 'AssAttr':
-                            print obj, dir(obj)
-                    full_name = inspect.getmodule(obj).__name__+'.'+obj.__name__
+                    full_name = inspect.getmodule(obj).__name__+'.'+obj.__class__.__name__
                     if not self._used_classes_dict.has_key(full_name): 
                         self._used_classes_dict[full_name] = 1
                     else:
@@ -110,6 +108,8 @@ if __name__ == '__main__':
     #trace_file = open('trace.log','w')
     #sys.settrace(trace_modules)
     dbg = CSUDbg(project_mark='logilab')
+    print isinstance(dbg,object)
+    print dbg
     dbg.set_trace()
     #test_func("Arg")
     main.Run(sys.argv[1:])
