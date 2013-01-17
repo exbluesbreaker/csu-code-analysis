@@ -14,34 +14,39 @@ from sets import Set
 
 class CSUDbg(Bdb):
     _project_mark = None
-    _used_classes_dict = {}
+    _used_classes_dict = None
     _project_classes = 0
     _non_project_classes = 0
     _no_more_trace = False
     def __init__(self, project_mark, skip=None):
         Bdb.__init__(self, skip=skip)
         self._project_mark = project_mark
+        self._used_classes_dict = {}
     def trace_dispatch(self,frame, event, arg):
         if(self._no_more_trace):
             return
         for  var in frame.f_locals:
             obj = frame.f_locals[var]
-            if not (inspect.isbuiltin(obj) or inspect.isclass(obj)):
+            if not (inspect.isbuiltin(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj)):
                 #print inspect.getfile(frame.f_locals[var])
                 if self._handle_obj(obj):
                     self._project_classes += 1
                     full_name = inspect.getmodule(obj).__name__+'.'+obj.__class__.__name__
                     if not self._used_classes_dict.has_key(full_name): 
-                        self._used_classes_dict[full_name] = 1
+                        self._used_classes_dict[full_name] = {'count':1}
                     else:
-                        self._used_classes_dict[full_name] += 1
+                        self._used_classes_dict[full_name]['count'] += 1
                     if not isinstance(obj, Const):
-                        inspect.getmembers(obj)
-                    #for attr in inspect.getmembers(obj):
-                    #    sub_obj = attr[1]
-                    #    if not (inspect.isbuiltin(sub_obj) or inspect.isclass(sub_obj)):
-                    #        if self._handle_obj(sub_obj):
-                    #            print "Gotcha!"
+                        #inspect.getmembers(obj)
+                        #dir(obj)
+                        for attr in inspect.getmembers(obj):
+                            sub_obj = attr[1]
+                            if not (inspect.isbuiltin(sub_obj) or inspect.isclass(sub_obj) or inspect.ismethod(sub_obj) or inspect.isfunction(sub_obj)):
+                                if self._handle_obj(sub_obj):
+                                    if not self._used_classes_dict[full_name].has_key(attr[0]):
+                                        self._used_classes_dict[full_name][attr[0]] = Set([inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__])
+                                    else:
+                                        self._used_classes_dict[full_name][attr[0]].add(inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__)
                 else:
                     self._non_project_classes += 1
                 #if isinstance(frame.f_locals[var], NodeNG):
@@ -63,24 +68,51 @@ class CSUDbg(Bdb):
         self._no_more_trace = True
         
 
+project_mark = 'logilab'
+used_classes_dict = {}
+project_classes = 0
+non_project_classes = 0
 trace_file = None
 dot_nodes = {}
 dot_edges = {}
 no_more_trace = False
-
 test_var = 3
+
+def handle_obj(obj):
+        module = inspect.getmodule(obj)
+        if module:
+            if(module.__name__.find(project_mark)!=-1):
+                return True
+        return False 
 
 def test_func(str1):
     a = 4
     print str1
 
-def trace_calls(frame, event, arg):
-    if event != 'call':
-        return
-    co = frame.f_code
-    func_name = co.co_name
-    trace_file.write(func_name+'\n')
-    return 
+def trace_logilab(frame, event, arg):
+    global used_classes_dict, project_classes, non_project_classes
+    if(no_more_trace):
+            return
+    for  var in frame.f_locals:
+        obj = frame.f_locals[var]
+        if not (inspect.isbuiltin(obj) or inspect.isclass(obj)):
+            if handle_obj(obj):
+                project_classes += 1
+                full_name = inspect.getmodule(obj).__name__+'.'+obj.__class__.__name__
+                if not used_classes_dict.has_key(full_name): 
+                    used_classes_dict[full_name] = 1
+                else:
+                    used_classes_dict[full_name] += 1
+                if not isinstance(obj, Const):
+                    inspect.getmembers(obj)
+                        #dir(obj)
+                    #for attr in inspect.getmembers(obj):
+                    #    sub_obj = attr[1]
+                    #    if not (inspect.isbuiltin(sub_obj) or inspect.isclass(sub_obj)):
+                    #        if self._handle_obj(sub_obj):
+                    #            print "Gotcha!"
+                else:
+                    non_project_classes += 1
 
 def trace_modules(frame, event, arg):
     '''Trace calls between modules, and generate dot graph'''
@@ -106,16 +138,15 @@ def trace_modules(frame, event, arg):
 
 if __name__ == '__main__':
     #trace_file = open('trace.log','w')
-    #sys.settrace(trace_modules)
-    dbg = CSUDbg(project_mark='logilab')
+    sys.settrace(trace_logilab)
+    #dbg = CSUDbg(project_mark='logilab')
     test = CallFunc()
-    dbg.set_trace()
+    #dbg.set_trace()
     #test_func("Arg")
-    #main.Run(sys.argv[1:])
+    main.Run(sys.argv[1:])
     # for multi-threading
     no_more_trace = True
-    used_classes = dbg.get_used_classes()
+    used_classes = used_classes_dict
     for key, value in sorted(used_classes.iteritems(), key=lambda (k,v): (v,k)):
         print "%s: %s" % (key, value)
     print len(used_classes.keys())
-    print dbg.get_classes_usage()

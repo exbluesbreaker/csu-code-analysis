@@ -67,11 +67,11 @@ class ClassIRRunner(ConfigurationMixIn):
     _process_candidates = False
     _ducks_count = 0
     _found_ducks = 0
-    _prob_used_classes = Set([])
+    _prob_used_classes = None
     _all_attrs_num = 0
     _complex_ducks = 0
     _assigned_ducks = 0
-    _dbg_assattr_parents =Set([]) 
+    _dbg_assattr_parents = None 
     _list_attrs = [attr for attr in dir([]) if not re.search('\A(?!_)',attr)]
     _list_methods = [attr for attr in dir([]) if re.search('\A(?!_)',attr)]
     _dict_attrs = [attr for attr in dir({}) if not re.search('\A(?!_)',attr)]
@@ -81,6 +81,8 @@ class ClassIRRunner(ConfigurationMixIn):
     
     def __init__(self, args,process_candidates=False):
         ConfigurationMixIn.__init__(self, usage=__doc__)
+        self._prob_used_classes = Set([])
+        self._dbg_assattr_parents = Set([])
         self._process_candidates = process_candidates
         insert_default_options()
         self.manager = ASTNGManager()
@@ -336,11 +338,12 @@ class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
     _successes = 0
     _fails = 0
     _tree = None
-    _complete_signatures = {}
+    _complete_signatures = None
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
         ClassIRHandler.__init__(self, args)
+        _complete_signatures = {}
         self.run(args)
         
     def _compute_signature(self,id,curr_node=None):
@@ -391,7 +394,7 @@ class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
         for id in self._complete_signatures.keys():
             if  self._complete_signatures[id]['ProbUsed']== True:
                 prob_used_classes+=1
-        print "Numbers of ducks: ",len(ducks)
+        print "Numbers of d _no_more_trace = Falseucks: ",len(ducks)
         print "Found ducks: ",found_ducks, " percentage: ",round(100*float(found_ducks)/len(ducks),1), " %"
         print "Numbers of classes: ",len(self._complete_signatures.keys())
         print "Probably used (as field) classes: ",prob_used_classes," percentage: ",round(100*float(prob_used_classes)/len(self._complete_signatures.keys()),1), " %"
@@ -445,11 +448,12 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
     # search for probable inheritance mistakes
     
     options = OPTIONS
-    _methods = {}
+    _methods = None
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
         ClassIRHandler.__init__(self, args)
+        self._methods = {}
         self.run()
     
     def run(self):
@@ -488,6 +492,8 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
 
 class LogilabObjectTracer(ConfigurationMixIn):
     
+    options = OPTIONS
+    
     def __init__(self, args):
         self._dbg = CSUDbg(project_mark='logilab')
         self._dbg.set_trace()
@@ -509,6 +515,12 @@ class LogilabObjectTracer(ConfigurationMixIn):
         handler = DiadefsHandler(self.config)
         diadefs = handler.get_diadefs(project, linker)
         self._dbg.disable_trace()
+        print self._dbg.get_classes_usage() 
+        used_classes = self._dbg.get_used_classes()
+        print used_classes
+        #for key, value in sorted(used_classes.iteritems(), key=lambda (k,v): (v,k)):
+        #    print "%s: %s" % (key, value)
+        print len(used_classes.keys())
         
        
         
