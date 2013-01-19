@@ -282,7 +282,7 @@ class ClassIRRunner(ConfigurationMixIn):
         root = etree.Element("Classes")
         for obj in diadefs[1].objects:
             self._all_classes +=1
-            node = etree.Element("Class",name=obj.title,id=str(obj.fig_id))
+            node = etree.Element("Class",name=obj.title,id=str(obj.fig_id),label=obj.node.root().name)
             mapper[obj] = node
             root.append(node)
             for attr in obj.attrs:
