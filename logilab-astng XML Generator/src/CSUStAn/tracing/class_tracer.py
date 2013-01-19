@@ -33,9 +33,9 @@ class CSUDbg(Bdb):
                     self._project_classes += 1
                     full_name = inspect.getmodule(obj).__name__+'.'+obj.__class__.__name__
                     if not self._used_classes_dict.has_key(full_name): 
-                        self._used_classes_dict[full_name] = {'count':1}
+                        self._used_classes_dict[full_name] = [1,{}]
                     else:
-                        self._used_classes_dict[full_name]['count'] += 1
+                        self._used_classes_dict[full_name][0] += 1
                     if not isinstance(obj, Const):
                         #inspect.getmembers(obj)
                         #dir(obj)
@@ -43,10 +43,10 @@ class CSUDbg(Bdb):
                             sub_obj = attr[1]
                             if not (inspect.isbuiltin(sub_obj) or inspect.isclass(sub_obj) or inspect.ismethod(sub_obj) or inspect.isfunction(sub_obj)):
                                 if self._handle_obj(sub_obj):
-                                    if not self._used_classes_dict[full_name].has_key(attr[0]):
-                                        self._used_classes_dict[full_name][attr[0]] = Set([inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__])
+                                    if not self._used_classes_dict[full_name][1].has_key(attr[0]):
+                                        self._used_classes_dict[full_name][1][attr[0]] = Set([inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__])
                                     else:
-                                        self._used_classes_dict[full_name][attr[0]].add(inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__)
+                                        self._used_classes_dict[full_name][1][attr[0]].add(inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__)
                 else:
                     self._non_project_classes += 1
                 #if isinstance(frame.f_locals[var], NodeNG):

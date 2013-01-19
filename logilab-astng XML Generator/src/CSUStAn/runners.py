@@ -489,12 +489,31 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
             if(not self._assign_method(parent, method, False)):
                 return False            
         return True
+    
+class TypesComparator(ClassIRHandler):
+    
+    #dictionary with information about types, got from running program
+    _dynamic_types_info = None
+    _result = None
+    
+    def __init__(self, class_ir_file):
+        ClassIRHandler.__init__(self, [class_ir_file])
+        self._result = {'not_found_types':0,'incorrect_types':0,'correct_types':0}
+        
+    def compare_type_info(self):
+        for current_class in self._dynamic_types_info.keys():
+            print current_class
+            for field in self._dynamic_types_info[current_class][1].keys():
+                print "    ",field
+                for type in self._dynamic_types_info[current_class][1][field]:
+                    print "    ","    ",type
 
-class LogilabObjectTracer(ConfigurationMixIn):
+class LogilabObjectTracer(ConfigurationMixIn,TypesComparator):
     
     options = OPTIONS
     
     def __init__(self, args):
+        TypesComparator.__init__(self, args[1])
         self._dbg = CSUDbg(project_mark='logilab')
         self._dbg.set_trace()
         ConfigurationMixIn.__init__(self, usage=__doc__)
@@ -515,12 +534,14 @@ class LogilabObjectTracer(ConfigurationMixIn):
         handler = DiadefsHandler(self.config)
         diadefs = handler.get_diadefs(project, linker)
         self._dbg.disable_trace()
-        print self._dbg.get_classes_usage() 
+        #print self._dbg.get_classes_usage() 
         used_classes = self._dbg.get_used_classes()
-        print used_classes
+        self._dynamic_types_info = used_classes
+        self.compare_type_info()
+        #print used_classes
         #for key, value in sorted(used_classes.iteritems(), key=lambda (k,v): (v,k)):
         #    print "%s: %s" % (key, value)
-        print len(used_classes.keys())
+        #print len(used_classes.keys())
         
        
         

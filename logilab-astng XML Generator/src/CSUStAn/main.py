@@ -134,6 +134,6 @@ elif(args.type=="FieldCandidates"):
     runner = FieldCandidateFinder([args.in_file])
 elif(args.type=="LogilabObjectTracer"):
     sys.argv = ["main.py",args.project]
-    runner = LogilabObjectTracer([args.project])
+    runner = LogilabObjectTracer([args.project,args.in_file])
 else:
     print "Unknown type!"
