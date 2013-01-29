@@ -204,6 +204,7 @@ class ClassIRRunner(ConfigurationMixIn):
             else:
                 rel.from_object.csu_parents=[rel.to_object]
         bad_ducks = 0
+        empty_ducks = 0
         # First pass for collecting "duck" information about fields 
         for obj in diadefs[1].objects:
             self._compute_signature(obj)
@@ -234,14 +235,14 @@ class ClassIRRunner(ConfigurationMixIn):
                         duck_methods = current_class.ducks[duck]['element_signature']['methods']
                     else:
                         # duck of complex type and no duck info about element
-                        bad_ducks += 1
+                        empty_ducks += 1
                         continue
                 else:
                     duck_attrs = current_class.ducks[duck]['attrs']
                     duck_methods = current_class.ducks[duck]['methods']
                 # ignore empty ducks
                 if((not duck_attrs) and (not duck_methods)):
-                    bad_ducks += 1
+                    empty_ducks += 1
                     continue
                 duck_found = False
                 for field_candidate in diadefs[1].objects:
@@ -268,7 +269,8 @@ class ClassIRRunner(ConfigurationMixIn):
                 if(not duck_found):
                     bad_ducks += 1
                     print "Bad duck - ",duck_attrs, duck_methods     
-        print "Bad ducks ", bad_ducks                    
+        print "Bad ducks ", bad_ducks
+        print "Empty ducks ", empty_ducks                    
         print "Numbers of ducks: ", self._ducks_count
         print "Numbers of ducks with assignment in class: ", self._assigned_ducks
         print "Numbers of ducks with complex type: ", self._complex_ducks
@@ -285,9 +287,7 @@ class ClassIRRunner(ConfigurationMixIn):
             node = etree.Element("Class",name=obj.title,id=str(obj.fig_id),label=obj.node.root().name)
             mapper[obj] = node
             root.append(node)
-            for attr in obj.attrs:
-                # drop type specification in attr name, if it exists
-                attrname = re.search('[^ :]*',attr).group(0)
+            for attrname in Set([re.search('[^ :]*',attr).group(0) for attr in obj.attrs]):
                 attr_node = etree.Element('Attr',name=attrname,modifier='public')
                 node.append(attr_node)
                 if(obj.ducks and (attrname in obj.ducks)):
@@ -320,16 +320,52 @@ class ClassIRHandler:
     # Process XML class IR
     _tree = None
     _classes = None
+    _full_name_dict = None
+    _id_dict = None
     def __init__(self, args):
         if(len(args)!=1):
             print "usage <> <file name>"
             exit(0)
         self._tree = etree.parse(args[0])
-        self._classes = [node for node in self._tree.iter("Class")] 
+        self._classes = [node for node in self._tree.iter("Class")]
+        self._full_name_dict = {}
+        self._id_dict = {}
+        for class_node in self._classes:
+            self._full_name_dict[class_node.get("label")+'.'+class_node.get("name")] = class_node
+            self._id_dict[class_node.get("id")] = class_node      
     def get_methods(self,node):
         return Set([meth.get("name") for meth in node.iter("Method")])
+    def get_attrs(self,node):
+        return Set([attr.get("name") for attr in node.iter("Attr")])
+    def get_attr(self,node, attrname):
+        attrs = [attr for attr in node.iter("Attr") if (attr.get("name")==attrname)]
+        if len(attrs)==0:
+            print node.get("id"), attrname
+            return None
+        else:
+            return attrs[0]
+    def get_common_type(self,node, attrname, type_set= None):
+        if type_set is None:
+            type_set = Set([])
+        attr = self.get_attr(node, attrname)
+        if attr is not None:
+            type_set |= Set([self._id_dict[type.get("id")].get("label")+'.'+self._id_dict[type.get("id")].get("name") for type in attr.iter("CommonType")])
+        for parent in self.get_parents(node):
+            self.get_common_type(parent, attrname, type_set)
+        return type_set
     def get_parents(self,node):
         return [self._tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in node.iter("Parent")]
+    def get_class_by_full_name(self,full_name):
+        if self._full_name_dict.has_key(full_name):
+            return self._full_name_dict[full_name]
+        else: 
+            print "None get_class_by_full_name", full_name
+            return None
+    def get_class_by_id(self,class_id):
+        if self._id_dict.has_key(class_id):
+            return self._id_dict[class_id]
+        else: 
+            return None
 
 class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
     # scan classes description for candidate for class's field
@@ -498,15 +534,24 @@ class TypesComparator(ClassIRHandler):
     
     def __init__(self, class_ir_file):
         ClassIRHandler.__init__(self, [class_ir_file])
-        self._result = {'not_found_types':0,'incorrect_types':0,'correct_types':0}
+        self._result = {'not_found_types':0,'correct_types':0}
         
     def compare_type_info(self):
         for current_class in self._dynamic_types_info.keys():
-            print current_class
-            for field in self._dynamic_types_info[current_class][1].keys():
-                print "    ",field
-                for type in self._dynamic_types_info[current_class][1][field]:
-                    print "    ","    ",type
+            node = self.get_class_by_full_name(current_class)
+            if node is None:
+                    continue
+            for attrname in self._dynamic_types_info[current_class][1].keys():
+                common_type = self.get_common_type(node,attrname)
+                for type in self._dynamic_types_info[current_class][1][attrname]:
+                    if type in common_type:
+                        self._result['correct_types']+=1
+                    else:
+                        print "not found", common_type, attrname, node.get("id")
+                        self._result['not_found_types']+=1
+    def get_result(self):
+        return self._result.copy()
+                        
 
 class LogilabObjectTracer(ConfigurationMixIn,TypesComparator):
     
@@ -538,6 +583,7 @@ class LogilabObjectTracer(ConfigurationMixIn,TypesComparator):
         used_classes = self._dbg.get_used_classes()
         self._dynamic_types_info = used_classes
         self.compare_type_info()
+        print self.get_result()
         #print used_classes
         #for key, value in sorted(used_classes.iteritems(), key=lambda (k,v): (v,k)):
         #    print "%s: %s" % (key, value)

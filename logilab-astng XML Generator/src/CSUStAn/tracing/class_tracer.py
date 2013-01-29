@@ -6,6 +6,7 @@ Created on 08.01.2013
 import sys
 from bdb import Bdb
 import inspect
+import pdb
 from operator import itemgetter
 from pylint.pyreverse import main
 from logilab.astng.node_classes import *
@@ -27,9 +28,7 @@ class CSUDbg(Bdb):
             return
         for  var in frame.f_locals:
             obj = frame.f_locals[var]
-            if not (inspect.isbuiltin(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj)):
-                #print inspect.getfile(frame.f_locals[var])
-                if self._handle_obj(obj):
+            if self._handle_obj(obj):
                     self._project_classes += 1
                     full_name = inspect.getmodule(obj).__name__+'.'+obj.__class__.__name__
                     if not self._used_classes_dict.has_key(full_name): 
@@ -41,13 +40,12 @@ class CSUDbg(Bdb):
                         #dir(obj)
                         for attr in inspect.getmembers(obj):
                             sub_obj = attr[1]
-                            if not (inspect.isbuiltin(sub_obj) or inspect.isclass(sub_obj) or inspect.ismethod(sub_obj) or inspect.isfunction(sub_obj)):
-                                if self._handle_obj(sub_obj):
+                            if self._handle_obj(sub_obj):
                                     if not self._used_classes_dict[full_name][1].has_key(attr[0]):
                                         self._used_classes_dict[full_name][1][attr[0]] = Set([inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__])
                                     else:
                                         self._used_classes_dict[full_name][1][attr[0]].add(inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__)
-                else:
+            else:
                     self._non_project_classes += 1
                 #if isinstance(frame.f_locals[var], NodeNG):
                 #    print frame.f_locals[var]
@@ -59,6 +57,8 @@ class CSUDbg(Bdb):
     def get_most_popular_classes(self):
         pass
     def _handle_obj(self,obj):
+        if (inspect.ismethod(obj) or inspect.isclass(obj) or inspect.istraceback(obj) or inspect.isbuiltin(obj) or inspect.ismodule(obj) or inspect.isfunction(obj)):
+            return False
         module = inspect.getmodule(obj)
         if module:
             if(module.__name__.find(self._project_mark)!=-1):
