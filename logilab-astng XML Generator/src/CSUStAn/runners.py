@@ -339,19 +339,18 @@ class ClassIRHandler:
         return Set([attr.get("name") for attr in node.iter("Attr")])
     def get_attr(self,node, attrname):
         attrs = [attr for attr in node.iter("Attr") if (attr.get("name")==attrname)]
-        if len(attrs)==0:
-            print node.get("id"), attrname
+        if(len(attrs)==0):
             return None
         else:
             return attrs[0]
-    def get_common_type(self,node, attrname, type_set= None):
+    def get_type(self,type_mark,node, attrname, type_set= None):
         if type_set is None:
             type_set = Set([])
         attr = self.get_attr(node, attrname)
         if attr is not None:
-            type_set |= Set([self._id_dict[type.get("id")].get("label")+'.'+self._id_dict[type.get("id")].get("name") for type in attr.iter("CommonType")])
+            type_set |= Set([self._id_dict[type.get("id")].get("label")+'.'+self._id_dict[type.get("id")].get("name") for type in attr.iter(type_mark)])
         for parent in self.get_parents(node):
-            self.get_common_type(parent, attrname, type_set)
+            self.get_type(type_mark,parent, attrname, type_set)
         return type_set
     def get_parents(self,node):
         return [self._tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in node.iter("Parent")]
@@ -534,7 +533,7 @@ class TypesComparator(ClassIRHandler):
     
     def __init__(self, class_ir_file):
         ClassIRHandler.__init__(self, [class_ir_file])
-        self._result = {'not_found_types':0,'correct_types':0}
+        self._result = {'not_found_common_types':0,'correct_common_types':0,'not_found_aggr_types':0,'correct_aggr_types':0}
         
     def compare_type_info(self):
         for current_class in self._dynamic_types_info.keys():
@@ -542,13 +541,19 @@ class TypesComparator(ClassIRHandler):
             if node is None:
                     continue
             for attrname in self._dynamic_types_info[current_class][1].keys():
-                common_type = self.get_common_type(node,attrname)
-                for type in self._dynamic_types_info[current_class][1][attrname]:
+                common_type = self.get_type("CommonType",node,attrname)
+                aggr_type = self.get_type("AggregatedType",node,attrname)
+                for type in self._dynamic_types_info[current_class][1][attrname]['common_type']:
                     if type in common_type:
-                        self._result['correct_types']+=1
+                        self._result['correct_common_types']+=1
                     else:
-                        print "not found", common_type, attrname, node.get("id")
-                        self._result['not_found_types']+=1
+                        self._result['not_found_common_types']+=1
+                for type in self._dynamic_types_info[current_class][1][attrname]['aggregated_type']:
+                    if type in aggr_type:
+                        self._result['correct_aggr_types']+=1
+                    else:
+                        self._result['not_found_aggr_types']+=1
+                        #print "Not found aggr type ",type
     def get_result(self):
         return self._result.copy()
                         

@@ -40,16 +40,33 @@ class CSUDbg(Bdb):
                         #dir(obj)
                         for attr in inspect.getmembers(obj):
                             sub_obj = attr[1]
-                            if self._handle_obj(sub_obj):
+                            complex_type = self._check_complex_attr(sub_obj)
+                            if complex_type is not None:
+                                #add complex type info
+                                if not self._used_classes_dict[full_name][1].has_key(attr[0]):
+                                    self._used_classes_dict[full_name][1][attr[0]] = {'common_type':Set([]),'aggregated_type':Set([complex_type])}
+                                else:
+                                    self._used_classes_dict[full_name][1][attr[0]]['aggregated_type'].add(complex_type)
+                                pass 
+                            elif self._handle_obj(sub_obj):
+                                    #add common type info
                                     if not self._used_classes_dict[full_name][1].has_key(attr[0]):
-                                        self._used_classes_dict[full_name][1][attr[0]] = Set([inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__])
+                                        self._used_classes_dict[full_name][1][attr[0]] = {'common_type':Set([inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__]),'aggregated_type':Set([])}
                                     else:
-                                        self._used_classes_dict[full_name][1][attr[0]].add(inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__)
+                                        self._used_classes_dict[full_name][1][attr[0]]['common_type'].add(inspect.getmodule(sub_obj).__name__+'.'+sub_obj.__class__.__name__)
             else:
                     self._non_project_classes += 1
-                #if isinstance(frame.f_locals[var], NodeNG):
-                #    print frame.f_locals[var]
-        #print "I debugging it!"
+    def _check_complex_attr(self,obj):
+        if type(obj) in(list,tuple):
+            if(len(obj)>0):
+                if self._handle_obj(obj[0]):
+                    return inspect.getmodule(obj[0]).__name__+'.'+obj[0].__class__.__name__
+        if type(obj) is dict:
+            dict_keys = obj.keys()
+            if(len(dict_keys)>0):
+                if self._handle_obj(obj[dict_keys[0]]):
+                    return inspect.getmodule(obj[dict_keys[0]]).__name__+'.'+obj[dict_keys[0]].__class__.__name__
+        return None
     def get_used_classes(self):
         return self._used_classes_dict.copy()
     def get_classes_usage(self):
