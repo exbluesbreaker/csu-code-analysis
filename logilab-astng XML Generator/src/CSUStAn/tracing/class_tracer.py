@@ -39,6 +39,9 @@ class CSUDbg(Bdb):
                         #inspect.getmembers(obj)
                         #dir(obj)
                         for attr in inspect.getmembers(obj):
+                            if(attr[0]=='__dict__'):
+                                #__dict__ is not related to aggregation and will be ignored
+                                continue
                             sub_obj = attr[1]
                             complex_type = self._check_complex_attr(sub_obj)
                             if complex_type is not None:
@@ -60,11 +63,19 @@ class CSUDbg(Bdb):
         if type(obj) in(list,tuple):
             if(len(obj)>0):
                 if self._handle_obj(obj[0]):
+                    for element in obj[1:]:
+                        if(not type(element) is type(obj[0])):
+                            # list or tuple with different element types
+                            return None
                     return inspect.getmodule(obj[0]).__name__+'.'+obj[0].__class__.__name__
         if type(obj) is dict:
             dict_keys = obj.keys()
             if(len(dict_keys)>0):
                 if self._handle_obj(obj[dict_keys[0]]):
+                    for key in dict_keys[1:]:
+                        if(not type(obj[key]) is type(obj[dict_keys[0]])):
+                            # dict with different element types
+                            return None
                     return inspect.getmodule(obj[dict_keys[0]]).__name__+'.'+obj[dict_keys[0]].__class__.__name__
         return None
     def get_used_classes(self):

@@ -78,6 +78,7 @@ class ClassIRRunner(ConfigurationMixIn):
     _dict_methods = [attr for attr in dir({}) if re.search('\A(?!_)',attr)]
     _tuple_attrs = [attr for attr in dir(()) if not re.search('\A(?!_)',attr)]
     _tuple_methods = [attr for attr in dir(()) if re.search('\A(?!_)',attr)]
+    _attr_iteration_cycles = 0
     
     def __init__(self, args,process_candidates=False):
         ConfigurationMixIn.__init__(self, usage=__doc__)
@@ -110,12 +111,35 @@ class ClassIRRunner(ConfigurationMixIn):
             node.csu_complete_signatures['Methods'] |= parent_signature['Methods']
         return node.csu_complete_signatures
     
+    """ Check body of cycle, which iterating over class's field"""
+    def _check_cycle(self,node,iter_name,attr,duck_dict):
+        if isinstance(node, Getattr):
+            if(node.expr.as_string()==iter_name):
+                if(not duck_dict[attr].has_key('element_signature')):
+                           duck_dict[attr]['element_signature']={'attrs':Set([]),'methods':Set([])} 
+                if isinstance(node.parent,CallFunc):
+                    duck_dict[attr]['element_signature']['methods'].add(node.attrname)
+                else:
+                    duck_dict[attr]['element_signature']['attrs'].add(node.attrname)           
+        for child in node.get_children():
+            duck_dict = self._check_cycle(child,iter_name,attr,duck_dict)
+        return duck_dict
+    
     """ Extract information about class fields usage """
     def _extract_duck_info(self,node,attrs,duck_dict=None):
         if(duck_dict is None):
             duck_dict = {}
         if isinstance(node, Getattr):
             if(node.expr.as_string()=="self"):
+                if isinstance(node.parent, For):
+                    if(not duck_dict.has_key(node.attrname)):
+                        self._ducks_count +=1
+                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[],'complex_type':'Unknown','assigned':False}
+                    self._attr_iteration_cycles +=1
+                    if isinstance(node.parent.target, AssName):
+                        print node.parent.as_string()
+                        for body in node.parent.body:
+                            duck_dict = self._check_cycle(body,node.parent.target.name,node.attrname,duck_dict)
                 if(node.attrname not in attrs):
                     #print node.attrname,node.parent, node.fromlineno, node.root()
                     #print attrs
@@ -553,7 +577,7 @@ class TypesComparator(ClassIRHandler):
                         self._result['correct_aggr_types']+=1
                     else:
                         self._result['not_found_aggr_types']+=1
-                        #print "Not found aggr type ",type
+                        print "Not found aggr ", current_class, attrname, type
     def get_result(self):
         return self._result.copy()
                         
