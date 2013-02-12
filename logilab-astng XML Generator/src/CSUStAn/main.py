@@ -119,6 +119,7 @@ parser.add_argument("-t", action="store",required=True, type=str, dest="type")
 parser.add_argument("-o", action="store", type=str, default="out.xml", dest="out_file")
 parser.add_argument("-i", action="store", type=str, default="in.xml", dest="in_file")
 parser.add_argument("-p", action="store", type=str, dest="project")
+parser.add_argument("--preload", default="types.xml", dest="preload_file")
 parser.add_argument('--ducks', action='store_true', default=False, dest="process_ducks")
 args = parser.parse_args()
 print args.type
@@ -134,9 +135,9 @@ elif(args.type=="FieldCandidates"):
     runner = FieldCandidateFinder([args.in_file])
 elif(args.type=="LogilabObjectTracer"):
     sys.argv = ["main.py",args.project]
-    runner = LogilabObjectTracer([args.project,args.in_file])
+    runner = LogilabObjectTracer(args.in_file,args.preload_file)
 elif(args.type=="TwistedObjectTracer"):
     sys.argv = ["main.py","-h ftp.mozilla.org"]
-    runner = TwistedObjectTracer(args.in_file)
+    runner = TwistedObjectTracer(args.in_file,args.preload_file)
 else:
     print "Unknown type!"

@@ -15,9 +15,11 @@ from pylint.pyreverse import writer
 from CSUStAn.astng.simple import NamesCheckLinker
 from CSUStAn.tracing.class_tracer import CSUDbg
 from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGenerator,SourceModelXMLGenerator
-from CSUStAn.tests import twisted_ftpclient, twisted_getpage
+from CSUStAn.tests import twisted_ftpclient, twisted_getpage, twisted_ptyserv, twisted_testlogging
 from lxml import etree
 from twisted.internet import reactor
+from pylint.pyreverse import main
+import subprocess
 
 # must be refactored
 from logilab.astng.node_classes import *
@@ -653,31 +655,16 @@ class TypesComparator(ClassIRHandler):
         return self._result.copy()
                         
 
-class LogilabObjectTracer(ConfigurationMixIn,TypesComparator):
+class LogilabObjectTracer(TypesComparator):
     
-    options = OPTIONS
-    
-    def __init__(self, args):
-        TypesComparator.__init__(self, args[1])
+    def __init__(self, in_file, preload_file):
+        TypesComparator.__init__(self, in_file,'logilab',preload_file)
         self._dbg = CSUDbg(project_mark='logilab')
         self._dbg.set_trace()
-        ConfigurationMixIn.__init__(self, usage=__doc__)
-        insert_default_options()
-        self.manager = ASTNGManager()
-        self.register_options_provider(self.manager)
-        args = self.load_command_line_configuration()
-        self.run(args)
+        self.run()
         
-    def run(self, args):
-        """checking arguments and run project"""
-        if not args:
-            print self.help()
-            return
-        project = self.manager.project_from_files(args, astng_wrapper)
-        self.project = project
-        linker = Linker(project, tag=True)
-        handler = DiadefsHandler(self.config)
-        diadefs = handler.get_diadefs(project, linker)
+    def run(self):
+        main.Run(sys.argv[1:])
         self._dbg.disable_trace()
         #print self._dbg.get_classes_usage() 
         used_classes = self._dbg.get_used_classes()
@@ -692,17 +679,18 @@ class LogilabObjectTracer(ConfigurationMixIn,TypesComparator):
 
 class TwistedObjectTracer(TypesComparator):
     
-    options = OPTIONS
-    
-    def __init__(self, in_file):
-        TypesComparator.__init__(self, in_file,'twisted','types.xml')
+    def __init__(self, in_file,preload_file):
+        TypesComparator.__init__(self, in_file,'twisted',preload_file)
         self._dbg = CSUDbg(project_mark='twisted',preload_dt_info=self._preload_dt_info)
         self._dbg.set_trace()
         self.run()
         
     def run(self):
-        twisted_ftpclient.run()
+        #twisted_ftpclient.run()
         #twisted_getpage.get_page("http://en.wikipedia.org/wiki/Main_Page")
+        #twisted_ptyserv.run()
+        #twisted_testlogging.run()
+        subprocess.call(["python2.7","/home/bluesbreaker/Development/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStAn/tests/twisted_ftpclient.py"])
         self._dbg.disable_trace()
         used_classes = self._dbg.get_used_classes()
         self._dynamic_types_info = used_classes
