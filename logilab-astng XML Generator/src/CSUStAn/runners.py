@@ -653,49 +653,39 @@ class TypesComparator(ClassIRHandler):
             
     def get_result(self):
         return self._result.copy()
-                        
-
-class LogilabObjectTracer(TypesComparator):
     
-    def __init__(self, in_file, preload_file):
-        TypesComparator.__init__(self, in_file,'logilab',preload_file)
-        self._dbg = CSUDbg(project_mark='logilab')
+
+class ObjectTracer(TypesComparator):
+    def __init__(self, project_tag, in_file, preload_file):
+        TypesComparator.__init__(self, in_file,project_tag,preload_file)
+        self._dbg = CSUDbg(project_mark=project_tag)
         self._dbg.set_trace()
         self.run()
+        self._dbg.disable_trace()
+        used_classes = self._dbg.get_used_classes()
+        self._dynamic_types_info = used_classes
+        self.compare_type_info()
+        print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
+        print self.get_result()
+                        
+
+class LogilabObjectTracer(ObjectTracer):
+    
+    def __init__(self, in_file, preload_file):
+        ObjectTracer.__init__(self,'logilab', in_file ,preload_file)
         
     def run(self):
         main.Run(sys.argv[1:])
-        self._dbg.disable_trace()
-        #print self._dbg.get_classes_usage() 
-        used_classes = self._dbg.get_used_classes()
-        self._dynamic_types_info = used_classes
-        self.compare_type_info()
-        print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
-        print self.get_result()
-        #print used_classes
-        #for key, value in sorted(used_classes.iteritems(), key=lambda (k,v): (v,k)):
-        #    print "%s: %s" % (key, value)
-        #print len(used_classes.keys())
 
-class TwistedObjectTracer(TypesComparator):
+class TwistedObjectTracer(ObjectTracer):
     
     def __init__(self, in_file,preload_file):
-        TypesComparator.__init__(self, in_file,'twisted',preload_file)
-        self._dbg = CSUDbg(project_mark='twisted',preload_dt_info=self._preload_dt_info)
-        self._dbg.set_trace()
-        self.run()
+        ObjectTracer.__init__(self,'twisted', in_file ,preload_file)
         
     def run(self):
-        #twisted_ftpclient.run()
+        twisted_ftpclient.run()
         #twisted_getpage.get_page("http://en.wikipedia.org/wiki/Main_Page")
         #twisted_ptyserv.run()
         #twisted_testlogging.run()
-        subprocess.call(["python2.7","/home/bluesbreaker/Development/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStAn/tests/twisted_ftpclient.py"])
-        self._dbg.disable_trace()
-        used_classes = self._dbg.get_used_classes()
-        self._dynamic_types_info = used_classes
-        self.compare_type_info()
-        print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
-        print self.get_result()
        
         
