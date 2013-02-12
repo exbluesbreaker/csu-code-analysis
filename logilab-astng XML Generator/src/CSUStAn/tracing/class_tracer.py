@@ -19,10 +19,10 @@ class CSUDbg(Bdb):
     _project_classes = 0
     _non_project_classes = 0
     _no_more_trace = False
-    def __init__(self, project_mark, skip=None):
+    def __init__(self, project_mark,preload_dt_info={}, skip=None):
         Bdb.__init__(self, skip=skip)
         self._project_mark = project_mark
-        self._used_classes_dict = {}
+        self._used_classes_dict = preload_dt_info
     def trace_dispatch(self,frame, event, arg):
         if(self._no_more_trace):
             return

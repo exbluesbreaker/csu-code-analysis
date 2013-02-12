@@ -15,13 +15,16 @@ from pylint.pyreverse import writer
 from CSUStAn.astng.simple import NamesCheckLinker
 from CSUStAn.tracing.class_tracer import CSUDbg
 from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGenerator,SourceModelXMLGenerator
+from CSUStAn.tests import twisted_ftpclient, twisted_getpage
 from lxml import etree
+from twisted.internet import reactor
 
 # must be refactored
 from logilab.astng.node_classes import *
 from logilab.astng.scoped_nodes import *
 import re
 import pydot
+import os
 from sets import Set
 
 '''Entry points for different ASTNG processing'''
@@ -222,7 +225,7 @@ class ClassIRRunner(ConfigurationMixIn):
         diadefs = handler.get_diadefs(project, linker)
         # Add inheritance information to nodes
         # csu_parents will contain links to all parents of class
-        for rel in diadefs[1].relationships['specialization']:
+        for rel in diadefs[-1].relationships['specialization']:
             if hasattr(rel.from_object, "csu_parents"):
                 rel.from_object.csu_parents.append(rel.to_object)
             else:
@@ -230,7 +233,7 @@ class ClassIRRunner(ConfigurationMixIn):
         bad_ducks = 0
         empty_ducks = 0
         # First pass for collecting "duck" information about fields 
-        for obj in diadefs[1].objects:
+        for obj in diadefs[-1].objects:
             self._compute_signature(obj)
             attr_names = [re.search('[^ :]*',s).group(0) for s in obj.attrs]
             self._all_attrs_num += len(attr_names)
@@ -244,7 +247,7 @@ class ClassIRRunner(ConfigurationMixIn):
             obj.ducks=duck_dict
         successes = 0
         #Second pass  for processing "duck" information and generate information about types
-        for current_class in diadefs[1].objects:
+        for current_class in diadefs[-1].objects:
             if (current_class.ducks is None):
                 continue
             for duck in current_class.ducks.keys():
@@ -269,7 +272,7 @@ class ClassIRRunner(ConfigurationMixIn):
                     empty_ducks += 1
                     continue
                 duck_found = False
-                for field_candidate in diadefs[1].objects:
+                for field_candidate in diadefs[-1].objects:
                     complex_type = self._check_complex_type(duck_attrs, duck_methods)
                     if(complex_type):
                         #DEBUG
@@ -300,13 +303,13 @@ class ClassIRRunner(ConfigurationMixIn):
         print "Numbers of ducks with complex type: ", self._complex_ducks
         print "Found ducks: ",self._found_ducks, " percentage: ",round(100*float(self._found_ducks)/self._ducks_count,1), " %"
         print "Numbers of all attributes in project: ", self._all_attrs_num, " percentage of found attrs: ",round(100*float(self._found_ducks)/self._all_attrs_num,1), " %"
-        print "Numbers of classes: ",len(diadefs[1].objects)
-        print "Probably used (as field) classes: ",len(self._prob_used_classes)," percentage: ",round(100*float(len(self._prob_used_classes))/len(diadefs[1].objects),1), " %"
+        print "Numbers of classes: ",len(diadefs[-1].objects)
+        print "Probably used (as field) classes: ",len(self._prob_used_classes)," percentage: ",round(100*float(len(self._prob_used_classes))/len(diadefs[-1].objects),1), " %"
         
         # result XML generation
         mapper = {}
         root = etree.Element("Classes")
-        for obj in diadefs[1].objects:
+        for obj in diadefs[-1].objects:
             self._all_classes +=1
             node = etree.Element("Class",name=obj.title,id=str(obj.fig_id),label=obj.node.root().name)
             mapper[obj] = node
@@ -331,13 +334,14 @@ class ClassIRRunner(ConfigurationMixIn):
                     if not arg.name == 'self':
                         meth_node.append(etree.Element('Arg',name=arg.name))
                 node.append(meth_node)
-        for rel in diadefs[1].relationships['specialization']:
+        for rel in diadefs[-1].relationships['specialization']:
             mapper[rel.from_object].append(etree.Element('Parent',name=rel.to_object.title,id=str(rel.to_object.fig_id)))
         f = open('test.xml','w')
         f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
         #print self._good_gettatr,self._bad_gettatr
         #print self._all_ducks
+        
         #print self._all_classes
         
 class ClassIRHandler:
@@ -389,6 +393,8 @@ class ClassIRHandler:
             return self._id_dict[class_id]
         else: 
             return None
+    def get_num_of_classes(self):
+        return len(self._classes)
 
 class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
     # scan classes description for candidate for class's field
@@ -554,12 +560,21 @@ class TypesComparator(ClassIRHandler):
     #dictionary with information about types, got from running program
     _dynamic_types_info = None
     _result = None
+    _result_file = None
+    _project = None
+    _preload_dt_info = None
     
-    def __init__(self, class_ir_file):
+    def __init__(self, class_ir_file,project,result_file=None):
         ClassIRHandler.__init__(self, [class_ir_file])
+        self._project = project
         self._result = {'not_found_common_types':0,'correct_common_types':0,'not_found_aggr_types':0,'correct_aggr_types':0}
+        if result_file is not None:
+            self._result_file = result_file
+            self.preload_results()
         
     def compare_type_info(self):
+        #Save result
+        self.save_result()
         for current_class in self._dynamic_types_info.keys():
             node = self.get_class_by_full_name(current_class)
             if node is None:
@@ -578,6 +593,62 @@ class TypesComparator(ClassIRHandler):
                     else:
                         self._result['not_found_aggr_types']+=1
                         print "Not found aggr ", current_class, attrname, type
+    def save_result(self):
+        if(self._result_file is not None):
+            if(os.path.exists(self._result_file)):
+                parser = etree.XMLParser(remove_blank_text=True)
+                tree = etree.parse(self._result_file, parser)
+                projects = [node for node in tree.getroot().iter("Project") if node.get("name")==self._project]
+                for project in projects:
+                    tree.getroot().remove(project)
+                project = etree.Element("Project",name=self._project)
+                tree.getroot().append(project)
+                tree = tree.getroot()
+            else:
+                tree = etree.Element("DynamicResults")
+                project = etree.Element("Project",name=self._project)
+                tree.append(project)
+            for c in self._dynamic_types_info.keys():
+                c_node = etree.Element("Class",name=c)
+                project.append(c_node)
+                for attr in self._dynamic_types_info[c][1].keys():
+                    a_node = etree.Element("Attr",name=attr)
+                    c_node.append(a_node)
+                    for ct in self._dynamic_types_info[c][1][attr]['common_type']:
+                        ct_node = etree.Element("CommonType",name=ct)
+                        a_node.append(ct_node)
+                    for at in self._dynamic_types_info[c][1][attr]['aggregated_type']:
+                        at_node = etree.Element("AggregatedType",name=at)
+                        a_node.append(at_node)
+            f = open(self._result_file,'w')
+            f.write(etree.tostring(tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
+            f.close()
+    
+    def preload_results(self):
+        if(not os.path.exists(self._result_file)):
+            self._preload_dt_info = {}
+            return
+        parser = etree.XMLParser(remove_blank_text=True)
+        tree = etree.parse(self._result_file, parser)
+        projects = [node for node in tree.getroot().iter("Project") if node.get("name")==self._project]
+        if(projects is None):
+            self._preload_dt_info = {}
+            return
+        dt_info = {}
+        for project in projects:
+            for c in project.iter("Class"):
+                if not dt_info.has_key(c.get("name")):
+                    dt_info[c.get("name")] = [0, {}]
+                for attr in c.iter("Attr"):
+                    if not dt_info[c.get("name")][1].has_key(attr.get("name")):
+                        dt_info[c.get("name")][1][attr.get("name")]={'common_type':Set([]),'aggregated_type':Set([])}
+                    for ct in attr.iter("CommonType"):
+                        dt_info[c.get("name")][1][attr.get("name")]['common_type'].add(ct.get("name"))
+                    for at in attr.iter("AggregatedType"):
+                        dt_info[c.get("name")][1][attr.get("name")]['aggregated_type'].add(at.get("name")) 
+        self._preload_dt_info = dt_info
+             
+            
     def get_result(self):
         return self._result.copy()
                         
@@ -612,11 +683,31 @@ class LogilabObjectTracer(ConfigurationMixIn,TypesComparator):
         used_classes = self._dbg.get_used_classes()
         self._dynamic_types_info = used_classes
         self.compare_type_info()
+        print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
         print self.get_result()
         #print used_classes
         #for key, value in sorted(used_classes.iteritems(), key=lambda (k,v): (v,k)):
         #    print "%s: %s" % (key, value)
         #print len(used_classes.keys())
+
+class TwistedObjectTracer(TypesComparator):
+    
+    options = OPTIONS
+    
+    def __init__(self, in_file):
+        TypesComparator.__init__(self, in_file,'twisted','types.xml')
+        self._dbg = CSUDbg(project_mark='twisted',preload_dt_info=self._preload_dt_info)
+        self._dbg.set_trace()
+        self.run()
         
+    def run(self):
+        twisted_ftpclient.run()
+        #twisted_getpage.get_page("http://en.wikipedia.org/wiki/Main_Page")
+        self._dbg.disable_trace()
+        used_classes = self._dbg.get_used_classes()
+        self._dynamic_types_info = used_classes
+        self.compare_type_info()
+        print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
+        print self.get_result()
        
         
