@@ -8,7 +8,7 @@ Created on 19.08.2011
 import importlib
 import argparse
 import sys
-from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer
+from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer, SconsObjectTracer
 from CSUStAn.reflexion.rm_tools import RegexMapper
 
 if __name__ == '__main__':
@@ -139,5 +139,8 @@ elif(args.type=="LogilabObjectTracer"):
 elif(args.type=="TwistedObjectTracer"):
     sys.argv = ["main.py","-h ftp.mozilla.org"]
     runner = TwistedObjectTracer(args.in_file,args.preload_file)
+elif(args.type=="SconsObjectTracer"):
+    #sys.argv = ["scons","."]
+    runner = SconsObjectTracer(args.in_file,args.preload_file)
 else:
     print "Unknown type!"

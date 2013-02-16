@@ -6,7 +6,6 @@ Created on 08.04.2012
 
 from logilab.common.configuration import ConfigurationMixIn
 from logilab.astng.manager import astng_wrapper, ASTNGManager
-from logilab.astng.inspector import Linker
 
 from pylint.pyreverse.diadefslib import DiadefsHandler
 from pylint.pyreverse.utils import insert_default_options
@@ -16,10 +15,11 @@ from CSUStAn.astng.simple import NamesCheckLinker
 from CSUStAn.tracing.class_tracer import CSUDbg
 from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGenerator,SourceModelXMLGenerator
 from CSUStAn.tests import twisted_ftpclient, twisted_getpage, twisted_ptyserv, twisted_testlogging
+from CSUStAn.astng.inspector import NoInferLinker
 from lxml import etree
 from twisted.internet import reactor
 from pylint.pyreverse import main
-import subprocess
+import imp
 
 # must be refactored
 from logilab.astng.node_classes import *
@@ -222,7 +222,7 @@ class ClassIRRunner(ConfigurationMixIn):
             return
         project = self.manager.project_from_files(args, astng_wrapper)
         self.project = project
-        linker = Linker(project, tag=True)
+        linker = NoInferLinker(project, tag=True)
         handler = DiadefsHandler(self.config)
         diadefs = handler.get_diadefs(project, linker)
         # Add inheritance information to nodes
@@ -687,5 +687,16 @@ class TwistedObjectTracer(ObjectTracer):
         #twisted_getpage.get_page("http://en.wikipedia.org/wiki/Main_Page")
         #twisted_ptyserv.run()
         #twisted_testlogging.run()
+     
+class SconsObjectTracer(ObjectTracer):
+    
+    def __init__(self, in_file, preload_file):
+        ObjectTracer.__init__(self,'nltk', in_file ,preload_file)
+        
+    def run(self):
+        sys.path.append('/home/bluesbreaker/Development/arachnoid-0.5')
+        import nltk_main 
+        nltk_main.main()
+         
        
         
