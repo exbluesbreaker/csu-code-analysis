@@ -8,7 +8,7 @@ Created on 19.08.2011
 import importlib
 import argparse
 import sys
-from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer, SconsObjectTracer
+from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer, SconsObjectTracer, TestRunner
 from CSUStAn.reflexion.rm_tools import RegexMapper
 
 if __name__ == '__main__':
@@ -142,5 +142,8 @@ elif(args.type=="TwistedObjectTracer"):
 elif(args.type=="SconsObjectTracer"):
     #sys.argv = ["scons","."]
     runner = SconsObjectTracer(args.in_file,args.preload_file)
+elif(args.type=="TestRunner"):
+    sys.argv = ["main.py",args.project]
+    runner = TestRunner([args.project])
 else:
     print "Unknown type!"

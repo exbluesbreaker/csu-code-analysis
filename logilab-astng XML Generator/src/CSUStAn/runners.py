@@ -15,7 +15,7 @@ from CSUStAn.astng.simple import NamesCheckLinker
 from CSUStAn.tracing.class_tracer import CSUDbg
 from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGenerator,SourceModelXMLGenerator
 from CSUStAn.tests import twisted_ftpclient, twisted_getpage, twisted_ptyserv, twisted_testlogging
-from CSUStAn.astng.inspector import NoInferLinker
+from CSUStAn.astng.inspector import NoInferLinker, ClassIRLinker
 from lxml import etree
 from twisted.internet import reactor
 from pylint.pyreverse import main
@@ -238,7 +238,7 @@ class ClassIRRunner(ConfigurationMixIn):
         for obj in diadefs[-1].objects:
             self._compute_signature(obj)
             attr_names = [re.search('[^ :]*',s).group(0) for s in obj.attrs]
-            self._all_attrs_num += len(attr_names)
+            self._all_attrs_num += len(Set(attr_names))
             attr_names+= [m.name for m in obj.methods]
             duck_dict = None
             for meth in obj.methods:
@@ -341,6 +341,7 @@ class ClassIRRunner(ConfigurationMixIn):
         f = open('test.xml','w')
         f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
+        print len(diadefs[-1].relationships['specialization'])
         #print self._good_gettatr,self._bad_gettatr
         #print self._all_ducks
         
@@ -697,6 +698,20 @@ class SconsObjectTracer(ObjectTracer):
         sys.path.append('/home/bluesbreaker/Development/arachnoid-0.5')
         import nltk_main 
         nltk_main.main()
-         
-       
         
+class TestRunner(ConfigurationMixIn):
+    options = OPTIONS
+    
+    def __init__(self, args):
+        ConfigurationMixIn.__init__(self, usage=__doc__)
+        insert_default_options()
+        self.manager = ASTNGManager()
+        self.register_options_provider(self.manager)
+        args = self.load_command_line_configuration()
+        self.run(args)
+        
+    def run(self,args):
+        project = self.manager.project_from_files(args, astng_wrapper)
+        self.project = project
+        linker = ClassIRLinker(project)
+        linker.visit(project)
