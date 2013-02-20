@@ -51,6 +51,7 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
     _classes = []
     _ducks_count = 0
     _assigned_ducks = 0
+    _processed_methods = 0
     
     def __init__(self, project):
         IdGeneratorMixIn.__init__(self)
@@ -79,10 +80,12 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         """ add complete class signatures """
         for cl in self._classes:
             map(lambda x: cl.cir_complete_attrs.update(x.cir_attrs), self.get_all_parents(cl))
+        print "Processed methods ", self._processed_methods
         
     def visit_function(self, node):
         if isinstance(node.parent,Class):
-            self.handle_attrs(node,node.parent)          
+        	self._processed_methods +=1
+        	self.handle_attrs(node,node.parent)          
     
     
     def handle_attrs(self,node,class_node):

@@ -84,6 +84,7 @@ class LogilabClassIRRunner(ConfigurationMixIn):
     _tuple_attrs = [attr for attr in dir(()) if not re.search('\A(?!_)',attr)]
     _tuple_methods = [attr for attr in dir(()) if re.search('\A(?!_)',attr)]
     _attr_iteration_cycles = 0
+    _processed_methods = 0
     
     def __init__(self, args,process_candidates=False):
         ConfigurationMixIn.__init__(self, usage=__doc__)
@@ -245,6 +246,7 @@ class LogilabClassIRRunner(ConfigurationMixIn):
                 # check self access in method and generate information about class attrs 
                 if(self._process_candidates):
                     duck_dict =  self._extract_duck_info(meth,attr_names,duck_dict)
+                self._processed_methods += 1
             # add duck information to classes
             obj.ducks=duck_dict
         successes = 0
@@ -307,6 +309,7 @@ class LogilabClassIRRunner(ConfigurationMixIn):
         print "Numbers of all attributes in project: ", self._all_attrs_num, " percentage of found attrs: ",round(100*float(self._found_ducks)/self._all_attrs_num,1), " %"
         print "Numbers of classes: ",len(diadefs[-1].objects)
         print "Probably used (as field) classes: ",len(self._prob_used_classes)," percentage: ",round(100*float(len(self._prob_used_classes))/len(diadefs[-1].objects),1), " %"
+        print "Processed methods: ", self._processed_methods
         
         # result XML generation
         mapper = {}
