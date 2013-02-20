@@ -70,17 +70,15 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         self._num_attrs += len(node.cir_attrs)
         
     def leave_project(self, node):
-        # delete non-project parents
+        """ delete non-project parents """
         for spec in self._inherit[:]:
             if not (spec[1] in self._classes):
                 self._inherit.remove(spec)
             else:
                 spec[0].cir_parents.add(spec[1])
-        # add complete class signatures
+        """ add complete class signatures """
         for cl in self._classes:
             map(lambda x: cl.cir_complete_attrs.update(x.cir_attrs), self.get_all_parents(cl))
-        print self._num_attrs
-        print len(self._inherit)
         
     def visit_function(self, node):
         if isinstance(node.parent,Class):
@@ -166,3 +164,9 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         for p in class_node.ancestors(recurs=True):
             if p in self._classes:
                 yield p
+                
+    def get_ducks_count(self):
+    	return self._ducks_count
+    
+    def get_attrs_count(self):
+    	return self._num_attrs
