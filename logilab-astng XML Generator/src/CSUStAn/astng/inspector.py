@@ -91,7 +91,7 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
             if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
                 class_node.cir_attrs.add(node.attrname)
             if isinstance(node, Getattr):
-                if(node.expr.as_string()=="self"):
+                if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
                     if isinstance(node.parent, For):
                         if(not class_node.cir_ducks.has_key(node.attrname)):
                             self._ducks_count +=1
@@ -127,7 +127,7 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
                 			else:
                 				class_node.cir_ducks[node.attrname]['element_signature']['attrs'].add(node.parent.parent.attrname)
             elif isinstance(node, AssAttr):
-            	if(node.expr.as_string()=="self"):
+            	if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
             		if(not class_node.cir_ducks.has_key(node.attrname)):
             			self._ducks_count +=1
             			self._assigned_ducks +=1
