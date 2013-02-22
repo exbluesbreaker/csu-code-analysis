@@ -8,7 +8,7 @@ Created on 19.08.2011
 import importlib
 import argparse
 import sys
-from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer, SconsObjectTracer, TestRunner, LogilabClassIRRunner
+from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer, SconsObjectTracer, TestRunner
 from CSUStAn.reflexion.rm_tools import RegexMapper
 
 if __name__ == '__main__':

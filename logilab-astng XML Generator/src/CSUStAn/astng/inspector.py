@@ -61,6 +61,7 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         self._classes.append(node)
         node.cir_uid = self.generate_id()
         node.cir_attrs = set([item[0] for item in node.items() if (isinstance(item[1], AssName) and (get_visibility(item[0])!= 'special'))])
+        node.cir_methods = set([]) 
         node.cir_parents = set([])
         node.cir_ducks = {}
         node.cir_complete_attrs = node.cir_attrs.copy()
@@ -84,8 +85,9 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         
     def visit_function(self, node):
         if isinstance(node.parent,Class):
-        	self._processed_methods +=1
-        	self.handle_attrs(node,node.parent)          
+            self._processed_methods +=1
+            self.handle_attrs(node,node.parent)
+            node.parent.cir_methods.add(node.name)          
     
     
     def handle_attrs(self,node,class_node):
@@ -122,7 +124,7 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
                 		else:
                 			class_node.cir_ducks[node.attrname]['complex_type'] = 'Unknown'
                 		if(isinstance(node.parent.parent,Getattr)):
-                			# get some info about element of complex type
+                			""" get some info about element of complex type """
                 			if(not class_node.cir_ducks[node.attrname].has_key('element_signature')):
                 				class_node.cir_ducks[node.attrname]['element_signature']={'attrs':set([]),'methods':set([])}
                 			if isinstance(node.parent.parent.parent,CallFunc):
@@ -162,6 +164,15 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
     def get_classes(self):
         for cl in self._classes:
             yield cl
+    
+    def get_methods(self,class_node):
+        for it in class_node.items():
+            if(isinstance(it, Function)):
+                yield it
+                
+    def get_inheritances(self):
+        for inh in self._inherit:
+            yield inh
             
     def get_all_parents(self,class_node):
         for p in class_node.ancestors(recurs=True):

@@ -24,6 +24,7 @@ import imp
 # must be refactored
 from logilab.astng.node_classes import *
 from logilab.astng.scoped_nodes import *
+from pylint.pyreverse.utils import get_visibility
 import re
 import pydot
 import os
@@ -57,298 +58,6 @@ class ReflexionModelRunner(ConfigurationMixIn):
         dot_writer = HighLevelModelDotGenerator()
         graph = dot_writer.generate(mapper.get_hm_entities(), hm_model)
         graph.write_png(project_name+'_high-level_model.png')
-
-class LogilabClassIRRunner(ConfigurationMixIn):
-    # generate XML, describing classes of project
-    
-    options = OPTIONS
-    
-    _good_gettatr = 0
-    _bad_gettatr = 0
-    # numbers of "ducks" in project (for complexity estimation)
-    _all_ducks = 0
-    # numbers of classes in project (for complexity estimation)
-    _all_classes = 0
-    _process_candidates = False
-    _ducks_count = 0
-    _found_ducks = 0
-    _prob_used_classes = None
-    _all_attrs_num = 0
-    _complex_ducks = 0
-    _assigned_ducks = 0
-    _dbg_assattr_parents = None 
-    _list_attrs = [attr for attr in dir([]) if not re.search('\A(?!_)',attr)]
-    _list_methods = [attr for attr in dir([]) if re.search('\A(?!_)',attr)]
-    _dict_attrs = [attr for attr in dir({}) if not re.search('\A(?!_)',attr)]
-    _dict_methods = [attr for attr in dir({}) if re.search('\A(?!_)',attr)]
-    _tuple_attrs = [attr for attr in dir(()) if not re.search('\A(?!_)',attr)]
-    _tuple_methods = [attr for attr in dir(()) if re.search('\A(?!_)',attr)]
-    _attr_iteration_cycles = 0
-    _processed_methods = 0
-    
-    def __init__(self, args,process_candidates=False):
-        ConfigurationMixIn.__init__(self, usage=__doc__)
-        self._prob_used_classes = Set([])
-        self._dbg_assattr_parents = Set([])
-        self._process_candidates = process_candidates
-        insert_default_options()
-        self.manager = ASTNGManager()
-        self.register_options_provider(self.manager)
-        args = self.load_command_line_configuration()
-        self.run(args)
-      
-    """ Extract information about class signature - attrs and methods, which it have """    
-    def _compute_signature(self,node):
-        if(hasattr(node, "csu_complete_signatures")):
-            # node have been processed already
-            return node.csu_complete_signatures
-        else:
-            node.csu_complete_signatures={}
-        node.csu_complete_signatures['Attrs'] = Set([re.search('[^ :]*',attr).group(0) for attr in node.attrs])
-        node.csu_complete_signatures['Methods'] = Set([meth.name for meth in node.methods])
-        # class without parents
-        if not hasattr(node, "csu_parents"):
-            node.csu_parents = []
-        parents = node.csu_parents
-        for parent in parents:
-            parent_signature = self._compute_signature(parent)
-            # append all parents signatures
-            node.csu_complete_signatures['Attrs'] |= parent_signature['Attrs']
-            node.csu_complete_signatures['Methods'] |= parent_signature['Methods']
-        return node.csu_complete_signatures
-    
-    """ Check body of cycle, which iterating over class's field"""
-    def _check_cycle(self,node,iter_name,attr,duck_dict):
-        if isinstance(node, Getattr):
-            if(node.expr.as_string()==iter_name):
-                if(not duck_dict[attr].has_key('element_signature')):
-                           duck_dict[attr]['element_signature']={'attrs':Set([]),'methods':Set([])} 
-                if isinstance(node.parent,CallFunc):
-                    duck_dict[attr]['element_signature']['methods'].add(node.attrname)
-                else:
-                    duck_dict[attr]['element_signature']['attrs'].add(node.attrname)           
-        for child in node.get_children():
-            duck_dict = self._check_cycle(child,iter_name,attr,duck_dict)
-        return duck_dict
-    
-    """ Extract information about class fields usage """
-    def _extract_duck_info(self,node,attrs,duck_dict=None):
-        if(duck_dict is None):
-            duck_dict = {}
-        if isinstance(node, Getattr):
-            if(node.expr.as_string()=="self"):
-                if isinstance(node.parent, For):
-                    if(not duck_dict.has_key(node.attrname)):
-                        self._ducks_count +=1
-                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[],'complex_type':'Unknown','assigned':False}
-                    self._attr_iteration_cycles +=1
-                    if isinstance(node.parent.target, AssName):
-                        print node.parent.as_string()
-                        for body in node.parent.body:
-                            duck_dict = self._check_cycle(body,node.parent.target.name,node.attrname,duck_dict)
-                if(node.attrname not in attrs):
-                    #print node.attrname,node.parent, node.fromlineno, node.root()
-                    #print attrs
-                    self._bad_gettatr+=1
-                else:
-                    self._good_gettatr+=1
-                # if additional info about attr's field may be obtained
-                if isinstance(node.parent, Getattr):
-                    #init dict for attr
-                    if(not duck_dict.has_key(node.attrname)):
-                        self._ducks_count +=1
-                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[],'complex_type':None,'assigned':False}
-                    if isinstance(node.parent.parent,CallFunc):
-                        #we get info about attr's method
-                        duck_dict[node.attrname]['methods'].add(node.parent.attrname)
-                    else:
-                        #we get info about attr's attr
-                        duck_dict[node.attrname]['attrs'].add(node.parent.attrname)
-                # attr of complex type (list, dict, tuple etc.)
-                elif isinstance(node.parent, Subscript):
-                    if(not duck_dict.has_key(node.attrname)):
-                        self._ducks_count +=1
-                        duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[],'complex_type':'Unknown','assigned':False}
-                    else:
-                        duck_dict[node.attrname]['complex_type'] = 'Unknown'
-                    if(isinstance(node.parent.parent,Getattr)):
-                       # get some info about element of complex type
-                       if(not duck_dict[node.attrname].has_key('element_signature')):
-                           duck_dict[node.attrname]['element_signature']={'attrs':Set([]),'methods':Set([])}
-                       if isinstance(node.parent.parent.parent,CallFunc):
-                           duck_dict[node.attrname]['element_signature']['methods'].add(node.parent.parent.attrname)
-                       else:
-                           duck_dict[node.attrname]['element_signature']['attrs'].add(node.parent.parent.attrname)
-        elif isinstance(node, AssAttr):
-            if(node.expr.as_string()=="self"):
-                if(not duck_dict.has_key(node.attrname)):
-                    self._ducks_count +=1
-                    self._assigned_ducks +=1
-                    duck_dict[node.attrname] = {'attrs':Set([]),'methods':Set([]),'type':[],'complex_type':None,'assigned':True} 
-                else:
-                    if(not duck_dict[node.attrname]['assigned']):
-                        duck_dict[node.attrname]['assigned'] = True
-                        self._assigned_ducks+=1
-                # DEBUG
-                if (not node.parent.__class__.__name__ in self._dbg_assattr_parents):
-                    self._dbg_assattr_parents |= Set([node.parent.__class__.__name__])
-                    print node.parent.__class__.__name__
-                    if(isinstance(node.parent, Tuple)):
-                        print node.parent.as_string()
-                # DEBUG END
-                if(isinstance(node.parent, (Assign,AugAssign))):
-                    if(isinstance(node.parent.value, (Tuple,Dict,List))):
-                        duck_dict[node.attrname]['complex_type'] = node.parent.value.__class__.__name__ 
-        for child in node.get_children():
-            duck_dict = self._extract_duck_info(child,attrs,duck_dict)
-        return duck_dict
-    
-    # Check if object is of standard complex type(dict, tuple or list)
-    def _check_complex_type(self,attrs,methods):
-        if(all(meth in self._list_methods for meth in methods) and
-           all(attr in self._list_attrs for attr in attrs)):
-            return 'List'
-        elif(all(meth in self._dict_methods for meth in methods) and
-             all(attr in self._dict_attrs for attr in attrs)):
-            return 'Dict'
-        elif(all(meth in self._tuple_methods for meth in methods) and
-             all(attr in self._tuple_attrs for attr in attrs)):
-            return 'Tuple'
-        return None
-
-    def run(self, args):
-        """checking arguments and run project"""
-        if not args:
-            print self.help()
-            return
-        project = self.manager.project_from_files(args, astng_wrapper)
-        self.project = project
-        linker = NoInferLinker(project, tag=True)
-        handler = DiadefsHandler(self.config)
-        diadefs = handler.get_diadefs(project, linker)
-        # Add inheritance information to nodes
-        # csu_parents will contain links to all parents of class
-        for rel in diadefs[-1].relationships['specialization']:
-            if hasattr(rel.from_object, "csu_parents"):
-                rel.from_object.csu_parents.append(rel.to_object)
-            else:
-                rel.from_object.csu_parents=[rel.to_object]
-        bad_ducks = 0
-        empty_ducks = 0
-        # First pass for collecting "duck" information about fields 
-        for obj in diadefs[-1].objects:
-            self._compute_signature(obj)
-            attr_names = [re.search('[^ :]*',s).group(0) for s in obj.attrs]
-            self._all_attrs_num += len(Set(attr_names))
-            attr_names+= [m.name for m in obj.methods]
-            duck_dict = None
-            for meth in obj.methods:
-                # check self access in method and generate information about class attrs 
-                if(self._process_candidates):
-                    duck_dict =  self._extract_duck_info(meth,attr_names,duck_dict)
-                self._processed_methods += 1
-            # add duck information to classes
-            obj.ducks=duck_dict
-        successes = 0
-        #Second pass  for processing "duck" information and generate information about types
-        for current_class in diadefs[-1].objects:
-            if (current_class.ducks is None):
-                continue
-            for duck in current_class.ducks.keys():
-                if(current_class.ducks[duck]['complex_type']):
-                    self._complex_ducks +=1
-                    #self._found_ducks+=1
-                    # duck is complex type, nothing to do with it
-                    # TODO recursively complex types
-                    if current_class.ducks[duck].has_key('element_signature'):
-                        # search for class of element is needed 
-                        duck_attrs = current_class.ducks[duck]['element_signature']['attrs']
-                        duck_methods = current_class.ducks[duck]['element_signature']['methods']
-                    else:
-                        # duck of complex type and no duck info about element
-                        empty_ducks += 1
-                        continue
-                else:
-                    duck_attrs = current_class.ducks[duck]['attrs']
-                    duck_methods = current_class.ducks[duck]['methods']
-                # ignore empty ducks
-                if((not duck_attrs) and (not duck_methods)):
-                    empty_ducks += 1
-                    continue
-                duck_found = False
-                for field_candidate in diadefs[-1].objects:
-                    complex_type = self._check_complex_type(duck_attrs, duck_methods)
-                    if(complex_type):
-                        #DEBUG
-                        if(current_class.ducks[duck]['complex_type']):
-                            if((current_class.ducks[duck]['complex_type'] != complex_type) 
-                               and (current_class.ducks[duck]['complex_type'] !='Unknown')):
-                                print current_class.ducks[duck]['complex_type'], complex_type
-                        #END DEBUG
-                        current_class.ducks[duck]['complex_type'] = complex_type
-                        if(not duck_found):
-                            self._found_ducks+=1
-                            duck_found = True
-                    if(all(attr in field_candidate.csu_complete_signatures['Attrs'] for attr in duck_attrs) and all(method in field_candidate.csu_complete_signatures['Methods'] for method in duck_methods)):
-                        current_class.ducks[duck]['type'].append(field_candidate)
-                        successes += 1
-                        self._prob_used_classes |= Set([field_candidate.fig_id])
-                        if(not duck_found):
-                            self._found_ducks+=1
-                            duck_found = True
-                #check if duck not found at all
-                if(not duck_found):
-                    bad_ducks += 1
-                    print "Bad duck - ",duck_attrs, duck_methods     
-        print "Bad ducks ", bad_ducks
-        print "Empty ducks ", empty_ducks                    
-        print "Numbers of ducks: ", self._ducks_count
-        print "Numbers of ducks with assignment in class: ", self._assigned_ducks
-        print "Numbers of ducks with complex type: ", self._complex_ducks
-        print "Found ducks: ",self._found_ducks, " percentage: ",round(100*float(self._found_ducks)/self._ducks_count,1), " %"
-        print "Numbers of all attributes in project: ", self._all_attrs_num, " percentage of found attrs: ",round(100*float(self._found_ducks)/self._all_attrs_num,1), " %"
-        print "Numbers of classes: ",len(diadefs[-1].objects)
-        print "Probably used (as field) classes: ",len(self._prob_used_classes)," percentage: ",round(100*float(len(self._prob_used_classes))/len(diadefs[-1].objects),1), " %"
-        print "Processed methods: ", self._processed_methods
-        
-        # result XML generation
-        mapper = {}
-        root = etree.Element("Classes")
-        for obj in diadefs[-1].objects:
-            self._all_classes +=1
-            node = etree.Element("Class",name=obj.title,id=str(obj.fig_id),label=obj.node.root().name)
-            mapper[obj] = node
-            root.append(node)
-            for attrname in Set([re.search('[^ :]*',attr).group(0) for attr in obj.attrs]):
-                attr_node = etree.Element('Attr',name=attrname,modifier='public')
-                node.append(attr_node)
-                if(obj.ducks and (attrname in obj.ducks)):
-                    if obj.ducks[attrname]['complex_type']:
-                        for prob_type in obj.ducks[attrname]['type']:
-                            attr_node.append(etree.Element('AggregatedType',type=str(obj.ducks[attrname]['complex_type']),element=prob_type.title,id=str(prob_type.fig_id)))
-                    else:
-                        for prob_type in obj.ducks[attrname]['type']:
-                            attr_node.append(etree.Element('CommonType',name=prob_type.title,id=str(prob_type.fig_id)))       
-            for meth in obj.methods:
-                meth_node = etree.Element('Method',name=meth.name,modifier='public')
-                # This is needed for some native libs(pyx)
-                if(meth.args.args == None):
-                    continue
-                for arg in meth.args.args:
-                    # ignore self arg
-                    if not arg.name == 'self':
-                        meth_node.append(etree.Element('Arg',name=arg.name))
-                node.append(meth_node)
-        for rel in diadefs[-1].relationships['specialization']:
-            mapper[rel.from_object].append(etree.Element('Parent',name=rel.to_object.title,id=str(rel.to_object.fig_id)))
-        f = open('test.xml','w')
-        f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
-        f.close()
-        print len(diadefs[-1].relationships['specialization'])
-        #print self._good_gettatr,self._bad_gettatr
-        #print self._all_ducks
-        
-        #print self._all_classes
         
         
 class ClassIRRunner(ConfigurationMixIn):
@@ -467,7 +176,7 @@ class ClassIRRunner(ConfigurationMixIn):
         print "Numbers of ducks: ", linker.get_ducks_count()
         print "Numbers of ducks with assignment in class: ", self._assigned_ducks
         print "Numbers of ducks with complex type: ", self._complex_ducks
-        print "Found ducks: ",self._found_ducks, " percentage: ",round(100*float(self._found_ducks)/linker.get_ducks_count(),1), " %"
+        print "Found ducks: ",self._found_ducks, " percentage from non-empty ducks: ",round(100*float(self._found_ducks)/(linker.get_ducks_count()-empty_ducks),1), " %"
         print "Numbers of all attributes in project: ", linker.get_attrs_count(), " percentage of found attrs: ",round(100*float(self._found_ducks)/linker.get_attrs_count(),1), " %"
         print "Numbers of classes: ",len(list(linker.get_classes()))
         print "Probably used (as field) classes: ",len(self._prob_used_classes)," percentage: ",round(100*float(len(self._prob_used_classes))/len(list(linker.get_classes())),1), " %"
@@ -475,24 +184,24 @@ class ClassIRRunner(ConfigurationMixIn):
         # result XML generation
         mapper = {}
         root = etree.Element("Classes")
-        for obj in diadefs[-1].objects:
+        for obj in linker.get_classes():
             self._all_classes +=1
-            node = etree.Element("Class",name=obj.title,id=str(obj.fig_id),label=obj.node.root().name)
+            node = etree.Element("Class",name=obj.name,id=str(obj.cir_uid),label=obj.root().name)
             mapper[obj] = node
             root.append(node)
-            for attrname in Set([re.search('[^ :]*',attr).group(0) for attr in obj.attrs]):
-                attr_node = etree.Element('Attr',name=attrname,modifier='public')
+            for attrname in obj.cir_attrs:
+                attr_node = etree.Element('Attr',name=attrname,modifier=get_visibility(attrname))
                 node.append(attr_node)
-                if(obj.ducks and (attrname in obj.ducks)):
-                    if obj.ducks[attrname]['complex_type']:
-                        for prob_type in obj.ducks[attrname]['type']:
-                            attr_node.append(etree.Element('AggregatedType',type=str(obj.ducks[attrname]['complex_type']),element=prob_type.title,id=str(prob_type.fig_id)))
+                if(attrname in obj.cir_ducks):
+                    if obj.cir_ducks[attrname]['complex_type']:
+                        for prob_type in obj.cir_ducks[attrname]['type']:
+                            attr_node.append(etree.Element('AggregatedType',type=str(obj.cir_ducks[attrname]['complex_type']),element=prob_type.name,id=str(prob_type.cir_uid)))
                     else:
-                        for prob_type in obj.ducks[attrname]['type']:
-                            attr_node.append(etree.Element('CommonType',name=prob_type.title,id=str(prob_type.fig_id)))       
-            for meth in obj.methods:
-                meth_node = etree.Element('Method',name=meth.name,modifier='public')
-                # This is needed for some native libs(pyx)
+                        for prob_type in obj.cir_ducks[attrname]['type']:
+                            attr_node.append(etree.Element('CommonType',name=prob_type.name,id=str(prob_type.cir_uid)))       
+            for meth in linker.get_methods(obj):
+                meth_node = etree.Element('Method',name=meth.name,modifier=get_visibility(meth.name))
+                """ This is needed for some native libs(pyx) """
                 if(meth.args.args == None):
                     continue
                 for arg in meth.args.args:
@@ -500,16 +209,11 @@ class ClassIRRunner(ConfigurationMixIn):
                     if not arg.name == 'self':
                         meth_node.append(etree.Element('Arg',name=arg.name))
                 node.append(meth_node)
-        for rel in diadefs[-1].relationships['specialization']:
-            mapper[rel.from_object].append(etree.Element('Parent',name=rel.to_object.title,id=str(rel.to_object.fig_id)))
+        for rel in linker.get_inheritances():
+            mapper[rel[0]].append(etree.Element('Parent',name=rel[1].name,id=str(rel[1].cir_uid)))
         f = open('test.xml','w')
         f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
-        print len(diadefs[-1].relationships['specialization'])
-        #print self._good_gettatr,self._bad_gettatr
-        #print self._all_ducks
-        
-        #print self._all_classes
         
 class ClassIRHandler:
     # Process XML class IR
@@ -626,7 +330,7 @@ class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
         for id in self._complete_signatures.keys():
             if  self._complete_signatures[id]['ProbUsed']== True:
                 prob_used_classes+=1
-        print "Numbers of d _no_more_trace = Falseucks: ",len(ducks)
+        print "Numbers of ducks: ",len(ducks)
         print "Found ducks: ",found_ducks, " percentage: ",round(100*float(found_ducks)/len(ducks),1), " %"
         print "Numbers of classes: ",len(self._complete_signatures.keys())
         print "Probably used (as field) classes: ",prob_used_classes," percentage: ",round(100*float(prob_used_classes)/len(self._complete_signatures.keys()),1), " %"
