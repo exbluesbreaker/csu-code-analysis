@@ -165,6 +165,11 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         for cl in self._classes:
             yield cl
     
+    def get_ducks(self):
+        for cl in self._classes:
+            for duck in cl.cir_ducks.keys():
+                yield cl.cir_ducks[duck]
+    
     def get_methods(self,class_node):
         for it in class_node.items():
             if(isinstance(it, Function)):
@@ -178,6 +183,34 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         for p in class_node.ancestors(recurs=True):
             if p in self._classes:
                 yield p
+                
+    def get_complex_ducks(self):
+        for cl in self._classes:
+            for duck in cl.cir_ducks.keys():
+                if cl.cir_ducks[duck]['complex_type']:
+                    yield duck
+    
+    def get_assigned_ducks(self):
+        for cl in self._classes:
+            for duck in cl.cir_ducks.keys():
+                if cl.cir_ducks[duck]['assigned']:
+                    yield duck
+                    
+    def get_empty_ducks(self):
+        for cl in self._classes:
+            for duck in cl.cir_ducks.keys():
+                if cl.cir_ducks[duck]['complex_type']:
+                    if not cl.cir_ducks[duck].has_key('element_signature'):
+                        yield duck
+                    elif((not cl.cir_ducks[duck]['element_signature']['methods']) 
+                        and 
+                        (not cl.cir_ducks[duck]['element_signature']['attrs'])):
+                        yield duck
+                else:
+                    if((not cl.cir_ducks[duck]['methods']) 
+                        and 
+                        (not cl.cir_ducks[duck]['attrs'])):
+                        yield duck
                 
     def get_ducks_count(self):
     	return self._ducks_count

@@ -74,8 +74,6 @@ class ClassIRRunner(ConfigurationMixIn):
     _process_candidates = False
     _found_ducks = 0
     _prob_used_classes = None
-    _complex_ducks = 0
-    _assigned_ducks = 0
     _dbg_assattr_parents = None 
     _list_attrs = [attr for attr in dir([]) if not re.search('\A(?!_)',attr)]
     _list_methods = [attr for attr in dir([]) if re.search('\A(?!_)',attr)]
@@ -119,13 +117,15 @@ class ClassIRRunner(ConfigurationMixIn):
         linker = ClassIRLinker(project)
         linker.visit(project)
         bad_ducks = 0
-        empty_ducks = 0
         successes = 0
+        ducks_num = len(list(linker.get_ducks()))
+        count = 1
         """ Handle "duck" information and generate information about types """
         for current_class in linker.get_classes():
             for duck in current_class.cir_ducks.keys():
+                print "Processing ", count, " duck of ",ducks_num
+                count +=1
                 if(current_class.cir_ducks[duck]['complex_type']):
-                    self._complex_ducks +=1
                     #self._found_ducks+=1
                     # duck is complex type, nothing to do with it
                     # TODO recursively complex types
@@ -135,14 +135,12 @@ class ClassIRRunner(ConfigurationMixIn):
                         duck_methods = current_class.cir_ducks[duck]['element_signature']['methods']
                     else:
                         # duck of complex type and no duck info about element
-                        empty_ducks += 1
                         continue
                 else:
                     duck_attrs = current_class.cir_ducks[duck]['attrs']
                     duck_methods = current_class.cir_ducks[duck]['methods']
                 # ignore empty ducks
                 if((not duck_attrs) and (not duck_methods)):
-                    empty_ducks += 1
                     continue
                 duck_found = False
                 for field_candidate in linker.get_classes():
@@ -170,12 +168,13 @@ class ClassIRRunner(ConfigurationMixIn):
                 #check if duck not found at all
                 if(not duck_found):
                     bad_ducks += 1
-                    print "Bad duck - ",duck_attrs, duck_methods     
+                    print "Bad duck - ",duck_attrs, duck_methods  
+        empty_ducks = len(list(linker.get_empty_ducks()))   
         print "Bad ducks ", bad_ducks
-        print "Empty ducks ", empty_ducks                    
+        print "Empty ducks ", empty_ducks                   
         print "Numbers of ducks: ", linker.get_ducks_count()
-        print "Numbers of ducks with assignment in class: ", self._assigned_ducks
-        print "Numbers of ducks with complex type: ", self._complex_ducks
+        print "Numbers of ducks with assignment in class: ", len(list(linker.get_assigned_ducks()))
+        print "Numbers of ducks with complex type: ", len(list(linker.get_complex_ducks()))
         print "Found ducks: ",self._found_ducks, " percentage from non-empty ducks: ",round(100*float(self._found_ducks)/(linker.get_ducks_count()-empty_ducks),1), " %"
         print "Numbers of all attributes in project: ", linker.get_attrs_count(), " percentage of found attrs: ",round(100*float(self._found_ducks)/linker.get_attrs_count(),1), " %"
         print "Numbers of classes: ",len(list(linker.get_classes()))
