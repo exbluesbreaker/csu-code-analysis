@@ -189,17 +189,21 @@ class ClassIRRunner(ConfigurationMixIn):
             mapper[obj] = node
             root.append(node)
             for attrname in obj.cir_attrs:
-                attr_node = etree.Element('Attr',name=attrname,modifier=get_visibility(attrname))
+                attr_node = etree.Element('Attr',name=attrname)
+                mod_node = etree.Element('Modifier',name=get_visibility(attrname))
+                attr_node.append(mod_node)
                 node.append(attr_node)
                 if(attrname in obj.cir_ducks):
                     if obj.cir_ducks[attrname]['complex_type']:
                         for prob_type in obj.cir_ducks[attrname]['type']:
-                            attr_node.append(etree.Element('AggregatedType',type=str(obj.cir_ducks[attrname]['complex_type']),element=prob_type.name,id=str(prob_type.cir_uid)))
+                            attr_node.append(etree.Element('AggregatedType',name=str(obj.cir_ducks[attrname]['complex_type']),element_type=prob_type.name,element_id=str(prob_type.cir_uid)))
                     else:
                         for prob_type in obj.cir_ducks[attrname]['type']:
                             attr_node.append(etree.Element('CommonType',name=prob_type.name,id=str(prob_type.cir_uid)))       
             for meth in linker.get_methods(obj):
-                meth_node = etree.Element('Method',name=meth.name,modifier=get_visibility(meth.name))
+                meth_node = etree.Element('Method',name=meth.name)
+                mod_node = etree.Element('Modifier',name=get_visibility(meth.name))
+                meth_node.append(mod_node)
                 """ This is needed for some native libs(pyx) """
                 if(meth.args.args == None):
                     continue
