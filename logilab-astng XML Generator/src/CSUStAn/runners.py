@@ -28,7 +28,6 @@ from pylint.pyreverse.utils import get_visibility
 import re
 import pydot
 import os
-from sets import Set
 
 '''Entry points for different ASTNG processing'''
 
@@ -247,10 +246,14 @@ class ClassIRHandler:
             return attrs[0]
     def get_type(self,type_mark,node, attrname, type_set= None):
         if type_set is None:
-            type_set = Set([])
+            type_set = set([])
         attr = self.get_attr(node, attrname)
         if attr is not None:
-            type_set |= Set([self._id_dict[type.get("id")].get("label")+'.'+self._id_dict[type.get("id")].get("name") for type in attr.iter(type_mark)])
+            if(type_mark=="AggregatedType"):
+                """ Return type of element"""
+                type_set |= set([self._id_dict[type.get("element_id")].get("label")+'.'+self._id_dict[type.get("element_id")].get("name") for type in attr.iter(type_mark)])
+            else:
+                type_set |= set([self._id_dict[type.get("id")].get("label")+'.'+self._id_dict[type.get("id")].get("name") for type in attr.iter(type_mark)])
         for parent in self.get_parents(node):
             self.get_type(type_mark,parent, attrname, type_set)
         return type_set
