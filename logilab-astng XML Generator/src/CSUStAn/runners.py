@@ -531,11 +531,15 @@ class TypesComparator(ClassIRHandler):
     
 
 class ObjectTracer(TypesComparator):
-    def __init__(self, project_tag, in_file, preload_file):
+    def __init__(self, project_tag, in_file, preload_file, skip_classes=()):
         TypesComparator.__init__(self, in_file,project_tag,preload_file)
-        self._dbg = CSUDbg(project_mark=project_tag)
+        self._dbg = CSUDbg(project_mark=project_tag, skip_classes=skip_classes)
         self._dbg.set_trace()
-        self.run()
+        try:
+            self.run()
+        except SystemExit:
+            """ Catching sys.exit """
+            pass
         self._dbg.disable_trace()
         used_classes = self._dbg.get_used_classes()
         self._dynamic_types_info = used_classes
@@ -547,7 +551,7 @@ class ObjectTracer(TypesComparator):
 class LogilabObjectTracer(ObjectTracer):
     
     def __init__(self, in_file, preload_file):
-        ObjectTracer.__init__(self,'logilab', in_file ,preload_file)
+        ObjectTracer.__init__(self,'logilab', in_file ,preload_file,skip_classes=(Const))
         
     def run(self):
         main.Run(sys.argv[1:])
@@ -566,12 +570,38 @@ class TwistedObjectTracer(ObjectTracer):
 class SconsObjectTracer(ObjectTracer):
     
     def __init__(self, in_file, preload_file):
-        ObjectTracer.__init__(self,'nltk', in_file ,preload_file)
+        from SCons.Script.SConsOptions import SConsValues
+        from SCons.Builder import CompositeBuilder
+        ObjectTracer.__init__(self,'SCons', in_file ,preload_file,skip_classes=(SConsValues,CompositeBuilder))
         
     def run(self):
-        sys.path.append('/home/bluesbreaker/Development/arachnoid-0.5')
-        import nltk_main 
-        nltk_main.main()
+        foo = imp.load_source('scons','/usr/bin/scons')
+        os.chdir('/home/bluesbreaker/Development/ascend-0.9.8')
+        import scons
+        import SCons.Script
+        # this does all the work, and calls sys.exit
+        # with the proper exit status when done.
+        SCons.Script.main()
+        #nltk_main.main()
+
+class BazaarObjectTracer(ObjectTracer):
+    
+    def __init__(self, in_file, preload_file):
+        import sys
+        sys.setrecursionlimit(10000)
+        from bzrlib.lazy_regex import LazyRegex
+        ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex))
+        
+    def run(self):
+        os.chdir('/home/bluesbreaker/Development/bzr')
+        import bzrlib
+        library_state = bzrlib.initialize()
+        library_state.__enter__()
+        try:
+            exit_val = bzrlib.commands.main()
+        finally:
+            library_state.__exit__(None, None, None)
+
         
 class TestRunner(ConfigurationMixIn):
     options = OPTIONS

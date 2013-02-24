@@ -9,9 +9,9 @@ import inspect
 import pdb
 from operator import itemgetter
 from pylint.pyreverse import main
-from logilab.astng.node_classes import *
-from logilab.astng.scoped_nodes import *
 from sets import Set
+import glob
+
 
 class CSUDbg(Bdb):
     _project_mark = None
@@ -19,12 +19,18 @@ class CSUDbg(Bdb):
     _project_classes = 0
     _non_project_classes = 0
     _no_more_trace = False
-    def __init__(self, project_mark,preload_dt_info={}, skip=None):
+    _skip_classes = ()
+    def __init__(self, project_mark,preload_dt_info={}, skip=None,skip_classes=()):
+        """ skip_classes is tuple of class objects instances of which will be ignored during analysis """
         Bdb.__init__(self, skip=skip)
         self._project_mark = project_mark
         self._used_classes_dict = preload_dt_info
+        self._skip_classes = skip_classes
     def trace_dispatch(self,frame, event, arg):
         if(self._no_more_trace):
+            return
+        """ skipping non-project frames """
+        if((not frame.f_globals.has_key('__name__'))or(frame.f_globals['__name__'].find(self._project_mark)==-1)):
             return
         for  var in frame.f_locals:
             obj = frame.f_locals[var]
@@ -35,9 +41,10 @@ class CSUDbg(Bdb):
                         self._used_classes_dict[full_name] = [1,{}]
                     else:
                         self._used_classes_dict[full_name][0] += 1
-                    if not isinstance(obj, Const):
+                    if not isinstance(obj, self._skip_classes):
                         #inspect.getmembers(obj)
                         #dir(obj)
+                        #print obj.__class__.__name__, inspect.getmodule(obj.__class__)
                         for attr in inspect.getmembers(obj):
                             if(attr[0]=='__dict__'):
                                 #__dict__ is not related to aggregation and will be ignored
