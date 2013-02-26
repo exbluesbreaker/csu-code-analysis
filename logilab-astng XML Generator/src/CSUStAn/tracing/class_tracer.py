@@ -92,7 +92,7 @@ class CSUDbg(Bdb):
     def get_most_popular_classes(self):
         pass
     def _handle_obj(self,obj):
-        if (inspect.ismethod(obj) or inspect.isclass(obj) or inspect.istraceback(obj) or inspect.isbuiltin(obj) or inspect.ismodule(obj) or inspect.isfunction(obj)):
+        if (inspect.ismethod(obj) or inspect.isclass(obj) or inspect.istraceback(obj) or inspect.isbuiltin(obj) or inspect.ismodule(obj) or inspect.isfunction(obj) or inspect.iscode(obj)):
             return False
         module = inspect.getmodule(obj)
         if module:
