@@ -21,7 +21,7 @@ class CSUDbg(Bdb):
     _no_more_trace = False
     _skip_classes = ()
     def __init__(self, project_mark,preload_dt_info={}, skip=None,skip_classes=()):
-        """ skip_classes is tuple of class objects instances of which will be ignored during analysis """
+        """ skip_classes is tuple of class objects instances of which will be ignored during analysis"""
         Bdb.__init__(self, skip=skip)
         self._project_mark = project_mark
         self._used_classes_dict = preload_dt_info
