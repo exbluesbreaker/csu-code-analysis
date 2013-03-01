@@ -20,6 +20,7 @@ class CSUDbg(Bdb):
     _non_project_classes = 0
     _no_more_trace = False
     _skip_classes = ()
+    _dbg_count = 0
     def __init__(self, project_mark,preload_dt_info={}, skip=None,skip_classes=()):
         """ skip_classes is tuple of class objects instances of which will be ignored during analysis"""
         Bdb.__init__(self, skip=skip)
@@ -31,6 +32,9 @@ class CSUDbg(Bdb):
             return
         """ skipping non-project frames """
         if((not frame.f_globals.has_key('__name__'))or(frame.f_globals['__name__'].find(self._project_mark)==-1)):
+            return
+        self._dbg_count+=1
+        if(not (self._dbg_count%5==1)):
             return
         for  var in frame.f_locals:
             obj = frame.f_locals[var]

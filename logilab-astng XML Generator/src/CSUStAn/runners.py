@@ -469,7 +469,6 @@ class TypesComparator(ClassIRHandler):
                         self._result['correct_aggr_types']+=1
                     else:
                         self._result['not_found_aggr_types']+=1
-                        print "Not found aggr ", current_class, attrname, type
     def save_result(self):
         if(self._result_file is not None):
             if(os.path.exists(self._result_file)):
@@ -518,7 +517,7 @@ class TypesComparator(ClassIRHandler):
                     dt_info[c.get("name")] = [0, {}]
                 for attr in c.iter("Attr"):
                     if not dt_info[c.get("name")][1].has_key(attr.get("name")):
-                        dt_info[c.get("name")][1][attr.get("name")]={'common_type':Set([]),'aggregated_type':Set([])}
+                        dt_info[c.get("name")][1][attr.get("name")]={'common_type':set([]),'aggregated_type':set([])}
                     for ct in attr.iter("CommonType"):
                         dt_info[c.get("name")][1][attr.get("name")]['common_type'].add(ct.get("name"))
                     for at in attr.iter("AggregatedType"):
@@ -563,9 +562,15 @@ class TwistedObjectTracer(ObjectTracer):
         
     def run(self):
         twisted_ftpclient.run()
-        #twisted_getpage.get_page("http://en.wikipedia.org/wiki/Main_Page")
-        #twisted_ptyserv.run()
-        #twisted_testlogging.run()
+        
+class PylintObjectTracer(ObjectTracer):
+    
+    def __init__(self, in_file, preload_file):
+        ObjectTracer.__init__(self,'pylint', in_file ,preload_file,skip_classes=(Const))
+        
+    def run(self):
+        from pylint import lint
+        lint.Run(sys.argv[1:])
      
 class SconsObjectTracer(ObjectTracer):
     
@@ -575,6 +580,7 @@ class SconsObjectTracer(ObjectTracer):
         ObjectTracer.__init__(self,'SCons', in_file ,preload_file,skip_classes=(SConsValues,CompositeBuilder))
         
     def run(self):
+        curr_dir = os.getcwd()
         foo = imp.load_source('scons','/usr/bin/scons')
         os.chdir('/home/bluesbreaker/Development/ascend-0.9.8')
         import scons
@@ -582,7 +588,7 @@ class SconsObjectTracer(ObjectTracer):
         # this does all the work, and calls sys.exit
         # with the proper exit status when done.
         SCons.Script.main()
-        #nltk_main.main()
+        os.chdir(curr_dir)
 
 class BazaarObjectTracer(ObjectTracer):
     
@@ -593,6 +599,7 @@ class BazaarObjectTracer(ObjectTracer):
         ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex))
         
     def run(self):
+        curr_dir = os.getcwd()
         os.chdir('/home/bluesbreaker/Development/bzr')
         import bzrlib
         library_state = bzrlib.initialize()
@@ -601,6 +608,7 @@ class BazaarObjectTracer(ObjectTracer):
             exit_val = bzrlib.commands.main()
         finally:
             library_state.__exit__(None, None, None)
+        os.chdir(curr_dir)
 
         
 class TestRunner(ConfigurationMixIn):
