@@ -530,9 +530,9 @@ class TypesComparator(ClassIRHandler):
     
 
 class ObjectTracer(TypesComparator):
-    def __init__(self, project_tag, in_file, preload_file, skip_classes=()):
+    def __init__(self, project_tag, in_file, preload_file, skip_classes=(), delay=5):
         TypesComparator.__init__(self, in_file,project_tag,preload_file)
-        self._dbg = CSUDbg(project_mark=project_tag, skip_classes=skip_classes)
+        self._dbg = CSUDbg(project_mark=project_tag, skip_classes=skip_classes, delay=delay)
         self._dbg.set_trace()
         try:
             self.run()
@@ -596,7 +596,7 @@ class BazaarObjectTracer(ObjectTracer):
         import sys
         sys.setrecursionlimit(10000)
         from bzrlib.lazy_regex import LazyRegex
-        ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex))
+        ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex), delay=20)
         
     def run(self):
         curr_dir = os.getcwd()

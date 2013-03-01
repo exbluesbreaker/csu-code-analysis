@@ -21,12 +21,14 @@ class CSUDbg(Bdb):
     _no_more_trace = False
     _skip_classes = ()
     _dbg_count = 0
-    def __init__(self, project_mark,preload_dt_info={}, skip=None,skip_classes=()):
+    _delay = 0
+    def __init__(self, project_mark,preload_dt_info={}, skip=None,skip_classes=(),delay=5):
         """ skip_classes is tuple of class objects instances of which will be ignored during analysis"""
         Bdb.__init__(self, skip=skip)
         self._project_mark = project_mark
         self._used_classes_dict = preload_dt_info
         self._skip_classes = skip_classes
+        self._delay = delay
     def trace_dispatch(self,frame, event, arg):
         if(self._no_more_trace):
             return
@@ -34,7 +36,7 @@ class CSUDbg(Bdb):
         if((not frame.f_globals.has_key('__name__'))or(frame.f_globals['__name__'].find(self._project_mark)==-1)):
             return
         self._dbg_count+=1
-        if(not (self._dbg_count%5==1)):
+        if(not (self._dbg_count%(self._delay)==1)):
             return
         for  var in frame.f_locals:
             obj = frame.f_locals[var]
