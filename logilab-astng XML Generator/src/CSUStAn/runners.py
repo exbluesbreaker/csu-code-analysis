@@ -544,7 +544,12 @@ class ObjectTracer(TypesComparator):
         self._dynamic_types_info = used_classes
         self.compare_type_info()
         print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
-        print self.get_result()
+        res =  self.get_result()
+        print "Correctly detected common types: ",res['correct_common_types']
+        print "Correctly detected aggregated types: ",res['correct_aggr_types']
+        print "Not correctly detected common types: ",res['not_found_common_types']
+        print "Not correctly detected aggregated types: ",res['not_found_aggr_types']
+        print "Success percentage: ",(res['correct_common_types']+res['correct_aggr_types'])*100.0/(res['correct_common_types']+res['correct_aggr_types']+res['not_found_common_types']+res['not_found_aggr_types']),"%"
                         
 
 class LogilabObjectTracer(ObjectTracer):
