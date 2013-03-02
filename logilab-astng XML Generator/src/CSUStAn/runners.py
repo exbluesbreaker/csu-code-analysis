@@ -70,7 +70,6 @@ class ClassIRRunner(ConfigurationMixIn):
     _all_ducks = 0
     # numbers of classes in project (for complexity estimation)
     _all_classes = 0
-    _process_candidates = False
     _found_ducks = 0
     _prob_used_classes = None
     _dbg_assattr_parents = None 
@@ -82,11 +81,10 @@ class ClassIRRunner(ConfigurationMixIn):
     _tuple_methods = [attr for attr in dir(()) if re.search('\A(?!_)',attr)]
     _attr_iteration_cycles = 0
     
-    def __init__(self, args,process_candidates=False):
+    def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
         self._prob_used_classes = set([])
         self._dbg_assattr_parents = set([])
-        self._process_candidates = process_candidates
         insert_default_options()
         self.manager = ASTNGManager()
         self.register_options_provider(self.manager)
@@ -595,14 +593,17 @@ class SconsObjectTracer(ObjectTracer):
 
 class BazaarObjectTracer(ObjectTracer):
     
-    def __init__(self, in_file, preload_file):
+    _work_dir = None
+    
+    def __init__(self, in_file, preload_file,work_dir):
         import sys
         sys.setrecursionlimit(10000)
         from bzrlib.lazy_regex import LazyRegex
+        self._work_dir = work_dir
         ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex), delay=20)
         
     def run(self):
-        os.chdir('/home/bluesbreaker/Development/bzr')
+        os.chdir(self._work_dir)
         import bzrlib
         library_state = bzrlib.initialize()
         library_state.__enter__()

@@ -10,6 +10,8 @@ import argparse
 import sys
 from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer, SconsObjectTracer, TestRunner, PylintObjectTracer, BazaarObjectTracer
 from CSUStAn.reflexion.rm_tools import RegexMapper
+from ConfigParser import SafeConfigParser
+from CSUStAn.astng.obsolete import LogilabClassIRRunner
 
 if __name__ == '__main__':
     pass
@@ -116,32 +118,40 @@ logilab_hm_model = [('Manager', 'TreePostProcessing'),
 
 parser = argparse.ArgumentParser(add_help=True)
 parser.add_argument("-t", action="store",required=True, type=str, dest="type")
-parser.add_argument("-o", action="store", type=str, default="out.xml", dest="out_file")
-parser.add_argument("-i", action="store", type=str, default="in.xml", dest="in_file")
-parser.add_argument("-p", action="store", type=str, dest="project")
-parser.add_argument("--preload", default="types.xml", dest="preload_file")
-parser.add_argument('--ducks', action='store_true', default=False, dest="process_ducks")
+parser.add_argument("-c", default="csu.ini", dest="config_file")
 args = parser.parse_args()
 print args.type
-print args.project
+cfg_parser = SafeConfigParser()
+cfg_parser.read(args.config_file)
 if(args.type=="ClassIR"):
-    sys.argv = ["main.py",args.project]
-    runner = ClassIRRunner([args.project],args.process_ducks)
+    project = cfg_parser.get(args.type,'project')
+    sys.argv = ["main.py",project]
+    runner = ClassIRRunner([project])
 elif(args.type=="LogilabClassIR"):
-    sys.argv = ["main.py",args.project]
-    runner = LogilabClassIRRunner([args.project],args.process_ducks)
+    project = cfg_parser.get(args.type,'project')
+    sys.argv = ["main.py",project]
+    runner = LogilabClassIRRunner([project],True)
 elif(args.type=="PotentialSiblings"):
-    runner = PotentialSiblingsCounter([args.in_file])
+    in_file = cfg_parser.get(args.type,'in_file')
+    runner = PotentialSiblingsCounter([in_file])
 elif(args.type=="VisualHierarchy"):
-    runner = ClassHierarchyVisualizer([args.in_file])
+    in_file = cfg_parser.get(args.type,'in_file')
+    runner = ClassHierarchyVisualizer([in_file])
 elif(args.type=="FieldCandidates"):
-    runner = FieldCandidateFinder([args.in_file])
+    in_file = cfg_parser.get(args.type,'in_file')
+    runner = FieldCandidateFinder([in_file])
 elif(args.type=="LogilabObjectTracer"):
-    sys.argv = ["main.py",args.project]
-    runner = LogilabObjectTracer(args.in_file,args.preload_file)
+    project = cfg_parser.get(args.type,'project')
+    in_file = cfg_parser.get(args.type,'in_file')
+    preload_file = cfg_parser.get(args.type,'preload_file')
+    sys.argv = ["main.py",project]
+    runner = LogilabObjectTracer(in_file,preload_file)
 elif(args.type=="PylintObjectTracer"):
-    sys.argv = ["main.py",args.project]
-    runner = PylintObjectTracer(args.in_file,args.preload_file)
+    project = cfg_parser.get(args.type,'project')
+    in_file = cfg_parser.get(args.type,'in_file')
+    preload_file = cfg_parser.get(args.type,'preload_file')
+    sys.argv = ["main.py",project]
+    runner = PylintObjectTracer(in_file,preload_file)
 elif(args.type=="TwistedObjectTracer"):
     sys.argv = ["main.py","-h ftp.mozilla.org"]
     runner = TwistedObjectTracer(args.in_file,args.preload_file)
@@ -149,10 +159,15 @@ elif(args.type=="SconsObjectTracer"):
     #sys.argv = ["scons","."]
     runner = SconsObjectTracer(args.in_file,args.preload_file)
 elif(args.type=="BazaarObjectTracer"):
-    sys.argv = ["bzr","branch","lp:gwibber"]# """http://bzr.savannah.gnu.org/r/grub/trunk/grub"""]
-    runner = BazaarObjectTracer(args.in_file,args.preload_file)
+    in_file = cfg_parser.get(args.type,'in_file')
+    preload_file = cfg_parser.get(args.type,'preload_file')
+    work_dir = cfg_parser.get(args.type,'work_dir')
+    repo = cfg_parser.get(args.type,'repo')
+    sys.argv = ["bzr","branch",repo]
+    runner = BazaarObjectTracer(in_file,preload_file,work_dir)
 elif(args.type=="TestRunner"):
-    sys.argv = ["main.py",args.project]
-    runner = TestRunner([args.project])
+    project = cfg_parser.get(args.type,'project')
+    sys.argv = ["main.py",project]
+    runner = TestRunner([project])
 else:
     print "Unknown type!"
