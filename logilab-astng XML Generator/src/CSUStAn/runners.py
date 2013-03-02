@@ -534,11 +534,13 @@ class ObjectTracer(TypesComparator):
         TypesComparator.__init__(self, in_file,project_tag,preload_file)
         self._dbg = CSUDbg(project_mark=project_tag, skip_classes=skip_classes, delay=delay)
         self._dbg.set_trace()
+        curr_dir = os.getcwd()
         try:
             self.run()
         except SystemExit:
             """ Catching sys.exit """
             pass
+        os.chdir(curr_dir)
         self._dbg.disable_trace()
         used_classes = self._dbg.get_used_classes()
         self._dynamic_types_info = used_classes
@@ -577,10 +579,12 @@ class SconsObjectTracer(ObjectTracer):
     def __init__(self, in_file, preload_file):
         from SCons.Script.SConsOptions import SConsValues
         from SCons.Builder import CompositeBuilder
-        ObjectTracer.__init__(self,'SCons', in_file ,preload_file,skip_classes=(SConsValues,CompositeBuilder))
+        from SCons.Node.FS import File
+        from SCons.Builder import BuilderBase
+        from SCons.Script.SConscript import SConsEnvironment
+        ObjectTracer.__init__(self,'SCons', in_file ,preload_file,skip_classes=(SConsValues,CompositeBuilder,File,BuilderBase,SConsEnvironment),delay=1)
         
     def run(self):
-        curr_dir = os.getcwd()
         foo = imp.load_source('scons','/usr/bin/scons')
         os.chdir('/home/bluesbreaker/Development/ascend-0.9.8')
         import scons
@@ -588,7 +592,6 @@ class SconsObjectTracer(ObjectTracer):
         # this does all the work, and calls sys.exit
         # with the proper exit status when done.
         SCons.Script.main()
-        os.chdir(curr_dir)
 
 class BazaarObjectTracer(ObjectTracer):
     
@@ -599,7 +602,6 @@ class BazaarObjectTracer(ObjectTracer):
         ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex), delay=20)
         
     def run(self):
-        curr_dir = os.getcwd()
         os.chdir('/home/bluesbreaker/Development/bzr')
         import bzrlib
         library_state = bzrlib.initialize()
@@ -608,7 +610,6 @@ class BazaarObjectTracer(ObjectTracer):
             exit_val = bzrlib.commands.main()
         finally:
             library_state.__exit__(None, None, None)
-        os.chdir(curr_dir)
 
         
 class TestRunner(ConfigurationMixIn):

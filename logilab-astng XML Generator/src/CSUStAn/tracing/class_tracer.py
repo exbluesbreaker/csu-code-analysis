@@ -11,6 +11,7 @@ from operator import itemgetter
 from pylint.pyreverse import main
 from sets import Set
 import glob
+import gc
 
 
 class CSUDbg(Bdb):
@@ -36,7 +37,7 @@ class CSUDbg(Bdb):
         if((not frame.f_globals.has_key('__name__'))or(frame.f_globals['__name__'].find(self._project_mark)==-1)):
             return
         self._dbg_count+=1
-        if(not (self._dbg_count%(self._delay)==1)):
+        if(not (self._dbg_count%(self._delay)==0)):
             return
         for  var in frame.f_locals:
             obj = frame.f_locals[var]

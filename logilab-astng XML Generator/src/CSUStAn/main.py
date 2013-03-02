@@ -149,7 +149,7 @@ elif(args.type=="SconsObjectTracer"):
     #sys.argv = ["scons","."]
     runner = SconsObjectTracer(args.in_file,args.preload_file)
 elif(args.type=="BazaarObjectTracer"):
-    sys.argv = ["bzr","branch","http://bzr.savannah.gnu.org/r/grub/trunk/grub"]
+    sys.argv = ["bzr","branch","lp:gwibber"]# """http://bzr.savannah.gnu.org/r/grub/trunk/grub"""]
     runner = BazaarObjectTracer(args.in_file,args.preload_file)
 elif(args.type=="TestRunner"):
     sys.argv = ["main.py",args.project]
