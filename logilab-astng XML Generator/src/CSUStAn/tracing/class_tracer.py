@@ -9,9 +9,10 @@ import inspect
 import pdb
 from operator import itemgetter
 from pylint.pyreverse import main
-from logilab.astng.node_classes import *
-from logilab.astng.scoped_nodes import *
 from sets import Set
+import glob
+import gc
+
 
 class CSUDbg(Bdb):
     _project_mark = None
@@ -19,12 +20,24 @@ class CSUDbg(Bdb):
     _project_classes = 0
     _non_project_classes = 0
     _no_more_trace = False
-    def __init__(self, project_mark, skip=None):
+    _skip_classes = ()
+    _dbg_count = 0
+    _delay = 0
+    def __init__(self, project_mark,preload_dt_info={}, skip=None,skip_classes=(),delay=5):
+        """ skip_classes is tuple of class objects instances of which will be ignored during analysis"""
         Bdb.__init__(self, skip=skip)
         self._project_mark = project_mark
-        self._used_classes_dict = {}
+        self._used_classes_dict = preload_dt_info
+        self._skip_classes = skip_classes
+        self._delay = delay
     def trace_dispatch(self,frame, event, arg):
         if(self._no_more_trace):
+            return
+        """ skipping non-project frames """
+        if((not frame.f_globals.has_key('__name__'))or(frame.f_globals['__name__'].find(self._project_mark)==-1)):
+            return
+        self._dbg_count+=1
+        if(not (self._dbg_count%(self._delay)==0)):
             return
         for  var in frame.f_locals:
             obj = frame.f_locals[var]
@@ -35,9 +48,10 @@ class CSUDbg(Bdb):
                         self._used_classes_dict[full_name] = [1,{}]
                     else:
                         self._used_classes_dict[full_name][0] += 1
-                    if not isinstance(obj, Const):
+                    if not isinstance(obj, self._skip_classes):
                         #inspect.getmembers(obj)
                         #dir(obj)
+                        #print obj.__class__.__name__, inspect.getmodule(obj.__class__)
                         for attr in inspect.getmembers(obj):
                             if(attr[0]=='__dict__'):
                                 #__dict__ is not related to aggregation and will be ignored
@@ -85,7 +99,7 @@ class CSUDbg(Bdb):
     def get_most_popular_classes(self):
         pass
     def _handle_obj(self,obj):
-        if (inspect.ismethod(obj) or inspect.isclass(obj) or inspect.istraceback(obj) or inspect.isbuiltin(obj) or inspect.ismodule(obj) or inspect.isfunction(obj)):
+        if (inspect.ismethod(obj) or inspect.isclass(obj) or inspect.istraceback(obj) or inspect.isbuiltin(obj) or inspect.ismodule(obj) or inspect.isfunction(obj) or inspect.iscode(obj)):
             return False
         module = inspect.getmodule(obj)
         if module:
