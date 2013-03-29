@@ -15,7 +15,7 @@ public class JCAssignHandler extends JCTreeHandler {
     protected void execute(JCTree node) {
         JCAssign assign = JCAssign.class.cast(node);
         walker.handle(assign.lhs, "nodename.left_part");
-        walker.handle(assign.lhs, "nodename.right_part");
+        walker.handle(assign.rhs, "nodename.right_part");
     }
 
 }
