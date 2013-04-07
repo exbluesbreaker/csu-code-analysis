@@ -7,7 +7,7 @@ USAGE
 * 1) logilab-astng XML Generator
 
 This is python utility for static analysis. Its main features:
-	- generation of universal class intermediate representation (XML) for Python projects(1)
+	- generation of universal class intermediate representation - UCR  (XML) for Python projects(1)
 	- generation of visual representation of class hierarchy from universal class intermediate representation(2)
 	- search for potential siblings in class hierarchy from universal class intermediate representation(3)
 	- tracing of living objects during different runs of Python projects (bazaar,logilab etc.). This needed for checking result of in-project aggregation generation in universal class representation(4)
@@ -20,6 +20,18 @@ Requirenments:
 	logilab-astng
 	pydot
 	lxml
+
+Supported run types:
+	ClassIR - generation of universal class representation for Python project(1)
+    	LogilabClassIR - old-style UCR generation (deprecated)(1)
+	PotentialSibling - (3)
+	VisualHierarchy - (2)
+	FieldCandidates - deprecated
+	LogilabObjectTracer - (4)
+	PylintObjectTracer - (4)
+	TwistedObjectTracer - (4)
+	SconsObjectTracer - (4)
+	BazaarObjectTracer - (4)
 
 Command line for (1):
 	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t ClassIR -p <project (installed python package) under analysis>
