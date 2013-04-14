@@ -22,37 +22,21 @@ Requirenments:
 	lxml
 
 Supported run types:
-	ClassIR - generation of universal class representation for Python project(1)
+	ClassIR - generation of UCR for Python project(1)
     	LogilabClassIR - old-style UCR generation (deprecated)(1)
-	PotentialSibling - (3)
-	VisualHierarchy - (2)
+	PotentialSibling - search for potential siblings in class hierarchy(3)
+	VisualHierarchy - visual representation of class relations in UCR (UML-like)(2)
 	FieldCandidates - deprecated
-	LogilabObjectTracer - (4)
-	PylintObjectTracer - (4)
-	TwistedObjectTracer - (4)
-	SconsObjectTracer - (4)
-	BazaarObjectTracer - (4)
+	LogilabObjectTracer - tracing of living objects from logilab package(4)
+	PylintObjectTracer - tracing of living objects from pylint package(4)
+	TwistedObjectTracer -tracing of living objects from twisted package (4)
+	SconsObjectTracer - tracing of living objects from SCons package (4)
+	BazaarObjectTracer - tracing of living objects from bzrlib package (4)
 
-Command line for (1):
-	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t ClassIR -p <project (installed python package) under analysis>
+Command line for :
+	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t <run type> [-c <alternative config>]
 E.G.:
-	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t ClassIR -p logilab
-
-Result will be generated in test.xml file in current working directory.
-
-Command line for (2):
-	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t VisualHierarchy -i <path to XML file, which  contains universal class intermediate representation>
-E.G.:
-	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t VisualHierarchy -i test.xml
-
-Result will be generated in classes.svg file in current working directory.
-
-Command line for (3):
-	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t PotentialSiblings -i <path to XML file, which  contains universal class intermediate representation>
-E.G.:
-	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t PotentialSiblings -i test.xml
-
-Result will be shown at the end of command line output.
+	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t ClassIR -c my.ini
 
 * 2) Java-XML
 
