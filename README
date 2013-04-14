@@ -33,7 +33,7 @@ Supported run types:
 	SconsObjectTracer - tracing of living objects from SCons package (4)
 	BazaarObjectTracer - tracing of living objects from bzrlib package (4)
 
-Command line for :
+Command line for run:
 	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t <run type> [-c <alternative config>]
 E.G.:
 	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t ClassIR -c my.ini
