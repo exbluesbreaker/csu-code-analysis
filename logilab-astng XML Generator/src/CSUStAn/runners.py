@@ -4,30 +4,32 @@ Created on 08.04.2012
 @author: bluesbreaker
 '''
 
+import imp
+import re
+import pydot
+import os
+from lxml import etree
+from twisted.internet import reactor
+
 from logilab.common.configuration import ConfigurationMixIn
 from logilab.astng.manager import astng_wrapper, ASTNGManager
+from logilab.astng.node_classes import *
+from logilab.astng.scoped_nodes import *
 
 from pylint.pyreverse.diadefslib import DiadefsHandler
 from pylint.pyreverse.utils import insert_default_options
 from pylint.pyreverse.main import OPTIONS
-from pylint.pyreverse import writer
+from pylint.pyreverse import writer, main
+from pylint.pyreverse.utils import get_visibility
 from CSUStAn.astng.simple import NamesCheckLinker
 from CSUStAn.tracing.class_tracer import CSUDbg
 from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGenerator,SourceModelXMLGenerator
 from CSUStAn.tests import twisted_ftpclient, twisted_getpage, twisted_ptyserv, twisted_testlogging
 from CSUStAn.astng.inspector import NoInferLinker, ClassIRLinker
-from lxml import etree
-from twisted.internet import reactor
-from pylint.pyreverse import main
-import imp
+from CSUStAn.astng.astng import ASTNGHandler
+from CSUStAn.astng.control_flow import CFGLinker
 
-# must be refactored
-from logilab.astng.node_classes import *
-from logilab.astng.scoped_nodes import *
-from pylint.pyreverse.utils import get_visibility
-import re
-import pydot
-import os
+
 
 '''Entry points for different ASTNG processing'''
 
@@ -634,3 +636,11 @@ class TestRunner(ConfigurationMixIn):
         self.project = project
         linker = ClassIRLinker(project)
         linker.visit(project)
+
+class CFGExtractor(ASTNGHandler):
+    def __init__(self,args):
+        ASTNGHandler.__init__(self,args)
+        self.run()
+    def run(self):
+        linker = CFGLinker(self.project)
+        linker.visit(self.project)

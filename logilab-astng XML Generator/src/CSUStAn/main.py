@@ -8,7 +8,7 @@ Created on 19.08.2011
 import importlib
 import argparse
 import sys
-from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer, SconsObjectTracer, TestRunner, PylintObjectTracer, BazaarObjectTracer
+from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer, SconsObjectTracer, TestRunner, PylintObjectTracer, BazaarObjectTracer,CFGExtractor
 from CSUStAn.reflexion.rm_tools import RegexMapper
 from ConfigParser import SafeConfigParser
 from CSUStAn.astng.obsolete import LogilabClassIRRunner
@@ -169,5 +169,9 @@ elif(args.type=="TestRunner"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]
     runner = TestRunner([project])
+if(args.type=="CFGExtractor"):
+    project = cfg_parser.get(args.type,'project')
+    sys.argv = ["main.py",project]
+    runner = CFGExtractor([project])
 else:
     print "Unknown type!"
