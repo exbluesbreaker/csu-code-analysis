@@ -5,7 +5,7 @@ Created on 14.04.2013
 '''
 from logilab.astng.utils import LocalsVisitor
 from logilab.astng.inspector import IdGeneratorMixIn
-from logilab.astng.node_classes import If, For, While
+from logilab.astng.node_classes import If, For, While, TryExcept, TryFinally
 import pydot
 from lxml import etree
 
@@ -42,7 +42,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             func_node.append(flow_node)
     def leave_function(self,node):
         ''' DEBUG '''
-        if self._stop or (len(node.body)<4):
+        if self._stop:
             del self._stack[node]
             return
         if not (self._dbg == True):
@@ -102,6 +102,12 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 else:
                     block_node.set("test",child.test.__class__.__name__)
                 id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+            elif isinstance(child, TryExcept):
+                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+            elif isinstance(child, TryFinally):
+                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+                #print child.frame().as_string()
+                #print child.orelse, child.handlers
             else:
                 prev = set([curr_id])
         return id_count, prev
@@ -113,11 +119,25 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         if isinstance(node, (If,While, For)):
             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
             parent_ids |=ids
-            if(len(node.orelse)>0):
-                self._dbg = True
             id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count)
             parent_ids |=ids
             parent_ids.add(curr_id)
+        elif isinstance(node, TryExcept):
+             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+             parent_ids |=ids
+             self._dbg = True
+             for h in node.handlers:
+                 id_count, ids = self.handle_flow_part(func_node,h.body, set([curr_id]), id_count)
+                 parent_ids |=ids
+             id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count)
+             parent_ids |=ids
+             parent_ids.add(curr_id)
+        elif isinstance(node, TryFinally):
+             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+             parent_ids |=ids
+             id_count, ids = self.handle_flow_part(func_node,node.finalbody, set([curr_id]), id_count)
+             parent_ids |=ids
+             parent_ids.add(curr_id)
         return id_count, parent_ids            
        
         
