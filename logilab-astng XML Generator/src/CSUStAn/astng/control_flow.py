@@ -5,7 +5,8 @@ Created on 14.04.2013
 '''
 from logilab.astng.utils import LocalsVisitor
 from logilab.astng.inspector import IdGeneratorMixIn
-from logilab.astng.node_classes import If, For, While, TryExcept, TryFinally
+from logilab.astng.node_classes import If, For, While, TryExcept, TryFinally, IfExp, With
+from logilab.astng.scoped_nodes import Class
 import pydot
 from lxml import etree
 
@@ -30,7 +31,10 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         f.write(etree.tostring(self._root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
     def visit_function(self,node):
-        func_node = etree.Element("Function",name=node.name,label=node.root().name)
+        if isinstance(node.parent,Class):
+            func_node = etree.Element("Method",name=node.name,parent_class=node.parent.name,label=node.root().name)
+        else:
+            func_node = etree.Element("Function",name=node.name,label=node.root().name)
         self._stack[node] = func_node
         self._root.append(func_node)
         id_count, prev = self.handle_flow_part(func_node,node.body, set([]),0)
@@ -102,12 +106,8 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 else:
                     block_node.set("test",child.test.__class__.__name__)
                 id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
-            elif isinstance(child, TryExcept):
+            elif isinstance(child, (TryExcept,TryFinally,With)):
                 id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
-            elif isinstance(child, TryFinally):
-                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
-                #print child.frame().as_string()
-                #print child.orelse, child.handlers
             else:
                 prev = set([curr_id])
         return id_count, prev
@@ -125,7 +125,6 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         elif isinstance(node, TryExcept):
              id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
              parent_ids |=ids
-             self._dbg = True
              for h in node.handlers:
                  id_count, ids = self.handle_flow_part(func_node,h.body, set([curr_id]), id_count)
                  parent_ids |=ids
@@ -138,6 +137,11 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
              id_count, ids = self.handle_flow_part(func_node,node.finalbody, set([curr_id]), id_count)
              parent_ids |=ids
              parent_ids.add(curr_id)
+        elif isinstance(node, With):
+             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+             parent_ids |=ids
+             parent_ids.add(curr_id)
+             self._dbg = True
         return id_count, parent_ids            
        
         
