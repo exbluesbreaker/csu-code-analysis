@@ -17,6 +17,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     ''' dbg '''
     _stop = False
     _stack = {}
+    _dbg = False
 
     def __init__(self, project):
         IdGeneratorMixIn.__init__(self)
@@ -32,11 +33,19 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         func_node = etree.Element("Function",name=node.name,label=node.root().name)
         self._stack[node] = func_node
         self._root.append(func_node)
-        self.extract(node,func_node,0)
+        id_count, prev = self.handle_flow_part(func_node,node.body, set([]),0)
+        id_count +=1
+        block_node = etree.Element("Block", type="<<Exit>>",id=str(id_count))
+        func_node.append(block_node)
+        for p in prev:
+            flow_node = etree.Element("Flow",from_id=str(p),to_id=str(id_count))
+            func_node.append(flow_node)
     def leave_function(self,node):
         ''' DEBUG '''
         if self._stop or (len(node.body)<4):
             del self._stack[node]
+            return
+        if not (self._dbg == True):
             return
         graph = pydot.Dot(graph_type='digraph')
         block_dict = {}
@@ -63,13 +72,13 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         f=open('cfg.txt','w')
         f.write(node.as_string())
         f.close()
-        self._stop = True
         del self._stack[node]
+        self._stop = True
         
-    def extract(self,node,parent_node,id_count):
-        prev=id_count
-        if_prev = None
-        for child in node.body:
+    def handle_flow_part(self,func_node,flow_part, parent_ids,id_count):
+        ''' Handle sequential part of flow, e.g then or else body of If'''
+        prev=parent_ids
+        for child in flow_part:
             id_count+=1
             if isinstance(child, If):
                 block_node = etree.Element("If",id=str(id_count))
@@ -80,33 +89,35 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             else:
                 block_node = etree.Element("Block",type=child.__class__.__name__,id=str(id_count))
             curr_id = id_count
-            parent_node.append(block_node)
-            if prev == 0:
-                prev=id_count
-            else:
-                flow_node = etree.Element("Flow",from_id=str(prev),to_id=str(curr_id))
-                parent_node.append(flow_node)
-                prev=id_count
-            if if_prev is not None:
-                ''' merge of flows after if '''
-                flow_node = etree.Element("Flow",from_id=str(if_prev),to_id=str(curr_id))
-                parent_node.append(flow_node)
-                if_prev = None
+            func_node.append(block_node)
+            for p in prev:
+                flow_node = etree.Element("Flow",from_id=str(p),to_id=str(curr_id))
+                func_node.append(flow_node)
             if isinstance(child, If):
                 block_node.set("test",child.test.__class__.__name__)
-                id_count = self.extract(child, parent_node, id_count)
-                if_prev = id_count
+                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
             elif isinstance(child, (For, While)):
                 if isinstance(child, For):
                     block_node.set("iterate",child.iter.__class__.__name__)
                 else:
                     block_node.set("test",child.test.__class__.__name__)
-                id_count = self.extract(child,parent_node, id_count)
-                cycle_prev = id_count
-                ''' cycle edge '''
-                flow_node = etree.Element("Flow",from_id=str(cycle_prev),to_id=str(curr_id))
-                parent_node.append(flow_node)
-        return id_count
-                
+                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+            else:
+                prev = set([curr_id])
+        return id_count, prev
+    
+    def handle_cross(self, node, func_node, parent_id,id_count):
+        ''' Handle conditional part of flow, e.g. If block'''
+        curr_id = id_count
+        parent_ids = set([]) 
+        if isinstance(node, (If,While, For)):
+            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+            parent_ids |=ids
+            if(len(node.orelse)>0):
+                self._dbg = True
+            id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count)
+            parent_ids |=ids
+            parent_ids.add(curr_id)
+        return id_count, parent_ids            
        
         
