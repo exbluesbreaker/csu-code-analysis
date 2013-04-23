@@ -56,6 +56,8 @@ public class Main {
 			HandlerFactory handlers = HandlerFactory.getInstance();
 			XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 			ClassContext context = ClassContext.getInstance(result, factory);
+			// Первый проход обработчика и формирование основного списка классов,
+			// формирование реестра типов
 			try{
 				File f = new File(input);
 				XMLEventReader reader = xmlFactory.createXMLEventReader(new FileInputStream(f));
@@ -78,7 +80,7 @@ public class Main {
 				System.out.println("Wrong XML");
 				e.printStackTrace();
 			}
-			
+			// Второй проход, установление связей между типами и родительскими классами
 			System.out.println("Resolving parent classes");
 			ImportRegistry imports = context.getImpReg();
 			PackageRegistry packages = context.getPackageReg();

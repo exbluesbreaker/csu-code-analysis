@@ -11,4 +11,9 @@ enum ContextState {
 	METHOD,
 	ARGUMENT,
 	PARENT,
+	MODIFIERS,
+	RETURN_TYPE,
+	FIELD_TYPE,
+	ARG_TYPE
+
 }

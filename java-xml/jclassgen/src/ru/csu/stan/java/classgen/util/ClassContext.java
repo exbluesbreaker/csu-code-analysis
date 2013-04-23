@@ -2,6 +2,8 @@ package ru.csu.stan.java.classgen.util;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -9,6 +11,7 @@ import javax.xml.stream.events.Attribute;
 import ru.csu.stan.java.classgen.jaxb.Argument;
 import ru.csu.stan.java.classgen.jaxb.Classes;
 import ru.csu.stan.java.classgen.jaxb.Method;
+import ru.csu.stan.java.classgen.jaxb.ModifierType;
 import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
 import ru.csu.stan.java.classgen.jaxb.ParentClass;
 
@@ -31,6 +34,7 @@ public class ClassContext {
 	private Method currentMethod;
 	private ParentClass currentParent;
 	private Argument currentArgument;
+	private List<ModifierType> currentModifier = new LinkedList<ModifierType>();
 	private ObjectFactory factory;
 	private Map<String, String> imported = new HashMap<String, String>();
 	private Stack<ContextState> stateStack = new Stack<ContextState>();
@@ -99,6 +103,10 @@ public class ClassContext {
 		stateStack.push(ContextState.COMPILATION_UNIT);
 	}
 	
+	public void setModifierState(){
+		stateStack.push(ContextState.MODIFIERS);
+	}
+	
 	public void setStateForVar(){
 		ContextState state = stateStack.peek();
 		if (state == ContextState.CLASS)
@@ -142,6 +150,9 @@ public class ClassContext {
 				break;
 			case NEW_CLASS:
 				processNewClass(name, attrs);
+				break;
+			case MODIFIERS:
+				processModifierTag(name, attrs);
 				break;
 			case EMPTY:
 				break;
@@ -191,6 +202,18 @@ public class ClassContext {
 				currentPackage = null;
 				impReg.addCompilationUni(currentUnit);
 				currentUnit = new CompilationUnit();
+				break;
+			case MODIFIERS:
+				ContextState currentState = stateStack.pop();
+				if (stateStack.peek() == ContextState.CLASS)
+					classStack.peek().getModifier().addAll(currentModifier);
+				if (stateStack.peek() == ContextState.METHOD)
+					currentMethod.getModifier().addAll(currentModifier);
+				if (stateStack.peek() == ContextState.FIELD)
+					currentAttribute.getModifier().addAll(currentModifier);
+				stateStack.push(currentState);
+				currentModifier.clear();
+				break;
 			default:
 				break;
 		}
@@ -318,6 +341,16 @@ public class ClassContext {
 				currentNewClass = getNameAttr(attrs);
 			else
 				currentNewClass = getNameAttr(attrs) + '.' + currentNewClass;
+	}
+	
+	private void processModifierTag(String name, Iterator<Attribute> attrs){
+		if ("modifier".equals(name)){
+			ModifierType mod = factory.createModifierType();
+			mod.setName(getNameAttr(attrs));
+			if (currentModifier == null)
+				currentModifier = new LinkedList<ModifierType>();
+			currentModifier.add(mod);
+		}
 	}
 	
 	private String getNameAttr(Iterator<Attribute> attrs){
