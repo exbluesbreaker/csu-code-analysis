@@ -8,15 +8,20 @@ import java.util.Map;
 import java.util.Stack;
 
 import javax.xml.stream.events.Attribute;
+
 import ru.csu.stan.java.classgen.jaxb.Argument;
 import ru.csu.stan.java.classgen.jaxb.Classes;
+import ru.csu.stan.java.classgen.jaxb.CommonType;
 import ru.csu.stan.java.classgen.jaxb.Method;
 import ru.csu.stan.java.classgen.jaxb.ModifierType;
 import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
 import ru.csu.stan.java.classgen.jaxb.ParentClass;
 
 /**
- * Контекст анализа AST для получения классового представления
+ * Контекст анализа AST для получения классового представления.
+ * Представляет собой конечный автомат со стековой памятью.
+ * В новое состояние переходит явным указанием такового,
+ * а выходит из него возвратом к предыдущему.
  * 
  * @author mz
  *
@@ -38,6 +43,7 @@ public class ClassContext {
 	private ObjectFactory factory;
 	private Map<String, String> imported = new HashMap<String, String>();
 	private Stack<ContextState> stateStack = new Stack<ContextState>();
+	private CommonType currentType;
 	
 	private PackageRegistry packageReg = new PackageRegistry();
 	
@@ -115,9 +121,21 @@ public class ClassContext {
 			stateStack.push(ContextState.ARGUMENT);
 	}
 	
+	public void setVartypeState(){
+		ContextState state = stateStack.peek();
+		if (state == ContextState.FIELD)
+			stateStack.push(ContextState.FIELD_TYPE);
+	}
+	
 	public void setPreviousVarState(){
 		ContextState state = stateStack.peek();
 		if (state == ContextState.FIELD || state == ContextState.ARGUMENT)
+			stateStack.pop();
+	}
+	
+	public void setPreviousVartypeState(){
+		ContextState state = stateStack.peek();
+		if (state == ContextState.FIELD_TYPE)
 			stateStack.pop();
 	}
 	
@@ -153,6 +171,9 @@ public class ClassContext {
 				break;
 			case MODIFIERS:
 				processModifierTag(name, attrs);
+				break;
+			case FIELD_TYPE:
+				processFieldTypeTag(name, attrs);
 				break;
 			case EMPTY:
 				break;
@@ -214,6 +235,11 @@ public class ClassContext {
 				stateStack.push(currentState);
 				currentModifier.clear();
 				break;
+			case FIELD_TYPE:
+				if (currentType != null)
+					currentAttribute.getCommonType().add(currentType);
+				currentType = null;
+				break;
 			default:
 				break;
 		}
@@ -222,6 +248,12 @@ public class ClassContext {
 	public void finishVar(){
 		ContextState state = stateStack.peek();
 		if (state == ContextState.FIELD || state == ContextState.ARGUMENT)
+			finish();
+	}
+	
+	public void finishVartype(){
+		ContextState state = stateStack.peek();
+		if (state == ContextState.FIELD_TYPE)
 			finish();
 	}
 	
@@ -350,6 +382,20 @@ public class ClassContext {
 			if (currentModifier == null)
 				currentModifier = new LinkedList<ModifierType>();
 			currentModifier.add(mod);
+		}
+	}
+	
+	private void processFieldTypeTag(String name, Iterator<Attribute> attrs){
+		if ("member_select".equals(name) || "identifier".equals(name)){
+			if (currentType == null)
+			{
+				currentType = factory.createCommonType();
+				currentType.setName("");
+			}
+			if (currentType.getName().isEmpty())
+				currentType.setName(getNameAttr(attrs));
+			else
+				currentType.setName(currentType.getName() + '.' + getNameAttr(attrs));
 		}
 	}
 	

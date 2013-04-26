@@ -4,10 +4,19 @@ import javax.xml.stream.events.EndElement;
 
 import ru.csu.stan.java.classgen.util.ClassContext;
 
+/**
+ * Обработчик завершающего тега.
+ * Закрывает текущее состояние в контексте и возвращается к предыдущему.
+ * 
+ * @author mz
+ *
+ */
 public class EndElementHandler implements IStaxHandler{
 
+	/** Событие окончания тега*/
 	private EndElement event;
 	
+	/** Конструктор */
 	public EndElementHandler(EndElement event){
 		this.event = event;
 	}
@@ -37,6 +46,12 @@ public class EndElementHandler implements IStaxHandler{
 		
 		if (event.getName().toString().equals("identifier"))
 			context.finishIdentifier();
+		
+		if (event.getName().toString().equals("vartype"))
+		{
+			context.finishVartype();
+			context.setPreviousVartypeState();
+		}
 		
 		return context;
 	}
