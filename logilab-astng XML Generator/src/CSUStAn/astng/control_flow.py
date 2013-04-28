@@ -5,10 +5,13 @@ Created on 14.04.2013
 '''
 from logilab.astng.utils import LocalsVisitor
 from logilab.astng.inspector import IdGeneratorMixIn
-from logilab.astng.node_classes import If, For, While, TryExcept, TryFinally, IfExp, With
-from logilab.astng.scoped_nodes import Class
+from logilab.astng.node_classes import If, For, While, TryExcept, TryFinally, IfExp, With,\
+    CallFunc
+from logilab.astng.scoped_nodes import Class, Function
 import pydot
 from lxml import etree
+
+JUMP_NODES = ( If, For, While, TryExcept, TryFinally, IfExp, With)
 
 class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     '''
@@ -19,6 +22,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     _stop = False
     _stack = {}
     _dbg = False
+    _dbg1 = None
 
     def __init__(self, project):
         IdGeneratorMixIn.__init__(self)
@@ -83,6 +87,9 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         ''' Handle sequential part of flow, e.g then or else body of If'''
         prev=parent_ids
         for child in flow_part:
+            if isinstance(child, Function):
+                ''' Ignore function defined in another function body'''
+                continue
             id_count+=1
             if isinstance(child, If):
                 block_node = etree.Element("If",id=str(id_count))
@@ -109,6 +116,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             elif isinstance(child, (TryExcept,TryFinally,With)):
                 id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
             else:
+                self.handle_simple_node(child)
                 prev = set([curr_id])
         return id_count, prev
     
@@ -141,7 +149,16 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
              id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
              parent_ids |=ids
              parent_ids.add(curr_id)
-             self._dbg = True
         return id_count, parent_ids            
+    
+    def handle_simple_node(self, node):
+        if isinstance(node, JUMP_NODES):
+            print "Warning! Ignored jump node at ", node.root
+            self._dbg = True
+        elif isinstance(node, CallFunc):
+            print node.as_string(),node.func
+            print node.scope().lookup(node.func)
+        for child in node.get_children():
+            self.handle_simple_node(child)
        
         
