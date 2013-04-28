@@ -166,8 +166,9 @@ public class StaxXmlRepresentation implements TraversalHandler {
 		}
 		try {
 			this.writer.writeAttribute("type", type);
-			// TODO здесь могут быть любые значения, даже \u0000
-			this.writer.writeAttribute("value", "");//String.valueOf(value));
+			// здесь могут быть любые значения, даже \u0000.
+			// TODO сейчас значение непечатаемых символов теряется
+			this.writer.writeAttribute("value", String.valueOf(value).replaceAll("\\P{Print}", ""));
 		} catch (XMLStreamException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

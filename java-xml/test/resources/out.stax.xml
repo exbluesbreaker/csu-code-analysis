@@ -1,29 +1,6 @@
 <?xml version="1.0" ?>
 
 <project>
-   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OurClass.java">
-      <package>
-         <member_select line="1" col="9" name="example">
-            <identifier line="1" col="9" name="com">
-            </identifier>
-         </member_select>
-      </package>
-      <definitions>
-         <class line="3" col="1" name="OurClass">
-            <modifiers line="3" col="1">
-               <modifier name="public"></modifier>
-            </modifiers>
-            <body>
-               <class line="4" col="2" name="MyClass2">
-                  <modifiers line="4" col="2">
-                     <modifier name="public"></modifier>
-                     <modifier name="static"></modifier>
-                  </modifiers>
-               </class>
-            </body>
-         </class>
-      </definitions>
-   </compilation_unit>
    <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/MyClass.java">
       <package>
          <member_select line="1" col="9" name="example">
@@ -98,7 +75,7 @@
                      </identifier>
                   </vartype>
                   <init>
-                     <string_literal line="11" col="36" type="string" value="">
+                     <string_literal line="11" col="36" type="string" value="asdasd">
                      </string_literal>
                   </init>
                </variable>
@@ -232,7 +209,7 @@
                                           <block line="20" col="34">
                                              <nodename.statements>
                                                 <return line="22" col="5">
-                                                   <null_literal line="22" col="12" type="null" value="">
+                                                   <null_literal line="22" col="12" type="null" value="null">
                                                    </null_literal>
                                                 </return>
                                              </nodename.statements>
@@ -257,7 +234,7 @@
                                           <block line="26" col="30">
                                              <nodename.statements>
                                                 <return line="28" col="5">
-                                                   <null_literal line="28" col="12" type="null" value="">
+                                                   <null_literal line="28" col="12" type="null" value="null">
                                                    </null_literal>
                                                 </return>
                                              </nodename.statements>
@@ -306,7 +283,7 @@
                                           <block line="32" col="60">
                                              <nodename.statements>
                                                 <return line="34" col="5">
-                                                   <null_literal line="34" col="12" type="null" value="">
+                                                   <null_literal line="34" col="12" type="null" value="null">
                                                    </null_literal>
                                                 </return>
                                              </nodename.statements>
@@ -329,7 +306,7 @@
                                           <block line="38" col="22">
                                              <nodename.statements>
                                                 <return line="40" col="5">
-                                                   <int_literal line="40" col="12" type="int" value="">
+                                                   <int_literal line="40" col="12" type="int" value="0">
                                                    </int_literal>
                                                 </return>
                                              </nodename.statements>
@@ -372,7 +349,7 @@
                                           <block line="44" col="49">
                                              <nodename.statements>
                                                 <return line="46" col="5">
-                                                   <null_literal line="46" col="12" type="null" value="">
+                                                   <null_literal line="46" col="12" type="null" value="null">
                                                    </null_literal>
                                                 </return>
                                              </nodename.statements>
@@ -412,7 +389,7 @@
                                           <block line="50" col="46">
                                              <nodename.statements>
                                                 <return line="52" col="5">
-                                                   <boolean_literal line="52" col="12" type="boolean" value="">
+                                                   <boolean_literal line="52" col="12" type="boolean" value="false">
                                                    </boolean_literal>
                                                 </return>
                                              </nodename.statements>
@@ -452,7 +429,7 @@
                                           <block line="56" col="46">
                                              <nodename.statements>
                                                 <return line="58" col="5">
-                                                   <boolean_literal line="58" col="12" type="boolean" value="">
+                                                   <boolean_literal line="58" col="12" type="boolean" value="false">
                                                    </boolean_literal>
                                                 </return>
                                              </nodename.statements>
@@ -486,7 +463,7 @@
                                           <block line="62" col="36">
                                              <nodename.statements>
                                                 <return line="64" col="5">
-                                                   <null_literal line="64" col="12" type="null" value="">
+                                                   <null_literal line="64" col="12" type="null" value="null">
                                                    </null_literal>
                                                 </return>
                                              </nodename.statements>
@@ -520,7 +497,7 @@
                                           <block line="68" col="36">
                                              <nodename.statements>
                                                 <return line="70" col="5">
-                                                   <boolean_literal line="70" col="12" type="boolean" value="">
+                                                   <boolean_literal line="70" col="12" type="boolean" value="false">
                                                    </boolean_literal>
                                                 </return>
                                              </nodename.statements>
@@ -560,7 +537,7 @@
                                           <block line="74" col="56">
                                              <nodename.statements>
                                                 <return line="76" col="5">
-                                                   <null_literal line="76" col="12" type="null" value="">
+                                                   <null_literal line="76" col="12" type="null" value="null">
                                                    </null_literal>
                                                 </return>
                                              </nodename.statements>
@@ -589,7 +566,7 @@
                                           <block line="80" col="47">
                                              <nodename.statements>
                                                 <return line="82" col="5">
-                                                   <null_literal line="82" col="12" type="null" value="">
+                                                   <null_literal line="82" col="12" type="null" value="null">
                                                    </null_literal>
                                                 </return>
                                              </nodename.statements>
@@ -623,7 +600,7 @@
                                           <block line="86" col="37">
                                              <nodename.statements>
                                                 <return line="88" col="5">
-                                                   <int_literal line="88" col="12" type="int" value="">
+                                                   <int_literal line="88" col="12" type="int" value="0">
                                                    </int_literal>
                                                 </return>
                                              </nodename.statements>
@@ -652,7 +629,7 @@
                                           <block line="92" col="39">
                                              <nodename.statements>
                                                 <return line="94" col="5">
-                                                   <null_literal line="94" col="12" type="null" value="">
+                                                   <null_literal line="94" col="12" type="null" value="null">
                                                    </null_literal>
                                                 </return>
                                              </nodename.statements>
@@ -675,7 +652,7 @@
                                           <block line="98" col="29">
                                              <nodename.statements>
                                                 <return line="100" col="5">
-                                                   <boolean_literal line="100" col="12" type="boolean" value="">
+                                                   <boolean_literal line="100" col="12" type="boolean" value="false">
                                                    </boolean_literal>
                                                 </return>
                                              </nodename.statements>
@@ -709,7 +686,7 @@
                                           <block line="104" col="33">
                                              <nodename.statements>
                                                 <return line="106" col="5">
-                                                   <int_literal line="106" col="12" type="int" value="">
+                                                   <int_literal line="106" col="12" type="int" value="0">
                                                    </int_literal>
                                                 </return>
                                              </nodename.statements>
@@ -743,7 +720,7 @@
                                           <block line="110" col="33">
                                              <nodename.statements>
                                                 <return line="112" col="5">
-                                                   <null_literal line="112" col="12" type="null" value="">
+                                                   <null_literal line="112" col="12" type="null" value="null">
                                                    </null_literal>
                                                 </return>
                                              </nodename.statements>
@@ -783,7 +760,7 @@
                                           <block line="116" col="48">
                                              <nodename.statements>
                                                 <return line="118" col="5">
-                                                   <boolean_literal line="118" col="12" type="boolean" value="">
+                                                   <boolean_literal line="118" col="12" type="boolean" value="false">
                                                    </boolean_literal>
                                                 </return>
                                              </nodename.statements>
@@ -817,7 +794,7 @@
                                           <block line="122" col="38">
                                              <nodename.statements>
                                                 <return line="124" col="5">
-                                                   <boolean_literal line="124" col="12" type="boolean" value="">
+                                                   <boolean_literal line="124" col="12" type="boolean" value="false">
                                                    </boolean_literal>
                                                 </return>
                                              </nodename.statements>
@@ -885,7 +862,7 @@
                                           <block line="134" col="69">
                                              <nodename.statements>
                                                 <return line="136" col="5">
-                                                   <boolean_literal line="136" col="12" type="boolean" value="">
+                                                   <boolean_literal line="136" col="12" type="boolean" value="false">
                                                    </boolean_literal>
                                                 </return>
                                              </nodename.statements>
@@ -927,7 +904,7 @@
                                           <block line="140" col="58">
                                              <nodename.statements>
                                                 <return line="142" col="5">
-                                                   <boolean_literal line="142" col="12" type="boolean" value="">
+                                                   <boolean_literal line="142" col="12" type="boolean" value="false">
                                                    </boolean_literal>
                                                 </return>
                                              </nodename.statements>
@@ -998,7 +975,7 @@
                                           <block line="152" col="33">
                                              <nodename.statements>
                                                 <return line="154" col="5">
-                                                   <boolean_literal line="154" col="12" type="boolean" value="">
+                                                   <boolean_literal line="154" col="12" type="boolean" value="false">
                                                    </boolean_literal>
                                                 </return>
                                              </nodename.statements>
@@ -1052,7 +1029,7 @@
                   <block line="159" col="47">
                      <nodename.statements>
                         <return line="160" col="6">
-                           <int_literal line="160" col="13" type="int" value="">
+                           <int_literal line="160" col="13" type="int" value="1">
                            </int_literal>
                         </return>
                      </nodename.statements>
@@ -1105,6 +1082,29 @@
          </class>
       </definitions>
    </compilation_unit>
+   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OurClass.java">
+      <package>
+         <member_select line="1" col="9" name="example">
+            <identifier line="1" col="9" name="com">
+            </identifier>
+         </member_select>
+      </package>
+      <definitions>
+         <class line="3" col="1" name="OurClass">
+            <modifiers line="3" col="1">
+               <modifier name="public"></modifier>
+            </modifiers>
+            <body>
+               <class line="4" col="2" name="MyClass2">
+                  <modifiers line="4" col="2">
+                     <modifier name="public"></modifier>
+                     <modifier name="static"></modifier>
+                  </modifiers>
+               </class>
+            </body>
+         </class>
+      </definitions>
+   </compilation_unit>
    <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/IAction.java">
       <package>
          <member_select line="1" col="9" name="example">
@@ -1132,43 +1132,60 @@
       </package>
       <definitions>
          <import line="3" col="1">
-            <member_select line="3" col="8" name="*">
+            <member_select line="3" col="8" name="IAction">
                <member_select line="3" col="8" name="example">
                   <identifier line="3" col="8" name="com">
                   </identifier>
                </member_select>
             </member_select>
          </import>
-         <class line="5" col="1" name="OtherClass">
-            <modifiers line="5" col="1">
+         <import line="4" col="1">
+            <member_select line="4" col="8" name="MyClass">
+               <member_select line="4" col="8" name="example">
+                  <identifier line="4" col="8" name="com">
+                  </identifier>
+               </member_select>
+            </member_select>
+         </import>
+         <class line="6" col="1" name="OtherClass">
+            <modifiers line="6" col="1">
                <modifier name="public"></modifier>
             </modifiers>
             <extends>
-               <identifier line="5" col="33" name="MyClass">
+               <identifier line="6" col="33" name="MyClass">
                </identifier>
             </extends>
             <implements>
-               <identifier line="5" col="52" name="IAction">
+               <identifier line="6" col="52" name="IAction">
                </identifier>
             </implements>
             <body>
-               <class line="7" col="2" name="AnotherOtherClass">
-                  <modifiers line="7" col="2">
+               <class line="8" col="2" name="AnotherOtherClass">
+                  <modifiers line="8" col="2">
                      <modifier name="public"></modifier>
                      <modifier name="static"></modifier>
                   </modifiers>
                   <extends>
-                     <identifier line="7" col="48" name="MyClass2">
+                     <identifier line="8" col="48" name="MyClass2">
                      </identifier>
                   </extends>
                   <body>
-                     <class line="9" col="3" name="AndNowSomethingCompletelyDifferent">
+                     <variable line="9" col="3" name="field">
                         <modifiers line="9" col="3">
+                           <modifier name="private"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="9" col="11" name="MyClass3">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                     <class line="11" col="3" name="AndNowSomethingCompletelyDifferent">
+                        <modifiers line="11" col="3">
                            <modifier name="public"></modifier>
                            <modifier name="static"></modifier>
                         </modifiers>
                         <extends>
-                           <identifier line="9" col="66" name="MyClass3">
+                           <identifier line="11" col="66" name="MyClass3">
                            </identifier>
                         </extends>
                      </class>

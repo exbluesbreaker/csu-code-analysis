@@ -16,17 +16,17 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ParentClass complex type.
+ * <p>Java class for AggregatedType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ParentClass">
+ * &lt;complexType name="AggregatedType">
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}integer" />
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/restriction>
+ *     &lt;extension base="{}Type">
+ *       &lt;attribute name="element_id" type="{http://www.w3.org/2001/XMLSchema}integer" />
+ *       &lt;attribute name="element_type" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -34,60 +34,62 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ParentClass")
-public class ParentClass {
+@XmlType(name = "AggregatedType")
+public class AggregatedType
+    extends Type
+{
 
-    @XmlAttribute
-    protected BigInteger id;
-    @XmlAttribute
-    protected String name;
+    @XmlAttribute(name = "element_id")
+    protected BigInteger elementId;
+    @XmlAttribute(name = "element_type")
+    protected String elementType;
 
     /**
-     * Gets the value of the id property.
+     * Gets the value of the elementId property.
      * 
      * @return
      *     possible object is
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getId() {
-        return id;
+    public BigInteger getElementId() {
+        return elementId;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the elementId property.
      * 
      * @param value
      *     allowed object is
      *     {@link BigInteger }
      *     
      */
-    public void setId(BigInteger value) {
-        this.id = value;
+    public void setElementId(BigInteger value) {
+        this.elementId = value;
     }
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the elementType property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getElementType() {
+        return elementType;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the elementType property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setElementType(String value) {
+        this.elementType = value;
     }
 
 }

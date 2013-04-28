@@ -6,9 +6,7 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,8 +18,10 @@ import javax.xml.stream.events.XMLEvent;
 
 import ru.csu.stan.java.classgen.handlers.HandlerFactory;
 import ru.csu.stan.java.classgen.handlers.IStaxHandler;
+import ru.csu.stan.java.classgen.jaxb.Attribute;
 import ru.csu.stan.java.classgen.jaxb.Class;
 import ru.csu.stan.java.classgen.jaxb.Classes;
+import ru.csu.stan.java.classgen.jaxb.CommonType;
 import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
 import ru.csu.stan.java.classgen.jaxb.ParentClass;
 import ru.csu.stan.java.classgen.util.ClassContext;
@@ -56,6 +56,8 @@ public class Main {
 			HandlerFactory handlers = HandlerFactory.getInstance();
 			XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 			ClassContext context = ClassContext.getInstance(result, factory);
+			// Первый проход обработчика и формирование основного списка классов,
+			// формирование реестра типов
 			try{
 				File f = new File(input);
 				XMLEventReader reader = xmlFactory.createXMLEventReader(new FileInputStream(f));
@@ -78,7 +80,7 @@ public class Main {
 				System.out.println("Wrong XML");
 				e.printStackTrace();
 			}
-			
+			// Второй проход, установление связей между типами и родительскими классами
 			System.out.println("Resolving parent classes");
 			ImportRegistry imports = context.getImpReg();
 			PackageRegistry packages = context.getPackageReg();
@@ -86,55 +88,30 @@ public class Main {
 				// формируем новый список родителей
 				List<ParentClass> newParents = new LinkedList<ParentClass>();
 				for (ParentClass parent : clazz.getParent()){
-					// все по простому: родитель нормально импортирован из проекта
-					if (packages.isClassInRegistry(parent.getName()))
+					String fullParentName = getFullTypeName(packages, imports, parent.getName(), clazz, result);
+					if (fullParentName != null && !fullParentName.isEmpty())
+					{
+						parent.setName(fullParentName);
 						newParents.add(parent);
-					// всякие сложности
-					else{
-						CompilationUnit unit = imports.findUnitByClass(clazz.getName());
-						boolean found = false;
-						for (String starImport : unit.getStarImports()){
-							// отбрасываем ".*"
-							String fullName = findFullParentNameInPackage(starImport.substring(0, starImport.length()-2), parent.getName(), packages);
-							if (fullName != null){
-								found = true;
-								parent.setName(fullName);
-								newParents.add(parent);
-								break;
-							}
-						}
-						if (!found){
-							String fullName = findFullParentNameInPackage(unit.getPackageName(), parent.getName(), packages);
-							if (fullName != null){
-								found = true;
-								parent.setName(fullName);
-								newParents.add(parent);
-							}
-							if (!found){
-								String localClassName = clazz.getName().substring(unit.getPackageName().length()+1);
-								if (localClassName.indexOf('.') > 0){
-									Set<String> sameThings = new HashSet<String>();
-									for (String imp : unit.getImports())
-										sameThings.addAll(packages.getClassesByPrefixAndPostfix(imp, parent.getName()));
-									if (sameThings.size() > 1){
-										String fullParentName = resolvePreviousParentName(result.getClazz(), unit.getPackageName(), localClassName, parent.getName(), sameThings);
-										if (fullParentName != null && !fullParentName.isEmpty()){
-											parent.setName(fullParentName);
-											newParents.add(parent);
-										}
-									}
-									if (sameThings.size() == 1){
-										parent.setName(sameThings.iterator().next());
-										newParents.add(parent);
-									}
-								}
-							}
-						}
 					}
 				}
 				// задаем новых отфильтрованых родителей
 				clazz.getParent().clear();
 				clazz.getParent().addAll(newParents);
+				// формируем полные типы для полей
+				if (clazz.getAttr() != null)
+					for (Attribute attr: clazz.getAttr()){
+						List<CommonType> type = attr.getCommonType();
+						if (type != null && type.size() > 0){
+							String fullTypeName = getFullTypeName(packages, imports, type.get(0).getName(), clazz, result);
+							if (fullTypeName != null && !fullTypeName.isEmpty())
+							{
+								type.get(0).setName(fullTypeName);
+							}
+							else
+								attr.getCommonType().clear();
+						}
+					}
 			}
 			
 			System.out.println("Generating IDs for classes");
@@ -142,6 +119,10 @@ public class Main {
 				if (clazz.getParent() != null)
 					for (ParentClass parent : clazz.getParent())
 						parent.setId(ClassIdGenerator.getInstance().getClassId(parent.getName()));
+				if (clazz.getAttr() != null)
+					for (Attribute attr: clazz.getAttr())
+						if (attr.getCommonType().size() > 0)
+							attr.getCommonType().get(0).setId(ClassIdGenerator.getInstance().getClassId(attr.getCommonType().get(0).getName()));
 			}
 			
 			try {
@@ -157,6 +138,49 @@ public class Main {
 		}
 		else
 			System.out.println(HELP);
+	}
+	
+	/**
+	 * Получение полного имени типа.
+	 * @param name
+	 * @return полное имя типа, null - если в проекте не описан соответствующий тип.
+	 */
+	private static String getFullTypeName(PackageRegistry packages, ImportRegistry imports, String name, Class clazz, Classes result)
+	{
+		// все по простому: родитель нормально импортирован из проекта
+		if (packages.isClassInRegistry(name))
+			return name;
+		// всякие сложности
+		else{
+			CompilationUnit unit = imports.findUnitByClass(clazz.getName());
+			for (String starImport : unit.getStarImports()){
+				// отбрасываем ".*"
+				String fullName = packages.findFullNameByShortInPackage(starImport.substring(0, starImport.length()-2), name);
+				if (fullName != null){
+					return fullName;
+				}
+			}
+			String fullName = packages.findFullNameByShortInPackage(unit.getPackageName(), name);
+			if (fullName != null){
+				return fullName;
+			}
+			String localClassName = clazz.getName().substring(unit.getPackageName().length()+1);
+			if (localClassName.indexOf('.') > 0){
+				Set<String> sameThings = new HashSet<String>();
+				for (String imp : unit.getImports())
+					sameThings.addAll(packages.getClassesByPrefixAndPostfix(imp, name));
+				if (sameThings.size() > 1){
+					String fullTypeName = resolvePreviousParentName(result.getClazz(), unit.getPackageName(), localClassName, name, sameThings);
+					if (fullTypeName != null && !fullTypeName.isEmpty()){
+						return fullTypeName;
+					}
+				}
+				if (sameThings.size() == 1){
+					return sameThings.iterator().next();
+				}
+			}
+		}
+		return null;
 	}
 	
 	private static String resolvePreviousParentName(List<Class> classes, String packageName, String localClassName, String parentName, Set<String> candidates){
@@ -181,21 +205,17 @@ public class Main {
 		return null;
 	}
 
+	/**
+	 * Поиск в наборе строк тех, что имеют заданное окончание.
+	 * @param strings набор строк для поиска.
+	 * @param ending окончание, по которому идет поиск.
+	 * @return Набор строк, подобранных среди исходного.
+	 */
 	private static Set<String> searchForEnding(Set<String> strings, String ending){
 		Set<String> result = new HashSet<String>();
 		for (String str : strings)
 			if (str.endsWith(ending))
 				result.add(str);
 		return result;
-	}
-	
-	private static String findFullParentNameInPackage(String packageName, String localName, PackageRegistry packages){
-		Map<String, Set<String>> classesFromStarPackage = packages.getPackageClasses(packageName);
-		for (Entry<String, Set<String>> pkg: classesFromStarPackage.entrySet())
-			for (String cl : pkg.getValue())
-				if (cl.equals(localName)){
-					return pkg.getKey() + '.' + cl;
-				}
-		return null;
 	}
 }

@@ -7,6 +7,14 @@ import javax.xml.stream.events.StartElement;
 
 import ru.csu.stan.java.classgen.util.ClassContext;
 
+/**
+ * Обработчик события начала тега.
+ * Использует контекст классов (автомат).
+ * Переводит его в новое состояние при получении соответствующего тега.
+ * 
+ * @author mz
+ *
+ */
 public class StartElementHandler implements IStaxHandler {
 
 	private StartElement event;
@@ -47,6 +55,12 @@ public class StartElementHandler implements IStaxHandler {
 		}
 		if (event.getName().toString().equals("compilation_unit")){
 			context.setCompilationUnitState();
+		}
+		if (event.getName().toString().equals("modifiers")){
+			context.setModifierState();
+		}
+		if (event.getName().toString().equals("vartype")){
+			context.setVartypeState();
 		}
 		@SuppressWarnings("unchecked")
 		Iterator<Attribute> it =event.getAttributes();

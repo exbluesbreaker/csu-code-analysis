@@ -1,93 +1,156 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Classes>
-    <Class name="com.example.OurClass.MyClass2" id="2"/>
-    <Class name="com.example.OurClass" id="1"/>
-    <Class name="com.example.MyClass$1" id="4">
+    <Class name="com.example.MyClass$1" id="2">
         <Method name="toArray">
+            <Modifier name="public"/>
             <Arg name="a"/>
         </Method>
-        <Method name="toArray"/>
+        <Method name="toArray">
+            <Modifier name="public"/>
+        </Method>
         <Method name="subList">
+            <Modifier name="public"/>
             <Arg name="fromIndex"/>
             <Arg name="toIndex"/>
         </Method>
-        <Method name="size"/>
+        <Method name="size">
+            <Modifier name="public"/>
+        </Method>
         <Method name="set">
+            <Modifier name="public"/>
             <Arg name="index"/>
             <Arg name="element"/>
         </Method>
         <Method name="retainAll">
+            <Modifier name="public"/>
             <Arg name="c"/>
         </Method>
         <Method name="removeAll">
+            <Modifier name="public"/>
             <Arg name="c"/>
         </Method>
         <Method name="remove">
+            <Modifier name="public"/>
             <Arg name="index"/>
         </Method>
         <Method name="remove">
+            <Modifier name="public"/>
             <Arg name="o"/>
         </Method>
         <Method name="listIterator">
+            <Modifier name="public"/>
             <Arg name="index"/>
         </Method>
-        <Method name="listIterator"/>
+        <Method name="listIterator">
+            <Modifier name="public"/>
+        </Method>
         <Method name="lastIndexOf">
+            <Modifier name="public"/>
             <Arg name="o"/>
         </Method>
-        <Method name="iterator"/>
-        <Method name="isEmpty"/>
+        <Method name="iterator">
+            <Modifier name="public"/>
+        </Method>
+        <Method name="isEmpty">
+            <Modifier name="public"/>
+        </Method>
         <Method name="indexOf">
+            <Modifier name="public"/>
             <Arg name="o"/>
         </Method>
         <Method name="get">
+            <Modifier name="public"/>
             <Arg name="index"/>
         </Method>
         <Method name="containsAll">
+            <Modifier name="public"/>
             <Arg name="c"/>
         </Method>
         <Method name="contains">
+            <Modifier name="public"/>
             <Arg name="o"/>
         </Method>
-        <Method name="clear"/>
+        <Method name="clear">
+            <Modifier name="public"/>
+        </Method>
         <Method name="addAll">
+            <Modifier name="public"/>
             <Arg name="index"/>
             <Arg name="c"/>
         </Method>
         <Method name="addAll">
+            <Modifier name="public"/>
             <Arg name="c"/>
         </Method>
         <Method name="add">
+            <Modifier name="public"/>
             <Arg name="index"/>
             <Arg name="element"/>
         </Method>
         <Method name="add">
+            <Modifier name="public"/>
             <Arg name="e"/>
         </Method>
     </Class>
-    <Class name="com.example.MyClass.MyClass2.MyClass3" id="6"/>
-    <Class name="com.example.MyClass.MyClass2" id="5">
-        <Method name="foo"/>
+    <Class name="com.example.MyClass.MyClass2.MyClass3" id="4">
+        <Modifier name="public"/>
+        <Modifier name="static"/>
     </Class>
-    <Class name="com.example.MyClass" id="3">
-        <Attr name="A"/>
-        <Attr name="sb"/>
-        <Attr name="x"/>
+    <Class name="com.example.MyClass.MyClass2" id="3">
+        <Modifier name="public"/>
+        <Modifier name="static"/>
+        <Method name="foo">
+            <Modifier name="public"/>
+        </Method>
+    </Class>
+    <Class name="com.example.MyClass" id="1">
+        <Modifier name="public"/>
+        <Attr name="A">
+            <Modifier name="public"/>
+            <Modifier name="static"/>
+            <Modifier name="final"/>
+        </Attr>
+        <Attr name="sb">
+            <Modifier name="private"/>
+        </Attr>
+        <Attr name="x">
+            <Modifier name="private"/>
+        </Attr>
         <Method name="bar">
+            <Modifier name="public"/>
             <Arg name="a"/>
             <Arg name="b"/>
             <Arg name="c"/>
         </Method>
     </Class>
-    <Class name="com.example.IAction" id="7"/>
+    <Class name="com.example.OurClass.MyClass2" id="6">
+        <Modifier name="public"/>
+        <Modifier name="static"/>
+    </Class>
+    <Class name="com.example.OurClass" id="5">
+        <Modifier name="public"/>
+    </Class>
+    <Class name="com.example.IAction" id="7">
+        <Modifier name="public"/>
+        <Modifier name="interface"/>
+    </Class>
     <Class name="com.example.util.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" id="10">
-        <Parent name="com.example.MyClass.MyClass2.MyClass3" id="6"/>
+        <Modifier name="public"/>
+        <Modifier name="static"/>
+        <Parent name="com.example.MyClass.MyClass2.MyClass3" id="4"/>
     </Class>
     <Class name="com.example.util.OtherClass.AnotherOtherClass" id="9">
-        <Parent name="com.example.MyClass.MyClass2" id="5"/>
+        <Modifier name="public"/>
+        <Modifier name="static"/>
+        <Attr name="field">
+            <Modifier name="private"/>
+            <CommonType name="com.example.MyClass.MyClass2.MyClass3" id="4"/>
+        </Attr>
+        <Parent name="com.example.MyClass.MyClass2" id="3"/>
     </Class>
     <Class name="com.example.util.OtherClass" id="8">
-        <Parent name="com.example.MyClass" id="3"/>
+        <Modifier name="public"/>
+        <Parent name="com.example.MyClass" id="1"/>
         <Parent name="com.example.IAction" id="7"/>
     </Class>
 </Classes>
