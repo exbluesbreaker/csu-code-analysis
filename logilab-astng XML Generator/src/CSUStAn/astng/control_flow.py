@@ -86,38 +86,60 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     def handle_flow_part(self,func_node,flow_part, parent_ids,id_count):
         ''' Handle sequential part of flow, e.g then or else body of If'''
         prev=parent_ids
+	block_node = None
+	#block_node = etree.Element("Block",id=str(id_count))
+	#func_node.append(block_node)
         for child in flow_part:
             if isinstance(child, Function):
                 ''' Ignore function defined in another function body'''
                 continue
             id_count+=1
-            if isinstance(child, If):
-                block_node = etree.Element("If",id=str(id_count))
+            '''if isinstance(child, If):
+                subblock_node = etree.Element("If",id=str(id_count))
             elif isinstance(child, For):
-                block_node = etree.Element("For",id=str(id_count))
+                subblock_node = etree.Element("For",id=str(id_count))
             elif isinstance(child, While):
-                block_node = etree.Element("While",id=str(id_count))
+                subblock_node = etree.Element("While",id=str(id_count))
             else:
-                block_node = etree.Element("Block",type=child.__class__.__name__,id=str(id_count))
+                subblock_node = etree.Element("SubBlock",type=child.__class__.__name__,id=str(id_count))'''
             curr_id = id_count
-            func_node.append(block_node)
-            for p in prev:
-                flow_node = etree.Element("Flow",from_id=str(p),to_id=str(curr_id))
-                func_node.append(flow_node)
+            #block_node.append(subblock_node)
+	    if(isinstance(child,(If,While,For,TryExcept,TryFinally,With)) or (block_node is None)):
+	    	for p in prev:
+                	flow_node = etree.Element("Flow",from_id=str(p),to_id=str(curr_id))
+                	func_node.append(flow_node)
             if isinstance(child, If):
-                block_node.set("test",child.test.__class__.__name__)
+		if_node = etree.Element("If",id=str(id_count),test=child.test.__class__.__name__)
+		func_node.append(if_node)
                 id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
-            elif isinstance(child, (For, While)):
-                if isinstance(child, For):
-                    block_node.set("iterate",child.iter.__class__.__name__)
-                else:
-                    block_node.set("test",child.test.__class__.__name__)
+		block_node = None
+            elif isinstance(child, For):
+		for_node = etree.Element("For",id=str(id_count),iterate=child.iter.__class__.__name__)
+		func_node.append(for_node)
                 id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+		block_node = None
+            elif isinstance(child, While):
+		while_node = etree.Element("While",id=str(id_count),test=child.test.__class__.__name__)
+		func_node.append(while_node)
+                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+		block_node = None
             elif isinstance(child, (TryExcept,TryFinally,With)):
+		jump_node = etree.Element(child.__class__.__name__,id=str(id_count))
+		func_node.append(jump_node)
                 id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+		block_node = None
             else:
-                self.handle_simple_node(child)
-                prev = set([curr_id])
+                #self.handle_simple_node(child)
+		if block_node is None:
+		   block_node = etree.Element("Block",id=str(id_count))
+		   func_node.append(block_node)
+		   prev = set([id_count])
+		   id_count+=1
+		   subblock_node = etree.Element("SubBlock",type=child.__class__.__name__,id=str(id_count))
+		   block_node.append(subblock_node)
+	        else:
+		   subblock_node = etree.Element("SubBlock",type=child.__class__.__name__,id=str(id_count))
+		   block_node.append(subblock_node)
         return id_count, prev
     
     def handle_cross(self, node, func_node, parent_id,id_count):
