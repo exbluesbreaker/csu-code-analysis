@@ -129,17 +129,12 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
 		block_node = None
             else:
-                #self.handle_simple_node(child)
 		if block_node is None:
 		   block_node = etree.Element("Block",id=str(id_count))
 		   func_node.append(block_node)
 		   prev = set([id_count])
 		   id_count+=1
-		   subblock_node = etree.Element("SubBlock",type=child.__class__.__name__,id=str(id_count))
-		   block_node.append(subblock_node)
-	        else:
-		   subblock_node = etree.Element("SubBlock",type=child.__class__.__name__,id=str(id_count))
-		   block_node.append(subblock_node)
+                self.handle_simple_node(block_node,child)
         return id_count, prev
     
     def handle_cross(self, node, func_node, parent_id,id_count):
@@ -173,14 +168,16 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
              parent_ids.add(curr_id)
         return id_count, parent_ids            
     
-    def handle_simple_node(self, node):
+    def handle_simple_node(self,block_node,node):
         if isinstance(node, JUMP_NODES):
             print "Warning! Ignored jump node at ", node.root
             self._dbg = True
         elif isinstance(node, CallFunc):
-            print node.as_string(),node.func
-            print node.scope().lookup(node.func)
+	    call_node = etree.Element("CallFunc",func=node.func.__class__.__name__)
+	    block_node.append(call_node)
+            #print node.as_string(),node.func
+            #print node.scope().lookup(node.func)
         for child in node.get_children():
-            self.handle_simple_node(child)
+            self.handle_simple_node(block_node,child)
        
         
