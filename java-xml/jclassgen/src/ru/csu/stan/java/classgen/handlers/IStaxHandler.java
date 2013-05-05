@@ -1,6 +1,6 @@
 package ru.csu.stan.java.classgen.handlers;
 
-import ru.csu.stan.java.classgen.util.ClassContext;
+import ru.csu.stan.java.classgen.automaton.ClassContext;
 
 /**
  * Интерфейс обработчика STAX-события.

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 
-import ru.csu.stan.java.classgen.util.ClassContext;
+import ru.csu.stan.java.classgen.automaton.ClassContext;
 
 /**
  * Обработчик события начала тега.
@@ -62,8 +62,11 @@ public class StartElementHandler implements IStaxHandler {
 		if (event.getName().toString().equals("vartype")){
 			context.setVartypeState();
 		}
+		if (event.getName().toString().equals("resulttype")){
+			context.setResultTypeState();
+		}
 		@SuppressWarnings("unchecked")
-		Iterator<Attribute> it =event.getAttributes();
+		Iterator<Attribute> it = event.getAttributes();
 		context.processTag(event.getName().toString(), it);
 		return context;
 	}

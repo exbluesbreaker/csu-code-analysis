@@ -116,6 +116,13 @@
         <Attr name="x">
             <Modifier name="private"/>
         </Attr>
+        <Method name="main">
+            <Modifier name="public"/>
+            <Modifier name="static"/>
+            <Arg name="action">
+                <Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CommonType" name="com.example.IAction" id="7"/>
+            </Arg>
+        </Method>
         <Method name="bar">
             <Modifier name="public"/>
             <Arg name="a"/>

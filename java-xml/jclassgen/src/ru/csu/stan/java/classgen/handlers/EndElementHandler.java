@@ -2,7 +2,7 @@ package ru.csu.stan.java.classgen.handlers;
 
 import javax.xml.stream.events.EndElement;
 
-import ru.csu.stan.java.classgen.util.ClassContext;
+import ru.csu.stan.java.classgen.automaton.ClassContext;
 
 /**
  * Обработчик завершающего тега.
@@ -33,6 +33,7 @@ public class EndElementHandler implements IStaxHandler{
 			event.getName().toString().equals("new_class") ||
 			event.getName().toString().equals("arguments") ||
 			event.getName().toString().equals("modifiers") ||
+			event.getName().toString().equals("resulttype") ||
 			event.getName().toString().equals("compilation_unit") ){
 			context.finish();
 			context.setPreviousState();

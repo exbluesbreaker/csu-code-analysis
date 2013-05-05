@@ -16,15 +16,18 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
+import ru.csu.stan.java.classgen.automaton.ClassContext;
 import ru.csu.stan.java.classgen.handlers.HandlerFactory;
 import ru.csu.stan.java.classgen.handlers.IStaxHandler;
+import ru.csu.stan.java.classgen.jaxb.Argument;
 import ru.csu.stan.java.classgen.jaxb.Attribute;
 import ru.csu.stan.java.classgen.jaxb.Class;
 import ru.csu.stan.java.classgen.jaxb.Classes;
 import ru.csu.stan.java.classgen.jaxb.CommonType;
+import ru.csu.stan.java.classgen.jaxb.Method;
 import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
 import ru.csu.stan.java.classgen.jaxb.ParentClass;
-import ru.csu.stan.java.classgen.util.ClassContext;
+import ru.csu.stan.java.classgen.jaxb.Type;
 import ru.csu.stan.java.classgen.util.ClassIdGenerator;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
 import ru.csu.stan.java.classgen.util.ImportRegistry;
@@ -112,17 +115,50 @@ public class Main {
 								attr.getCommonType().clear();
 						}
 					}
+				// формируем полные типы для возвращаемых значений из методов
+				if (clazz.getMethod() != null)
+					for (Method method: clazz.getMethod()){
+						List<Type> type = method.getType();
+						if (type != null && type.size() > 0){
+							String fullTypeName = getFullTypeName(packages, imports, type.get(0).getName(), clazz, result);
+							if (fullTypeName != null && !fullTypeName.isEmpty())
+							{
+								type.get(0).setName(fullTypeName);
+							}
+							else
+								method.getType().clear();
+						}
+						// формируем полные типы аргументов методов
+						if (method.getArg() != null)
+							for (Argument arg: method.getArg()){
+								List<Type> argumentType = arg.getType();
+								if (argumentType != null && argumentType.size() > 0){
+									String fullTypeName = getFullTypeName(packages, imports, argumentType.get(0).getName(), clazz, result);
+									if (fullTypeName != null && !fullTypeName.isEmpty())
+									{
+										argumentType.get(0).setName(fullTypeName);
+									}
+									else
+										arg.getType().clear();
+								}
+							}
+					}
 			}
 			
 			System.out.println("Generating IDs for classes");
 			for (Class clazz : result.getClazz()){
-				if (clazz.getParent() != null)
-					for (ParentClass parent : clazz.getParent())
-						parent.setId(ClassIdGenerator.getInstance().getClassId(parent.getName()));
-				if (clazz.getAttr() != null)
-					for (Attribute attr: clazz.getAttr())
-						if (attr.getCommonType().size() > 0)
-							attr.getCommonType().get(0).setId(ClassIdGenerator.getInstance().getClassId(attr.getCommonType().get(0).getName()));
+				for (ParentClass parent : clazz.getParent())
+					parent.setId(ClassIdGenerator.getInstance().getClassId(parent.getName()));
+				for (Attribute attr: clazz.getAttr())
+					if (attr.getCommonType().size() > 0)
+						attr.getCommonType().get(0).setId(ClassIdGenerator.getInstance().getClassId(attr.getCommonType().get(0).getName()));
+				for (Method method: clazz.getMethod()){
+					if (method.getType().size() > 0)
+						method.getType().get(0).setId(ClassIdGenerator.getInstance().getClassId(method.getType().get(0).getName()));
+					for (Argument arg: method.getArg())
+						if (arg.getType().size() > 0)
+							arg.getType().get(0).setId(ClassIdGenerator.getInstance().getClassId(arg.getType().get(0).getName()));
+				}
 			}
 			
 			try {

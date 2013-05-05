@@ -12,7 +12,7 @@ public class MyClass extends ArrayList<Object>{
     private StringBuffer sb = new StringBuffer();
     private int x = Integer.valueOf(sb.toString());
     
-    public static void main() {
+    public static void main(IAction action) {
         System.out.println(MyClass.A);
         List<Object> a = new List<Object>() {
 			
