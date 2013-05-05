@@ -1,4 +1,4 @@
-package ru.csu.stan.java.classgen.util;
+package ru.csu.stan.java.classgen.automaton;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,6 +16,10 @@ import ru.csu.stan.java.classgen.jaxb.Method;
 import ru.csu.stan.java.classgen.jaxb.ModifierType;
 import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
 import ru.csu.stan.java.classgen.jaxb.ParentClass;
+import ru.csu.stan.java.classgen.util.ClassIdGenerator;
+import ru.csu.stan.java.classgen.util.CompilationUnit;
+import ru.csu.stan.java.classgen.util.ImportRegistry;
+import ru.csu.stan.java.classgen.util.PackageRegistry;
 
 /**
  * Контекст анализа AST для получения классового представления.
@@ -36,7 +40,7 @@ public class ClassContext {
 	private Stack<ru.csu.stan.java.classgen.jaxb.Class> classStack = new Stack<ru.csu.stan.java.classgen.jaxb.Class>();
 	private Stack<Integer> classInnersCount = new Stack<Integer>();
 	private ru.csu.stan.java.classgen.jaxb.Attribute currentAttribute;
-	private Method currentMethod;
+	private Stack<Method> methodStack = new Stack<Method>();
 	private ParentClass currentParent;
 	private Argument currentArgument;
 	private List<ModifierType> currentModifier = new LinkedList<ModifierType>();
@@ -113,6 +117,10 @@ public class ClassContext {
 		stateStack.push(ContextState.MODIFIERS);
 	}
 	
+	public void setResultTypeState(){
+		stateStack.push(ContextState.RETURN_TYPE);
+	}
+	
 	public void setStateForVar(){
 		ContextState state = stateStack.peek();
 		if (state == ContextState.CLASS)
@@ -125,6 +133,8 @@ public class ClassContext {
 		ContextState state = stateStack.peek();
 		if (state == ContextState.FIELD)
 			stateStack.push(ContextState.FIELD_TYPE);
+		if (state == ContextState.ARGUMENT)
+			stateStack.push(ContextState.ARG_TYPE);
 	}
 	
 	public void setPreviousVarState(){
@@ -135,7 +145,7 @@ public class ClassContext {
 	
 	public void setPreviousVartypeState(){
 		ContextState state = stateStack.peek();
-		if (state == ContextState.FIELD_TYPE)
+		if (state == ContextState.FIELD_TYPE || state == ContextState.ARG_TYPE)
 			stateStack.pop();
 	}
 	
@@ -173,7 +183,13 @@ public class ClassContext {
 				processModifierTag(name, attrs);
 				break;
 			case FIELD_TYPE:
-				processFieldTypeTag(name, attrs);
+				processTypeTag(name, attrs);
+				break;
+			case RETURN_TYPE:
+				processTypeTag(name, attrs);
+				break;
+			case ARG_TYPE:
+				processTypeTag(name, attrs);
 				break;
 			case EMPTY:
 				break;
@@ -189,15 +205,14 @@ public class ClassContext {
 				classInnersCount.pop();
 				break;
 			case METHOD:
-				classStack.peek().getMethod().add(currentMethod);
-				currentMethod = null;
+				classStack.peek().getMethod().add(methodStack.pop());
 				break;
 			case FIELD:
 				classStack.peek().getAttr().add(currentAttribute);
 				currentAttribute = null;
 				break;
 			case ARGUMENT:
-				currentMethod.getArg().add(currentArgument);
+				methodStack.peek().getArg().add(currentArgument);
 				currentArgument = null;
 				break;
 			case PARENT:
@@ -229,7 +244,8 @@ public class ClassContext {
 				if (stateStack.peek() == ContextState.CLASS)
 					classStack.peek().getModifier().addAll(currentModifier);
 				if (stateStack.peek() == ContextState.METHOD)
-					currentMethod.getModifier().addAll(currentModifier);
+					if (!methodStack.isEmpty())
+						methodStack.peek().getModifier().addAll(currentModifier);
 				if (stateStack.peek() == ContextState.FIELD)
 					currentAttribute.getModifier().addAll(currentModifier);
 				stateStack.push(currentState);
@@ -238,6 +254,17 @@ public class ClassContext {
 			case FIELD_TYPE:
 				if (currentType != null)
 					currentAttribute.getCommonType().add(currentType);
+				currentType = null;
+				break;
+			case RETURN_TYPE:
+				if (currentType != null)
+					if (!methodStack.isEmpty())
+						methodStack.peek().getType().add(currentType);
+				currentType = null;
+				break;
+			case ARG_TYPE:
+				if (currentType != null)
+					currentArgument.getType().add(currentType);
 				currentType = null;
 				break;
 			default:
@@ -254,6 +281,8 @@ public class ClassContext {
 	public void finishVartype(){
 		ContextState state = stateStack.peek();
 		if (state == ContextState.FIELD_TYPE)
+			finish();
+		if (state == ContextState.ARG_TYPE)
 			finish();
 	}
 	
@@ -321,11 +350,12 @@ public class ClassContext {
 	private void processMethodTag(String name, Iterator<Attribute> attrs){
 		if ("method".equals(name))
 		{
-			currentMethod = factory.createMethod();
+			Method currentMethod = factory.createMethod();
 			String nameAttr = getNameAttr(attrs);
 			if ("<init>".equals(nameAttr))
 				nameAttr = classStack.peek().getName().substring(classStack.peek().getName().lastIndexOf('.')+1);
 			currentMethod.setName(nameAttr);
+			methodStack.push(currentMethod);
 		}
 	}
 	
@@ -385,7 +415,7 @@ public class ClassContext {
 		}
 	}
 	
-	private void processFieldTypeTag(String name, Iterator<Attribute> attrs){
+	private void processTypeTag(String name, Iterator<Attribute> attrs){
 		if ("member_select".equals(name) || "identifier".equals(name)){
 			if (currentType == null)
 			{

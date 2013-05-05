@@ -128,7 +128,18 @@
                      <primitive_type line="15" col="19" name="void">
                      </primitive_type>
                   </resulttype>
-                  <block line="15" col="31">
+                  <parameters>
+                     <variable line="15" col="29" name="action">
+                        <modifiers line="-1" col="-1">
+                           <modifier name="parameter"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="15" col="29" name="IAction">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                  </parameters>
+                  <block line="15" col="45">
                      <nodename.statements>
                         <expression_statement line="16" col="9">
                            <method_invocation line="16" col="9">

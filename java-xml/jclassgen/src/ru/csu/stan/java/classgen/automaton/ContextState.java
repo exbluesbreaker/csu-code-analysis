@@ -1,4 +1,4 @@
-package ru.csu.stan.java.classgen.util;
+package ru.csu.stan.java.classgen.automaton;
 
 /**
  * Перечисление состояний контекста классов.
@@ -8,7 +8,7 @@ package ru.csu.stan.java.classgen.util;
  * @author mz
  *
  */
-enum ContextState {
+public enum ContextState {
 	
 	/** Пустое состояние */
 	EMPTY,
