@@ -5,9 +5,9 @@ Created on 14.04.2013
 '''
 from logilab.astng.utils import LocalsVisitor
 from logilab.astng.inspector import IdGeneratorMixIn
-from logilab.astng.node_classes import If, For, While, TryExcept, TryFinally, IfExp, With,\
-    CallFunc
+from logilab.astng.node_classes import *
 from logilab.astng.scoped_nodes import Class, Function
+from logilab.astng.exceptions import InferenceError
 import pydot
 from lxml import etree
 
@@ -23,6 +23,8 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     _stack = {}
     _dbg = False
     _dbg1 = None
+    _dbg_calls = set([])
+    _dbg_call_lookup = set([])
 
     def __init__(self, project):
         IdGeneratorMixIn.__init__(self)
@@ -31,14 +33,20 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     def visit_project(self,node):
         self._root = etree.Element("Project")
     def leave_project(self,node):
+        print self._dbg_calls
+        print self._dbg_call_lookup
         f = open('cfg.xml','w')
         f.write(etree.tostring(self._root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
     def visit_function(self,node):
+        if not hasattr(node, "id"):
+            node.id = self.generate_id()
+        if(len(node.body)>8):
+            self._dbg = True
         if isinstance(node.parent,Class):
-            func_node = etree.Element("Method",name=node.name,parent_class=node.parent.name,label=node.root().name)
+            func_node = etree.Element("Method",id=str(node.id),name=node.name,parent_class=node.parent.name,label=node.root().name)
         else:
-            func_node = etree.Element("Function",name=node.name,label=node.root().name)
+            func_node = etree.Element("Function",id=str(node.id),name=node.name,label=node.root().name)
         self._stack[node] = func_node
         self._root.append(func_node)
         id_count, prev = self.handle_flow_part(func_node,node.body, set([]),0)
@@ -58,7 +66,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         graph = pydot.Dot(graph_type='digraph')
         block_dict = {}
         for block in self._stack[node].iter("Block"):
-            dot_node = pydot.Node(block.get("type")+' '+block.get("id"),shape='record')
+            dot_node = pydot.Node(block.get("id"),shape='record')
             graph.add_node(dot_node)
             block_dict[block.get("id")] = dot_node
         for block in self._stack[node].iter("If"):
@@ -84,17 +92,15 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         self._stop = True
         
     def handle_flow_part(self,func_node,flow_part, parent_ids,id_count):
-        ''' Handle sequential part of flow, e.g then or else body of If'''
+        ''' Handle sequential paobjectrt of flow, e.g then or else body of If'''
         prev=parent_ids
-	block_node = None
-	#block_node = etree.Element("Block",id=str(id_count))
-	#func_node.append(block_node)
+        block_node = None
         for child in flow_part:
             if isinstance(child, Function):
                 ''' Ignore function defined in another function body'''
                 continue
             id_count+=1
-            '''if isinstance(child, If):
+            '''if isinstance(child, If):logilab.astng.exceptions
                 subblock_node = etree.Element("If",id=str(id_count))
             elif isinstance(child, For):
                 subblock_node = etree.Element("For",id=str(id_count))
@@ -104,37 +110,37 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 subblock_node = etree.Element("SubBlock",type=child.__class__.__name__,id=str(id_count))'''
             curr_id = id_count
             #block_node.append(subblock_node)
-	    if(isinstance(child,(If,While,For,TryExcept,TryFinally,With)) or (block_node is None)):
-	    	for p in prev:
-                	flow_node = etree.Element("Flow",from_id=str(p),to_id=str(curr_id))
+            if(isinstance(child, (If, While, For, TryExcept, TryFinally, With)) or (block_node is None)):
+                for p in prev:
+                	flow_node = etree.Element("Flow", from_id=str(p), to_id=str(curr_id))
                 	func_node.append(flow_node)
             if isinstance(child, If):
-		if_node = etree.Element("If",id=str(id_count),test=child.test.__class__.__name__)
+		if_node = etree.Element("If", id=str(id_count), test=child.test.__class__.__name__)
 		func_node.append(if_node)
-                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
 		block_node = None
             elif isinstance(child, For):
-		for_node = etree.Element("For",id=str(id_count),iterate=child.iter.__class__.__name__)
+		for_node = etree.Element("For", id=str(id_count), iterate=child.iter.__class__.__name__)
 		func_node.append(for_node)
-                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
 		block_node = None
             elif isinstance(child, While):
-		while_node = etree.Element("While",id=str(id_count),test=child.test.__class__.__name__)
+		while_node = etree.Element("While", id=str(id_count), test=child.test.__class__.__name__)
 		func_node.append(while_node)
-                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
 		block_node = None
-            elif isinstance(child, (TryExcept,TryFinally,With)):
-		jump_node = etree.Element(child.__class__.__name__,id=str(id_count))
+            elif isinstance(child, (TryExcept, TryFinally, With)):
+		jump_node = etree.Element(child.__class__.__name__, id=str(id_count))
 		func_node.append(jump_node)
-                id_count, prev = self.handle_cross(child,func_node, curr_id, id_count)
+                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
 		block_node = None
             else:
 		if block_node is None:
-		   block_node = etree.Element("Block",id=str(id_count))
+		   block_node = etree.Element("Block", id=str(id_count))
 		   func_node.append(block_node)
 		   prev = set([id_count])
-		   id_count+=1
-                self.handle_simple_node(block_node,child)
+		   id_count += 1
+                self.handle_simple_node(child, block_node)
         return id_count, prev
     
     def handle_cross(self, node, func_node, parent_id,id_count):
@@ -168,16 +174,34 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
              parent_ids.add(curr_id)
         return id_count, parent_ids            
     
-    def handle_simple_node(self,block_node,node):
+    def handle_simple_node(self,node,block_node):
         if isinstance(node, JUMP_NODES):
             print "Warning! Ignored jump node at ", node.root
-            self._dbg = True
+            #self._dbg = True
         elif isinstance(node, CallFunc):
-	    call_node = etree.Element("CallFunc",func=node.func.__class__.__name__)
-	    block_node.append(call_node)
+            call_node = etree.Element("Call")
+            self._dbg_calls.add(node.func.__class__.__name__)
+            if isinstance(node.func, Name):
+                lookup = node.func.lookup(node.func.name)
+                for asgn in lookup[1]:
+                    if isinstance(asgn, Function):
+                        call_node.set("type","internal")
+                        call_node.set("called","function")
+                        if not hasattr(asgn, "id"):
+                            asgn.id = self.generate_id()
+                        call_node.set("id",str(asgn.id))
+                    elif isinstance(asgn, From):
+                        try:
+                            module = asgn.do_import_module(asgn.modname)
+                            call_node.set("type","cross")
+                            print module.lookup(node.func.name)
+                        except InferenceError:
+                            call_node.set("type","external")
+                    self._dbg_call_lookup.add(asgn.__class__.__name__)
+            block_node.append(call_node)
             #print node.as_string(),node.func
             #print node.scope().lookup(node.func)
         for child in node.get_children():
-            self.handle_simple_node(block_node,child)
+            self.handle_simple_node(child,block_node)
        
         
