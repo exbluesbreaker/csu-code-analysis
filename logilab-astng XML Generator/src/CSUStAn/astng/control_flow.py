@@ -182,26 +182,40 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             call_node = etree.Element("Call")
             self._dbg_calls.add(node.func.__class__.__name__)
             if isinstance(node.func, Name):
-                lookup = node.func.lookup(node.func.name)
-                for asgn in lookup[1]:
-                    if isinstance(asgn, Function):
-                        call_node.set("type","internal")
-                        call_node.set("called","function")
-                        if not hasattr(asgn, "id"):
-                            asgn.id = self.generate_id()
-                        call_node.set("id",str(asgn.id))
-                    elif isinstance(asgn, From):
-                        try:
-                            module = asgn.do_import_module(asgn.modname)
-                            call_node.set("type","cross")
-                            print module.lookup(node.func.name)
-                        except InferenceError:
-                            call_node.set("type","external")
-                    self._dbg_call_lookup.add(asgn.__class__.__name__)
+                space_type,called,called_id = self.handle_lookup(node.func, node.func.name)
+                if(called == "class"):
+                    print node.as_string()
             block_node.append(call_node)
             #print node.as_string(),node.func
             #print node.scope().lookup(node.func)
         for child in node.get_children():
             self.handle_simple_node(child,block_node)
+    
+    def handle_lookup(self,node,name,space_type=None):
+        lookup = node.lookup(name)
+        called = None
+        called_id = None
+        for asgn in lookup[1]:
+            if isinstance(asgn, Function):
+                if(space_type is None):
+                    space_type = "internal"
+                called = "function"
+                if not hasattr(asgn, "id"):
+                    asgn.id = self.generate_id()
+                    called_id = asgn.id
+            elif isinstance(asgn, Class):
+                called = "class"
+            elif isinstance(asgn, From):
+                try:
+                    module = asgn.do_import_module(asgn.modname)
+                    if(space_type is None):
+                        space_type = "cross"
+                    space_type,called,called_id = self.handle_lookup(module, name, space_type)
+                except InferenceError:
+                    if(space_type is None):
+                        space_type = "external"
+                        self._dbg_call_lookup.add(asgn.__class__.__name__)
+        return space_type,called,called_id
+
        
         
