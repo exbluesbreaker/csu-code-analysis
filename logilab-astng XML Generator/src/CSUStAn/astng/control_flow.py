@@ -183,8 +183,6 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             self._dbg_calls.add(node.func.__class__.__name__)
             if isinstance(node.func, Name):
                 space_type,called,called_id = self.handle_lookup(node.func, node.func.name)
-                if(called == "class"):
-                    print node.as_string()
             block_node.append(call_node)
             #print node.as_string(),node.func
             #print node.scope().lookup(node.func)
@@ -204,7 +202,13 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     asgn.id = self.generate_id()
                     called_id = asgn.id
             elif isinstance(asgn, Class):
+                if(space_type is None):
+                    space_type = "internal"
                 called = "class"
+                constr = [meth for meth in asgn.methods() if meth.name == '__init__']
+                if not hasattr(constr[0], "id"):
+                    constr[0].id = self.generate_id()
+                    called_id = constr[0].id
             elif isinstance(asgn, From):
                 try:
                     module = asgn.do_import_module(asgn.modname)
@@ -214,7 +218,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 except InferenceError:
                     if(space_type is None):
                         space_type = "external"
-                        self._dbg_call_lookup.add(asgn.__class__.__name__)
+            self._dbg_call_lookup.add(asgn.__class__.__name__)
         return space_type,called,called_id
 
        
