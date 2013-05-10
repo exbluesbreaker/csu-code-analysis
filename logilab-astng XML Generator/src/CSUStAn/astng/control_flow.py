@@ -25,6 +25,9 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     _dbg1 = None
     _dbg_calls = set([])
     _dbg_call_lookup = set([])
+    _getattr_calls = 0
+    _func_calls = 0
+    _class_calls = 0
 
     def __init__(self, project):
         IdGeneratorMixIn.__init__(self)
@@ -35,6 +38,9 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     def leave_project(self,node):
         print self._dbg_calls
         print self._dbg_call_lookup
+	print "Func calls ",self._func_calls
+	print "Class calls ",self._class_calls
+	print "Getattr calls ",self._getattr_calls
         f = open('cfg.xml','w')
         f.write(etree.tostring(self._root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
@@ -183,6 +189,20 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             self._dbg_calls.add(node.func.__class__.__name__)
             if isinstance(node.func, Name):
                 space_type,called,called_id = self.handle_lookup(node.func, node.func.name)
+		if called == 'function':
+			self._func_calls += 1
+		elif called == 'class':
+			self._class_calls += 1
+		call_node.set("type","direct")
+		if space_type is not None:
+			call_node.set("space_type",space_type)
+		if called is not None:
+			call_node.set("called",called)
+		if called_id is not None:
+			call_node.set("id",str(called_id))
+            elif isinstance(node.func, Getattr):
+		self._getattr_calls += 1
+		call_node.set("type","getattr")
             block_node.append(call_node)
             #print node.as_string(),node.func
             #print node.scope().lookup(node.func)
@@ -219,6 +239,8 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     if(space_type is None):
                         space_type = "external"
             self._dbg_call_lookup.add(asgn.__class__.__name__)
+	    if isinstance(asgn,AssAttr):
+		print name,asgn.as_string(), asgn.root()
         return space_type,called,called_id
 
        
