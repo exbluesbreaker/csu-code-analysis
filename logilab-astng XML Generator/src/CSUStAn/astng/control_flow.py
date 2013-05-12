@@ -189,20 +189,23 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             self._dbg_calls.add(node.func.__class__.__name__)
             if isinstance(node.func, Name):
                 space_type,called,called_id = self.handle_lookup(node.func, node.func.name)
-		if called == 'function':
-			self._func_calls += 1
-		elif called == 'class':
-			self._class_calls += 1
-		call_node.set("type","direct")
-		if space_type is not None:
-			call_node.set("space_type",space_type)
-		if called is not None:
-			call_node.set("called",called)
-		if called_id is not None:
-			call_node.set("id",str(called_id))
+                call_node.set("name",node.func.name)
+                if called == 'function':
+                    self._func_calls += 1
+                elif called == 'class':
+                    self._class_calls += 1
+                call_node.set("type","direct")
+                if space_type is not None:
+                    call_node.set("space_type",space_type)
+                if called is not None:
+                    call_node.set("called",called)
+                if called_id is not None:
+                    call_node.set("id",str(called_id))
             elif isinstance(node.func, Getattr):
-		self._getattr_calls += 1
-		call_node.set("type","getattr")
+                self._getattr_calls += 1
+                call_node.set("name",node.func.attrname)
+                call_node.set("label",node.func.expr.as_string())
+                call_node.set("type","getattr")
             block_node.append(call_node)
             #print node.as_string(),node.func
             #print node.scope().lookup(node.func)
@@ -225,10 +228,10 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if(space_type is None):
                     space_type = "internal"
                 called = "class"
-                constr = [meth for meth in asgn.methods() if meth.name == '__init__']
-                if not hasattr(constr[0], "id"):
-                    constr[0].id = self.generate_id()
-                    called_id = constr[0].id
+                for cstr in [meth for meth in asgn.methods() if meth.name == '__init__']:
+                    if not hasattr(cstr, "id"):
+                        cstr.id = self.generate_id()
+                    called_id = cstr.id
             elif isinstance(asgn, From):
                 try:
                     module = asgn.do_import_module(asgn.modname)
