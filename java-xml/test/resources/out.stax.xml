@@ -1005,74 +1005,89 @@
                      <modifier name="public"></modifier>
                   </modifiers>
                   <resulttype>
-                     <primitive_type line="159" col="12" name="int">
-                     </primitive_type>
+                     <member_select line="159" col="12" name="MyClass2">
+                        <identifier line="159" col="12" name="OurClass">
+                        </identifier>
+                     </member_select>
                   </resulttype>
                   <parameters>
-                     <variable line="159" col="20" name="a">
+                     <variable line="159" col="34" name="a">
                         <modifiers line="-1" col="-1">
                            <modifier name="parameter"></modifier>
                         </modifiers>
                         <vartype>
-                           <identifier line="159" col="20" name="String">
+                           <identifier line="159" col="34" name="String">
                            </identifier>
                         </vartype>
                      </variable>
-                     <variable line="159" col="30" name="b">
+                     <variable line="159" col="44" name="b">
                         <modifiers line="-1" col="-1">
                            <modifier name="parameter"></modifier>
                         </modifiers>
                         <vartype>
-                           <primitive_type line="159" col="30" name="boolean">
+                           <primitive_type line="159" col="44" name="boolean">
                            </primitive_type>
                         </vartype>
                      </variable>
-                     <variable line="159" col="41" name="c">
+                     <variable line="159" col="55" name="c">
                         <modifiers line="-1" col="-1">
                            <modifier name="parameter"></modifier>
                         </modifiers>
                         <vartype>
-                           <primitive_type line="159" col="41" name="int">
-                           </primitive_type>
+                           <member_select line="159" col="55" name="MyClass2">
+                              <identifier line="159" col="55" name="OurClass">
+                              </identifier>
+                           </member_select>
                         </vartype>
                      </variable>
                   </parameters>
-                  <block line="159" col="47">
+                  <block line="159" col="75">
                      <nodename.statements>
                         <return line="160" col="6">
-                           <int_literal line="160" col="13" type="int" value="1">
-                           </int_literal>
+                           <null_literal line="160" col="13" type="null" value="null">
+                           </null_literal>
                         </return>
                      </nodename.statements>
                   </block>
                </method>
-               <class line="163" col="5" name="MyClass2">
+               <variable line="163" col="5" name="hoho">
                   <modifiers line="163" col="5">
+                     <modifier name="private"></modifier>
+                  </modifiers>
+                  <vartype>
+                     <member_select line="163" col="13" name="MyClass2">
+                        <identifier line="163" col="13" name="OurClass">
+                        </identifier>
+                     </member_select>
+                  </vartype>
+               </variable>
+               <class line="165" col="5" name="MyClass2">
+                  <modifiers line="165" col="5">
                      <modifier name="public"></modifier>
                      <modifier name="static"></modifier>
                   </modifiers>
                   <body>
-                     <method line="165" col="9" name="foo">
-                        <modifiers line="165" col="9">
+                     <method line="167" col="9" name="foo">
+                        <modifiers line="167" col="9">
                            <modifier name="public"></modifier>
                         </modifiers>
                         <resulttype>
-                           <primitive_type line="165" col="16" name="void">
+                           <primitive_type line="167" col="16" name="void">
                            </primitive_type>
                         </resulttype>
-                        <block line="165" col="27">
+                        <block line="167" col="27">
                            <nodename.statements>
-                              <expression_statement line="166" col="13">
-                                 <method_invocation line="166" col="13">
-                                    <member_select line="166" col="13" name="println">
-                                       <member_select line="166" col="13" name="out">
-                                          <identifier line="166" col="13" name="System">
+                              <expression_statement line="168" col="13">
+                                 <method_invocation line="168" col="13">
+                                    <member_select line="168" col="13" name="println">
+                                       <member_select line="168" col="13" name="out">
+                                          <identifier line="168" col="13" name="System">
                                           </identifier>
                                        </member_select>
                                     </member_select>
                                     <arguments>
-                                       <member_select line="166" col="32" name="A">
-                                          <identifier line="166" col="32" name="MyClass">
+                                       <member_select line="168" col="32" name="A">
+                                          <identifier line="168" col="32" name="MyClass">
                                           </identifier>
                                        </member_select>
                                     </arguments>
@@ -1081,8 +1096,8 @@
                            </nodename.statements>
                         </block>
                      </method>
-                     <class line="169" col="9" name="MyClass3">
-                        <modifiers line="169" col="9">
+                     <class line="171" col="9" name="MyClass3">
+                        <modifiers line="171" col="9">
                            <modifier name="public"></modifier>
                            <modifier name="static"></modifier>
                         </modifiers>
@@ -1132,6 +1147,62 @@
          </class>
       </definitions>
    </compilation_unit>
+   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OtherClass.java">
+      <package>
+         <member_select line="1" col="9" name="example">
+            <identifier line="1" col="9" name="com">
+            </identifier>
+         </member_select>
+      </package>
+      <definitions>
+         <class line="4" col="1" name="OtherClass">
+            <modifiers line="4" col="1">
+               <modifier name="public"></modifier>
+            </modifiers>
+            <extends>
+               <identifier line="4" col="33" name="MyClass">
+               </identifier>
+            </extends>
+            <implements>
+               <identifier line="4" col="52" name="IAction">
+               </identifier>
+            </implements>
+            <body>
+               <class line="6" col="2" name="AnotherOtherClass">
+                  <modifiers line="6" col="2">
+                     <modifier name="public"></modifier>
+                     <modifier name="static"></modifier>
+                  </modifiers>
+                  <extends>
+                     <identifier line="6" col="48" name="MyClass2">
+                     </identifier>
+                  </extends>
+                  <body>
+                     <variable line="7" col="3" name="field">
+                        <modifiers line="7" col="3">
+                           <modifier name="private"></modifier>
+                        </modifiers>
+                        <vartype>
+                           <identifier line="7" col="11" name="MyClass3">
+                           </identifier>
+                        </vartype>
+                     </variable>
+                     <class line="9" col="3" name="AndNowSomethingCompletelyDifferent">
+                        <modifiers line="9" col="3">
+                           <modifier name="public"></modifier>
+                           <modifier name="static"></modifier>
+                        </modifiers>
+                        <extends>
+                           <identifier line="9" col="66" name="MyClass3">
+                           </identifier>
+                        </extends>
+                     </class>
+                  </body>
+               </class>
+            </body>
+         </class>
+      </definitions>
+   </compilation_unit>
    <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/util/OtherClass.java">
       <package>
          <member_select line="1" col="9" name="util">
@@ -1158,45 +1229,45 @@
                </member_select>
             </member_select>
          </import>
-         <class line="6" col="1" name="OtherClass">
-            <modifiers line="6" col="1">
+         <class line="7" col="1" name="OtherClass">
+            <modifiers line="7" col="1">
                <modifier name="public"></modifier>
             </modifiers>
             <extends>
-               <identifier line="6" col="33" name="MyClass">
+               <identifier line="7" col="33" name="MyClass">
                </identifier>
             </extends>
             <implements>
-               <identifier line="6" col="52" name="IAction">
+               <identifier line="7" col="52" name="IAction">
                </identifier>
             </implements>
             <body>
-               <class line="8" col="2" name="AnotherOtherClass">
-                  <modifiers line="8" col="2">
+               <class line="9" col="2" name="AnotherOtherClass">
+                  <modifiers line="9" col="2">
                      <modifier name="public"></modifier>
                      <modifier name="static"></modifier>
                   </modifiers>
                   <extends>
-                     <identifier line="8" col="48" name="MyClass2">
+                     <identifier line="9" col="48" name="MyClass2">
                      </identifier>
                   </extends>
                   <body>
-                     <variable line="9" col="3" name="field">
-                        <modifiers line="9" col="3">
+                     <variable line="10" col="3" name="field">
+                        <modifiers line="10" col="3">
                            <modifier name="private"></modifier>
                         </modifiers>
                         <vartype>
-                           <identifier line="9" col="11" name="MyClass3">
+                           <identifier line="10" col="11" name="MyClass3">
                            </identifier>
                         </vartype>
                      </variable>
-                     <class line="11" col="3" name="AndNowSomethingCompletelyDifferent">
-                        <modifiers line="11" col="3">
+                     <class line="12" col="3" name="AndNowSomethingCompletelyDifferent">
+                        <modifiers line="12" col="3">
                            <modifier name="public"></modifier>
                            <modifier name="static"></modifier>
                         </modifiers>
                         <extends>
-                           <identifier line="11" col="66" name="MyClass3">
+                           <identifier line="12" col="66" name="MyClass3">
                            </identifier>
                         </extends>
                      </class>

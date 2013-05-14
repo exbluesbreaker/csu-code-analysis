@@ -73,6 +73,10 @@ public class ClassContext {
 		return new ClassContext(classes, factory);
 	}
 	
+	public Classes getResultClassesRoot() {
+		return root;
+	}
+	
 	public void setPackageState(){
 		stateStack.push(ContextState.PACKAGE);
 	}
@@ -425,7 +429,7 @@ public class ClassContext {
 			if (currentType.getName().isEmpty())
 				currentType.setName(getNameAttr(attrs));
 			else
-				currentType.setName(currentType.getName() + '.' + getNameAttr(attrs));
+				currentType.setName(getNameAttr(attrs) + '.' + currentType.getName());
 		}
 	}
 	
