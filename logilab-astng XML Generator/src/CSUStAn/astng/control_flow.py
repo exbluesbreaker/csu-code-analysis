@@ -245,6 +245,18 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
 	    if isinstance(asgn,AssAttr):
 		print name,asgn.as_string(), asgn.root()
         return space_type,called,called_id
-
-       
-        
+    
+class CFGHandler:
+    # Process XML CFG
+    _tree = None
+    _methods = None
+    _funcs = None
+    #_full_name_dict = None
+    #_id_dict = None
+    def __init__(self, args):
+        if(len(args)!=1):
+            print "usage <> <file name>"
+            exit(0)
+        self._tree = etree.parse(args[0])
+        self._methods = [node for node in self._tree.iter("Method")]
+        self._methods = [node for node in self._tree.iter("Function")]

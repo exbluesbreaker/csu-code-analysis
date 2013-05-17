@@ -27,7 +27,7 @@ from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGe
 from CSUStAn.tests import twisted_ftpclient, twisted_getpage, twisted_ptyserv, twisted_testlogging
 from CSUStAn.astng.inspector import NoInferLinker, ClassIRLinker
 from CSUStAn.astng.astng import ASTNGHandler
-from CSUStAn.astng.control_flow import CFGLinker
+from CSUStAn.astng.control_flow import CFGLinker,CFGHandler
 
 
 
@@ -223,11 +223,8 @@ class ClassIRHandler:
     _classes = None
     _full_name_dict = None
     _id_dict = None
-    def __init__(self, args):
-        if(len(args)!=1):
-            print "usage <> <file name>"
-            exit(0)
-        self._tree = etree.parse(args[0])
+    def __init__(self, ucr_xml):
+        self._tree = etree.parse(ucr_xml)
         self._classes = [node for node in self._tree.iter("Class")]
         self._full_name_dict = {}
         self._id_dict = {}
@@ -284,7 +281,7 @@ class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
-        ClassIRHandler.__init__(self, args)
+        ClassIRHandler.__init__(self, args[0])
         _complete_signatures = {}
         self.run(args)
         
@@ -349,7 +346,7 @@ class ClassHierarchyVisualizer(ConfigurationMixIn,ClassIRHandler):
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
-        ClassIRHandler.__init__(self, args)
+        ClassIRHandler.__init__(self, args[0])
         self.run()
     
     def run(self):
@@ -394,7 +391,7 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
-        ClassIRHandler.__init__(self, args)
+        ClassIRHandler.__init__(self, args[0])
         self._methods = {}
         self.run()
     
@@ -442,7 +439,7 @@ class TypesComparator(ClassIRHandler):
     _preload_dt_info = None
     
     def __init__(self, class_ir_file,project,result_file=None):
-        ClassIRHandler.__init__(self, [class_ir_file])
+        ClassIRHandler.__init__(self, class_ir_file)
         self._project = project
         self._result = {'not_found_common_types':0,'correct_common_types':0,'not_found_aggr_types':0,'correct_aggr_types':0}
         if result_file is not None:
@@ -499,7 +496,6 @@ class TypesComparator(ClassIRHandler):
             f = open(self._result_file,'w')
             f.write(etree.tostring(tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
             f.close()
-    
     def preload_results(self):
         if(not os.path.exists(self._result_file)):
             self._preload_dt_info = {}
@@ -644,3 +640,11 @@ class CFGExtractor(ASTNGHandler):
     def run(self):
         linker = CFGLinker(self.project)
         linker.visit(self.project)
+        
+class DataflowLinker(CFGHandler,ClassIRHandler):
+    def __init__(self,ucr_xml,cfg_xml):
+        ClassIRHandler.__init__(self, ucr_xml)
+        ClassIRHandler.__init__(self, cfg_xml)
+        self.run()
+    def run(self):
+        pass

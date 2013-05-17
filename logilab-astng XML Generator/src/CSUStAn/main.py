@@ -8,7 +8,7 @@ Created on 19.08.2011
 import importlib
 import argparse
 import sys
-from CSUStAn.runners import ReflexionModelRunner,ClassIRRunner, FieldCandidateFinder, ClassHierarchyVisualizer, PotentialSiblingsCounter, LogilabObjectTracer, TwistedObjectTracer, SconsObjectTracer, TestRunner, PylintObjectTracer, BazaarObjectTracer,CFGExtractor
+from CSUStAn.runners import *
 from CSUStAn.reflexion.rm_tools import RegexMapper
 from ConfigParser import SafeConfigParser
 from CSUStAn.astng.obsolete import LogilabClassIRRunner
@@ -173,5 +173,9 @@ if(args.type=="CFGExtractor"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]
     runner = CFGExtractor([project])
+if(args.type=="DataflowLinker"):
+    ucr_xml = cfg_parser.get(args.type,'ucr_xml')
+    cfg_xml = cfg_parser.get(args.type,'cfg_xml')
+    runner = DataflowLinker(ucr_xml,cfg_xml)
 else:
     print "Unknown type!"
