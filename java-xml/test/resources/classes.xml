@@ -116,6 +116,10 @@
         <Attr name="x">
             <Modifier name="private"/>
         </Attr>
+        <Attr name="hoho">
+            <Modifier name="private"/>
+            <CommonType name="com.example.OurClass.MyClass2" id="6"/>
+        </Attr>
         <Method name="main">
             <Modifier name="public"/>
             <Modifier name="static"/>
@@ -127,7 +131,10 @@
             <Modifier name="public"/>
             <Arg name="a"/>
             <Arg name="b"/>
-            <Arg name="c"/>
+            <Arg name="c">
+                <Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CommonType" name="com.example.OurClass.MyClass2" id="6"/>
+            </Arg>
+            <Type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CommonType" name="com.example.OurClass.MyClass2" id="6"/>
         </Method>
     </Class>
     <Class name="com.example.OurClass.MyClass2" id="6">
@@ -141,12 +148,12 @@
         <Modifier name="public"/>
         <Modifier name="interface"/>
     </Class>
-    <Class name="com.example.util.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" id="10">
+    <Class name="com.example.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" id="10">
         <Modifier name="public"/>
         <Modifier name="static"/>
         <Parent name="com.example.MyClass.MyClass2.MyClass3" id="4"/>
     </Class>
-    <Class name="com.example.util.OtherClass.AnotherOtherClass" id="9">
+    <Class name="com.example.OtherClass.AnotherOtherClass" id="9">
         <Modifier name="public"/>
         <Modifier name="static"/>
         <Attr name="field">
@@ -155,7 +162,26 @@
         </Attr>
         <Parent name="com.example.MyClass.MyClass2" id="3"/>
     </Class>
-    <Class name="com.example.util.OtherClass" id="8">
+    <Class name="com.example.OtherClass" id="8">
+        <Modifier name="public"/>
+        <Parent name="com.example.MyClass" id="1"/>
+        <Parent name="com.example.IAction" id="7"/>
+    </Class>
+    <Class name="com.example.util.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" id="13">
+        <Modifier name="public"/>
+        <Modifier name="static"/>
+        <Parent name="com.example.MyClass.MyClass2.MyClass3" id="4"/>
+    </Class>
+    <Class name="com.example.util.OtherClass.AnotherOtherClass" id="12">
+        <Modifier name="public"/>
+        <Modifier name="static"/>
+        <Attr name="field">
+            <Modifier name="private"/>
+            <CommonType name="com.example.MyClass.MyClass2.MyClass3" id="4"/>
+        </Attr>
+        <Parent name="com.example.MyClass.MyClass2" id="3"/>
+    </Class>
+    <Class name="com.example.util.OtherClass" id="11">
         <Modifier name="public"/>
         <Parent name="com.example.MyClass" id="1"/>
         <Parent name="com.example.IAction" id="7"/>

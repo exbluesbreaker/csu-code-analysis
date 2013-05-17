@@ -3,10 +3,8 @@ package ru.csu.stan.java.classgen.main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -29,9 +27,7 @@ import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
 import ru.csu.stan.java.classgen.jaxb.ParentClass;
 import ru.csu.stan.java.classgen.jaxb.Type;
 import ru.csu.stan.java.classgen.util.ClassIdGenerator;
-import ru.csu.stan.java.classgen.util.CompilationUnit;
-import ru.csu.stan.java.classgen.util.ImportRegistry;
-import ru.csu.stan.java.classgen.util.PackageRegistry;
+import ru.csu.stan.java.classgen.util.ClassNameResolver;
 
 /**
  * Генератор универсального классового представления
@@ -85,13 +81,12 @@ public class Main {
 			}
 			// Второй проход, установление связей между типами и родительскими классами
 			System.out.println("Resolving parent classes");
-			ImportRegistry imports = context.getImpReg();
-			PackageRegistry packages = context.getPackageReg();
+			ClassNameResolver nameResolver = ClassNameResolver.getInstance(context);
 			for (Class clazz : result.getClazz()){
 				// формируем новый список родителей
 				List<ParentClass> newParents = new LinkedList<ParentClass>();
 				for (ParentClass parent : clazz.getParent()){
-					String fullParentName = getFullTypeName(packages, imports, parent.getName(), clazz, result);
+					String fullParentName = nameResolver.getFullTypeName(parent.getName(), clazz, result);
 					if (fullParentName != null && !fullParentName.isEmpty())
 					{
 						parent.setName(fullParentName);
@@ -106,7 +101,7 @@ public class Main {
 					for (Attribute attr: clazz.getAttr()){
 						List<CommonType> type = attr.getCommonType();
 						if (type != null && type.size() > 0){
-							String fullTypeName = getFullTypeName(packages, imports, type.get(0).getName(), clazz, result);
+							String fullTypeName = nameResolver.getFullTypeName(type.get(0).getName(), clazz, result);
 							if (fullTypeName != null && !fullTypeName.isEmpty())
 							{
 								type.get(0).setName(fullTypeName);
@@ -120,7 +115,7 @@ public class Main {
 					for (Method method: clazz.getMethod()){
 						List<Type> type = method.getType();
 						if (type != null && type.size() > 0){
-							String fullTypeName = getFullTypeName(packages, imports, type.get(0).getName(), clazz, result);
+							String fullTypeName = nameResolver.getFullTypeName(type.get(0).getName(), clazz, result);
 							if (fullTypeName != null && !fullTypeName.isEmpty())
 							{
 								type.get(0).setName(fullTypeName);
@@ -133,7 +128,7 @@ public class Main {
 							for (Argument arg: method.getArg()){
 								List<Type> argumentType = arg.getType();
 								if (argumentType != null && argumentType.size() > 0){
-									String fullTypeName = getFullTypeName(packages, imports, argumentType.get(0).getName(), clazz, result);
+									String fullTypeName = nameResolver.getFullTypeName(argumentType.get(0).getName(), clazz, result);
 									if (fullTypeName != null && !fullTypeName.isEmpty())
 									{
 										argumentType.get(0).setName(fullTypeName);
@@ -174,84 +169,5 @@ public class Main {
 		}
 		else
 			System.out.println(HELP);
-	}
-	
-	/**
-	 * Получение полного имени типа.
-	 * @param name
-	 * @return полное имя типа, null - если в проекте не описан соответствующий тип.
-	 */
-	private static String getFullTypeName(PackageRegistry packages, ImportRegistry imports, String name, Class clazz, Classes result)
-	{
-		// все по простому: родитель нормально импортирован из проекта
-		if (packages.isClassInRegistry(name))
-			return name;
-		// всякие сложности
-		else{
-			CompilationUnit unit = imports.findUnitByClass(clazz.getName());
-			for (String starImport : unit.getStarImports()){
-				// отбрасываем ".*"
-				String fullName = packages.findFullNameByShortInPackage(starImport.substring(0, starImport.length()-2), name);
-				if (fullName != null){
-					return fullName;
-				}
-			}
-			String fullName = packages.findFullNameByShortInPackage(unit.getPackageName(), name);
-			if (fullName != null){
-				return fullName;
-			}
-			String localClassName = clazz.getName().substring(unit.getPackageName().length()+1);
-			if (localClassName.indexOf('.') > 0){
-				Set<String> sameThings = new HashSet<String>();
-				for (String imp : unit.getImports())
-					sameThings.addAll(packages.getClassesByPrefixAndPostfix(imp, name));
-				if (sameThings.size() > 1){
-					String fullTypeName = resolvePreviousParentName(result.getClazz(), unit.getPackageName(), localClassName, name, sameThings);
-					if (fullTypeName != null && !fullTypeName.isEmpty()){
-						return fullTypeName;
-					}
-				}
-				if (sameThings.size() == 1){
-					return sameThings.iterator().next();
-				}
-			}
-		}
-		return null;
-	}
-	
-	private static String resolvePreviousParentName(List<Class> classes, String packageName, String localClassName, String parentName, Set<String> candidates){
-		if (localClassName.lastIndexOf('.') == -1)
-			return null;
-		String newLocalName = localClassName.substring(0, localClassName.lastIndexOf('.'));
-		String searchClass = packageName + '.' + newLocalName;
-		for (Class cl : classes)
-			if (cl.getName().equals(searchClass))
-				for (ParentClass parentCl : cl.getParent()){
-					String newParentName = parentName;
-					if (parentCl.getName().lastIndexOf('.') > 0)
-						newParentName = parentCl.getName().substring(parentCl.getName().lastIndexOf('.')+1, parentCl.getName().length()-1) + '.' + newParentName;
-					else
-						newParentName = parentCl.getName() + '.' + newParentName;
-					Set<String> sameEndings = searchForEnding(candidates, newParentName);
-					if (sameEndings.size() > 1)
-						return resolvePreviousParentName(classes, packageName, newLocalName, newParentName, sameEndings);
-					if (sameEndings.size() == 1)
-						return sameEndings.iterator().next();
-				}
-		return null;
-	}
-
-	/**
-	 * Поиск в наборе строк тех, что имеют заданное окончание.
-	 * @param strings набор строк для поиска.
-	 * @param ending окончание, по которому идет поиск.
-	 * @return Набор строк, подобранных среди исходного.
-	 */
-	private static Set<String> searchForEnding(Set<String> strings, String ending){
-		Set<String> result = new HashSet<String>();
-		for (String str : strings)
-			if (str.endsWith(ending))
-				result.add(str);
-		return result;
 	}
 }

@@ -1,7 +1,4 @@
-package com.example.util;
-
-import com.example.IAction;
-import com.example.MyClass;
+package com.example;
 
 
 public class OtherClass extends MyClass implements IAction {

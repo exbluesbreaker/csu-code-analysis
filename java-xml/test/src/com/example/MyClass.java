@@ -156,9 +156,11 @@ public class MyClass extends ArrayList<Object>{
 		};
     }
     
-    public int bar(String a, boolean b, int c){
-    	return 1;
+    public OurClass.MyClass2 bar(String a, boolean b, OurClass.MyClass2 c){
+    	return null;
     }
+    
+    private OurClass.MyClass2 hoho;
     
     public static class MyClass2 {
         
