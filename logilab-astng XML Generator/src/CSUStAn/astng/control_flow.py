@@ -106,14 +106,6 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 ''' Ignore function defined in another function body'''
                 continue
             id_count+=1
-            '''if isinstance(child, If):logilab.astng.exceptions
-                subblock_node = etree.Element("If",id=str(id_count))
-            elif isinstance(child, For):
-                subblock_node = etree.Element("For",id=str(id_count))
-            elif isinstance(child, While):
-                subblock_node = etree.Element("While",id=str(id_count))
-            else:
-                subblock_node = etree.Element("SubBlock",type=child.__class__.__name__,id=str(id_count))'''
             curr_id = id_count
             #block_node.append(subblock_node)
             if(isinstance(child, (If, While, For, TryExcept, TryFinally, With)) or (block_node is None)):
@@ -188,7 +180,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             call_node = etree.Element("Call")
             self._dbg_calls.add(node.func.__class__.__name__)
             if isinstance(node.func, Name):
-                space_type,called,called_id = self.handle_lookup(node.func, node.func.name)
+                space_type,called,called_id, label = self.handle_lookup(node.func, node.func.name)
                 call_node.set("name",node.func.name)
                 if called == 'function':
                     self._func_calls += 1
@@ -197,6 +189,8 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 call_node.set("type","direct")
                 if space_type is not None:
                     call_node.set("space_type",space_type)
+                if label is not None:
+                    call_node.set("label",label)
                 if called is not None:
                     call_node.set("called",called)
                 if called_id is not None:
@@ -216,11 +210,13 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         lookup = node.lookup(name)
         called = None
         called_id = None
+        label = None
         for asgn in lookup[1]:
             if isinstance(asgn, Function):
                 if(space_type is None):
                     space_type = "internal"
                 called = "function"
+                label = asgn.root().name
                 if not hasattr(asgn, "id"):
                     asgn.id = self.generate_id()
                     called_id = asgn.id
@@ -228,6 +224,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if(space_type is None):
                     space_type = "internal"
                 called = "class"
+                label = asgn.root().name                
                 for cstr in [meth for meth in asgn.methods() if meth.name == '__init__']:
                     if not hasattr(cstr, "id"):
                         cstr.id = self.generate_id()
@@ -237,26 +234,24 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     module = asgn.do_import_module(asgn.modname)
                     if(space_type is None):
                         space_type = "cross"
-                    space_type,called,called_id = self.handle_lookup(module, name, space_type)
+                    space_type,called,called_id, label = self.handle_lookup(module, name, space_type)
                 except InferenceError:
                     if(space_type is None):
                         space_type = "external"
             self._dbg_call_lookup.add(asgn.__class__.__name__)
-	    if isinstance(asgn,AssAttr):
-		print name,asgn.as_string(), asgn.root()
-        return space_type,called,called_id
+            if isinstance(asgn,AssAttr):
+                print name,asgn.as_string(), asgn.root()
+        return space_type,called,called_id, label
     
 class CFGHandler:
     # Process XML CFG
-    _tree = None
+    _cfg_tree = None
     _methods = None
     _funcs = None
     #_full_name_dict = None
     #_id_dict = None
-    def __init__(self, args):
-        if(len(args)!=1):
-            print "usage <> <file name>"
-            exit(0)
-        self._tree = etree.parse(args[0])
-        self._methods = [node for node in self._tree.iter("Method")]
-        self._methods = [node for node in self._tree.iter("Function")]
+    def __init__(self, cfg_xml):
+        parser = etree.XMLParser(remove_blank_text=True)
+        self._cfg_tree = etree.parse(cfg_xml, parser)
+        self._methods = [node for node in self._cfg_tree.iter("Method")]
+        self._funcs = [node for node in self._cfg_tree.iter("Function")]

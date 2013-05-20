@@ -10,6 +10,7 @@ import pydot
 import os
 from lxml import etree
 from twisted.internet import reactor
+import hashlib
 
 from logilab.common.configuration import ConfigurationMixIn
 from logilab.astng.manager import astng_wrapper, ASTNGManager
@@ -219,13 +220,13 @@ class ClassIRRunner(ConfigurationMixIn):
         
 class ClassIRHandler:
     # Process XML class IR
-    _tree = None
+    _ucr_tree = None
     _classes = None
     _full_name_dict = None
     _id_dict = None
     def __init__(self, ucr_xml):
-        self._tree = etree.parse(ucr_xml)
-        self._classes = [node for node in self._tree.iter("Class")]
+        self._ucr_tree = etree.parse(ucr_xml)
+        self._classes = [node for node in self._ucr_tree.iter("Class")]
         self._full_name_dict = {}
         self._id_dict = {}
         for class_node in self._classes:
@@ -255,7 +256,7 @@ class ClassIRHandler:
             self.get_type(type_mark,parent, attrname, type_set)
         return type_set
     def get_parents(self,node):
-        return [self._tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in node.iter("Parent")]
+        return [self._ucr_tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in node.iter("Parent")]
     def get_class_by_full_name(self,full_name):
         if self._full_name_dict.has_key(full_name):
             return self._full_name_dict[full_name]
@@ -267,6 +268,8 @@ class ClassIRHandler:
             return self._id_dict[class_id]
         else: 
             return None
+    def get_classes_from_module(self,modname):
+        return self._ucr_tree.xpath("//Class[@label=\""+modname+"\"]")
     def get_num_of_classes(self):
         return len(self._classes)
 
@@ -276,7 +279,7 @@ class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
     options = OPTIONS
     _successes = 0
     _fails = 0
-    _tree = None
+    _ucr_tree = None
     _complete_signatures = None
     
     def __init__(self, args):
@@ -287,7 +290,7 @@ class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
         
     def _compute_signature(self,id,curr_node=None):
         if(curr_node is None):
-            curr_node = self._tree.xpath("//Class[@id="+id+"]")[0]
+            curr_node = self._ucr_tree.xpath("//Class[@id="+id+"]")[0]
         self._complete_signatures[id]['Attrs'] |= Set([re.search('[^ :]*',attr.get("name")).group(0) for attr in curr_node.iter("Attr")])
         self._complete_signatures[id]['Methods'] |= self.get_methods(curr_node)
         parents = self.get_parents(curr_node)
@@ -295,7 +298,7 @@ class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
             self._compute_signature(id,parent)
 
     def run(self, args):
-        ducks = [node for node in self._tree.iter("DuckAttr")]
+        ducks = [node for node in self._ucr_tree.iter("DuckAttr")]
         # prepare data about classes attrs and methods
         status = 0
         classes_num = len(self._classes)
@@ -642,9 +645,24 @@ class CFGExtractor(ASTNGHandler):
         linker.visit(self.project)
         
 class DataflowLinker(CFGHandler,ClassIRHandler):
-    def __init__(self,ucr_xml,cfg_xml):
+    _targeted = 0
+    _out_xml = None
+    def __init__(self,ucr_xml,cfg_xml,out_xml):
         ClassIRHandler.__init__(self, ucr_xml)
-        ClassIRHandler.__init__(self, cfg_xml)
+        CFGHandler.__init__(self, cfg_xml)
+        self._out_xml = out_xml
         self.run()
     def run(self):
-        pass
+        self.slice_constructors(self._cfg_tree)
+    def slice_constructors(self,xml_node):
+        for call in self._cfg_tree.xpath("//Call[not(@called=\"class\")]"):
+            call.getparent().remove(call)
+        for call in self._cfg_tree.xpath("//Call"):
+            target_class = self.get_class_by_full_name(call.get("label")+'.'+call.get("name"))
+            if(not target_class is None):
+                call.set("ucr_id",target_class.get("id"))
+                self._targeted += 1
+        f = open(self._out_xml,'w')
+        f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
+        f.close()
+        print "Found ",self._targeted," UCR classes"

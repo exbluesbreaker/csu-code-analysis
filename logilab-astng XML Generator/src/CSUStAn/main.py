@@ -176,6 +176,7 @@ if(args.type=="CFGExtractor"):
 if(args.type=="DataflowLinker"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     cfg_xml = cfg_parser.get(args.type,'cfg_xml')
-    runner = DataflowLinker(ucr_xml,cfg_xml)
+    out_xml = cfg_parser.get(args.type,'out_xml')
+    runner = DataflowLinker(ucr_xml,cfg_xml,out_xml)
 else:
     print "Unknown type!"
