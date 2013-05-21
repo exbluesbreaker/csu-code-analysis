@@ -172,8 +172,8 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
     
     def get_methods(self,class_node):
         for it in class_node.items():
-            if(isinstance(it, Function)):
-                yield it
+            if(isinstance(it[1], Function)):
+                yield it[1]
                 
     def get_inheritances(self):
         for inh in self._inherit:
