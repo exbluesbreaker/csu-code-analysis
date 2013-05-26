@@ -659,6 +659,9 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
     def run(self):
         self.slice_constructors(self._cfg_tree)
     def slice_constructors(self,xml_node):
+        for meth in self._cfg_tree.xpath("//Method"):
+            parent_class = self.get_class_by_full_name(meth.get("label")+'.'+meth.get("parent_class"))
+            meth.set("ucr_id",parent_class.get("id"))
         for call in self._cfg_tree.xpath("//Call[@called=\"class\"]"):
             target_class = self.get_class_by_full_name(call.get("label")+'.'+call.get("name"))
             if(not target_class is None):
