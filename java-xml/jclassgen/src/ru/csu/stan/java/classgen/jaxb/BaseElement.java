@@ -17,15 +17,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Type complex type.
+ * <p>Java class for BaseElement complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Type">
+ * &lt;complexType name="BaseElement">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}integer" />
+ *       &lt;attribute name="fromlineno" type="{http://www.w3.org/2001/XMLSchema}integer" />
+ *       &lt;attribute name="col_offset" type="{http://www.w3.org/2001/XMLSchema}integer" />
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="label" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
@@ -36,42 +37,68 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Type")
+@XmlType(name = "BaseElement")
 @XmlSeeAlso({
-    CommonType.class,
-    AggregatedType.class
+    Class.class,
+    BaseTypedElement.class
 })
-public abstract class Type {
+public class BaseElement {
 
     @XmlAttribute
-    protected BigInteger id;
+    protected BigInteger fromlineno;
+    @XmlAttribute(name = "col_offset")
+    protected BigInteger colOffset;
     @XmlAttribute
     protected String name;
     @XmlAttribute
     protected String label;
 
     /**
-     * Gets the value of the id property.
+     * Gets the value of the fromlineno property.
      * 
      * @return
      *     possible object is
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getId() {
-        return id;
+    public BigInteger getFromlineno() {
+        return fromlineno;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the fromlineno property.
      * 
      * @param value
      *     allowed object is
      *     {@link BigInteger }
      *     
      */
-    public void setId(BigInteger value) {
-        this.id = value;
+    public void setFromlineno(BigInteger value) {
+        this.fromlineno = value;
+    }
+
+    /**
+     * Gets the value of the colOffset property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BigInteger }
+     *     
+     */
+    public BigInteger getColOffset() {
+        return colOffset;
+    }
+
+    /**
+     * Sets the value of the colOffset property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigInteger }
+     *     
+     */
+    public void setColOffset(BigInteger value) {
+        this.colOffset = value;
     }
 
     /**

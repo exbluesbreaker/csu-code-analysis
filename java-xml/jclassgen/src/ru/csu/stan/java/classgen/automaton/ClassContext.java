@@ -9,6 +9,7 @@ import java.util.Stack;
 
 import javax.xml.stream.events.Attribute;
 
+import ru.csu.stan.java.classgen.jaxb.AggregatedType;
 import ru.csu.stan.java.classgen.jaxb.Argument;
 import ru.csu.stan.java.classgen.jaxb.Classes;
 import ru.csu.stan.java.classgen.jaxb.CommonType;
@@ -30,9 +31,8 @@ import ru.csu.stan.java.classgen.util.PackageRegistry;
  * @author mz
  *
  */
-public class ClassContext {
+public class ClassContext extends ContextBase {
 
-	private Classes root;
 	private String currentPackage;
 	private String currentImport;
 	private String currentNewClass;
@@ -44,10 +44,11 @@ public class ClassContext {
 	private ParentClass currentParent;
 	private Argument currentArgument;
 	private List<ModifierType> currentModifier = new LinkedList<ModifierType>();
-	private ObjectFactory factory;
 	private Map<String, String> imported = new HashMap<String, String>();
 	private Stack<ContextState> stateStack = new Stack<ContextState>();
-	private CommonType currentType;
+	private CommonType currentCommonType;
+	private AggregatedType currentAggregatedType;
+	private boolean currentTypeAggregated = false;
 	
 	private PackageRegistry packageReg = new PackageRegistry();
 	
@@ -73,7 +74,8 @@ public class ClassContext {
 		return new ClassContext(classes, factory);
 	}
 	
-	public Classes getResultClassesRoot() {
+	@Override
+	public Classes getResultRoot() {
 		return root;
 	}
 	
@@ -157,6 +159,7 @@ public class ClassContext {
 		stateStack.pop();
 	}
 	
+	@Override
 	public void processTag(String name, Iterator<Attribute> attrs){
 		switch (this.stateStack.peek()){
 			case CLASS:
@@ -256,20 +259,33 @@ public class ClassContext {
 				currentModifier.clear();
 				break;
 			case FIELD_TYPE:
-				if (currentType != null)
-					currentAttribute.getCommonType().add(currentType);
-				currentType = null;
+				if (currentCommonType != null)
+					currentAttribute.getCommonType().add(currentCommonType);
+				if (currentAggregatedType != null)
+					currentAttribute.getAggregatedType().add(currentAggregatedType);
+				currentCommonType = null;
+				currentAggregatedType = null;
+				currentTypeAggregated = false;
 				break;
 			case RETURN_TYPE:
-				if (currentType != null)
+				if (currentCommonType != null)
 					if (!methodStack.isEmpty())
-						methodStack.peek().getType().add(currentType);
-				currentType = null;
+						methodStack.peek().getCommonType().add(currentCommonType);
+				if (currentAggregatedType != null)
+					if (!methodStack.isEmpty())
+						methodStack.peek().getAggregatedType().add(currentAggregatedType);
+				currentCommonType = null;
+				currentAggregatedType = null;
+				currentTypeAggregated = false;
 				break;
 			case ARG_TYPE:
-				if (currentType != null)
-					currentArgument.getType().add(currentType);
-				currentType = null;
+				if (currentCommonType != null)
+					currentArgument.getCommonType().add(currentCommonType);
+				if (currentAggregatedType != null)
+					currentArgument.getAggregatedType().add(currentAggregatedType);
+				currentCommonType = null;
+				currentAggregatedType = null;
+				currentTypeAggregated = false;
 				break;
 			default:
 				break;
@@ -295,6 +311,10 @@ public class ClassContext {
 			classStack.peek().getParent().add(currentParent);
 			currentParent = factory.createParentClass();
 		}
+		if (stateStack.peek() == ContextState.ARG_TYPE || stateStack.peek() == ContextState.RETURN_TYPE || stateStack.peek() == ContextState.FIELD_TYPE)
+			if (currentTypeAggregated){
+				
+			}
 	}
 	
 	private void processPackageTag(String name, Iterator<Attribute> attrs){
@@ -421,15 +441,41 @@ public class ClassContext {
 	
 	private void processTypeTag(String name, Iterator<Attribute> attrs){
 		if ("member_select".equals(name) || "identifier".equals(name)){
-			if (currentType == null)
-			{
-				currentType = factory.createCommonType();
-				currentType.setName("");
+			if (currentAggregatedType == null){
+				if (currentCommonType == null)
+				{
+					currentCommonType = factory.createCommonType();
+					currentCommonType.setName("");
+				}
+				if (currentCommonType.getName().isEmpty())
+					currentCommonType.setName(getNameAttr(attrs));
+				else
+					currentCommonType.setName(getNameAttr(attrs) + '.' + currentCommonType.getName());
 			}
-			if (currentType.getName().isEmpty())
-				currentType.setName(getNameAttr(attrs));
-			else
-				currentType.setName(getNameAttr(attrs) + '.' + currentType.getName());
+			else{
+				if (currentTypeAggregated){
+					if (currentAggregatedType.getElementType().isEmpty())
+						currentAggregatedType.setElementType(getNameAttr(attrs));
+					else
+						currentAggregatedType.setElementType(getNameAttr(attrs) + '.' + currentAggregatedType.getElementType());
+				}
+				else{
+					if (currentAggregatedType.getName().isEmpty())
+						currentAggregatedType.setName(getNameAttr(attrs));
+					else
+						currentAggregatedType.setName(getNameAttr(attrs) + '.' + currentAggregatedType.getName());
+				}
+			}
+		}
+		if ("parameterized_type".equals(name) && currentCommonType == null){
+			if (currentAggregatedType == null){
+				currentAggregatedType = factory.createAggregatedType();
+				currentAggregatedType.setName("");
+				currentAggregatedType.setElementType("");
+			}
+		}
+		if ("arguments".equals(name)){
+			currentTypeAggregated = true;
 		}
 	}
 	
@@ -441,5 +487,110 @@ public class ClassContext {
 				return a.getValue();
 		}
 		return result;
+	}
+
+	@Override
+	public IContext<Classes> getNextState(IContext<Classes> context, String eventName) {
+		if (eventName.equals("package")){
+			this.setPackageState();
+		}
+		if (eventName.equals("class")){
+			this.setClassState();
+		}
+		if (eventName.equals("method")){
+			this.setMethodState();
+		}
+		if (eventName.equals("variable")){
+			this.setStateForVar();
+		}
+		if (eventName.equals("extends") || 
+				eventName.equals("implements")){
+			this.setParentState();
+		}
+		if (eventName.equals("import")){
+			this.setImportState();
+		}
+		if (eventName.equals("block")){
+			this.setEmptyState();
+		}
+		if (eventName.equals("new_class")){
+			this.setNewClassState();
+		}
+//		if (eventName.equals("arguments")){
+//			context.setEmptyState();
+//		}
+		if (eventName.equals("compilation_unit")){
+			this.setCompilationUnitState();
+		}
+		if (eventName.equals("modifiers")){
+			this.setModifierState();
+		}
+		if (eventName.equals("vartype")){
+			this.setVartypeState();
+		}
+		if (eventName.equals("resulttype")){
+			this.setResultTypeState();
+		}
+		return this;
+	}
+
+	@Override
+	public IContext<Classes> getPreviousState(String eventName) {
+		if (eventName.equals("package") ||
+			eventName.equals("class") ||
+			eventName.equals("method") ||
+			eventName.equals("extends") || 
+			eventName.equals("implements") ||
+			eventName.equals("import") ||
+			eventName.equals("block") ||
+			eventName.equals("new_class") ||
+//					event.getName().toString().equals("arguments") ||
+			eventName.equals("modifiers") ||
+			eventName.equals("resulttype") ||
+			eventName.equals("compilation_unit") ){
+			this.setPreviousState();
+		}
+		
+		if (eventName.equals("variable"))
+		{
+			this.setPreviousVarState();
+		}
+				
+		if (eventName.equals("vartype"))
+		{
+			this.setPreviousVartypeState();
+		}
+		return this;
+	}
+
+	@Override
+	public void finish(String eventName) {
+		if (eventName.equals("package") ||
+			eventName.equals("class") ||
+			eventName.equals("method") ||
+			eventName.equals("extends") || 
+			eventName.equals("implements") ||
+			eventName.equals("import") ||
+			eventName.equals("block") ||
+			eventName.equals("new_class") ||
+//				event.getName().toString().equals("arguments") ||
+			eventName.equals("modifiers") ||
+			eventName.equals("resulttype") ||
+			eventName.equals("compilation_unit") ){
+			this.finish();
+		}
+		
+		if (eventName.equals("variable"))
+		{
+			this.finishVar();
+		}
+		
+		if (eventName.equals("identifier"))
+			this.finishIdentifier();
+		
+		if (eventName.equals("vartype"))
+		{
+			this.finishVartype();
+		}
 	}
 }

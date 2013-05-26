@@ -2,7 +2,7 @@ package ru.csu.stan.java.classgen.handlers;
 
 import javax.xml.stream.events.EndElement;
 
-import ru.csu.stan.java.classgen.automaton.ClassContext;
+import ru.csu.stan.java.classgen.automaton.IContext;
 
 /**
  * Обработчик завершающего тега.
@@ -11,7 +11,7 @@ import ru.csu.stan.java.classgen.automaton.ClassContext;
  * @author mz
  *
  */
-public class EndElementHandler implements IStaxHandler{
+public class EndElementHandler<T> implements IStaxHandler<T>{
 
 	/** Событие окончания тега*/
 	private EndElement event;
@@ -22,39 +22,10 @@ public class EndElementHandler implements IStaxHandler{
 	}
 	
 	@Override
-	public ClassContext handle(final ClassContext context) {
-		if (event.getName().toString().equals("package") ||
-			event.getName().toString().equals("class") ||
-			event.getName().toString().equals("method") ||
-			event.getName().toString().equals("extends") || 
-			event.getName().toString().equals("implements") ||
-			event.getName().toString().equals("import") ||
-			event.getName().toString().equals("block") ||
-			event.getName().toString().equals("new_class") ||
-			event.getName().toString().equals("arguments") ||
-			event.getName().toString().equals("modifiers") ||
-			event.getName().toString().equals("resulttype") ||
-			event.getName().toString().equals("compilation_unit") ){
-			context.finish();
-			context.setPreviousState();
-		}
-		
-		if (event.getName().toString().equals("variable"))
-		{
-			context.finishVar();
-			context.setPreviousVarState();
-		}
-		
-		if (event.getName().toString().equals("identifier"))
-			context.finishIdentifier();
-		
-		if (event.getName().toString().equals("vartype"))
-		{
-			context.finishVartype();
-			context.setPreviousVartypeState();
-		}
-		
-		return context;
+	public IContext<T> handle(final IContext<T> context) {
+		context.finish(event.getName().toString());
+		IContext<T> result = context.getPreviousState(event.getName().toString());
+		return result;
 	}
 
 }

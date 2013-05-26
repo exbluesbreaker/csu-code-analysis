@@ -30,22 +30,22 @@ public class HandlerFactory {
 	 * @param xmlEvent
 	 * @return
 	 */
-	public IStaxHandler createHandler(XMLEvent xmlEvent){
+	public <T> IStaxHandler<T> createHandler(XMLEvent xmlEvent){
 		switch (xmlEvent.getEventType()){
 			case XMLEvent.ATTRIBUTE:
-				return new NothingToDoHandler();
+				return new NothingToDoHandler<T>();
 			case XMLEvent.CHARACTERS:
-				return new NothingToDoHandler();
+				return new NothingToDoHandler<T>();
 			case XMLEvent.END_DOCUMENT:
-				return new NothingToDoHandler();
+				return new NothingToDoHandler<T>();
 			case XMLEvent.END_ELEMENT:
-				return new EndElementHandler(xmlEvent.asEndElement());
+				return new EndElementHandler<T>(xmlEvent.asEndElement());
 			case XMLEvent.START_DOCUMENT:
-				return new NothingToDoHandler();
+				return new NothingToDoHandler<T>();
 			case XMLEvent.START_ELEMENT:
-				return new StartElementHandler(xmlEvent.asStartElement());
+				return new StartElementHandler<T>(xmlEvent.asStartElement());
 			default:
-				return new NothingToDoHandler();
+				return new NothingToDoHandler<T>();
 		}
 	}
 }
