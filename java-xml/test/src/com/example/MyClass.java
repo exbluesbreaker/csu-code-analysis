@@ -11,6 +11,8 @@ public class MyClass extends ArrayList<Object>{
     public final static String A = "asdasd";
     private StringBuffer sb = new StringBuffer();
     private int x = Integer.valueOf(sb.toString());
+    OurClass<IAction> list;
+    List<IAction> actionList;
     
     public static void main(IAction action) {
         System.out.println(MyClass.A);

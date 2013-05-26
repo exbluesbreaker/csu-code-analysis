@@ -9,17 +9,37 @@
     </xs:complexType>
   </xs:element>
   
-  <xs:complexType name="Class">
-    <xs:sequence>
-      <xs:element name="Modifier" type="ModifierType" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="Attr" type="Attribute" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="Method" type="Method" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="Parent" type="ParentClass" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="Template" type="Template" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="id" type="xs:integer"/>
-    <xs:attribute name="name" type="xs:string"/>
+  <xs:complexType name="BaseElement">
+  	<xs:attribute name="fromlineno" type="xs:integer"/>
+  	<xs:attribute name="col_offset" type="xs:integer"/>
+  	<xs:attribute name="name" type="xs:string"/>
     <xs:attribute name="label" type="xs:string" use="optional"/>
+  </xs:complexType>
+  
+  <xs:complexType name="BaseTypedElement">
+    <xs:complexContent>
+      <xs:extension base="BaseElement">
+        <xs:sequence>
+          <xs:element name="CommonType" type="CommonType" minOccurs="0" maxOccurs="unbounded"/>
+	      <xs:element name="AggregatedType" type="AggregatedType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="Class">
+  	<xs:complexContent>
+	  	<xs:extension base="BaseElement">
+		    <xs:sequence>
+		      <xs:element name="Modifier" type="ModifierType" minOccurs="0" maxOccurs="unbounded"/>
+		      <xs:element name="Attr" type="Attribute" minOccurs="0" maxOccurs="unbounded"/>
+		      <xs:element name="Method" type="Method" minOccurs="0" maxOccurs="unbounded"/>
+		      <xs:element name="Parent" type="ParentClass" minOccurs="0" maxOccurs="unbounded"/>
+		      <xs:element name="Template" type="Template" minOccurs="0" maxOccurs="unbounded"/>
+		    </xs:sequence>
+		    <xs:attribute name="id" type="xs:integer"/>
+	    </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   
   <xs:complexType name="ParentClass">
@@ -28,32 +48,32 @@
   </xs:complexType>
   
   <xs:complexType name="Argument">
-  	<xs:sequence>
-      <xs:element name="Type" type="Type" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="name" type="xs:string"/>
-    <xs:attribute name="label" type="xs:string" use="optional"/>
+  	<xs:complexContent>
+	  	<xs:extension base="BaseTypedElement">
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   
   <xs:complexType name="Method">
-    <xs:sequence>
-      <xs:element name="Modifier" type="ModifierType" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="Arg" type="Argument" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="Type" type="Type" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="Template" type="Template" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="name" type="xs:string"/>
-    <xs:attribute name="label" type="xs:string" use="optional"/>
+  	<xs:complexContent>
+	  	<xs:extension base="BaseTypedElement">
+		    <xs:sequence>
+		      <xs:element name="Modifier" type="ModifierType" minOccurs="0" maxOccurs="unbounded"/>
+		      <xs:element name="Arg" type="Argument" minOccurs="0" maxOccurs="unbounded"/>
+		      <xs:element name="Template" type="Template" minOccurs="0" maxOccurs="unbounded"/>
+		    </xs:sequence>
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   
   <xs:complexType name="Attribute">
-    <xs:sequence>
-      <xs:element name="Modifier" type="ModifierType" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="CommonType" type="CommonType" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="AggregatedType" type="AggregatedType" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="name" type="xs:string"/>
-    <xs:attribute name="label" type="xs:string" use="optional"/>
+  	<xs:complexContent>
+	  	<xs:extension base="BaseTypedElement">
+		    <xs:sequence>
+		      <xs:element name="Modifier" type="ModifierType" minOccurs="0" maxOccurs="unbounded"/>
+		    </xs:sequence>
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   
   <xs:complexType name="Type" abstract="true">

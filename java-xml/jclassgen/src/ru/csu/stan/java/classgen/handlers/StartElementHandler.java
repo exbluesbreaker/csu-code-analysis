@@ -5,7 +5,7 @@ import java.util.Iterator;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 
-import ru.csu.stan.java.classgen.automaton.ClassContext;
+import ru.csu.stan.java.classgen.automaton.IContext;
 
 /**
  * Обработчик события начала тега.
@@ -15,7 +15,7 @@ import ru.csu.stan.java.classgen.automaton.ClassContext;
  * @author mz
  *
  */
-public class StartElementHandler implements IStaxHandler {
+public class StartElementHandler<T> implements IStaxHandler<T> {
 
 	private StartElement event;
 	
@@ -24,51 +24,12 @@ public class StartElementHandler implements IStaxHandler {
 	}
 	
 	@Override
-	public ClassContext handle(final ClassContext context) {
-		if (event.getName().toString().equals("package")){
-			context.setPackageState();
-		}
-		if (event.getName().toString().equals("class")){
-			context.setClassState();
-		}
-		if (event.getName().toString().equals("method")){
-			context.setMethodState();
-		}
-		if (event.getName().toString().equals("variable")){
-			context.setStateForVar();
-		}
-		if (event.getName().toString().equals("extends") || 
-				event.getName().toString().equals("implements")){
-			context.setParentState();
-		}
-		if (event.getName().toString().equals("import")){
-			context.setImportState();
-		}
-		if (event.getName().toString().equals("block")){
-			context.setEmptyState();
-		}
-		if (event.getName().toString().equals("new_class")){
-			context.setNewClassState();
-		}
-		if (event.getName().toString().equals("arguments")){
-			context.setEmptyState();
-		}
-		if (event.getName().toString().equals("compilation_unit")){
-			context.setCompilationUnitState();
-		}
-		if (event.getName().toString().equals("modifiers")){
-			context.setModifierState();
-		}
-		if (event.getName().toString().equals("vartype")){
-			context.setVartypeState();
-		}
-		if (event.getName().toString().equals("resulttype")){
-			context.setResultTypeState();
-		}
+	public IContext<T> handle(final IContext<T> context) {
+		IContext<T> result = context.getNextState(context, event.getName().toString());
 		@SuppressWarnings("unchecked")
 		Iterator<Attribute> it = event.getAttributes();
-		context.processTag(event.getName().toString(), it);
-		return context;
+		result.processTag(event.getName().toString(), it);
+		return result;
 	}
 
 }
