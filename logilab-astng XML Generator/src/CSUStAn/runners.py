@@ -649,6 +649,8 @@ class CFGExtractor(ASTNGHandler):
 class DataflowLinker(CFGHandler,ClassIRHandler):
     _targeted = 0
     _out_xml = None
+    _typed_ga_calls = 0
+    _unknown_ga_calls = 0
     def __init__(self,ucr_xml,cfg_xml,out_xml):
         ClassIRHandler.__init__(self, ucr_xml)
         CFGHandler.__init__(self, cfg_xml)
@@ -657,14 +659,27 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
     def run(self):
         self.slice_constructors(self._cfg_tree)
     def slice_constructors(self,xml_node):
-        for call in self._cfg_tree.xpath("//Call[not(@called=\"class\")]"):
-            call.getparent().remove(call)
-        for call in self._cfg_tree.xpath("//Call"):
+        for call in self._cfg_tree.xpath("//Call[@called=\"class\"]"):
             target_class = self.get_class_by_full_name(call.get("label")+'.'+call.get("name"))
             if(not target_class is None):
                 call.set("ucr_id",target_class.get("id"))
                 self._targeted += 1
+        for call in self._cfg_tree.xpath("//Call[@type=\"getattr\" and starts-with(@label,\"self.\")]"):
+            frame = call.getparent().getparent()
+            if(frame.tag=='Method'):
+                source_class = self.get_class_by_full_name(frame.get("label")+'.'+frame.get("parent_class"))
+                attr = self.get_attr(source_class,call.get("label")[5:])
+                if(attr is not None):
+                    attr_types = list(attr.iter("CommonType"))
+                    if(len(attr_types)>0):
+                        self._typed_ga_calls +=1
+                    else:
+                        self._unknown_ga_calls +=1
+                    for t in attr_types:
+                        tgt_node = etree.Element("TargetClass", ucr_id=t.get("id"))
+                        call.append(tgt_node)
         f = open(self._out_xml,'w')
         f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
         print "Found ",self._targeted," UCR classes"
+        print "Found getattr calls ",self._typed_ga_calls,"  unknown - ", self._unknown_ga_calls
