@@ -38,9 +38,9 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     def leave_project(self,node):
         print self._dbg_calls
         print self._dbg_call_lookup
-	print "Func calls ",self._func_calls
-	print "Class calls ",self._class_calls
-	print "Getattr calls ",self._getattr_calls
+        print "Func calls ",self._func_calls
+        print "Class calls ",self._class_calls
+        print "Getattr calls ",self._getattr_calls
         f = open('cfg.xml','w')
         f.write(etree.tostring(self._root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
@@ -106,46 +106,48 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 ''' Ignore function defined in another function body'''
                 continue
             id_count+=1
-            '''if isinstance(child, If):logilab.astng.exceptions
-                subblock_node = etree.Element("If",id=str(id_count))
-            elif isinstance(child, For):
-                subblock_node = etree.Element("For",id=str(id_count))
-            elif isinstance(child, While):
-                subblock_node = etree.Element("While",id=str(id_count))
-            else:
-                subblock_node = etree.Element("SubBlock",type=child.__class__.__name__,id=str(id_count))'''
             curr_id = id_count
             #block_node.append(subblock_node)
             if(isinstance(child, (If, While, For, TryExcept, TryFinally, With)) or (block_node is None)):
                 for p in prev:
-                	flow_node = etree.Element("Flow", from_id=str(p), to_id=str(curr_id))
-                	func_node.append(flow_node)
+                    flow_node = etree.Element("Flow", from_id=str(p), to_id=str(curr_id))
+                    func_node.append(flow_node)
             if isinstance(child, If):
-		if_node = etree.Element("If", id=str(id_count), test=child.test.__class__.__name__)
-		func_node.append(if_node)
+                if_node = etree.Element("If", id=str(id_count), test=child.test.__class__.__name__)
+                if_node.set("fromlineno",str(child.fromlineno))
+                if_node.set("col_offset",str(child.col_offset))
+                func_node.append(if_node)
                 id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
-		block_node = None
+                block_node = None
             elif isinstance(child, For):
-		for_node = etree.Element("For", id=str(id_count), iterate=child.iter.__class__.__name__)
-		func_node.append(for_node)
+                for_node = etree.Element("For", id=str(id_count), iterate=child.iter.__class__.__name__)
+                for_node.set("fromlineno",str(child.fromlineno))
+                for_node.set("col_offset",str(child.col_offset))
+                func_node.append(for_node)
                 id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
-		block_node = None
+                block_node = None
             elif isinstance(child, While):
-		while_node = etree.Element("While", id=str(id_count), test=child.test.__class__.__name__)
-		func_node.append(while_node)
+                while_node = etree.Element("While", id=str(id_count), test=child.test.__class__.__name__)
+                while_node.set("fromlineno",str(child.fromlineno))
+                while_node.set("col_offset",str(child.col_offset))
+                func_node.append(while_node)
                 id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
-		block_node = None
+                block_node = None
             elif isinstance(child, (TryExcept, TryFinally, With)):
-		jump_node = etree.Element(child.__class__.__name__, id=str(id_count))
-		func_node.append(jump_node)
+                jump_node = etree.Element(child.__class__.__name__, id=str(id_count))
+                jump_node.set("fromlineno",str(child.fromlineno))
+                jump_node.set("col_offset",str(child.col_offset))
+                func_node.append(jump_node)
                 id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
-		block_node = None
+                block_node = None
             else:
-		if block_node is None:
-		   block_node = etree.Element("Block", id=str(id_count))
-		   func_node.append(block_node)
-		   prev = set([id_count])
-		   id_count += 1
+                if block_node is None:
+                    block_node = etree.Element("Block", id=str(id_count))
+                    block_node.set("fromlineno",str(child.fromlineno))
+                    block_node.set("col_offset",str(child.col_offset))
+                    func_node.append(block_node)
+                    prev = set([id_count])
+                    id_count += 1
                 self.handle_simple_node(child, block_node)
         return id_count, prev
     
@@ -160,24 +162,24 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             parent_ids |=ids
             parent_ids.add(curr_id)
         elif isinstance(node, TryExcept):
-             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
-             parent_ids |=ids
-             for h in node.handlers:
-                 id_count, ids = self.handle_flow_part(func_node,h.body, set([curr_id]), id_count)
-                 parent_ids |=ids
-             id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count)
-             parent_ids |=ids
-             parent_ids.add(curr_id)
+            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+            parent_ids |=ids
+            for h in node.handlers:
+                id_count, ids = self.handle_flow_part(func_node,h.body, set([curr_id]), id_count)
+                parent_ids |=ids
+            id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count)
+            parent_ids |=ids
+            parent_ids.add(curr_id)
         elif isinstance(node, TryFinally):
-             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
-             parent_ids |=ids
-             id_count, ids = self.handle_flow_part(func_node,node.finalbody, set([curr_id]), id_count)
-             parent_ids |=ids
-             parent_ids.add(curr_id)
+            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+            parent_ids |=ids
+            id_count, ids = self.handle_flow_part(func_node,node.finalbody, set([curr_id]), id_count)
+            parent_ids |=ids
+            parent_ids.add(curr_id)
         elif isinstance(node, With):
-             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
-             parent_ids |=ids
-             parent_ids.add(curr_id)
+            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+            parent_ids |=ids
+            parent_ids.add(curr_id)
         return id_count, parent_ids            
     
     def handle_simple_node(self,node,block_node):
@@ -187,8 +189,10 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         elif isinstance(node, CallFunc):
             call_node = etree.Element("Call")
             self._dbg_calls.add(node.func.__class__.__name__)
+            call_node.set("fromlineno",str(node.fromlineno))
+            call_node.set("col_offset",str(node.col_offset))
             if isinstance(node.func, Name):
-                space_type,called,called_id = self.handle_lookup(node.func, node.func.name)
+                space_type,called,called_id, label = self.handle_lookup(node.func, node.func.name)
                 call_node.set("name",node.func.name)
                 if called == 'function':
                     self._func_calls += 1
@@ -197,6 +201,8 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 call_node.set("type","direct")
                 if space_type is not None:
                     call_node.set("space_type",space_type)
+                if label is not None:
+                    call_node.set("label",label)
                 if called is not None:
                     call_node.set("called",called)
                 if called_id is not None:
@@ -216,11 +222,13 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         lookup = node.lookup(name)
         called = None
         called_id = None
+        label = None
         for asgn in lookup[1]:
             if isinstance(asgn, Function):
                 if(space_type is None):
                     space_type = "internal"
                 called = "function"
+                label = asgn.root().name
                 if not hasattr(asgn, "id"):
                     asgn.id = self.generate_id()
                     called_id = asgn.id
@@ -228,6 +236,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if(space_type is None):
                     space_type = "internal"
                 called = "class"
+                label = asgn.root().name                
                 for cstr in [meth for meth in asgn.methods() if meth.name == '__init__']:
                     if not hasattr(cstr, "id"):
                         cstr.id = self.generate_id()
@@ -237,14 +246,24 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     module = asgn.do_import_module(asgn.modname)
                     if(space_type is None):
                         space_type = "cross"
-                    space_type,called,called_id = self.handle_lookup(module, name, space_type)
+                    space_type,called,called_id, label = self.handle_lookup(module, name, space_type)
                 except InferenceError:
                     if(space_type is None):
                         space_type = "external"
             self._dbg_call_lookup.add(asgn.__class__.__name__)
-	    if isinstance(asgn,AssAttr):
-		print name,asgn.as_string(), asgn.root()
-        return space_type,called,called_id
-
-       
-        
+            if isinstance(asgn,AssAttr):
+                print name,asgn.as_string(), asgn.root()
+        return space_type,called,called_id, label
+    
+class CFGHandler:
+    # Process XML CFG
+    _cfg_tree = None
+    _methods = None
+    _funcs = None
+    #_full_name_dict = None
+    #_id_dict = None
+    def __init__(self, cfg_xml):
+        parser = etree.XMLParser(remove_blank_text=True)
+        self._cfg_tree = etree.parse(cfg_xml, parser)
+        self._methods = [node for node in self._cfg_tree.iter("Method")]
+        self._funcs = [node for node in self._cfg_tree.iter("Function")]
