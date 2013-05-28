@@ -662,6 +662,9 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
         for meth in self._cfg_tree.xpath("//Method"):
             parent_class = self.get_class_by_full_name(meth.get("label")+'.'+meth.get("parent_class"))
             meth.set("ucr_id",parent_class.get("id"))
+            cfg_id = meth.get("id")
+            del meth.attrib["id"]
+            meth.set("cfg_id",cfg_id)
         for call in self._cfg_tree.xpath("//Call[@called=\"class\"]"):
             target_class = self.get_class_by_full_name(call.get("label")+'.'+call.get("name"))
             if(not target_class is None):
@@ -681,6 +684,9 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
                     for t in attr_types:
                         tgt_node = etree.Element("TargetClass", ucr_id=t.get("id"))
                         call.append(tgt_node)
+                        for meth in self._cfg_tree.xpath("//Method[@ucr_id=\""+t.get("id")+"\" and @name=\""+call.get("name")+"\"]"):
+                            tgt_meth_node = etree.Element("TargetMethod", id=meth.get("cfg_id"))
+                            tgt_node.append(tgt_meth_node)
         f = open(self._out_xml,'w')
         f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
