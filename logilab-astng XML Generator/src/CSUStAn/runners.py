@@ -651,6 +651,7 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
     _out_xml = None
     _typed_ga_calls = 0
     _unknown_ga_calls = 0
+    _class_dict = {}
     def __init__(self,ucr_xml,cfg_xml,out_xml):
         ClassIRHandler.__init__(self, ucr_xml)
         CFGHandler.__init__(self, cfg_xml)
@@ -665,6 +666,7 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
             cfg_id = meth.get("id")
             del meth.attrib["id"]
             meth.set("cfg_id",cfg_id)
+            self._class_dict[parent_class.get("id")+meth.get("name")]=meth
         for call in self._cfg_tree.xpath("//Call[@called=\"class\"]"):
             target_class = self.get_class_by_full_name(call.get("label")+'.'+call.get("name"))
             if(not target_class is None):
@@ -684,7 +686,8 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
                     for t in attr_types:
                         tgt_node = etree.Element("TargetClass", ucr_id=t.get("id"))
                         call.append(tgt_node)
-                        for meth in self._cfg_tree.xpath("//Method[@ucr_id=\""+t.get("id")+"\" and @name=\""+call.get("name")+"\"]"):
+                        if self._class_dict.has_key(t.get("id")+call.get("name")):
+                            meth = self._class_dict[t.get("id")+call.get("name")]
                             tgt_meth_node = etree.Element("TargetMethod", id=meth.get("cfg_id"))
                             tgt_node.append(tgt_meth_node)
         f = open(self._out_xml,'w')
