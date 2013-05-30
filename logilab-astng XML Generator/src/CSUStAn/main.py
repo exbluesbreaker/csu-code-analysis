@@ -169,14 +169,18 @@ elif(args.type=="TestRunner"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]
     runner = TestRunner([project])
-if(args.type=="CFGExtractor"):
+elif(args.type=="CFGExtractor"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]
     runner = CFGExtractor([project])
-if(args.type=="DataflowLinker"):
+elif(args.type=="DataflowLinker"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     cfg_xml = cfg_parser.get(args.type,'cfg_xml')
     out_xml = cfg_parser.get(args.type,'out_xml')
     runner = DataflowLinker(ucr_xml,cfg_xml,out_xml)
+elif(args.type=="CFGVisualizer"):
+    lcfg_xml = cfg_parser.get(args.type,'linked_cfg_xml')
+    out_dir = cfg_parser.get(args.type,'out_dir')
+    runner = CFGVisualizer(lcfg_xml,out_dir)
 else:
     print "Unknown type!"

@@ -695,3 +695,48 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
         f.close()
         print "Found ",self._targeted," UCR classes"
         print "Found getattr calls ",self._typed_ga_calls,"  unknown - ", self._unknown_ga_calls
+        
+class CFGVisualizer(CFGHandler):
+    _out_dir = None
+    def __init__(self,lcfg_xml,out_dir):
+        CFGHandler.__init__(self, lcfg_xml)
+        self._out_dir = out_dir
+        self.run()
+    def run(self):
+        for meth in self._cfg_tree.xpath("//Method"):
+            self.handle_method(meth)
+    def handle_method(self,node):
+        graph = pydot.Dot(graph_type='digraph')
+        block_dict = {}
+        for block in node.iter("Block"):
+            dot_node = pydot.Node(block.get("id"),shape='record')
+            graph.add_node(dot_node)
+            block_dict[block.get("id")] = dot_node
+        for block in node.iter("If"):
+            dot_node = pydot.Node('If '+block.get("id")+'\l'+block.get("test"),shape='diamond')
+            graph.add_node(dot_node)
+            block_dict[block.get("id")] = dot_node
+        for block in node.iter("For"):
+            dot_node = pydot.Node('For '+block.get("id")+'\l'+block.get("iterate"),shape='diamond')
+            graph.add_node(dot_node)
+            block_dict[block.get("id")] = dot_node
+        for block in node.iter("While"):
+            dot_node = pydot.Node('While '+block.get("id")+'\l'+block.get("test"),shape='diamond')
+            graph.add_node(dot_node)
+            block_dict[block.get("id")] = dot_node
+        for block in node.iter("TryExcept"):
+            dot_node = pydot.Node('TryExcept',shape='diamond')
+            graph.add_node(dot_node)
+            block_dict[block.get("id")] = dot_node
+        for block in node.iter("TryFinally"):
+            dot_node = pydot.Node('TryFinally',shape='diamond')
+            graph.add_node(dot_node)
+            block_dict[block.get("id")] = dot_node
+        for block in node.iter("With"):
+            dot_node = pydot.Node('With',shape='diamond')
+            graph.add_node(dot_node)
+            block_dict[block.get("id")] = dot_node
+        for flow in node.iter("Flow"):
+            dot_edge = pydot.Edge(block_dict[flow.get("from_id")],block_dict[flow.get("to_id")])
+            graph.add_edge(dot_edge)
+        graph.write_svg(self._out_dir+'/'+node.get("cfg_id")+'.svg')
