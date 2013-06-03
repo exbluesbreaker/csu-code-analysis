@@ -706,37 +706,64 @@ class CFGVisualizer(CFGHandler):
         for meth in self._cfg_tree.xpath("//Method"):
             self.handle_method(meth)
     def handle_method(self,node):
-        graph = pydot.Dot(graph_type='digraph')
+        pydot.Subgraph
+        graph = pydot.Dot(graph_type='digraph',compound='true')
         block_dict = {}
         for block in node.iter("Block"):
-            dot_node = pydot.Node(block.get("id"),shape='record')
-            graph.add_node(dot_node)
-            block_dict[block.get("id")] = dot_node
+            block_node = pydot.Cluster(block.get("id")+'_',shape='record',label='Block '+str(block.get("id")))
+            dbg_cnt = 0
+            call_node = None
+            for c in block.iter("Call"):
+                call_node = pydot.Node('Call '+str(dbg_cnt),shape='record')
+                dbg_cnt += 1
+                block_node.add_node(call_node)
+            if dbg_cnt == 0:
+                block_node = pydot.Node('Block '+str(block.get("id")),shape='record')
+                graph.add_node(block_node)
+                block_dict[block.get("id")] = block_node
+            else:
+                graph.add_subgraph(block_node)
+                block_dict[block.get("id")] = (block_node,call_node)
         for block in node.iter("If"):
-            dot_node = pydot.Node('If '+block.get("id")+'\l'+block.get("test"),shape='diamond')
-            graph.add_node(dot_node)
-            block_dict[block.get("id")] = dot_node
+            block_node = pydot.Node('If '+block.get("id")+'\l'+block.get("test"),shape='diamond')
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
         for block in node.iter("For"):
-            dot_node = pydot.Node('For '+block.get("id")+'\l'+block.get("iterate"),shape='diamond')
-            graph.add_node(dot_node)
-            block_dict[block.get("id")] = dot_node
+            block_node = pydot.Node('For '+block.get("id")+'\l'+block.get("iterate"),shape='diamond')
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
         for block in node.iter("While"):
-            dot_node = pydot.Node('While '+block.get("id")+'\l'+block.get("test"),shape='diamond')
-            graph.add_node(dot_node)
-            block_dict[block.get("id")] = dot_node
+            block_node = pydot.Node('While '+block.get("id")+'\l'+block.get("test"),shape='diamond')
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
         for block in node.iter("TryExcept"):
-            dot_node = pydot.Node('TryExcept',shape='diamond')
-            graph.add_node(dot_node)
-            block_dict[block.get("id")] = dot_node
+            block_node = pydot.Node('TryExcept',shape='diamond')
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
         for block in node.iter("TryFinally"):
-            dot_node = pydot.Node('TryFinally',shape='diamond')
-            graph.add_node(dot_node)
-            block_dict[block.get("id")] = dot_node
+            block_node = pydot.Node('TryFinally',shape='diamond')
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
         for block in node.iter("With"):
-            dot_node = pydot.Node('With',shape='diamond')
-            graph.add_node(dot_node)
-            block_dict[block.get("id")] = dot_node
+            block_node = pydot.Node('With',shape='diamond')
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
         for flow in node.iter("Flow"):
-            dot_edge = pydot.Edge(block_dict[flow.get("from_id")],block_dict[flow.get("to_id")])
+            from_node = block_dict[flow.get("from_id")]
+            if isinstance(from_node,tuple):
+                tail = from_node[1]
+                tail_l = from_node[0]
+            else:
+                tail=from_node
+                tail_l = from_node
+            to_node = block_dict[flow.get("to_id")]
+            if isinstance(to_node,tuple):
+                head = to_node[1]
+                head_l = to_node[0]
+            else:
+                head = to_node
+                head_l = to_node
+            dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
             graph.add_edge(dot_edge)
         graph.write_svg(self._out_dir+'/'+node.get("cfg_id")+'.svg')
+        #exit(0)
