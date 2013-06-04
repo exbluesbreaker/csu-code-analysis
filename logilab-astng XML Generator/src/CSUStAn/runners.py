@@ -714,7 +714,14 @@ class CFGVisualizer(CFGHandler):
             dbg_cnt = 0
             call_node = None
             for c in block.iter("Call"):
-                call_node = pydot.Node('Call '+str(dbg_cnt),shape='record')
+                call_color = 'black'
+                if(c.get("called")=='class'):
+                    call_color = 'blue'
+                elif(c.get("called")=='function'):
+                    call_color = 'yellow'
+                elif(c.get("type")=='getattr'):
+                    call_color = 'green'
+                call_node = pydot.Node('Call '+str(dbg_cnt),shape='record',color=call_color)
                 dbg_cnt += 1
                 block_node.add_node(call_node)
             if dbg_cnt == 0:
