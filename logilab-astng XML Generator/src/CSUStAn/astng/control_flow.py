@@ -206,7 +206,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if called is not None:
                     call_node.set("called",called)
                 if called_id is not None:
-                    call_node.set("id",str(called_id))
+                    call_node.set("called_id",str(called_id))
             elif isinstance(node.func, Getattr):
                 self._getattr_calls += 1
                 call_node.set("name",node.func.attrname)

@@ -698,7 +698,6 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
         
 class CFGVisualizer(CFGHandler):
     _out_dir = None
-    _dbg = False
     def __init__(self,lcfg_xml,out_dir):
         CFGHandler.__init__(self, lcfg_xml)
         self._out_dir = out_dir
@@ -717,13 +716,16 @@ class CFGVisualizer(CFGHandler):
             call_node = None
             for c in block.iter("Call"):
                 call_color = 'black'
+                call_url = '#'
                 if(c.get("called")=='class'):
                     call_color = 'blue'
                 elif(c.get("called")=='function'):
                     call_color = 'yellow'
                 elif(c.get("type")=='getattr'):
                     call_color = 'green'
-                call_node = pydot.Node('Call '+str(dbg_cnt),shape='record',color=call_color)
+                if 'called_id'in c.keys():
+                    call_url = os.path.abspath(self._out_dir+'/'+c.get('called_id')+'.svg')
+                call_node = pydot.Node('Call '+str(dbg_cnt),shape='record',color=call_color,URL=call_url)
                 dbg_cnt += 1
                 block_node.add_node(call_node)
             if dbg_cnt == call_cnt:
@@ -761,7 +763,6 @@ class CFGVisualizer(CFGHandler):
             block_node = pydot.Node('With',shape='diamond')
             graph.add_node(block_node)
             block_dict[block.get("id")] = block_node
-        print graph.obj_dict['nodes'].keys()
         for flow in node.iter("Flow"):
             from_node = block_dict[flow.get("from_id")]
             if isinstance(from_node,tuple):
@@ -785,13 +786,6 @@ class CFGVisualizer(CFGHandler):
                 dot_edge = pydot.Edge(tail,head,lhead=head_l.get_name())
             else:
                 dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
-            if tail.get_name() == '\"For 5\"':
-                self._dbg = True
             graph.add_edge(dot_edge)
         graph.write_svg(self._out_dir+'/'+node.get("cfg_id")+'.svg')
-        if self._dbg:
-            for cl in graph.obj_dict['subgraphs'].keys():
-                print cl,graph.obj_dict['subgraphs'][cl][0]['nodes'].keys()
-            print graph.obj_dict['nodes'].keys()
-            exit(0)
         #exit(0)
