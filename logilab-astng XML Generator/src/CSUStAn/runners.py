@@ -719,8 +719,8 @@ class CFGVisualizer(CFGHandler):
                 call_url = '#'
                 if(c.get("called")=='class'):
                     call_color = 'blue'
-                elif(c.get("called")=='function'):
-                    call_color = 'yellow'
+                #elif(c.get("called")=='function'):
+                #    call_color = 'yellow'
                 elif(c.get("type")=='getattr'):
                     call_color = 'green'
                 if 'called_id'in c.keys():

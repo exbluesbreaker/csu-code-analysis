@@ -198,20 +198,22 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     self._func_calls += 1
                 elif called == 'class':
                     self._class_calls += 1
-                call_node.set("type","direct")
-                if space_type is not None:
-                    call_node.set("space_type",space_type)
-                if label is not None:
-                    call_node.set("label",label)
+                call_subnode = etree.Element("Direct")
                 if called is not None:
-                    call_node.set("called",called)
+                    call_subnode.set("called",called)
+                if space_type is not None:
+                    call_subnode.set("space_type",space_type)
+                if label is not None:
+                    call_subnode.set("label",label)
                 if called_id is not None:
-                    call_node.set("called_id",str(called_id))
+                    call_subnode.set("called_id",str(called_id))
+                call_node.append(call_subnode)
             elif isinstance(node.func, Getattr):
                 self._getattr_calls += 1
-                call_node.set("name",node.func.attrname)
-                call_node.set("label",node.func.expr.as_string())
-                call_node.set("type","getattr")
+                call_subnode = etree.Element("Getattr")
+                call_subnode.set("name",node.func.attrname)
+                call_subnode.set("label",node.func.expr.as_string())
+                call_node.append(call_subnode)
             block_node.append(call_node)
             #print node.as_string(),node.func
             #print node.scope().lookup(node.func)
@@ -229,6 +231,8 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     space_type = "internal"
                 called = "function"
                 label = asgn.root().name
+                if label == '__builtin__':
+                    continue    
                 if not hasattr(asgn, "id"):
                     asgn.id = self.generate_id()
                     called_id = asgn.id
@@ -236,7 +240,9 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if(space_type is None):
                     space_type = "internal"
                 called = "class"
-                label = asgn.root().name                
+                label = asgn.root().name   
+                if label == '__builtin__':
+                    continue             
                 for cstr in [meth for meth in asgn.methods() if meth.name == '__init__']:
                     if not hasattr(cstr, "id"):
                         cstr.id = self.generate_id()
