@@ -202,14 +202,25 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 elif called == 'class':
                     self._class_calls += 1
                 call_subnode = etree.Element("Direct")
-                if called is not None:
-                    call_subnode.set("called",called)
                 if space_type is not None:
                     call_subnode.set("space_type",space_type)
-                if label is not None:
-                    call_subnode.set("label",label)
+                if called=='function':
+                    target_subnode = etree.Element("TargetFunction")
+                    call_subnode.append(target_subnode)
+                    if label is not None:
+                        target_subnode.set("label",label)
+                elif called=='class':
+                    class_subnode = etree.Element("TargetClass")
+                    if label is not None:
+                        class_subnode.set("label",label)
+                    call_subnode.append(class_subnode)
+                    target_subnode = etree.Element("TargetFunction")
+                    class_subnode.append(target_subnode)
+                else:
+                    target_subnode = etree.Element("TargetUnknown")
+                    call_subnode.append(target_subnode)
                 if called_id is not None:
-                    call_subnode.set("called_id",str(called_id))
+                    target_subnode.set("called_id",str(called_id))
                 call_node.append(call_subnode)
             elif isinstance(node.func, Getattr):
                 self._getattr_calls += 1
@@ -253,8 +264,10 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             elif isinstance(asgn, From):
                 try:
                     module = asgn.do_import_module(asgn.modname)
-                    if(space_type is None):
+                    if((space_type is None) and (re.split('\W+', module.name)[0] == self._project_name)):
                         space_type = "cross"
+                    else:
+                        space_type = "external"
                     space_type,called,called_id, label = self.handle_lookup(module, name, space_type)
                 except InferenceError:
                     if(space_type is None):
