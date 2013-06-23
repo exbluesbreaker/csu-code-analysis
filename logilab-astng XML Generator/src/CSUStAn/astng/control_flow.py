@@ -9,6 +9,7 @@ from logilab.astng.node_classes import *
 from logilab.astng.scoped_nodes import Class, Function
 from logilab.astng.exceptions import InferenceError
 import pydot
+import re 
 from lxml import etree
 
 JUMP_NODES = ( If, For, While, TryExcept, TryFinally, IfExp, With)
@@ -23,15 +24,17 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     _stack = {}
     _dbg = False
     _dbg1 = None
+    _project_name = None
     _dbg_calls = set([])
     _dbg_call_lookup = set([])
     _getattr_calls = 0
     _func_calls = 0
     _class_calls = 0
 
-    def __init__(self, project):
+    def __init__(self, project_name):
         IdGeneratorMixIn.__init__(self)
         LocalsVisitor.__init__(self)
+        self._project_name = project_name
     
     def visit_project(self,node):
         self._root = etree.Element("Project")
@@ -243,7 +246,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 label = asgn.root().name   
                 if label == '__builtin__':
                     continue             
-                for cstr in [meth for meth in asgn.methods() if meth.name == '__init__']:
+                for cstr in [meth for meth in asgn.methods() if ((re.split('\W+', meth.parent.root().name)[0] == self._project_name)and(meth.name == '__init__'))]:
                     if not hasattr(cstr, "id"):
                         cstr.id = self.generate_id()
                     called_id = cstr.id

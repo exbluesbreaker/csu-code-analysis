@@ -639,11 +639,13 @@ class TestRunner(ConfigurationMixIn):
         linker.visit(project)
 
 class CFGExtractor(ASTNGHandler):
+    _project_name = None
     def __init__(self,args):
+        self._project_name = args[0]
         ASTNGHandler.__init__(self,args)
         self.run()
     def run(self):
-        linker = CFGLinker(self.project)
+        linker = CFGLinker(self._project_name)
         linker.visit(self.project)
         
 class DataflowLinker(CFGHandler,ClassIRHandler):
@@ -658,8 +660,14 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
         self._out_xml = out_xml
         self.run()
     def run(self):
-        self.slice_constructors(self._cfg_tree)
-    def slice_constructors(self,xml_node):
+        self.link_funcs(self._cfg_tree)
+        self.link_methods(self._cfg_tree)
+    def link_funcs(self,xml_node):
+        for meth in self._cfg_tree.xpath("//Function"):
+            cfg_id = meth.get("id")
+            del meth.attrib["id"]
+            meth.set("cfg_id",cfg_id)
+    def link_methods(self,xml_node):
         for meth in self._cfg_tree.xpath("//Method"):
             parent_class = self.get_class_by_full_name(meth.get("label")+'.'+meth.get("parent_class"))
             meth.set("ucr_id",parent_class.get("id"))
@@ -667,13 +675,14 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
             del meth.attrib["id"]
             meth.set("cfg_id",cfg_id)
             self._class_dict[parent_class.get("id")+meth.get("name")]=meth
-        for call in self._cfg_tree.xpath("//Call[@called=\"class\"]"):
-            target_class = self.get_class_by_full_name(call.get("label")+'.'+call.get("name"))
+        for call in self._cfg_tree.xpath("//Direct[@called=\"class\"]"):
+            target_class = self.get_class_by_full_name(call.get("label")+'.'+call.getparent().get("name"))
             if(not target_class is None):
-                call.set("ucr_id",target_class.get("id"))
+                class_node = etree.Element("TargetClass", ucr_id=target_class.get("id"))
+                call.append(class_node)
                 self._targeted += 1
-        for call in self._cfg_tree.xpath("//Call[@type=\"getattr\" and starts-with(@label,\"self.\")]"):
-            frame = call.getparent().getparent()
+        for call in self._cfg_tree.xpath("//Getattr[starts-with(@label,\"self.\")]"):
+            frame = call.getparent().getparent().getparent()
             if(frame.tag=='Method'):
                 source_class = self.get_class_by_full_name(frame.get("label")+'.'+frame.get("parent_class"))
                 attr = self.get_attr(source_class,call.get("label")[5:])
@@ -688,7 +697,7 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
                         call.append(tgt_node)
                         if self._class_dict.has_key(t.get("id")+call.get("name")):
                             meth = self._class_dict[t.get("id")+call.get("name")]
-                            tgt_meth_node = etree.Element("TargetMethod", id=meth.get("cfg_id"))
+                            tgt_meth_node = etree.Element("TargetMethod", cfg_id=meth.get("cfg_id"))
                             tgt_node.append(tgt_meth_node)
         f = open(self._out_xml,'w')
         f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
@@ -705,8 +714,9 @@ class CFGVisualizer(CFGHandler):
     def run(self):
         for meth in self._cfg_tree.xpath("//Method"):
             self.handle_method(meth)
+        for func in self._cfg_tree.xpath("//Function"):
+            self.handle_func(func)
     def handle_method(self,node):
-        pydot.Subgraph
         graph = pydot.Dot(graph_type='digraph',compound='true')
         block_dict = {}
         call_cnt = 0
@@ -717,14 +727,15 @@ class CFGVisualizer(CFGHandler):
             for c in block.iter("Call"):
                 call_color = 'black'
                 call_url = '#'
-                if(c.get("called")=='class'):
+                if((len(c.getchildren())>0) and (c.getchildren()[0].get("called")=='class')):
                     call_color = 'blue'
-                #elif(c.get("called")=='function'):
-                #    call_color = 'yellow'
-                elif(c.get("type")=='getattr'):
+                elif((len(c.getchildren())>0) and (c.getchildren()[0].get("called")=='function')):
+                    call_color = 'yellow'
+                elif((len(c.getchildren())>0) and (c.getchildren()[0].tag=='Getattr')):
                     call_color = 'green'
-                if 'called_id'in c.keys():
-                    call_url = os.path.abspath(self._out_dir+'/'+c.get('called_id')+'.svg')
+                if (((len(c.getchildren())>0)) and('called_id'in c.getchildren()[0].keys())):
+                    call_url = os.path.abspath(self._out_dir+'/'+c.getchildren()[0].get('called_id')+'.svg')
+                    call_color = 'red'
                 call_node = pydot.Node('Call '+str(dbg_cnt),shape='record',color=call_color,URL=call_url)
                 dbg_cnt += 1
                 block_node.add_node(call_node)
@@ -788,4 +799,88 @@ class CFGVisualizer(CFGHandler):
                 dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
             graph.add_edge(dot_edge)
         graph.write_svg(self._out_dir+'/'+node.get("cfg_id")+'.svg')
-        #exit(0)
+    
+    def handle_func(self,node):
+        graph = pydot.Dot(graph_type='digraph',compound='true')
+        block_dict = {}
+        call_cnt = 0
+        for block in node.iter("Block"):
+            block_node = pydot.Cluster(block.get("id")+'_',shape='record',label='Block '+str(block.get("id")))
+            dbg_cnt = call_cnt
+            call_node = None
+            for c in block.iter("Call"):
+                call_color = 'black'
+                call_url = '#'
+                if((len(c.getchildren())>0) and (c.getchildren()[0].get("called")=='class')):
+                    call_color = 'blue'
+                elif((len(c.getchildren())>0) and (c.getchildren()[0].get("called")=='function')):
+                    call_color = 'yellow'
+                elif((len(c.getchildren())>0) and (c.getchildren()[0].tag=='Getattr')):
+                    call_color = 'green'
+                if (((len(c.getchildren())>0)) and('called_id'in c.getchildren()[0].keys())):
+                    call_url = os.path.abspath(self._out_dir+'/'+c.getchildren()[0].get('called_id')+'.svg')
+                    call_color = 'red'
+                    print node.get("cfg_id")
+                call_node = pydot.Node('Call '+str(dbg_cnt),shape='record',color=call_color,URL=call_url)
+                dbg_cnt += 1
+                block_node.add_node(call_node)
+            if dbg_cnt == call_cnt:
+                block_node = pydot.Node('Block '+str(block.get("id")),shape='record')
+                graph.add_node(block_node)
+                block_dict[block.get("id")] = block_node
+            else:
+                graph.add_subgraph(block_node)
+                block_dict[block.get("id")] = (block_node,call_node)
+                call_cnt = dbg_cnt
+        for block in node.iter("If"):
+            block_node = pydot.Node('If '+block.get("id"),shape='diamond')
+            #block.get("test")
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
+        for block in node.iter("For"):
+            block_node = pydot.Node('For '+block.get("id"),shape='diamond')
+            #block.get("iterate")
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
+        for block in node.iter("While"):
+            block_node = pydot.Node('While '+block.get("id"),shape='diamond')
+            #block.get("test")
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
+        for block in node.iter("TryExcept"):
+            block_node = pydot.Node('TryExcept',shape='diamond')
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
+        for block in node.iter("TryFinally"):
+            block_node = pydot.Node('TryFinally',shape='diamond')
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
+        for block in node.iter("With"):
+            block_node = pydot.Node('With',shape='diamond')
+            graph.add_node(block_node)
+            block_dict[block.get("id")] = block_node
+        for flow in node.iter("Flow"):
+            from_node = block_dict[flow.get("from_id")]
+            if isinstance(from_node,tuple):
+                tail = from_node[1]
+                tail_l = from_node[0]
+            else:
+                tail=from_node
+                tail_l = None
+            to_node = block_dict[flow.get("to_id")]
+            if isinstance(to_node,tuple):
+                head = to_node[1]
+                head_l = to_node[0]
+            else:
+                head = to_node
+                head_l = None
+            if((tail_l is None) and (head_l is None)):
+                dot_edge = pydot.Edge(tail,head)
+            elif((tail_l is not None) and (head_l is None)):
+                dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name())
+            elif((tail_l is None) and (head_l is not None)):
+                dot_edge = pydot.Edge(tail,head,lhead=head_l.get_name())
+            else:
+                dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
+            graph.add_edge(dot_edge)
+        graph.write_svg(self._out_dir+'/'+node.get("cfg_id")+'.svg')
