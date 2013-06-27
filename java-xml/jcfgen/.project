@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/ru/csu/stan/java/cfg/jaxb/controlflow.xsd</name>
+			<type>1</type>
+			<location>/home/mz/git/csu-code-analysis/data/controlflow.xsd</location>
+		</link>
+	</linkedResources>
 </projectDescription>
