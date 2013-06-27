@@ -10,10 +10,10 @@ import java.util.Map;
  * @author mz
  *
  */
-public class ClassIdGenerator {
+public class ClassIdGenerator implements IClassIdGenerator {
 
 	/** Единственный экхемпляр, для обеспечения уникальности */
-	private static final ClassIdGenerator instance = new ClassIdGenerator();
+	private static final IClassIdGenerator instance = new ClassIdGenerator();
 	
 	/** Словарь полных имен классов и ID, поставленных им в соответствие */
 	private Map<String, BigInteger> ids = new HashMap<String, BigInteger>();
@@ -25,27 +25,52 @@ public class ClassIdGenerator {
 	 * Закрытый конструктор.
 	 * @see #getInstance()
 	 */
-	private ClassIdGenerator() {}
+	protected ClassIdGenerator() {}
 	
 	/**
 	 * Получение экземпляра фабрики.
 	 * Гарантировано, что экземпляр будет всегда одинаковый.
 	 * @return
 	 */
-	public static ClassIdGenerator getInstance(){
+	public static IClassIdGenerator getInstance(){
 		return instance;
 	}
-	
+
+	@Override
+	public BigInteger getClassId(String className){
+		if (!isClassWithId(className))
+			setClassId(className, getNextId());
+		return getClassIdNotSafe(className);
+	}
+
 	/**
-	 * Получение ID класса по его полному имени.
-	 * Если классу не назначен ID, то он будет сгенерирован,
-	 * иначе возвратится уже назначенный.
+	 * @return
+	 */
+	protected BigInteger getNextId() {
+		return BigInteger.valueOf(id++);
+	}
+
+	/**
 	 * @param className
 	 * @return
 	 */
-	public BigInteger getClassId(String className){
-		if (!ids.containsKey(className))
-			ids.put(className, BigInteger.valueOf(id++));
+	protected BigInteger getClassIdNotSafe(String className) {
 		return ids.get(className);
+	}
+
+	/**
+	 * @param className
+	 * @param id
+	 */
+	protected void setClassId(String className, BigInteger id) {
+		ids.put(className, id);
+	}
+
+	/**
+	 * @param className
+	 * @return
+	 */
+	protected boolean isClassWithId(String className) {
+		return ids.containsKey(className);
 	}
 }
