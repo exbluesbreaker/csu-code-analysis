@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <xs:element name="Project">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Method" type="Method"/>
+        <xs:element name="Function" type="Function"/>
+      </xs:choice>
+      <xs:attribute name="name" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="Method">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="TryExcept" type="TryExcept"/>
+      <xs:element name="Block" type="Block"/>
+      <xs:element name="Flow" type="Flow"/>
+      <xs:element name="For" type="For"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="parent_class" type="xs:string"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="id" type="xs:integer"/>
+  </xs:complexType>
+
+  <xs:complexType name="Function">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="TryExcept" type="TryExcept"/>
+      <xs:element name="Block" type="Block"/>
+      <xs:element name="Flow" type="Flow"/>
+      <xs:element name="For" type="For"/>
+    </xs:choice>
+    <xs:attribute name="id" type="xs:integer"/>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="label" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="TryExcept">
+    <xs:attribute name="id" type="xs:integer"/>
+    <xs:attribute name="fromlineno" type="xs:integer"/>
+    <xs:attribute name="col_offset" type="xs:integer"/>
+  </xs:complexType>
+
+  <xs:complexType name="For">
+    <xs:attribute name="iterate" type="xs:string"/>
+    <xs:attribute name="id" type="xs:integer"/>
+    <xs:attribute name="fromlineno" type="xs:integer"/>
+    <xs:attribute name="col_offset" type="xs:integer"/>
+  </xs:complexType>
+
+  <xs:complexType name="Block">
+    <xs:sequence>
+      <xs:element name="Call" type="Call" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:integer"/>
+    <xs:attribute name="fromlineno" type="xs:integer"/>
+    <xs:attribute name="col_offset" type="xs:integer"/>
+    <xs:attribute name="type" type="xs:string" use="optional"/>
+  </xs:complexType>
+  
+  <xs:complexType name="Call">
+    <xs:choice minOccurs="0" maxOccurs="1">
+      <xs:element name="Direct" type="Direct"/>
+      <xs:element name="Getattr" type="Getattr"/>
+    </xs:choice>
+    <xs:attribute name="fromlineno" type="xs:integer"/>
+    <xs:attribute name="col_offset" type="xs:integer"/>
+  </xs:complexType>
+
+  <xs:complexType name="Flow">
+    <xs:attribute name="to_id" type="xs:integer"/>
+    <xs:attribute name="from_id" type="xs:integer"/>
+  </xs:complexType>
+
+  <xs:complexType name="Direct">
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="space_type" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="Getattr">
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="label" type="xs:string"/>
+  </xs:complexType>
+  
+</xs:schema>
