@@ -1,10 +1,11 @@
 package ru.csu.stan.java.cfg.automaton;
 
+import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
 
-public abstract class ContextBase implements IContext<Object> {
+public abstract class ContextBase implements IContext<Project> {
 
-	private Object resultRoot;
+	private Project resultRoot;
 	private ContextBase previousState;
 	
 	ContextBase(Object resultRoot, ContextBase previousState) {
@@ -16,13 +17,13 @@ public abstract class ContextBase implements IContext<Object> {
 	}
 
 	@Override
-	public Object getResultRoot() {
+	public Project getResultRoot() {
 		return resultRoot;
 	}
 
 	@Override
-	public IContext<Object> getNextState(IContext<Object> context, String eventName) {
-		IContext<Object> result = ContextFactory.getContextState(eventName);
+	public IContext<Project> getNextState(IContext<Project> context, String eventName) {
+		IContext<Project> result = ContextFactory.getContextState(eventName);
 		if (result != null)
 			return result;
 		else

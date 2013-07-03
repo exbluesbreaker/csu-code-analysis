@@ -13,6 +13,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import ru.csu.stan.java.cfg.automaton.ContextFactory;
+import ru.csu.stan.java.cfg.jaxb.ObjectFactory;
+import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.cfg.util.ImportedClassIdGenerator;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.HandlerFactory;
@@ -31,10 +33,12 @@ public class CFGGenerator {
 	private IClassIdGenerator idGenerator;
 	private XMLInputFactory xmlFactory;
 	private HandlerFactory handlersFactory;
+	private ObjectFactory objectFactory;
 	
 	private CFGGenerator(){
 		xmlFactory = XMLInputFactory.newInstance();
 		handlersFactory = HandlerFactory.getInstance();
+		objectFactory = new ObjectFactory();
 	}
 	
 	public static CFGGenerator getInstance(){
@@ -57,15 +61,15 @@ public class CFGGenerator {
 		return firstPass(filename).getResultRoot();
 	}
 	
-	private IContext<Object> firstPass(String filename){
-		IContext<Object> context = ContextFactory.getStartContext(new Object());
+	private IContext<Project> firstPass(String filename){
+		IContext<Project> context = ContextFactory.getStartContext(objectFactory.createProject());
 		try{
 			File f = new File(filename);
 			XMLEventReader reader = xmlFactory.createXMLEventReader(new FileInputStream(f));
 			try{
 				while (reader.hasNext()){
 					XMLEvent nextEvent = reader.nextEvent();
-					IStaxHandler<Object> handler = handlersFactory.createHandler(nextEvent);
+					IStaxHandler<Project> handler = handlersFactory.createHandler(nextEvent);
 					context = handler.handle(context);
 				}
 			}

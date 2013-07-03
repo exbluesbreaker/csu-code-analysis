@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import javax.xml.stream.events.Attribute;
 
+import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
 
 class EmptyContext extends ContextBase {
@@ -13,7 +14,7 @@ class EmptyContext extends ContextBase {
 	}
 
 	@Override
-	public IContext<Object> getNextState(IContext<Object> context, String eventName) {
+	public IContext<Project> getNextState(IContext<Project> context, String eventName) {
 		return ContextFactory.getContextState(eventName);
 	}
 

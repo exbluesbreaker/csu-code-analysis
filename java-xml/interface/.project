@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>jcfgen</name>
+	<name>interface</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/ru/csu/stan/java/cfg/jaxb/cfg.xsd</name>
-			<type>1</type>
-			<location>/home/mz/git/csu-code-analysis/data/cfg.xsd</location>
-		</link>
-	</linkedResources>
 </projectDescription>

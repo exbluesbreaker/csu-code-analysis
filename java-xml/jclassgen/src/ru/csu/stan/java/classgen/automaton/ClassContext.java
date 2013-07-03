@@ -32,6 +32,9 @@ import ru.csu.stan.java.classgen.util.PackageRegistry;
  *
  */
 public class ClassContext extends ContextBase {
+	
+	private static final String NAME_ATTRIBUTE = "name";
+	private static final String FILENAME_ATTRIBUTE = "filename";
 
 	private String currentPackage;
 	private String currentImport;
@@ -197,6 +200,9 @@ public class ClassContext extends ContextBase {
 				break;
 			case ARG_TYPE:
 				processTypeTag(name, attrs);
+				break;
+			case COMPILATION_UNIT:
+				processCompilationUnitTag(name, attrs);
 				break;
 			case EMPTY:
 				break;
@@ -479,11 +485,27 @@ public class ClassContext extends ContextBase {
 		}
 	}
 	
+	private void processCompilationUnitTag(String name, Iterator<Attribute> attrs){
+		if ("compilation_unit".equals(name)){
+			currentUnit.setFilename(getAttribute(attrs, FILENAME_ATTRIBUTE));
+		}
+	}
+	
 	private String getNameAttr(Iterator<Attribute> attrs){
 		String result = "";
 		while (attrs.hasNext()){
 			Attribute a = attrs.next();
-			if ("name".equals(a.getName().toString()))
+			if (NAME_ATTRIBUTE.equals(a.getName().toString()))
+				return a.getValue();
+		}
+		return result;
+	}
+	
+	private String getAttribute(Iterator<Attribute> attrs, String attrName){
+		String result = "";
+		while (attrs.hasNext()){
+			Attribute a = attrs.next();
+			if (attrName.equals(a.getName().toString()))
 				return a.getValue();
 		}
 		return result;

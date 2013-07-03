@@ -21,6 +21,25 @@ public class CompilationUnit {
 	/** Имя пакета в файле */
 	private String packageName;
 	
+	/** Имя файла */
+	private String filename;
+	
+	/**
+	 * Получение имени текущего файла.
+	 * @return
+	 */
+	public String getFilename() {
+		return filename;
+	}
+
+	/**
+	 * Установка значения имени текущего файла.
+	 * @param filename
+	 */
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
 	/**
 	 * Получение имени пакета в текущем файле.
 	 * @return
