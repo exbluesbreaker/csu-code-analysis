@@ -9,7 +9,7 @@ import ru.csu.stan.java.classgen.automaton.IContext;
 
 class EmptyContext extends ContextBase {
 
-	EmptyContext(Object resultRoot, ContextBase previousState) {
+	EmptyContext(Project resultRoot, ContextBase previousState) {
 		super(resultRoot, previousState);
 	}
 
@@ -27,5 +27,11 @@ class EmptyContext extends ContextBase {
 	public void finish(String eventName) {
 
 	}
+
+    @Override
+    public IContext<Project> getPreviousState(String eventName)
+    {
+        return getPreviousState();
+    }
 
 }

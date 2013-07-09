@@ -18,7 +18,7 @@
 		<link>
 			<name>src/ru/csu/stan/java/cfg/jaxb/cfg.xsd</name>
 			<type>1</type>
-			<location>/home/mz/git/csu-code-analysis/data/cfg.xsd</location>
+			<locationURI>$%7BPARENT-2-PROJECT_LOC%7D/data/cfg.xsd</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -19,7 +19,7 @@ public class ImportRegistry {
 	 * Добавление компилируемого файла в реестр.
 	 * @param unit
 	 */
-	public void addCompilationUni(CompilationUnit unit){
+	public void addCompilationUnit(CompilationUnit unit){
 		units.add(unit);
 	}
 	

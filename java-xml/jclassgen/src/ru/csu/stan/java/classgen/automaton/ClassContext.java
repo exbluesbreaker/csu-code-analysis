@@ -249,7 +249,7 @@ public class ClassContext extends ContextBase {
 				imported.clear();
 				currentUnit.setPackageName(currentPackage.substring(0, currentPackage.length()-1));
 				currentPackage = null;
-				impReg.addCompilationUni(currentUnit);
+				impReg.addCompilationUnit(currentUnit);
 				currentUnit = new CompilationUnit();
 				break;
 			case MODIFIERS:
