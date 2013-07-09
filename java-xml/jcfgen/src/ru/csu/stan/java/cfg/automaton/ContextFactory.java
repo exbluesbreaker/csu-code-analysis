@@ -12,7 +12,7 @@ public class ContextFactory {
 	}
 	
 	public static IContext<Project> getStartContext(Project root){
-		return new EmptyContext(root, null);
+		return new ProjectContext(root, null);
 	}
 	
 }

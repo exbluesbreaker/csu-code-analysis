@@ -14,7 +14,7 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
  * @author mzubov
  *
  */
-class ClassContext extends ContextBase
+class ClassContext extends ContextBase implements IClassNameHolder
 {
     private String name = "";
     private int methodId = 1;
@@ -40,7 +40,9 @@ class ClassContext extends ContextBase
     public IContext<Project> getNextState(IContext<Project> context, String eventName)
     {
         if ("method".equals(eventName))
-            return new MethodContext(getResultRoot(), this, name, methodId++);
+            return new MethodContext(getResultRoot(), this, name, methodId++, compilationUnit);
+        if ("class".equals(eventName))
+            return new ClassContext(getResultRoot(), this, compilationUnit);
         return this;
     }
 
@@ -52,22 +54,22 @@ class ClassContext extends ContextBase
             String nameAttr = getNameAttr(attrs);
             if (nameAttr == null || "".equals(nameAttr))
             {
-                if (getPreviousState() instanceof ClassContext)
+                if (getPreviousState() instanceof IClassNameHolder)
                 {
-                    String upperName = ((ClassContext)getPreviousState()).getName();
-                    int innerCount = ((ClassContext)getPreviousState()).getNextInnerCount();
-                    name = upperName + '$' + innerCount;
+                    String upperName = ((IClassNameHolder)getPreviousState()).getClassName();
+                    int innerCount = ((IClassNameHolder)getPreviousState()).getNextInnerCount();
+                    this.name = upperName + '$' + innerCount;
                 }
             }
             else
             {
-                if (getPreviousState() instanceof ClassContext)
-                    name = ((ClassContext)getPreviousState()).getName() + "." + nameAttr;
+                if (getPreviousState() instanceof IClassNameHolder)
+                	this.name = ((IClassNameHolder)getPreviousState()).getClassName() + "." + nameAttr;
                 else
-                    name = compilationUnit.getPackageName() + nameAttr;
+                	this.name = compilationUnit.getPackageName() + "." + nameAttr;
             }
-            compilationUnit.addClass(name);
-            System.out.println("Found class '" + name + "'");
+            compilationUnit.addClass(this.name);
+            System.out.println("Found class '" + this.name + "'");
         }
     }
 
@@ -77,10 +79,12 @@ class ClassContext extends ContextBase
 
     }
     
-    public String getName(){
+    @Override
+    public String getClassName(){
         return name;
     }
     
+    @Override
     public int getNextInnerCount(){
         return ++innerCount;
     }

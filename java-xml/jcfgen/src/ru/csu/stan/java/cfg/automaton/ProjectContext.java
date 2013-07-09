@@ -35,7 +35,7 @@ class ProjectContext extends ContextBase {
     @Override
     public IContext<Project> getPreviousState(String eventName)
     {
-        return null;
+        return this;
     }
 
 }

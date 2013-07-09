@@ -16,6 +16,8 @@ public abstract class ContextBase implements IContext<Project> {
 	private static ObjectFactory objectFactory = new ObjectFactory();
 	
 	ContextBase(Project resultRoot, ContextBase previousState) {
+		this.resultRoot = resultRoot;
+		this.previousState = previousState;
 	}
 
 	protected ContextBase getPreviousState() {

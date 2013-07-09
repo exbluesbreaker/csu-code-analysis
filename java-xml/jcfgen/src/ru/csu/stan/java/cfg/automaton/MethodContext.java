@@ -8,6 +8,7 @@ import javax.xml.stream.events.Attribute;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
+import ru.csu.stan.java.classgen.util.CompilationUnit;
 
 /**
  * Состояние анализа метода.
@@ -16,17 +17,19 @@ import ru.csu.stan.java.classgen.automaton.IContext;
  * @author mzubov
  *
  */
-public class MethodContext extends ContextBase
+class MethodContext extends ContextBase implements IClassNameHolder
 {
     private int id;
     private String className;
     private String name;
+    private CompilationUnit compilationUnit;
 
-    MethodContext(Project resultRoot, ContextBase previousState, String className, int id)
+    MethodContext(Project resultRoot, ContextBase previousState, String className, int id, CompilationUnit compilationUnit)
     {
         super(resultRoot, previousState);
         this.className = className;
         this.id = id;
+        this.compilationUnit = compilationUnit;
     }
 
     @Override
@@ -34,20 +37,27 @@ public class MethodContext extends ContextBase
     {
         if ("method".equals(eventName))
             return getPreviousState();
-        else
-            return this;
+        return this;
     }
 
     @Override
     public IContext<Project> getNextState(IContext<Project> context, String eventName)
     {
+    	if ("class".equals(eventName))
+             return new ClassContext(getResultRoot(), this, compilationUnit);
         return this;
     }
 
     @Override
     public void processTag(String name, Iterator<Attribute> attrs)
     {
-
+    	if ("method".equals(name))
+		{
+			String nameAttr = getNameAttr(attrs);
+			if ("<init>".equals(nameAttr))
+				nameAttr = className.substring(className.lastIndexOf('.')+1);
+			name = nameAttr;
+		}
     }
 
     @Override
@@ -59,7 +69,21 @@ public class MethodContext extends ContextBase
             method.setParentClass(className);
             method.setId(BigInteger.valueOf(id));
             method.setName(name);
+            getResultRoot().getMethodOrFunction().add(method);
         }
     }
+
+	@Override
+	public String getClassName() {
+		return className;
+	}
+
+	@Override
+	public int getNextInnerCount() {
+		if (getPreviousState() instanceof IClassNameHolder)
+			return ((IClassNameHolder)getPreviousState()).getNextInnerCount();
+		else
+			return 0;
+	}
 
 }
