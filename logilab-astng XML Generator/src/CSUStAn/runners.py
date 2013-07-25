@@ -799,3 +799,35 @@ class CFGVisualizer(CFGHandler):
                 dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
             graph.add_edge(dot_edge)
         graph.write_svg(self._out_dir+'/'+node.get("cfg_id")+'.svg')
+        
+class ClassSlicer(ConfigurationMixIn,ClassIRHandler):
+    # search for probable inheritance mistakes
+    
+    options = OPTIONS
+    _methods = None
+    _class_id = None
+    _related_classes = set([])
+    _out_file = None
+    
+    def __init__(self, in_file,out_file, class_id):
+        ConfigurationMixIn.__init__(self, usage=__doc__)
+        ClassIRHandler.__init__(self, in_file)
+        self._out_file = out_file
+        self._methods = {}
+        self._class_id = class_id
+        self.run()
+        
+    def run(self):
+        root_node = etree.Element("Classes")
+        self.slice_class(self._id_dict[self._class_id])
+        for c in self._related_classes:
+            root_node.append(c)
+        f = open(self._out_file,'w')
+        f.write(etree.tostring(root_node, pretty_print=True, encoding='utf-8', xml_declaration=True))
+        f.close()
+        
+    def slice_class(self,node):
+        self._related_classes.add(node)
+        for p in self.get_parents(node):
+            self.slice_class(p)
+        #self.get_class_by_id()

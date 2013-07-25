@@ -182,5 +182,10 @@ elif(args.type=="CFGVisualizer"):
     lcfg_xml = cfg_parser.get(args.type,'linked_cfg_xml')
     out_dir = cfg_parser.get(args.type,'out_dir')
     runner = CFGVisualizer(lcfg_xml,out_dir)
+elif(args.type=="ClassSlicer"):
+    in_file = cfg_parser.get(args.type,'in_file')
+    out_file = cfg_parser.get(args.type,'out_file')
+    class_id = cfg_parser.get(args.type,'id')
+    runner = ClassSlicer(in_file,out_file,class_id)
 else:
     print "Unknown type!"

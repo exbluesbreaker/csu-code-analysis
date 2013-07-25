@@ -37,7 +37,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         self._project_name = project_name
     
     def visit_project(self,node):
-        self._root = etree.Element("Project")
+        self._root = etree.Element("Project",name=self._project_name)
     def leave_project(self,node):
         print self._dbg_calls
         print self._dbg_call_lookup
@@ -196,12 +196,11 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             call_node.set("col_offset",str(node.col_offset))
             if isinstance(node.func, Name):
                 space_type,called,called_id, label = self.handle_lookup(node.func, node.func.name)
-                call_node.set("name",node.func.name)
                 if called == 'function':
                     self._func_calls += 1
                 elif called == 'class':
                     self._class_calls += 1
-                call_subnode = etree.Element("Direct")
+                call_subnode = etree.Element("Direct",name=node.func.name)
                 if space_type is not None:
                     call_subnode.set("space_type",space_type)
                 if called=='function':
@@ -214,7 +213,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     if label is not None:
                         class_subnode.set("label",label)
                     call_subnode.append(class_subnode)
-                    target_subnode = etree.Element("TargetFunction")
+                    target_subnode = etree.Element("TargetMethod")
                     class_subnode.append(target_subnode)
                 else:
                     target_subnode = etree.Element("TargetUnknown")
