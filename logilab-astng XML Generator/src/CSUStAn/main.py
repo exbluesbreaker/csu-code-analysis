@@ -136,7 +136,8 @@ elif(args.type=="PotentialSiblings"):
     runner = PotentialSiblingsCounter([in_file])
 elif(args.type=="VisualHierarchy"):
     in_file = cfg_parser.get(args.type,'in_file')
-    runner = ClassHierarchyVisualizer([in_file])
+    out_file = cfg_parser.get(args.type,'out_file')
+    runner = ClassHierarchyVisualizer(in_file,out_file)
 elif(args.type=="FieldCandidates"):
     in_file = cfg_parser.get(args.type,'in_file')
     runner = FieldCandidateFinder([in_file])
