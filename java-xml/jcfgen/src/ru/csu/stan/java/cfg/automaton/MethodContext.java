@@ -1,13 +1,11 @@
 package ru.csu.stan.java.cfg.automaton;
 
 import java.math.BigInteger;
-import java.util.Iterator;
-
-import javax.xml.stream.events.Attribute;
 
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
+import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
 
 /**
@@ -49,11 +47,11 @@ class MethodContext extends ContextBase implements IClassNameHolder
     }
 
     @Override
-    public void processTag(String name, Iterator<Attribute> attrs)
+    public void processTag(String name, NodeAttributes attrs)
     {
     	if ("method".equals(name))
 		{
-			String nameAttr = getNameAttr(attrs);
+			String nameAttr = attrs.getNameAttribute();
 			if ("<init>".equals(nameAttr))
 				nameAttr = className.substring(className.lastIndexOf('.')+1);
 			name = nameAttr;

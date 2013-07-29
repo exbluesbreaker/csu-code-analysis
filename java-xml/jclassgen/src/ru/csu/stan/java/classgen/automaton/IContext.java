@@ -1,8 +1,6 @@
 package ru.csu.stan.java.classgen.automaton;
 
-import java.util.Iterator;
-
-import javax.xml.stream.events.Attribute;
+import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 
 
 public interface IContext<T> {
@@ -11,7 +9,7 @@ public interface IContext<T> {
 	
 	IContext<T> getNextState(IContext<T> context, String eventName);
 	
-	void processTag(String name, Iterator<Attribute> attrs);
+	void processTag(String name, NodeAttributes attrs);
 	
 	void finish(String eventName);
 	

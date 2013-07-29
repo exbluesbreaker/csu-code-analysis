@@ -1,16 +1,16 @@
 package ru.csu.stan.java.classgen.automaton;
 
+import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import javax.xml.stream.events.Attribute;
-
+import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.jaxb.AggregatedType;
 import ru.csu.stan.java.classgen.jaxb.Argument;
+import ru.csu.stan.java.classgen.jaxb.BaseElement;
 import ru.csu.stan.java.classgen.jaxb.Classes;
 import ru.csu.stan.java.classgen.jaxb.CommonType;
 import ru.csu.stan.java.classgen.jaxb.Method;
@@ -33,9 +33,6 @@ import ru.csu.stan.java.classgen.util.PackageRegistry;
  */
 public class ClassContext extends ContextBase {
 	
-	private static final String NAME_ATTRIBUTE = "name";
-	private static final String FILENAME_ATTRIBUTE = "filename";
-
 	private String currentPackage;
 	private String currentImport;
 	private String currentNewClass;
@@ -52,6 +49,7 @@ public class ClassContext extends ContextBase {
 	private CommonType currentCommonType;
 	private AggregatedType currentAggregatedType;
 	private boolean currentTypeAggregated = false;
+	private int modifierLine, modifierCol;
 	
 	private PackageRegistry packageReg = new PackageRegistry();
 	
@@ -163,7 +161,7 @@ public class ClassContext extends ContextBase {
 	}
 	
 	@Override
-	public void processTag(String name, Iterator<Attribute> attrs){
+	public void processTag(String name, NodeAttributes attrs){
 		switch (this.stateStack.peek()){
 			case CLASS:
 				processClassTag(name, attrs);
@@ -323,18 +321,18 @@ public class ClassContext extends ContextBase {
 			}
 	}
 	
-	private void processPackageTag(String name, Iterator<Attribute> attrs){
+	private void processPackageTag(String name, NodeAttributes attrs){
 		if ("package".equals(name))
 			currentPackage = "";
 		if ("member_select".equals(name) || "identifier".equals(name))
-			currentPackage = getNameAttr(attrs) + '.' + currentPackage;
+			currentPackage = attrs.getNameAttribute() + '.' + currentPackage;
 	}
 	
-	private void processClassTag(String name, Iterator<Attribute> attrs){
+	private void processClassTag(String name, NodeAttributes attrs){
 		if ("class".equals(name))
 		{
 			ru.csu.stan.java.classgen.jaxb.Class newClass = factory.createClass();
-			String nameAttr = getNameAttr(attrs);
+			String nameAttr = attrs.getNameAttribute();
 			if (nameAttr == null || "".equals(nameAttr))
 			{
 				String upperName = classStack.get(classStack.size() - 1).getName();
@@ -356,96 +354,110 @@ public class ClassContext extends ContextBase {
 					parent.setName(currentNewClass);
 				else
 					parent.setName(imported.get(currentNewClass));
-//				parent.setId(ClassIdGenerator.getInstance().getClassId(parent.getName()));
 				newClass.getParent().add(parent);
 			}
 			imported.put(newClass.getName().substring(currentPackage.length()), newClass.getName());
 			packageReg.addClassToPackage(newClass.getName().substring(currentPackage.length()), currentPackage.substring(0, currentPackage.length()-1));
 			newClass.setId(ClassIdGenerator.getInstance().getClassId(newClass.getName()));
 			currentUnit.addClass(newClass.getName());
+			newClass.setFilename(currentUnit.getFilename());
+			setPosition(newClass, attrs);
 			System.out.println("Found class '" + newClass.getName() + "'");
 			classStack.push(newClass);
 			classInnersCount.push(0);
 		}
 	}
 	
-	private void processFieldTag(String name, Iterator<Attribute> attrs){
+	private void processFieldTag(String name, NodeAttributes attrs){
 		if ("variable".equals(name))
 		{
 			currentAttribute = factory.createAttribute();
-			currentAttribute.setName(getNameAttr(attrs));
+			setPosition(currentAttribute, attrs);
+			currentAttribute.setName(attrs.getNameAttribute());
 		}
 	}
 	
-	private void processMethodTag(String name, Iterator<Attribute> attrs){
+	private void processMethodTag(String name, NodeAttributes attrs){
 		if ("method".equals(name))
 		{
 			Method currentMethod = factory.createMethod();
-			String nameAttr = getNameAttr(attrs);
+			String nameAttr = attrs.getNameAttribute();
 			if ("<init>".equals(nameAttr))
 				nameAttr = classStack.peek().getName().substring(classStack.peek().getName().lastIndexOf('.')+1);
 			currentMethod.setName(nameAttr);
+			setPosition(currentMethod, attrs);
 			methodStack.push(currentMethod);
 		}
 	}
 	
-	private void processArgumentTag(String name, Iterator<Attribute> attrs){
+	private void processArgumentTag(String name, NodeAttributes attrs){
 		if ("variable".equals(name))
 		{
 			currentArgument = factory.createArgument();
-			currentArgument.setName(getNameAttr(attrs));
+			setPosition(currentArgument, attrs);
+			currentArgument.setName(attrs.getNameAttribute());
 		}
 	}
 	
-	private void processParentTag(String name, Iterator<Attribute> attrs){
+	private void processParentTag(String name, NodeAttributes attrs){
 		if ("extends".equals(name) || "implements".equals(name))
 			currentParent = factory.createParentClass();
-		if ("member_select".equals(name))
-			currentParent.setName(getNameAttr(attrs) + '.' + currentParent.getName());
-		if ("identifier".equals(name))
+		if ("member_select".equals(name)){
+			currentParent.setName(attrs.getNameAttribute() + '.' + currentParent.getName());
+			setPosition(currentParent, attrs);
+		}
+		if ("identifier".equals(name)){
 			if (currentParent.getName() == null || "".equals(currentParent.getName()))
 			{
-				String nameAttr = getNameAttr(attrs);
+				String nameAttr = attrs.getNameAttribute();
 				if (imported.containsKey(nameAttr))
 					currentParent.setName(imported.get(nameAttr));
 				else
 					currentParent.setName(nameAttr);
 			}
 			else
-				currentParent.setName(getNameAttr(attrs) + '.' + currentParent.getName());
+				currentParent.setName(attrs.getNameAttribute() + '.' + currentParent.getName());
+			setPosition(currentParent, attrs);
+		}
 	}
 	
-	private void processImportTag(String name, Iterator<Attribute> attrs){
+	private void processImportTag(String name, NodeAttributes attrs){
 		if ("import".equals(name))
 			currentImport = "";
 		if ("member_select".equals(name) || "identifier".equals(name))
 			if ("".equals(currentImport))
-				currentImport = getNameAttr(attrs);
+				currentImport = attrs.getNameAttribute();
 			else
-				currentImport = getNameAttr(attrs) + '.' + currentImport;
+				currentImport = attrs.getNameAttribute() + '.' + currentImport;
 	}
 	
-	private void processNewClass(String name, Iterator<Attribute> attrs){
+	private void processNewClass(String name, NodeAttributes attrs){
 		if ("new_class".equals(name))
 			currentNewClass = "";
 		if ("member_select".equals(name) || "identifier".equals(name))
 			if ("".equals(currentNewClass))
-				currentNewClass = getNameAttr(attrs);
+				currentNewClass = attrs.getNameAttribute();
 			else
-				currentNewClass = getNameAttr(attrs) + '.' + currentNewClass;
+				currentNewClass = attrs.getNameAttribute() + '.' + currentNewClass;
 	}
 	
-	private void processModifierTag(String name, Iterator<Attribute> attrs){
+	private void processModifierTag(String name, NodeAttributes attrs){
 		if ("modifier".equals(name)){
 			ModifierType mod = factory.createModifierType();
-			mod.setName(getNameAttr(attrs));
+			mod.setName(attrs.getNameAttribute());
+			mod.setFromlineno(BigInteger.valueOf(modifierLine));
+			mod.setColOffset(BigInteger.valueOf(modifierCol));
 			if (currentModifier == null)
 				currentModifier = new LinkedList<ModifierType>();
 			currentModifier.add(mod);
 		}
+		if ("modifiers".equals(name)){
+			modifierLine = attrs.getIntAttribute(NodeAttributes.LINE_ATTRIBUTE);
+			modifierCol = attrs.getIntAttribute(NodeAttributes.COL_ATTRIBUTE);
+		}
 	}
 	
-	private void processTypeTag(String name, Iterator<Attribute> attrs){
+	private void processTypeTag(String name, NodeAttributes attrs){
 		if ("member_select".equals(name) || "identifier".equals(name)){
 			if (currentAggregatedType == null){
 				if (currentCommonType == null)
@@ -454,22 +466,23 @@ public class ClassContext extends ContextBase {
 					currentCommonType.setName("");
 				}
 				if (currentCommonType.getName().isEmpty())
-					currentCommonType.setName(getNameAttr(attrs));
+					currentCommonType.setName(attrs.getNameAttribute());
 				else
-					currentCommonType.setName(getNameAttr(attrs) + '.' + currentCommonType.getName());
+					currentCommonType.setName(attrs.getNameAttribute() + '.' + currentCommonType.getName());
+				setPosition(currentCommonType, attrs);
 			}
 			else{
 				if (currentTypeAggregated){
 					if (currentAggregatedType.getElementType().isEmpty())
-						currentAggregatedType.setElementType(getNameAttr(attrs));
+						currentAggregatedType.setElementType(attrs.getNameAttribute());
 					else
-						currentAggregatedType.setElementType(getNameAttr(attrs) + '.' + currentAggregatedType.getElementType());
+						currentAggregatedType.setElementType(attrs.getNameAttribute() + '.' + currentAggregatedType.getElementType());
 				}
 				else{
 					if (currentAggregatedType.getName().isEmpty())
-						currentAggregatedType.setName(getNameAttr(attrs));
+						currentAggregatedType.setName(attrs.getNameAttribute());
 					else
-						currentAggregatedType.setName(getNameAttr(attrs) + '.' + currentAggregatedType.getName());
+						currentAggregatedType.setName(attrs.getNameAttribute() + '.' + currentAggregatedType.getName());
 				}
 			}
 		}
@@ -478,6 +491,7 @@ public class ClassContext extends ContextBase {
 				currentAggregatedType = factory.createAggregatedType();
 				currentAggregatedType.setName("");
 				currentAggregatedType.setElementType("");
+				setPosition(currentAggregatedType, attrs);
 			}
 		}
 		if ("arguments".equals(name)){
@@ -485,30 +499,10 @@ public class ClassContext extends ContextBase {
 		}
 	}
 	
-	private void processCompilationUnitTag(String name, Iterator<Attribute> attrs){
+	private void processCompilationUnitTag(String name, NodeAttributes attrs){
 		if ("compilation_unit".equals(name)){
-			currentUnit.setFilename(getAttribute(attrs, FILENAME_ATTRIBUTE));
+			currentUnit.setFilename(attrs.getStringAttribute(NodeAttributes.FILENAME_ATTRIBUTE));
 		}
-	}
-	
-	private String getNameAttr(Iterator<Attribute> attrs){
-		String result = "";
-		while (attrs.hasNext()){
-			Attribute a = attrs.next();
-			if (NAME_ATTRIBUTE.equals(a.getName().toString()))
-				return a.getValue();
-		}
-		return result;
-	}
-	
-	private String getAttribute(Iterator<Attribute> attrs, String attrName){
-		String result = "";
-		while (attrs.hasNext()){
-			Attribute a = attrs.next();
-			if (attrName.equals(a.getName().toString()))
-				return a.getValue();
-		}
-		return result;
 	}
 
 	@Override
@@ -614,5 +608,12 @@ public class ClassContext extends ContextBase {
 		{
 			this.finishVartype();
 		}
+	}
+	
+	private void setPosition(BaseElement element, NodeAttributes attrs){
+		if (element.getFromlineno() == null || element.getFromlineno().intValue() <= 0)
+			element.setFromlineno(BigInteger.valueOf(attrs.getIntAttribute(NodeAttributes.LINE_ATTRIBUTE)));
+		if (element.getColOffset() == null || element.getColOffset().intValue() <= 0)
+			element.setColOffset(BigInteger.valueOf(attrs.getIntAttribute(NodeAttributes.COL_ATTRIBUTE)));
 	}
 }
