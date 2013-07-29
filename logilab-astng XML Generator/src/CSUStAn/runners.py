@@ -348,10 +348,12 @@ class ClassHierarchyVisualizer(ConfigurationMixIn,ClassIRHandler):
     # generate dot from XML classes IR
     
     options = OPTIONS
+    _out_file = None
     
-    def __init__(self, args):
+    def __init__(self, in_file,out_file):
         ConfigurationMixIn.__init__(self, usage=__doc__)
-        ClassIRHandler.__init__(self, args[0])
+        ClassIRHandler.__init__(self, in_file)
+        self._out_file = out_file
         self.run()
     
     def run(self):
@@ -386,7 +388,7 @@ class ClassHierarchyVisualizer(ConfigurationMixIn,ClassIRHandler):
 #            node_dict[node] = dot_node
 #        for source, target in deps:
 #            graph.add_edge(pydot.Edge(node_dict[source], node_dict[target]))
-        graph.write_svg('classes.svg')
+        graph.write_svg(self._out_file)
         
 class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
     # search for probable inheritance mistakes

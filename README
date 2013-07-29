@@ -32,11 +32,17 @@ Supported run types:
 	TwistedObjectTracer -tracing of living objects from twisted package (4)
 	SconsObjectTracer - tracing of living objects from SCons package (4)
 	BazaarObjectTracer - tracing of living objects from bzrlib package (4)
+	CFGExtractor - extraction of control flow graph for project
+	DataflowLinker - add dataflow information to CFG, according to UCR
+	CFGVisualizer - simple svg-based visualizer of CFG
+	ClassSlicer - slice UCR, for class of interest
 
 Command line for run:
 	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t <run type> [-c <alternative config>]
 E.G.:
 	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t ClassIR -c my.ini
+	
+	Example of config can be found in data/csu.ini
 
 * 2) Java-XML
 
