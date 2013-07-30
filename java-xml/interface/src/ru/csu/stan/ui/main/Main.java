@@ -1,6 +1,7 @@
 package ru.csu.stan.ui.main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -19,7 +20,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if (args.length == 1)
+		if (args.length == 3)
 			try {
 				JAXBContext jcontext = JAXBContext.newInstance("ru.csu.stan.java.classgen.jaxb");
 				Unmarshaller unmarshaller = jcontext.createUnmarshaller();
@@ -36,12 +37,16 @@ public class Main {
 							project.addAnchor(clazz.getFilename(), argument);
 					}
 				}
+				project.processFiles(args[1], args[2]);
 			} 
 			catch (JAXBException e) {
 				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		else{
-			System.out.println("Usage: Main <filename>");
+			System.out.println("Usage: Main <filename> <source-root-dir> <output-root-dir>");
 			System.exit(1);
 		}
 	}

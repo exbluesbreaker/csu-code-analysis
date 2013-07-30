@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Classes>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/MyClass.java" id="2" name="com.example.MyClass$1" col_offset="45" fromlineno="19">
+    <Class filename="/com/example/MyClass.java" id="2" name="com.example.MyClass$1" col_offset="45" fromlineno="19">
         <Method name="toArray" col_offset="4" fromlineno="21">
             <Modifier name="public" col_offset="4" fromlineno="21"/>
             <Arg name="a" col_offset="27" fromlineno="22"/>
@@ -92,18 +92,18 @@
             <Arg name="e" col_offset="23" fromlineno="154"/>
         </Method>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/MyClass.java" id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="9" fromlineno="173">
+    <Class filename="/com/example/MyClass.java" id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="9" fromlineno="173">
         <Modifier name="public" col_offset="9" fromlineno="173"/>
         <Modifier name="static" col_offset="9" fromlineno="173"/>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/MyClass.java" id="3" name="com.example.MyClass.MyClass2" col_offset="5" fromlineno="167">
+    <Class filename="/com/example/MyClass.java" id="3" name="com.example.MyClass.MyClass2" col_offset="5" fromlineno="167">
         <Modifier name="public" col_offset="5" fromlineno="167"/>
         <Modifier name="static" col_offset="5" fromlineno="167"/>
         <Method name="foo" col_offset="9" fromlineno="169">
             <Modifier name="public" col_offset="9" fromlineno="169"/>
         </Method>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/MyClass.java" id="1" name="com.example.MyClass" col_offset="1" fromlineno="9">
+    <Class filename="/com/example/MyClass.java" id="1" name="com.example.MyClass" col_offset="1" fromlineno="9">
         <Modifier name="public" col_offset="1" fromlineno="9"/>
         <Attr name="A" col_offset="5" fromlineno="11">
             <Modifier name="public" col_offset="5" fromlineno="11"/>
@@ -143,23 +143,23 @@
             </Arg>
         </Method>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OurClass.java" id="6" name="com.example.OurClass.MyClass2" col_offset="2" fromlineno="4">
+    <Class filename="/com/example/OurClass.java" id="6" name="com.example.OurClass.MyClass2" col_offset="2" fromlineno="4">
         <Modifier name="public" col_offset="2" fromlineno="4"/>
         <Modifier name="static" col_offset="2" fromlineno="4"/>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OurClass.java" id="5" name="com.example.OurClass" col_offset="1" fromlineno="3">
+    <Class filename="/com/example/OurClass.java" id="5" name="com.example.OurClass" col_offset="1" fromlineno="3">
         <Modifier name="public" col_offset="1" fromlineno="3"/>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/IAction.java" id="7" name="com.example.IAction" col_offset="1" fromlineno="3">
+    <Class filename="/com/example/IAction.java" id="7" name="com.example.IAction" col_offset="1" fromlineno="3">
         <Modifier name="public" col_offset="1" fromlineno="3"/>
         <Modifier name="interface" col_offset="1" fromlineno="3"/>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OtherClass.java" id="10" name="com.example.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" col_offset="3" fromlineno="9">
+    <Class filename="/com/example/OtherClass.java" id="10" name="com.example.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" col_offset="3" fromlineno="9">
         <Modifier name="public" col_offset="3" fromlineno="9"/>
         <Modifier name="static" col_offset="3" fromlineno="9"/>
         <Parent id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="66" fromlineno="9"/>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OtherClass.java" id="9" name="com.example.OtherClass.AnotherOtherClass" col_offset="2" fromlineno="6">
+    <Class filename="/com/example/OtherClass.java" id="9" name="com.example.OtherClass.AnotherOtherClass" col_offset="2" fromlineno="6">
         <Modifier name="public" col_offset="2" fromlineno="6"/>
         <Modifier name="static" col_offset="2" fromlineno="6"/>
         <Attr name="field" col_offset="3" fromlineno="7">
@@ -168,17 +168,17 @@
         </Attr>
         <Parent id="3" name="com.example.MyClass.MyClass2" col_offset="48" fromlineno="6"/>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OtherClass.java" id="8" name="com.example.OtherClass" col_offset="1" fromlineno="4">
+    <Class filename="/com/example/OtherClass.java" id="8" name="com.example.OtherClass" col_offset="1" fromlineno="4">
         <Modifier name="public" col_offset="1" fromlineno="4"/>
         <Parent id="1" name="com.example.MyClass" col_offset="33" fromlineno="4"/>
         <Parent id="7" name="com.example.IAction" col_offset="52" fromlineno="4"/>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/util/OtherClass.java" id="13" name="com.example.util.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" col_offset="3" fromlineno="12">
+    <Class filename="/com/example/util/OtherClass.java" id="13" name="com.example.util.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" col_offset="3" fromlineno="12">
         <Modifier name="public" col_offset="3" fromlineno="12"/>
         <Modifier name="static" col_offset="3" fromlineno="12"/>
         <Parent id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="66" fromlineno="12"/>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/util/OtherClass.java" id="12" name="com.example.util.OtherClass.AnotherOtherClass" col_offset="2" fromlineno="9">
+    <Class filename="/com/example/util/OtherClass.java" id="12" name="com.example.util.OtherClass.AnotherOtherClass" col_offset="2" fromlineno="9">
         <Modifier name="public" col_offset="2" fromlineno="9"/>
         <Modifier name="static" col_offset="2" fromlineno="9"/>
         <Attr name="field" col_offset="3" fromlineno="10">
@@ -187,7 +187,7 @@
         </Attr>
         <Parent id="3" name="com.example.MyClass.MyClass2" col_offset="48" fromlineno="9"/>
     </Class>
-    <Class filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/util/OtherClass.java" id="11" name="com.example.util.OtherClass" col_offset="1" fromlineno="7">
+    <Class filename="/com/example/util/OtherClass.java" id="11" name="com.example.util.OtherClass" col_offset="1" fromlineno="7">
         <Modifier name="public" col_offset="1" fromlineno="7"/>
         <Parent id="1" name="com.example.MyClass" col_offset="33" fromlineno="7"/>
         <Parent id="7" name="com.example.IAction" col_offset="52" fromlineno="7"/>

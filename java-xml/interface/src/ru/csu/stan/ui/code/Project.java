@@ -1,5 +1,7 @@
 package ru.csu.stan.ui.code;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,15 @@ public class Project {
 	
 	public void addAnchor(String filename, BaseElement element){
 		this.getFile(filename).createAnchor(element.getFromlineno().intValue(), element.getColOffset().intValue());
+	}
+	
+	public void processFiles(String projectRoot, String outRoot) throws FileNotFoundException{
+		File src = new File(projectRoot);
+		File outFile = new File(outRoot);
+		if (!src.exists())
+			throw new FileNotFoundException(projectRoot);
+		if (!outFile.exists())
+			throw new FileNotFoundException(outRoot);
 	}
 	
 }
