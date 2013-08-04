@@ -32,7 +32,7 @@ public class Launcher {
 			
 			Collection<TraversalHandler> handlers = new LinkedList<TraversalHandler>();
 			System.out.println("Using " + out + " as output file");
-			StaxXmlRepresentation stax = StaxXmlRepresentation.getInstance(out);
+			StaxXmlRepresentation stax = StaxXmlRepresentation.getInstance(path, out);
 			handlers.add(stax);
 			stax.startDocument();
 			

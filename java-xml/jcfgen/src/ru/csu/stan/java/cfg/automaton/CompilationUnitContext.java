@@ -1,11 +1,8 @@
 package ru.csu.stan.java.cfg.automaton;
 
-import java.util.Iterator;
-
-import javax.xml.stream.events.Attribute;
-
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
+import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
 
 /**
@@ -38,10 +35,10 @@ class CompilationUnitContext extends ContextBase
     }
 
     @Override
-    public void processTag(String name, Iterator<Attribute> attrs)
+    public void processTag(String name, NodeAttributes attrs)
     {
         if ("compilation_unit".equals(name)){
-            compilationUnit.setFilename(getAttribute(attrs, FILENAME_ATTRIBUTE));
+            compilationUnit.setFilename(attrs.getStringAttribute(FILENAME_ATTRIBUTE));
         }
     }
 

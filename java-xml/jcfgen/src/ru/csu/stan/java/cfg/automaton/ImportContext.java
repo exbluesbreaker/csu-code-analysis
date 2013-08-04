@@ -1,11 +1,8 @@
 package ru.csu.stan.java.cfg.automaton;
 
-import java.util.Iterator;
-
-import javax.xml.stream.events.Attribute;
-
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
+import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
 
 /**
@@ -33,15 +30,15 @@ class ImportContext extends ContextBase
     }
 
     @Override
-    public void processTag(String name, Iterator<Attribute> attrs)
+    public void processTag(String name, NodeAttributes attrs)
     {
         if ("import".equals(name))
             currentImport = "";
         if ("member_select".equals(name) || "identifier".equals(name))
             if ("".equals(currentImport))
-                currentImport = getNameAttr(attrs);
+                currentImport = attrs.getNameAttribute();
             else
-                currentImport = getNameAttr(attrs) + '.' + currentImport;
+                currentImport = attrs.getNameAttribute() + '.' + currentImport;
     }
 
     @Override

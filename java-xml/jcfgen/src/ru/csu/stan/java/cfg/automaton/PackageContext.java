@@ -1,11 +1,8 @@
 package ru.csu.stan.java.cfg.automaton;
 
-import java.util.Iterator;
-
-import javax.xml.stream.events.Attribute;
-
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
+import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
 
 /**
@@ -32,12 +29,12 @@ public class PackageContext extends ContextBase
     }
 
     @Override
-    public void processTag(String name, Iterator<Attribute> attrs)
+    public void processTag(String name, NodeAttributes attrs)
     {
         if ("package".equals(name))
             currentPackage = "";
         if ("member_select".equals(name) || "identifier".equals(name))
-            currentPackage = getNameAttr(attrs) + '.' + currentPackage;
+            currentPackage = attrs.getNameAttribute() + '.' + currentPackage;
     }
 
     @Override

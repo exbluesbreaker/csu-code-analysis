@@ -1,11 +1,8 @@
 package ru.csu.stan.java.cfg.automaton;
 
-import java.util.Iterator;
-
-import javax.xml.stream.events.Attribute;
-
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
+import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
 
 /**
@@ -47,11 +44,11 @@ class ClassContext extends ContextBase implements IClassNameHolder
     }
 
     @Override
-    public void processTag(String name, Iterator<Attribute> attrs)
+    public void processTag(String name, NodeAttributes attrs)
     {
         if ("class".equals(name))
         {
-            String nameAttr = getNameAttr(attrs);
+            String nameAttr = attrs.getNameAttribute();
             if (nameAttr == null || "".equals(nameAttr))
             {
                 if (getPreviousState() instanceof IClassNameHolder)

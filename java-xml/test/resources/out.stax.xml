@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 
 <project>
-   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/MyClass.java">
+   <compilation_unit line="1" col="1" filename="/com/example/MyClass.java">
       <package>
          <member_select line="1" col="9" name="example">
             <identifier line="1" col="9" name="com">
@@ -1136,7 +1136,7 @@
          </class>
       </definitions>
    </compilation_unit>
-   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OurClass.java">
+   <compilation_unit line="1" col="1" filename="/com/example/OurClass.java">
       <package>
          <member_select line="1" col="9" name="example">
             <identifier line="1" col="9" name="com">
@@ -1163,7 +1163,7 @@
          </class>
       </definitions>
    </compilation_unit>
-   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/IAction.java">
+   <compilation_unit line="1" col="1" filename="/com/example/IAction.java">
       <package>
          <member_select line="1" col="9" name="example">
             <identifier line="1" col="9" name="com">
@@ -1179,7 +1179,7 @@
          </class>
       </definitions>
    </compilation_unit>
-   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/OtherClass.java">
+   <compilation_unit line="1" col="1" filename="/com/example/OtherClass.java">
       <package>
          <member_select line="1" col="9" name="example">
             <identifier line="1" col="9" name="com">
@@ -1235,7 +1235,7 @@
          </class>
       </definitions>
    </compilation_unit>
-   <compilation_unit line="1" col="1" filename="/home/mz/git/csu-code-analysis/java-xml/jxmlgen/../test/src/com/example/util/OtherClass.java">
+   <compilation_unit line="1" col="1" filename="/com/example/util/OtherClass.java">
       <package>
          <member_select line="1" col="9" name="util">
             <member_select line="1" col="9" name="example">

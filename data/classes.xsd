@@ -44,8 +44,11 @@
   </xs:complexType>
   
   <xs:complexType name="ParentClass">
-    <xs:attribute name="id" type="xs:integer"/>
-    <xs:attribute name="name" type="xs:string"/>
+  	<xs:complexContent>
+	  	<xs:extension base="BaseElement">
+   			<xs:attribute name="id" type="xs:integer"/>
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   
   <xs:complexType name="Argument">
@@ -78,9 +81,11 @@
   </xs:complexType>
   
   <xs:complexType name="Type" abstract="true">
-  	<xs:attribute name="id" type="xs:integer"/>
-  	<xs:attribute name="name" type="xs:string"/>
-  	<xs:attribute name="label" type="xs:string" use="optional"/>
+  	<xs:complexContent>
+      <xs:extension base="BaseElement">
+  		<xs:attribute name="id" type="xs:integer"/>
+  	  </xs:extension>
+  	</xs:complexContent>
   </xs:complexType>
   
   <xs:complexType name="CommonType">
@@ -100,7 +105,10 @@
   </xs:complexType>
   
   <xs:complexType name="ModifierType">
-  	<xs:attribute name="name" type="xs:string"/>
+  	<xs:complexContent>
+      <xs:extension base="BaseElement">
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   
   <xs:complexType name="Template">

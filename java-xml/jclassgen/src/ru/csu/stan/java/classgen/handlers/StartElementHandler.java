@@ -1,8 +1,5 @@
 package ru.csu.stan.java.classgen.handlers;
 
-import java.util.Iterator;
-
-import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 
 import ru.csu.stan.java.classgen.automaton.IContext;
@@ -26,9 +23,7 @@ public class StartElementHandler<T> implements IStaxHandler<T> {
 	@Override
 	public IContext<T> handle(final IContext<T> context) {
 		IContext<T> result = context.getNextState(context, event.getName().toString());
-		@SuppressWarnings("unchecked")
-		Iterator<Attribute> it = event.getAttributes();
-		result.processTag(event.getName().toString(), it);
+		result.processTag(event.getName().toString(), new NodeAttributes(event));
 		return result;
 	}
 

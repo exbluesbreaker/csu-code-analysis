@@ -36,15 +36,18 @@ public class StaxXmlRepresentation implements TraversalHandler {
 	private static String TAB = "   ";
 	private int offset;
 	private XMLStreamWriter writer;
+	private String projectRoot;
 	
 	private StaxXmlRepresentation() {}
 	
-	public static StaxXmlRepresentation getInstance(String filename) throws FileNotFoundException, XMLStreamException{
+	public static StaxXmlRepresentation getInstance(String projectRoot, String filename) throws FileNotFoundException, XMLStreamException{
 		StaxXmlRepresentation representation = new StaxXmlRepresentation();
 		XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		File f = new File(filename);
 		FileOutputStream stream = new FileOutputStream(f);
 		representation.writer = factory.createXMLStreamWriter(stream, "UTF-8");
+		File root = new File(projectRoot);
+		representation.projectRoot = root.getAbsolutePath();
 		return representation;
 	}
 	
@@ -262,11 +265,15 @@ public class StaxXmlRepresentation implements TraversalHandler {
 	@Override
 	public void onSourceFile(JavaFileObject sourceFile) {
 		try {
-			writer.writeAttribute("filename", sourceFile.getName());
+			writer.writeAttribute("filename", getRelativeFileName(sourceFile.getName()));
 		} catch (XMLStreamException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private String getRelativeFileName(String filename){
+		return filename.substring(projectRoot.length());
 	}
 
 }
