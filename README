@@ -11,11 +11,16 @@ This is python utility for static analysis. Its main features:
 	- generation of visual representation of class hierarchy from universal class intermediate representation(2)
 	- search for potential siblings in class hierarchy from universal class intermediate representation(3)
 	- tracing of living objects during different runs of Python projects (bazaar,logilab etc.). This needed for checking result of in-project aggregation generation in universal class representation(4)
+	- extraction of CFG for project fuctions and methods(5)
+	- linking of extracted CFG and UCR(6)
+	- simple visualization of linked CFG(7)
+	- slicing of UCR, according to given class(8)
 
 Project is on prototype stage and installation is not supported yet. For running you must need to add src directory of sources to PYTHONPATH environment variable and use CSUStan/main.py for run. main.py accepts two argument - type of run(-t) and optional file name of config file(-c, by default csu.ini will be used). Other paramaters must be set in config file. Example of config file presented in data/csu.ini.
 
 Requirenments:
 	Python(>= 2.6 and < 3.0)
+	Graphviz
 	pylint
 	logilab-astng
 	pydot
@@ -29,16 +34,18 @@ Supported run types:
 	FieldCandidates - deprecated
 	LogilabObjectTracer - tracing of living objects from logilab package(4)
 	PylintObjectTracer - tracing of living objects from pylint package(4)
-	TwistedObjectTracer -tracing of living objects from twisted package (4)
+	TwistedObjectTracer -tracing of living objects from twisted package(deprecated) (4)
 	SconsObjectTracer - tracing of living objects from SCons package (4)
 	BazaarObjectTracer - tracing of living objects from bzrlib package (4)
-	CFGExtractor - extraction of control flow graph for project
-	DataflowLinker - add dataflow information to CFG, according to UCR
-	CFGVisualizer - simple svg-based visualizer of CFG
-	ClassSlicer - slice UCR, for class of interest
+	CFGExtractor - extraction of control flow graph for project(5)
+	DataflowLinker - add dataflow information to CFG, according to UCR(6)
+	CFGVisualizer - simple svg-based visualizer of CFG(7)
+	ClassSlicer - slice UCR, for class of interest(8)
+
+	Extraction of UCR and CFG needs name of top-level module of project as project argument in config file. If you want to analyze module, which not installed in standard location in system (for example site-packages directory), you need to add directory, which contains top-level module of project to PYTHONPATH.
 
 Command line for run:
-	PYTHONPATH=$PYTHONPATH:<path_to_src_directory_of_sources> python <path_to_CSUStan/main.py> -t <run type> [-c <alternative config>]
+	PYTHONPATH=$PYTHONPATH:<path to csu-code-analysis/logilab-astng XML Generator/src>[:<path to project directory for analysis>] python <path to CSUStan/main.py> -t <run type> [-c <alternative config>]
 E.G.:
 	PYTHONPATH=$PYTHONPATH:/home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src python /home/stranger/csu-code-analysis/logilab-astng\ XML\ Generator/src/CSUStan/main.py -t ClassIR -c my.ini
 	
