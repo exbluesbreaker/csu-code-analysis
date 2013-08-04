@@ -9,7 +9,6 @@ import re
 import pydot
 import os
 from lxml import etree
-from twisted.internet import reactor
 import hashlib
 
 from logilab.common.configuration import ConfigurationMixIn
@@ -25,7 +24,6 @@ from pylint.pyreverse.utils import get_visibility
 from CSUStAn.astng.simple import NamesCheckLinker
 from CSUStAn.tracing.class_tracer import CSUDbg
 from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGenerator,SourceModelXMLGenerator
-from CSUStAn.tests import twisted_ftpclient, twisted_getpage, twisted_ptyserv, twisted_testlogging
 from CSUStAn.astng.inspector import NoInferLinker, ClassIRLinker
 from CSUStAn.astng.astng import ASTNGHandler
 from CSUStAn.astng.control_flow import CFGLinker,CFGHandler
