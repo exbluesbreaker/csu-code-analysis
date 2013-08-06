@@ -206,8 +206,7 @@ public class TreeWalkerImpl implements TreeWalker, TraversalHandler {
 		if (node == null) {
 			onNullNode(name);
 		} else {
-			Position position = PositionImpl.createPosition(lineMap, node
-					.getStartPosition());
+			Position position = PositionImpl.createPosition(lineMap, node.getPreferredPosition());
 			onStartNode(node, name, position);
 			if (JCLiteral.class.isInstance(node)) {
 				onLiteral(JCLiteral.class.cast(node).getValue(), JCLiteral.class.cast(node).getKind());
