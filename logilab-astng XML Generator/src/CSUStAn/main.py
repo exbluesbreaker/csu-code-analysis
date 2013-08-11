@@ -188,5 +188,10 @@ elif(args.type=="ClassSlicer"):
     out_file = cfg_parser.get(args.type,'out_file')
     class_id = cfg_parser.get(args.type,'id')
     runner = ClassSlicer(in_file,out_file,class_id)
+elif(args.type=="CFGSlicer"):
+    in_file = cfg_parser.get(args.type,'in_file')
+    out_file = cfg_parser.get(args.type,'out_file')
+    target_id = cfg_parser.get(args.type,'id')
+    runner = CFGSlicer(in_file,out_file,target_id)
 else:
     print "Unknown type!"

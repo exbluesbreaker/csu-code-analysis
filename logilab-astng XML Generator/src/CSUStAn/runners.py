@@ -833,4 +833,23 @@ class ClassSlicer(ConfigurationMixIn,ClassIRHandler):
         self._related_classes.add(node)
         for p in self.get_parents(node):
             self.slice_class(p)
-        #self.get_class_by_id()
+            
+class CFGSlicer(CFGHandler):
+    _id = None
+    _out_xml = None
+    def __init__(self,lcfg_xml,out_xml,target_id):
+        CFGHandler.__init__(self, lcfg_xml)
+        self._id = target_id
+        self._out_xml = out_xml
+        self.run()
+    def run(self):
+        sliced_calls=set(self._cfg_tree.xpath("//Direct[@cfg_id=\""+self._id+"\"]"))
+        for call in self._cfg_tree.xpath("//Direct[@called_id=\""+self._id+"\"]"):
+            sliced_calls.add(call.getparent().getparent().getparent())
+        for frame in self._cfg_tree.xpath("//Method|//Function"):
+            print frame
+            if frame not in sliced_calls:
+                frame.getparent().remove(frame)
+        f = open(self._out_xml,'w')
+        f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
+        f.close()
