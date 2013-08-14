@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,6 +16,7 @@ import java.util.List;
 
 /**
  * Класс, определяющий файл исходного кода, в котором необходимо расставить якоря для навигации.
+ * Позволяет обработать исходный файл и вывести результат в JavaScript-файл.
  * 
  * @author mz
  *
@@ -23,6 +26,10 @@ public class SourceFile {
 	private String filename;
 	private List<Anchor> anchorList = new LinkedList<Anchor>();
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	private static final String JS_LINE_SEPARATOR = "\\n\\";
+	private static final String JS_FUNCTION_BEGIN_TEMPLATE = "sourceFiles.{0} = function(){\n  return \"";
+	private static final String JS_FUNCTION_END = "\";\n}\n";
+	private static final String JS_ENSURE_PACKAGE_EXIST = "if (typeof sourceFiles.{0} == 'undefined')\n  sourceFiles.{0} = '{}';\n\n";
 	
 	private SourceFile(String filename) {
 		this.filename = filename;
@@ -62,6 +69,8 @@ public class SourceFile {
 		int lineNumber = 1;
 		Iterator<Anchor> it = anchorList.iterator();
 		Anchor anchor = it.next();
+		writeJSPackageEnsurance(writer);
+		writer.write(MessageFormat.format(JS_FUNCTION_BEGIN_TEMPLATE, getFilePackageName()));
 		while ((line = reader.readLine()) != null){
 			while (anchor != null && anchor.getLine() == lineNumber){
 				line = anchor.processLine(line);
@@ -70,12 +79,35 @@ public class SourceFile {
 				else
 					anchor = null;
 			}
-			writer.write(line);
+			writer.write(line.replaceAll("\"", "\\\\\""));
+			writer.write(JS_LINE_SEPARATOR);
 			writer.write(LINE_SEPARATOR);
 			lineNumber++;
 		}
+		writer.write(JS_FUNCTION_END);
 		reader.close();
 		writer.close();
 	}
 	
+	private void writeJSPackageEnsurance(Writer writer) throws IOException{
+	    String packageName = filename.replaceAll(System.getProperty("file.separator"), ".");
+	    String[] packages = packageName.split(".");
+	    String current = "";
+	    if (packages.length > 2)
+	        for (int i = 0; i < packages.length - 2; i++)
+	        {
+	            current += packages[i];
+	            writer.write(MessageFormat.format(JS_ENSURE_PACKAGE_EXIST, current));
+	            current += '.';
+	        }
+	}
+	
+	private String getFilePackageName(){
+	    StringBuffer sb = new StringBuffer(filename.replaceAll(System.getProperty("file.separator"), "."));
+	    if (sb.charAt(0) == '.')
+	        sb.deleteCharAt(0);
+	    if (sb.lastIndexOf(".") > 0)
+	        sb.delete(sb.lastIndexOf("."), sb.length());
+	    return sb.toString();
+	}
 }

@@ -52,7 +52,7 @@ public class Anchor {
 		return sb.toString();
 	}
 	
-	private String getNameWithoutDots(){
+	public String getNameWithoutDots(){
 		int dot = name.lastIndexOf('.');
 		if (dot >= 0)
 			return name.substring(dot+1);
