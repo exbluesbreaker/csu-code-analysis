@@ -21,6 +21,7 @@ class MethodContext extends ContextBase implements IClassNameHolder
     private String className;
     private String name;
     private CompilationUnit compilationUnit;
+    private Method method;
 
     MethodContext(Project resultRoot, ContextBase previousState, String className, int id, CompilationUnit compilationUnit)
     {
@@ -42,7 +43,9 @@ class MethodContext extends ContextBase implements IClassNameHolder
     public IContext<Project> getNextState(IContext<Project> context, String eventName)
     {
     	if ("class".equals(eventName))
-             return new ClassContext(getResultRoot(), this, compilationUnit);
+            return new ClassContext(getResultRoot(), this, compilationUnit);
+    	if ("block".equals(eventName))
+    	    return new ControlFlowContext(getResultRoot(), this, method, new FlowCursor(), compilationUnit);
         return this;
     }
 
@@ -54,7 +57,11 @@ class MethodContext extends ContextBase implements IClassNameHolder
 			String nameAttr = attrs.getNameAttribute();
 			if ("<init>".equals(nameAttr))
 				nameAttr = className.substring(className.lastIndexOf('.')+1);
-			name = nameAttr;
+			this.name = nameAttr;
+			method = getObjectFactory().createMethod();
+            method.setParentClass(className);
+            method.setId(BigInteger.valueOf(id));
+            method.setName(this.name);
 		}
     }
 
@@ -63,10 +70,6 @@ class MethodContext extends ContextBase implements IClassNameHolder
     {
         if ("method".equals(eventName))
         {
-            Method method = getObjectFactory().createMethod();
-            method.setParentClass(className);
-            method.setId(BigInteger.valueOf(id));
-            method.setName(name);
             getResultRoot().getMethodOrFunction().add(method);
         }
     }
