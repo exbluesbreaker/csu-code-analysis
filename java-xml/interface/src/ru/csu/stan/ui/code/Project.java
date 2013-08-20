@@ -20,6 +20,7 @@ import ru.csu.stan.java.classgen.jaxb.BaseElement;
  */
 public class Project {
 	
+    private static final String JS_EXTENSION = ".js";
 	private Map<String, SourceFile> files = new HashMap<String, SourceFile>();
 
 	private Project() {}
@@ -64,9 +65,17 @@ public class Project {
 	}
 	
 	private File getDestinationFile(File resultRoot, String filename) throws IOException{
-		File result = new File(resultRoot, filename);
+		File result = new File(resultRoot, changeFileExtension(filename));
 		result.getParentFile().mkdirs();
 		result.createNewFile();
 		return result;
+	}
+	
+	private String changeFileExtension(String filename){
+	    StringBuffer sb = new StringBuffer(filename);
+	    if (sb.lastIndexOf(".") > 0)
+	        sb.delete(sb.lastIndexOf("."), sb.length());
+	    sb.append(JS_EXTENSION);
+	    return sb.toString();
 	}
 }
