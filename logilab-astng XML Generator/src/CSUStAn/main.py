@@ -192,6 +192,7 @@ elif(args.type=="CFGSlicer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
     target_id = cfg_parser.get(args.type,'id')
-    runner = CFGSlicer(in_file,out_file,target_id)
+    criteria = cfg_parser.get(args.type,'criteria')
+    runner = CFGSlicer(in_file,out_file,target_id,criteria)
 else:
     print "Unknown type!"

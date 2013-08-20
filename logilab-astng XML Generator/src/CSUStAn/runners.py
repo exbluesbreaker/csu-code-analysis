@@ -837,19 +837,44 @@ class ClassSlicer(ConfigurationMixIn,ClassIRHandler):
 class CFGSlicer(CFGHandler):
     _id = None
     _out_xml = None
-    def __init__(self,lcfg_xml,out_xml,target_id):
+    _criteria = None
+    _sliced_frames = None
+    def __init__(self,lcfg_xml,out_xml,target_id,criteria):
         CFGHandler.__init__(self, lcfg_xml)
         self._id = target_id
         self._out_xml = out_xml
+        self._criteria = criteria
         self.run()
     def run(self):
-        sliced_calls=set(self._cfg_tree.xpath("//Direct[@cfg_id=\""+self._id+"\"]"))
-        for call in self._cfg_tree.xpath("//Direct[@called_id=\""+self._id+"\"]"):
-            sliced_calls.add(call.getparent().getparent().getparent())
+        if self._criteria == "callers":
+            self.handle_callers()
+        elif self._criteria == "tree":
+            self.handle_tree()
+        else:
+            print "Unknown CFG slicing criteria!"
+            return
+        print len(self._sliced_frames),"methods after slicing"
+        self.slice()
+    
+    def slice(self):
         for frame in self._cfg_tree.xpath("//Method|//Function"):
-            print frame
-            if frame not in sliced_calls:
+            if frame not in self._sliced_frames:
                 frame.getparent().remove(frame)
         f = open(self._out_xml,'w')
         f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
+    
+    def handle_tree(self,node_id=None):
+        if node_id is None:
+            self._sliced_frames = set([])
+            node_id = self._id
+        self._sliced_frames|=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+node_id+"\"]|//Method[@cfg_id=\""+node_id+"\"]"))
+        calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//Direct[@called_id]|//Function[@cfg_id=\""+node_id+"\"]//Direct[@called_id]")
+        for id in set([c.get("called_id") for c in calls]):
+            self.handle_tree(id)
+    def handle_callers(self):
+        ''' method/func of interest'''
+        self._sliced_frames=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+self._id+"\"]|//Method[@cfg_id=\""+self._id+"\"]"))
+        ''' calls of method/func of interest'''
+        for call in self._cfg_tree.xpath("//Direct[@called_id=\""+self._id+"\"]"):
+            self._sliced_frames.add(call.getparent().getparent().getparent())
