@@ -839,12 +839,14 @@ class CFGSlicer(CFGHandler):
     _out_xml = None
     _criteria = None
     _sliced_frames = None
+    
     def __init__(self,lcfg_xml,out_xml,target_id,criteria):
         CFGHandler.__init__(self, lcfg_xml)
         self._id = target_id
         self._out_xml = out_xml
         self._criteria = criteria
         self.run()
+        
     def run(self):
         if self._criteria == "callers":
             self.handle_callers()
@@ -857,6 +859,7 @@ class CFGSlicer(CFGHandler):
         self.slice()
     
     def slice(self):
+        ''' Extract sliced methods/funcs from CFG'''
         for frame in self._cfg_tree.xpath("//Method|//Function"):
             if frame not in self._sliced_frames:
                 frame.getparent().remove(frame)
@@ -865,6 +868,7 @@ class CFGSlicer(CFGHandler):
         f.close()
     
     def handle_tree(self,node_id=None):
+        ''' Slice methods/funcs called from given'''
         if node_id is None:
             self._sliced_frames = set([])
             node_id = self._id
@@ -872,7 +876,9 @@ class CFGSlicer(CFGHandler):
         calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//Direct[@called_id]|//Function[@cfg_id=\""+node_id+"\"]//Direct[@called_id]")
         for id in set([c.get("called_id") for c in calls]):
             self.handle_tree(id)
+            
     def handle_callers(self):
+        ''' Slice callers methods/funcs for given'''
         ''' method/func of interest'''
         self._sliced_frames=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+self._id+"\"]|//Method[@cfg_id=\""+self._id+"\"]"))
         ''' calls of method/func of interest'''
