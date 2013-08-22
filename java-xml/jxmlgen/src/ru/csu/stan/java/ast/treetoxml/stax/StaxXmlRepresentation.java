@@ -64,6 +64,18 @@ public class StaxXmlRepresentation implements TraversalHandler {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public void onEmptyNodeName(String nodeName) {
+		try {
+			writeOffset();
+			this.writer.writeStartElement(nodeName);
+			this.offset++;
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void onEndNode(JCTree node, String name, Position position) {

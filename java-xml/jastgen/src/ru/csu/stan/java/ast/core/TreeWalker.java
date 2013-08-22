@@ -37,6 +37,11 @@ public interface TreeWalker {
 	void handle(JCTree node, String innerName);
 	
 	/**
+	 * Обработка узла AST и передаваемого имени по отдельности.
+	 */
+	void handle(JCTree node, String innerName, boolean separateName);
+	
+	/**
 	 * Обработка списка узлов AST.
 	 */
 	void handle(List<? extends JCTree> nodesList, String innerName);

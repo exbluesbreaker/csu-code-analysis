@@ -27,7 +27,7 @@ public class SourceFile {
 	private List<Anchor> anchorList = new LinkedList<Anchor>();
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	private static final String JS_LINE_SEPARATOR = "\\n\\";
-	private static final String JS_FUNCTION_BEGIN_TEMPLATE = "sourceFiles.{0} = function(){\n  return \"";
+	private static final String JS_FUNCTION_BEGIN_TEMPLATE = "sourceFiles.{0} = function()'{'\n  return \"";
 	private static final String JS_FUNCTION_END = "\";\n}\n";
 	private static final String JS_ENSURE_PACKAGE_EXIST = "if (typeof sourceFiles.{0} == 'undefined')\n  sourceFiles.{0} = '{}';\n\n";
 	
@@ -91,7 +91,9 @@ public class SourceFile {
 	
 	private void writeJSPackageEnsurance(Writer writer) throws IOException{
 	    String packageName = filename.replaceAll(System.getProperty("file.separator"), ".");
-	    String[] packages = packageName.split(".");
+	    if (packageName.charAt(0) == '.')
+	    	packageName = packageName.substring(1);
+	    String[] packages = packageName.split("\\.");
 	    String current = "";
 	    if (packages.length > 2)
 	        for (int i = 0; i < packages.length - 2; i++)

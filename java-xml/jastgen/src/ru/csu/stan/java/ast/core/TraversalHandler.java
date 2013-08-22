@@ -110,6 +110,12 @@ public interface TraversalHandler {
     public void onSourceFile(JavaFileObject sourceFile);
     
     /**
+     * Событие, возникающее при обработке пустого узла, состоящего только из имени.
+     * Необходимо для создания пустых вспомогательных тегов, например, внутри if: condition, then и else.
+     */
+    public void onEmptyNodeName(String nodeName);
+    
+    /**
      * Интерфейс, описывающий позицию конструкции в исходном тексте.
      *
      */
