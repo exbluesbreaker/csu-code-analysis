@@ -873,8 +873,11 @@ class CFGSlicer(CFGHandler):
             self._sliced_frames = set([])
             node_id = self._id
         self._sliced_frames|=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+node_id+"\"]|//Method[@cfg_id=\""+node_id+"\"]"))
-        calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//Direct[@called_id]|//Function[@cfg_id=\""+node_id+"\"]//Direct[@called_id]")
-        for id in set([c.get("called_id") for c in calls]):
+        calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//TargetFunction[@cfg_id]|\
+                                                        //Method[@cfg_id=\""+node_id+"\"]//TargetMethod[@cfg_id]|\
+                                                        //Function[@cfg_id=\""+node_id+"\"]//TargetFunction[@cfg_id]|\
+                                                        //Function[@cfg_id=\""+node_id+"\"]//TargetMethod[@cfg_id]")
+        for id in set([c.get("cfg_id") for c in calls]):
             self.handle_tree(id)
             
     def handle_callers(self):
@@ -882,5 +885,7 @@ class CFGSlicer(CFGHandler):
         ''' method/func of interest'''
         self._sliced_frames=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+self._id+"\"]|//Method[@cfg_id=\""+self._id+"\"]"))
         ''' calls of method/func of interest'''
-        for call in self._cfg_tree.xpath("//Direct[@called_id=\""+self._id+"\"]"):
-            self._sliced_frames.add(call.getparent().getparent().getparent())
+        for call in self._cfg_tree.xpath("//TargetFunction[@cfg_id=\""+self._id+"\"]"):
+            self._sliced_frames.add(call.getparent().getparent().getparent().getparent())
+        for call in self._cfg_tree.xpath("//TargetMethod[@cfg_id=\""+self._id+"\"]"):
+            self._sliced_frames.add(call.getparent().getparent().getparent().getparent().getparent())

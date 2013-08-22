@@ -219,7 +219,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     target_subnode = etree.Element("TargetUnknown")
                     call_subnode.append(target_subnode)
                 if called_id is not None:
-                    target_subnode.set("called_id",str(called_id))
+                    target_subnode.set("cfg_id",str(called_id))
                 call_node.append(call_subnode)
             elif isinstance(node.func, Getattr):
                 self._getattr_calls += 1
