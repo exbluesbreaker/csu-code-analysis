@@ -8,7 +8,7 @@ import java.util.List;
  * @author mz
  *
  */
-class FlowCursor
+class FlowCursor implements Cloneable
 {
     private int currentId = 1;
     private List<Integer> parentIds;
@@ -16,6 +16,10 @@ class FlowCursor
     public int getCurrentId()
     {
         return currentId;
+    }
+    
+    public void setCurrentId(int value){
+        this.currentId = value;
     }
     
     public BigInteger getCurrentIdBigInteger(){
@@ -40,5 +44,15 @@ class FlowCursor
     public void addParentId(int id)
     {
         this.parentIds.add(Integer.valueOf(id));
+    }
+
+    @Override
+    protected FlowCursor clone()
+    {
+        FlowCursor newObject = new FlowCursor();
+        newObject.currentId = this.currentId;
+        for (Integer i: parentIds)
+            newObject.addParentId(i.intValue());
+        return newObject;
     }
 }

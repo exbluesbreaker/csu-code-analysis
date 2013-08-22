@@ -42,22 +42,15 @@ class ControlFlowContext extends ContextBase{
     public IContext<Project> getNextState(IContext<Project> context, String eventName){
         if ("class".equals(eventName))
             return new ClassContext(getResultRoot(), this, compilationUnit);
+        if ("if".equals(eventName)){
+            block = null;
+            return new IfContext(getResultRoot(), this, cursor, compilationUnit, method);
+        }
         return this;
     }
 
     @Override
     public void processTag(String name, NodeAttributes attrs){
-        if ("if".equals(name)){
-            If ifBlock = getObjectFactory().createIf();
-            ifBlock.setFromlineno(BigInteger.valueOf(attrs.getIntAttribute(NodeAttributes.LINE_ATTRIBUTE)));
-            ifBlock.setColOffset(BigInteger.valueOf(attrs.getIntAttribute(NodeAttributes.COL_ATTRIBUTE)));
-            ifBlock.setId(cursor.getCurrentIdBigInteger());
-            cursor.incrementCurrentId();
-            method.getTryExceptOrTryFinallyOrWith().add(ifBlock);
-            // TODO: а здесь разбираем его внутренности
-            block = null;
-            return;
-        }
         if (block == null){
         	makeFlowsToCurrent();
             block = getObjectFactory().createBlock();
