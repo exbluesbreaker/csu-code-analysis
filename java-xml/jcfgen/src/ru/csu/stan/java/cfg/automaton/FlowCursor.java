@@ -1,5 +1,6 @@
 package ru.csu.stan.java.cfg.automaton;
 
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -15,6 +16,10 @@ class FlowCursor
     public int getCurrentId()
     {
         return currentId;
+    }
+    
+    public BigInteger getCurrentIdBigInteger(){
+    	return BigInteger.valueOf(currentId);
     }
         
     public void incrementCurrentId()

@@ -16,6 +16,20 @@ public class MyClass extends ArrayList<Object>{
     
     public static void main(IAction action) {
         System.out.println(MyClass.A);
+        
+        if (1+2 > 2+3)
+        	System.out.println("123");
+        else
+        	System.out.println("321");
+        
+        if (action.equals(A))
+        	if (2 > 3)
+        		System.out.println("000");
+        	else{
+        		System.out.println("1");
+        		System.out.println("1");
+        	}
+        
         List<Object> a = new List<Object>() {
 			
 			@Override

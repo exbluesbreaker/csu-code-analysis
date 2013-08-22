@@ -154,30 +154,42 @@ public class TreeWalkerImpl implements TreeWalker, TraversalHandler {
 		handlers.remove(handler);
 	}
 
+	@Override
 	public final void handle(Symbol symbol, String innerName) {
 		handleSymbol(symbol, getNodeName(innerName));
 	}
 
+	@Override
 	public final void handle(Type type, String innerName) {
 		onType(type, getNodeName(innerName));
 	}
 
+	@Override
 	public final void handle(Name nameElement, String innerName) {
 		onName(nameElement, getNodeName(innerName));
 	}
 
+	@Override
 	public final void handle(JCTree node, String innerName) {
-		onHandleNode(node, getNodeName(innerName));
+		onHandleNode(node, getNodeName(innerName), false);
+	}
+	
+	@Override
+	public final void handle(JCTree node, String innerName, boolean separateName) {
+		onHandleNode(node, getNodeName(innerName), separateName);
 	}
 
+	@Override
 	public final void handle(List<? extends JCTree> nodesList, String innerName) {
 		onHandleList(nodesList, getNodeName(innerName));
 	}
 
+	@Override
 	public final void handleFlags(long flags) {
 		onFlags(flags);
 	}
 
+	@Override
 	public final void handlePrimitiveType(TypeKind typeKind) {
 		onPrimitiveType(typeKind);
 	}
@@ -202,10 +214,12 @@ public class TreeWalkerImpl implements TreeWalker, TraversalHandler {
 		onSourceFile(javaFile);
 	}
 
-	protected void onHandleNode(JCTree node, String name) {
+	protected void onHandleNode(JCTree node, String name, boolean separateName) {
 		if (node == null) {
 			onNullNode(name);
 		} else {
+			if (separateName)
+				onEmptyNodeName(name);
 			Position position = PositionImpl.createPosition(lineMap, node.getPreferredPosition());
 			onStartNode(node, name, position);
 			if (JCLiteral.class.isInstance(node)) {
@@ -223,6 +237,8 @@ public class TreeWalkerImpl implements TreeWalker, TraversalHandler {
 				}
 			}
 			onEndNode(node, name, position);
+			if (separateName)
+				onEndNode(null, name, position);
 		}
 	}
 
@@ -233,7 +249,7 @@ public class TreeWalkerImpl implements TreeWalker, TraversalHandler {
 			onStartNodesList(nodesList, name);
 			int i = 0;
 			for (JCTree node : nodesList) {
-				onHandleNode(node, "I" + i++);
+				onHandleNode(node, "I" + i++, false);
 			}
 			onEndNodesList(nodesList, name);
 		}
@@ -363,6 +379,13 @@ public class TreeWalkerImpl implements TreeWalker, TraversalHandler {
 	public void onSourceFile(JavaFileObject file) {
 		for (TraversalHandler handler : handlers) {
 			handler.onSourceFile(file);
+		}
+	}
+	
+	@Override
+	public void onEmptyNodeName(String nodeName) {
+		for (TraversalHandler handler : handlers) {
+			handler.onEmptyNodeName(nodeName);
 		}
 	}
 

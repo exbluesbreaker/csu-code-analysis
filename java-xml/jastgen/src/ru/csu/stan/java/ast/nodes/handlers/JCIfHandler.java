@@ -14,9 +14,9 @@ public class JCIfHandler extends JCTreeHandler {
     @Override
     protected void execute(JCTree node) {
         JCIf ifStmt = JCIf.class.cast(node);
-        walker.handle(ifStmt.cond, "nodename.condition");
-        walker.handle(ifStmt.thenpart, "nodename.then_part");
-        walker.handle(ifStmt.elsepart, "nodename.else_part");
+        walker.handle(ifStmt.cond, "nodename.condition", true);
+        walker.handle(ifStmt.thenpart, "nodename.then_part", true);
+        walker.handle(ifStmt.elsepart, "nodename.else_part", true);
     }
 
 }
