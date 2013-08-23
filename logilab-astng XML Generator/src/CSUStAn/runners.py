@@ -678,12 +678,10 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
             del meth.attrib["id"]
             meth.set("cfg_id",cfg_id)
             self._class_dict[parent_class.get("id")+meth.get("name")]=meth
-        for call in self._cfg_tree.xpath("//Direct[@called=\"class\"]"):
-            target_class = self.get_class_by_full_name(call.get("label")+'.'+call.getparent().get("name"))
+        for call in self._cfg_tree.xpath("//TargetClass"):
+            target_class = self.get_class_by_full_name(call.get("label")+'.'+call.getparent().getparent().get("name"))
             if(not target_class is None):
-                class_node = etree.Element("TargetClass", ucr_id=target_class.get("id"))
-                call.append(class_node)
-                self._targeted += 1
+                call.set("ucr_id",target_class.get("id"))
         for call in self._cfg_tree.xpath("//Getattr[starts-with(@label,\"self.\")]"):
             frame = call.getparent().getparent().getparent()
             if(frame.tag=='Method'):
@@ -695,13 +693,18 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
                         self._typed_ga_calls +=1
                     else:
                         self._unknown_ga_calls +=1
+                        target_node = etree.Element("Target",type="unknown")
+                        call.append(target_node)
                     for t in attr_types:
-                        tgt_node = etree.Element("TargetClass", ucr_id=t.get("id"))
-                        call.append(tgt_node)
                         if self._class_dict.has_key(t.get("id")+call.get("name")):
                             meth = self._class_dict[t.get("id")+call.get("name")]
-                            tgt_meth_node = etree.Element("TargetMethod", cfg_id=meth.get("cfg_id"))
-                            tgt_node.append(tgt_meth_node)
+                            tgt_node = etree.Element("Target",type="method", cfg_id=meth.get("cfg_id"))
+                            call.append(tgt_node)
+                        else:
+                            tgt_node = etree.Element("Target",type="method")
+                            call.append(tgt_node)
+                        tgt_class_node = etree.Element("TargetClass", ucr_id=t.get("id"))
+                        tgt_node.append(tgt_class_node)
         f = open(self._out_xml,'w')
         f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()

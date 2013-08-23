@@ -203,21 +203,20 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 call_subnode = etree.Element("Direct",name=node.func.name)
                 if space_type is not None:
                     call_subnode.set("space_type",space_type)
+                target_subnode = etree.Element("Target")
+                call_subnode.append(target_subnode)
                 if called=='function':
-                    target_subnode = etree.Element("TargetFunction")
-                    call_subnode.append(target_subnode)
+                    target_subnode.set("type","function")
                     if label is not None:
                         target_subnode.set("label",label)
                 elif called=='class':
+                    target_subnode.set("type","method")
                     class_subnode = etree.Element("TargetClass")
                     if label is not None:
                         class_subnode.set("label",label)
-                    call_subnode.append(class_subnode)
-                    target_subnode = etree.Element("TargetMethod")
-                    class_subnode.append(target_subnode)
+                    target_subnode.append(class_subnode)
                 else:
-                    target_subnode = etree.Element("TargetUnknown")
-                    call_subnode.append(target_subnode)
+                    target_subnode.set("type","unknown")
                 if called_id is not None:
                     target_subnode.set("cfg_id",str(called_id))
                 call_node.append(call_subnode)
