@@ -665,20 +665,11 @@ class DataflowLinker(CFGHandler,ClassIRHandler):
         self._out_xml = out_xml
         self.run()
     def run(self):
-        self.link_funcs(self._cfg_tree)
         self.link_methods(self._cfg_tree)
-    def link_funcs(self,xml_node):
-        for meth in self._cfg_tree.xpath("//Function"):
-            cfg_id = meth.get("id")
-            del meth.attrib["id"]
-            meth.set("cfg_id",cfg_id)
     def link_methods(self,xml_node):
         for meth in self._cfg_tree.xpath("//Method"):
             parent_class = self.get_class_by_full_name(meth.get("label")+'.'+meth.get("parent_class"))
             meth.set("ucr_id",parent_class.get("id"))
-            cfg_id = meth.get("id")
-            del meth.attrib["id"]
-            meth.set("cfg_id",cfg_id)
             self._class_dict[parent_class.get("id")+meth.get("name")]=meth
         for call in self._cfg_tree.xpath("//TargetClass"):
             target_class = self.get_class_by_full_name(call.get("label")+'.'+call.getparent().getparent().get("name"))

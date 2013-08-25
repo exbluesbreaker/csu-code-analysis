@@ -55,9 +55,9 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         if(len(node.body)>8):
             self._dbg = True
         if isinstance(node.parent,Class):
-            func_node = etree.Element("Method",id=str(node.id),name=node.name,parent_class=node.parent.name,label=node.root().name)
+            func_node = etree.Element("Method",cfg_id=str(node.id),name=node.name,parent_class=node.parent.name,label=node.root().name)
         else:
-            func_node = etree.Element("Function",id=str(node.id),name=node.name,label=node.root().name)
+            func_node = etree.Element("Function",cfg_id=str(node.id),name=node.name,label=node.root().name)
         self._stack[node] = func_node
         self._root.append(func_node)
         id_count, prev = self.handle_flow_part(func_node,node.body, set([]),0)
