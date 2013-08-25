@@ -643,12 +643,14 @@ class TestRunner(ConfigurationMixIn):
 
 class CFGExtractor(ASTNGHandler):
     _project_name = None
-    def __init__(self,args):
-        self._project_name = args[0]
-        ASTNGHandler.__init__(self,args)
+    _out_xml = None
+    def __init__(self,project,out_xml):
+        self._project_name = project
+        self._out_xml = out_xml
+        ASTNGHandler.__init__(self,[project])
         self.run()
     def run(self):
-        linker = CFGLinker(self._project_name)
+        linker = CFGLinker(self._project_name,self._out_xml)
         linker.visit(self.project)
         
 class DataflowLinker(CFGHandler,ClassIRHandler):
@@ -876,10 +878,8 @@ class CFGSlicer(CFGHandler):
             self._sliced_frames = set([])
             node_id = self._id
         self._sliced_frames|=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+node_id+"\"]|//Method[@cfg_id=\""+node_id+"\"]"))
-        calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//TargetFunction[@cfg_id]|\
-                                                        //Method[@cfg_id=\""+node_id+"\"]//TargetMethod[@cfg_id]|\
-                                                        //Function[@cfg_id=\""+node_id+"\"]//TargetFunction[@cfg_id]|\
-                                                        //Function[@cfg_id=\""+node_id+"\"]//TargetMethod[@cfg_id]")
+        calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]|\
+                                                        //Function[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]")
         for id in set([c.get("cfg_id") for c in calls]):
             self.handle_tree(id)
             
@@ -888,7 +888,5 @@ class CFGSlicer(CFGHandler):
         ''' method/func of interest'''
         self._sliced_frames=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+self._id+"\"]|//Method[@cfg_id=\""+self._id+"\"]"))
         ''' calls of method/func of interest'''
-        for call in self._cfg_tree.xpath("//TargetFunction[@cfg_id=\""+self._id+"\"]"):
+        for call in self._cfg_tree.xpath("//Target[@cfg_id=\""+self._id+"\"]"):
             self._sliced_frames.add(call.getparent().getparent().getparent().getparent())
-        for call in self._cfg_tree.xpath("//TargetMethod[@cfg_id=\""+self._id+"\"]"):
-            self._sliced_frames.add(call.getparent().getparent().getparent().getparent().getparent())

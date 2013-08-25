@@ -30,11 +30,13 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     _getattr_calls = 0
     _func_calls = 0
     _class_calls = 0
+    _out_xml = None
 
-    def __init__(self, project_name):
+    def __init__(self, project_name, out_xml):
         IdGeneratorMixIn.__init__(self)
         LocalsVisitor.__init__(self)
         self._project_name = project_name
+        self._out_xml = out_xml
     
     def visit_project(self,node):
         self._root = etree.Element("Project",name=self._project_name)
@@ -44,7 +46,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         print "Func calls ",self._func_calls
         print "Class calls ",self._class_calls
         print "Getattr calls ",self._getattr_calls
-        f = open('cfg.xml','w')
+        f = open(self._out_xml,'w')
         f.write(etree.tostring(self._root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
     def visit_function(self,node):

@@ -172,8 +172,9 @@ elif(args.type=="TestRunner"):
     runner = TestRunner([project])
 elif(args.type=="CFGExtractor"):
     project = cfg_parser.get(args.type,'project')
+    out_file = cfg_parser.get(args.type,'out_file')
     sys.argv = ["main.py",project]
-    runner = CFGExtractor([project])
+    runner = CFGExtractor(project,out_file)
 elif(args.type=="DataflowLinker"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     cfg_xml = cfg_parser.get(args.type,'cfg_xml')
