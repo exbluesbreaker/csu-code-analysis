@@ -1,11 +1,10 @@
 package ru.csu.stan.java.cfg.automaton;
 
 import java.math.BigInteger;
-import java.util.Arrays;
+import java.util.LinkedList;
 
 import ru.csu.stan.java.cfg.jaxb.Block;
 import ru.csu.stan.java.cfg.jaxb.Flow;
-import ru.csu.stan.java.cfg.jaxb.If;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
@@ -23,6 +22,7 @@ class ControlFlowContext extends ContextBase{
     private FlowCursor cursor;
     private CompilationUnit compilationUnit;
     private Block block;
+    private String startTag = "";
 
     ControlFlowContext(Project resultRoot, ContextBase previousState, Method method, FlowCursor cursor, CompilationUnit compilationUnit){
         super(resultRoot, previousState);
@@ -35,6 +35,8 @@ class ControlFlowContext extends ContextBase{
     public IContext<Project> getPreviousState(String eventName){   
         if ("block".equals(eventName))
             return getPreviousState();
+        if (startTag.equals(eventName))
+        	return getPreviousState();
         return this;
     }
 
@@ -51,14 +53,19 @@ class ControlFlowContext extends ContextBase{
 
     @Override
     public void processTag(String name, NodeAttributes attrs){
+    	if (startTag == null || "".equals(startTag))
+    		startTag = name;
         if (block == null){
         	makeFlowsToCurrent();
             block = getObjectFactory().createBlock();
             block.setId(BigInteger.valueOf(cursor.getCurrentId()));
-            block.setFromlineno(BigInteger.valueOf(attrs.getIntAttribute(NodeAttributes.LINE_ATTRIBUTE)));
-            block.setColOffset(BigInteger.valueOf(attrs.getIntAttribute(NodeAttributes.COL_ATTRIBUTE)));
+            if (attrs.isAttributeExist(NodeAttributes.LINE_ATTRIBUTE))
+            	block.setFromlineno(BigInteger.valueOf(attrs.getIntAttribute(NodeAttributes.LINE_ATTRIBUTE)));
+            if (attrs.isAttributeExist(NodeAttributes.COL_ATTRIBUTE))
+            	block.setColOffset(BigInteger.valueOf(attrs.getIntAttribute(NodeAttributes.COL_ATTRIBUTE)));
             method.getTryExceptOrTryFinallyOrWith().add(block);
-            cursor.setParentIds(Arrays.asList(Integer.valueOf(cursor.getCurrentId())));
+            cursor.setParentIds(new LinkedList<Integer>());
+            cursor.addParentId(cursor.getCurrentId());
             cursor.incrementCurrentId();
         }
     }

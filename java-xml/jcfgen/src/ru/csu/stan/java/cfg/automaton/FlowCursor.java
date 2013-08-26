@@ -1,6 +1,7 @@
 package ru.csu.stan.java.cfg.automaton;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
 class FlowCursor implements Cloneable
 {
     private int currentId = 1;
-    private List<Integer> parentIds;
+    private List<Integer> parentIds = new LinkedList<Integer>();
     
     public int getCurrentId()
     {
@@ -34,6 +35,10 @@ class FlowCursor implements Cloneable
     public List<Integer> getParentIds()
     {
         return parentIds;
+    }
+    
+    public void clearParentIds(){
+    	this.parentIds = new LinkedList<Integer>();
     }
     
     public void setParentIds(List<Integer> parentIds)

@@ -1,9 +1,16 @@
 package ru.csu.stan.java.classgen.handlers;
 
+import java.util.Iterator;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 
+/**
+ * 
+ * @author mz
+ *
+ */
 public class NodeAttributes {
 	
 	public static final String NAME_ATTRIBUTE = "name";
@@ -15,6 +22,13 @@ public class NodeAttributes {
 	
 	public NodeAttributes(StartElement event){
 		this.event = event;
+	}
+	
+	public boolean isAttributeExist(String name){
+		for (@SuppressWarnings("unchecked") Iterator<Attribute> it = event.getAttributes(); it.hasNext(); )
+			if (it.next().getName().equals(name))
+				return true;
+		return false;
 	}
 	
 	public String getStringAttribute(String name){
