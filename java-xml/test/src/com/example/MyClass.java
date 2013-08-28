@@ -12,7 +12,7 @@ public class MyClass extends ArrayList<Object>{
     private StringBuffer sb = new StringBuffer();
     private int x = Integer.valueOf(sb.toString());
     OurClass<IAction> list;
-    List<IAction> actionList;
+    static List<IAction> actionList;
     
     public static void main(IAction action) {
         System.out.println(MyClass.A);
@@ -29,6 +29,29 @@ public class MyClass extends ArrayList<Object>{
         		System.out.println("1");
         		System.out.println("1");
         	}
+        for (int i = 0; i < 10; i++)
+        	System.out.println(123);
+        
+        for (IAction act: actionList){
+        	System.out.println(act.toString());
+        }
+        boolean x = false;
+        	
+        while (!x){
+        	x = true;
+        }
+        
+        while (x)
+        	x = false;
+        
+        do
+        	x = true;
+        while (!x);
+        
+        do{
+        	x = false;	
+        }
+        while (x);
         
         List<Object> a = new List<Object>() {
 			

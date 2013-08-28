@@ -15,9 +15,9 @@ public class JCForLoopHandler extends JCTreeHandler {
     protected void execute(JCTree node) {
         JCForLoop loop = JCForLoop.class.cast(node);
         walker.handle(loop.init, "nodename.initialize_section");
-        walker.handle(loop.cond, "nodename.condition_section");
+        walker.handle(loop.cond, "nodename.condition_section", true);
         walker.handle(loop.step, "nodename.step_section");
-        walker.handle(loop.body, "nodename.body");
+        walker.handle(loop.body, "nodename.body", true);
     }
 
 }

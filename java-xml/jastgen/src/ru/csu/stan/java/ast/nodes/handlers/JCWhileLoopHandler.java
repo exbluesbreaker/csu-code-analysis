@@ -14,8 +14,9 @@ public class JCWhileLoopHandler extends JCTreeHandler {
     @Override
     protected void execute(JCTree node) {
         JCWhileLoop loop = JCWhileLoop.class.cast(node);
-        walker.handle(loop.body, "nodename.body");
-        walker.handle(loop.cond, "nodename.condition");
+        walker.handle(loop.cond, "nodename.condition", true);
+        walker.handle(loop.body, "nodename.body", true);
+        
     }
 
 }

@@ -14,9 +14,9 @@ public class JCEnhancedForLoopHandler extends JCTreeHandler {
     @Override
     protected void execute(JCTree node) {
         JCEnhancedForLoop loop = JCEnhancedForLoop.class.cast(node);
-        walker.handle(loop.var, "nodename.variable");
-        walker.handle(loop.expr, "nodename.expression");
-        walker.handle(loop.body, "nodename.body");
+        walker.handle(loop.var, "nodename.variable", true);
+        walker.handle(loop.expr, "nodename.expression", true);
+        walker.handle(loop.body, "nodename.body", true);
     }
 
 }

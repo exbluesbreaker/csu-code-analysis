@@ -48,11 +48,17 @@ class ControlFlowContext extends ContextBase{
             block = null;
             return new IfContext(getResultRoot(), this, cursor, compilationUnit, method);
         }
+        if ("while_loop".equals(eventName) || "do_while_loop".equals(eventName)){
+        	block = null;
+        	return new WhileContext(getResultRoot(), this, cursor, compilationUnit, method);
+        }
         return this;
     }
 
     @Override
     public void processTag(String name, NodeAttributes attrs){
+    	if ("body".equals(name))
+    		return;
     	if (startTag == null || "".equals(startTag))
     		startTag = name;
         if (block == null){
