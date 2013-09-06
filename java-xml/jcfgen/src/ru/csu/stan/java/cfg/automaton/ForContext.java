@@ -32,6 +32,11 @@ public class ForContext extends ControlFlowForkContextBase<For> {
 	public void processTag(String name, NodeAttributes attrs) {
 		super.processTag(name, attrs);
 		if ("initialize_section".equals(name))
+			if (getFlowForkBlock() != null)
+				getFlowForkBlock().setIterate("initialize_section");
+		if ("expression".equals(name))
+			if (getFlowForkBlock() != null)
+				getFlowForkBlock().setIterate("expression");
 	}
 
 	@Override
