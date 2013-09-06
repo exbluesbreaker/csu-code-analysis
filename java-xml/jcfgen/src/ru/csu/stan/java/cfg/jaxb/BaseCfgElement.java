@@ -12,23 +12,20 @@ import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Call complex type.
+ * <p>Java class for BaseCfgElement complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Call">
+ * &lt;complexType name="BaseCfgElement">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice minOccurs="0">
- *         &lt;element name="Direct" type="{}Direct"/>
- *         &lt;element name="Getattr" type="{}Getattr"/>
- *       &lt;/choice>
+ *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}integer" />
  *       &lt;attribute name="fromlineno" type="{http://www.w3.org/2001/XMLSchema}integer" />
  *       &lt;attribute name="col_offset" type="{http://www.w3.org/2001/XMLSchema}integer" />
  *     &lt;/restriction>
@@ -39,67 +36,47 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Call", propOrder = {
-    "direct",
-    "getattr"
+@XmlType(name = "BaseCfgElement")
+@XmlSeeAlso({
+    TryFinally.class,
+    TryExcept.class,
+    While.class,
+    For.class,
+    If.class,
+    With.class,
+    Block.class
 })
-public class Call {
+public class BaseCfgElement {
 
-    @XmlElement(name = "Direct")
-    protected Direct direct;
-    @XmlElement(name = "Getattr")
-    protected Getattr getattr;
+    @XmlAttribute
+    protected BigInteger id;
     @XmlAttribute
     protected BigInteger fromlineno;
     @XmlAttribute(name = "col_offset")
     protected BigInteger colOffset;
 
     /**
-     * Gets the value of the direct property.
+     * Gets the value of the id property.
      * 
      * @return
      *     possible object is
-     *     {@link Direct }
+     *     {@link BigInteger }
      *     
      */
-    public Direct getDirect() {
-        return direct;
+    public BigInteger getId() {
+        return id;
     }
 
     /**
-     * Sets the value of the direct property.
+     * Sets the value of the id property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Direct }
+     *     {@link BigInteger }
      *     
      */
-    public void setDirect(Direct value) {
-        this.direct = value;
-    }
-
-    /**
-     * Gets the value of the getattr property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Getattr }
-     *     
-     */
-    public Getattr getGetattr() {
-        return getattr;
-    }
-
-    /**
-     * Sets the value of the getattr property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Getattr }
-     *     
-     */
-    public void setGetattr(Getattr value) {
-        this.getattr = value;
+    public void setId(BigInteger value) {
+        this.id = value;
     }
 
     /**

@@ -60,7 +60,7 @@ class MethodContext extends ContextBase implements IClassNameHolder
 			this.name = nameAttr;
 			method = getObjectFactory().createMethod();
             method.setParentClass(className);
-            method.setId(BigInteger.valueOf(id));
+            method.setCfgId(BigInteger.valueOf(id));
             method.setName(this.name);
 		}
     }

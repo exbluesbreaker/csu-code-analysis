@@ -44,54 +44,67 @@
     <xs:attribute name="name" type="xs:string"/>
     <xs:attribute name="label" type="xs:string"/>
   </xs:complexType>
-
-  <xs:complexType name="TryExcept">
-    <xs:attribute name="id" type="xs:integer"/>
+  
+  <xs:complexType name="BaseCfgElement">
+  	<xs:attribute name="id" type="xs:integer"/>
     <xs:attribute name="fromlineno" type="xs:integer"/>
     <xs:attribute name="col_offset" type="xs:integer"/>
+  </xs:complexType>
+
+  <xs:complexType name="TryExcept">
+    <xs:complexContent>
+	  	<xs:extension base="BaseCfgElement">
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="TryFinally">
-    <xs:attribute name="id" type="xs:integer"/>
-    <xs:attribute name="fromlineno" type="xs:integer"/>
-    <xs:attribute name="col_offset" type="xs:integer"/>
+    <xs:complexContent>
+	  	<xs:extension base="BaseCfgElement">
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="With">
-    <xs:attribute name="id" type="xs:integer"/>
-    <xs:attribute name="fromlineno" type="xs:integer"/>
-    <xs:attribute name="col_offset" type="xs:integer"/>
+  	<xs:complexContent>
+	  	<xs:extension base="BaseCfgElement">
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="For">
-    <xs:attribute name="iterate" type="xs:string"/>
-    <xs:attribute name="id" type="xs:integer"/>
-    <xs:attribute name="fromlineno" type="xs:integer"/>
-    <xs:attribute name="col_offset" type="xs:integer"/>
+  	<xs:complexContent>
+	  	<xs:extension base="BaseCfgElement">
+	  		<xs:attribute name="iterate" type="xs:string"/>
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="If">
-    <xs:attribute name="test" type="xs:string"/>
-    <xs:attribute name="id" type="xs:integer"/>
-    <xs:attribute name="fromlineno" type="xs:integer"/>
-    <xs:attribute name="col_offset" type="xs:integer"/>
+  	<xs:complexContent>
+	  	<xs:extension base="BaseCfgElement">
+  			<xs:attribute name="test" type="xs:string"/>
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="While">
-    <xs:attribute name="test" type="xs:string"/>
-    <xs:attribute name="id" type="xs:integer"/>
-    <xs:attribute name="fromlineno" type="xs:integer"/>
-    <xs:attribute name="col_offset" type="xs:integer"/>
+  	<xs:complexContent>
+	  	<xs:extension base="BaseCfgElement">
+	  		<xs:attribute name="test" type="xs:string"/>
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="Block">
-    <xs:sequence>
-      <xs:element name="Call" type="Call" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="id" type="xs:integer"/>
-    <xs:attribute name="fromlineno" type="xs:integer"/>
-    <xs:attribute name="col_offset" type="xs:integer"/>
-    <xs:attribute name="type" type="xs:string" use="optional"/>
+  	<xs:complexContent>
+	  	<xs:extension base="BaseCfgElement">
+	  		<xs:sequence>
+		      <xs:element name="Call" type="Call" minOccurs="0" maxOccurs="unbounded"/>
+		    </xs:sequence>
+		    <xs:attribute name="type" type="xs:string" use="optional"/>
+    	</xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   
   <xs:complexType name="Call">

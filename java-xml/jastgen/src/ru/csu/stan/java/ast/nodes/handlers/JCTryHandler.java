@@ -14,9 +14,9 @@ public class JCTryHandler extends JCTreeHandler {
     @Override
     protected void execute(JCTree node) {
         JCTry tryStmt = JCTry.class.cast(node);
-        walker.handle(tryStmt.body, "nodename.body");
+        walker.handle(tryStmt.body, "nodename.body", true);
         walker.handle(tryStmt.catchers, "nodename.catchers");
-        walker.handle(tryStmt.finalizer, "nodename.finalizer");
+        walker.handle(tryStmt.finalizer, "nodename.finalizer", true);
     }
 
 }

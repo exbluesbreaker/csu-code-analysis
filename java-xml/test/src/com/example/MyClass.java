@@ -16,11 +16,19 @@ public class MyClass extends ArrayList<Object>{
     
     public static void main(IAction action) {
         System.out.println(MyClass.A);
-        
-        if (1+2 > 2+3)
-        	System.out.println("123");
-        else
-        	System.out.println("321");
+        try
+        {
+	        if (1+2 > 2+3)
+	        	System.out.println("123");
+	        else
+	        	System.out.println("321");
+        }
+        catch (Exception e){
+        	e.printStackTrace();
+        }
+        finally{
+        	System.out.println("aaaaaa");
+        }
         
         if (action.equals(A))
         	if (2 > 3)

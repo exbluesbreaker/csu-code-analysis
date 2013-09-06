@@ -17,20 +17,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Call complex type.
+ * <p>Java class for Target complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Call">
+ * &lt;complexType name="Target">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;choice minOccurs="0">
- *         &lt;element name="Direct" type="{}Direct"/>
- *         &lt;element name="Getattr" type="{}Getattr"/>
+ *         &lt;element name="TargetClass" type="{}TargetClass"/>
  *       &lt;/choice>
- *       &lt;attribute name="fromlineno" type="{http://www.w3.org/2001/XMLSchema}integer" />
- *       &lt;attribute name="col_offset" type="{http://www.w3.org/2001/XMLSchema}integer" />
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="label" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="cfg_id" type="{http://www.w3.org/2001/XMLSchema}integer" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -39,115 +39,114 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Call", propOrder = {
-    "direct",
-    "getattr"
+@XmlType(name = "Target", propOrder = {
+    "targetClass"
 })
-public class Call {
+public class Target {
 
-    @XmlElement(name = "Direct")
-    protected Direct direct;
-    @XmlElement(name = "Getattr")
-    protected Getattr getattr;
+    @XmlElement(name = "TargetClass")
+    protected TargetClass targetClass;
     @XmlAttribute
-    protected BigInteger fromlineno;
-    @XmlAttribute(name = "col_offset")
-    protected BigInteger colOffset;
+    protected String type;
+    @XmlAttribute
+    protected String label;
+    @XmlAttribute(name = "cfg_id")
+    protected BigInteger cfgId;
 
     /**
-     * Gets the value of the direct property.
+     * Gets the value of the targetClass property.
      * 
      * @return
      *     possible object is
-     *     {@link Direct }
+     *     {@link TargetClass }
      *     
      */
-    public Direct getDirect() {
-        return direct;
+    public TargetClass getTargetClass() {
+        return targetClass;
     }
 
     /**
-     * Sets the value of the direct property.
+     * Sets the value of the targetClass property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Direct }
+     *     {@link TargetClass }
      *     
      */
-    public void setDirect(Direct value) {
-        this.direct = value;
+    public void setTargetClass(TargetClass value) {
+        this.targetClass = value;
     }
 
     /**
-     * Gets the value of the getattr property.
+     * Gets the value of the type property.
      * 
      * @return
      *     possible object is
-     *     {@link Getattr }
+     *     {@link String }
      *     
      */
-    public Getattr getGetattr() {
-        return getattr;
+    public String getType() {
+        return type;
     }
 
     /**
-     * Sets the value of the getattr property.
+     * Sets the value of the type property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Getattr }
+     *     {@link String }
      *     
      */
-    public void setGetattr(Getattr value) {
-        this.getattr = value;
+    public void setType(String value) {
+        this.type = value;
     }
 
     /**
-     * Gets the value of the fromlineno property.
+     * Gets the value of the label property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * Sets the value of the label property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLabel(String value) {
+        this.label = value;
+    }
+
+    /**
+     * Gets the value of the cfgId property.
      * 
      * @return
      *     possible object is
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getFromlineno() {
-        return fromlineno;
+    public BigInteger getCfgId() {
+        return cfgId;
     }
 
     /**
-     * Sets the value of the fromlineno property.
+     * Sets the value of the cfgId property.
      * 
      * @param value
      *     allowed object is
      *     {@link BigInteger }
      *     
      */
-    public void setFromlineno(BigInteger value) {
-        this.fromlineno = value;
-    }
-
-    /**
-     * Gets the value of the colOffset property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
-     */
-    public BigInteger getColOffset() {
-        return colOffset;
-    }
-
-    /**
-     * Sets the value of the colOffset property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
-     */
-    public void setColOffset(BigInteger value) {
-        this.colOffset = value;
+    public void setCfgId(BigInteger value) {
+        this.cfgId = value;
     }
 
 }
