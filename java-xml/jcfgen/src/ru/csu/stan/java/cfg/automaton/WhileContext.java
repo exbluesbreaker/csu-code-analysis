@@ -23,6 +23,7 @@ class WhileContext extends ControlFlowForkContextBase<While> {
 	@Override
 	public IContext<Project> getNextState(IContext<Project> context, String eventName) {
 		if ("body".equals(eventName)){
+			bodyCursor = new FlowCursor();
 			return createStandardControlFlowContext(bodyCursor);
 		}
 		return this;
@@ -41,6 +42,7 @@ class WhileContext extends ControlFlowForkContextBase<While> {
 	public void finish(String eventName) {
 		if (isEventFitToContext(eventName)){
 			addCursorDataToCurrent(bodyCursor);
+			getCursor().addParentId(getFlowForkBlock().getId().intValue());
 		}
 	}
 

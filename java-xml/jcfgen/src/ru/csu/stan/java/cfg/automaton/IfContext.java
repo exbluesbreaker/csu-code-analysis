@@ -26,6 +26,7 @@ class IfContext extends ControlFlowForkContextBase<If>{
     public IContext<Project> getNextState(IContext<Project> context, String eventName)
     {
         if ("then_part".equals(eventName)){
+        	thenCursor = new FlowCursor();
         	return createStandardControlFlowContext(thenCursor);
         }
         if ("else_part".equals(eventName)){
@@ -50,11 +51,13 @@ class IfContext extends ControlFlowForkContextBase<If>{
     
 
     @Override
-    public void finish(String eventName)
-    {
+    public void finish(String eventName){
         if (isEventFitToContext(eventName)){
             addCursorDataToCurrent(thenCursor);
-            addCursorDataToCurrent(elseCursor);
+            if (elseCursor != null)
+            	addCursorDataToCurrent(elseCursor);
+            else
+            	getCursor().addParentId(getFlowForkBlock().getId().intValue());
         }
     }
 

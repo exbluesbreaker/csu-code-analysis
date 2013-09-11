@@ -1,5 +1,8 @@
 package ru.csu.stan.java.cfg.automaton;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.cfg.jaxb.TryExcept;
@@ -12,6 +15,10 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
  *
  */
 public class TryCatchContext extends ControlFlowForkContextBase<TryExcept> {
+	
+	private FlowCursor tryCursor;
+	private List<FlowCursor> catchCursors = new LinkedList<FlowCursor>();
+	private FlowCursor finallyCursor;
 
 	TryCatchContext(Project resultRoot, ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
 		super(resultRoot, previousState, cursor, compilationUnit, method);
@@ -19,12 +26,42 @@ public class TryCatchContext extends ControlFlowForkContextBase<TryExcept> {
 
 	@Override
 	public IContext<Project> getNextState(IContext<Project> context, String eventName) {
+		if ("body".equals(eventName)){
+			tryCursor = new FlowCursor();
+			return createStandardControlFlowContext(tryCursor);
+		}
+		if ("catch".equals(eventName)){
+			FlowCursor cursor = new FlowCursor();
+			catchCursors.add(cursor);
+			cursor.setCurrentId(getLastCurrentId());
+			cursor.addParentId(getFlowForkBlock().getId().intValue());
+			return new ControlFlowContext(getResultRoot(), this, getMethod(), cursor, getCompilationUnit());
+		}
+		if ("finally".equals(eventName)){
+			finallyCursor = new FlowCursor();
+			addCursorDataToCurrent(tryCursor);
+			for (FlowCursor cursor: catchCursors)
+				addCursorDataToCurrent(cursor);
+			finallyCursor.setCurrentId(getCursor().getCurrentId());
+			finallyCursor.setParentIds(getCursor().getParentIds());
+			return new ControlFlowContext(getResultRoot(), this, getMethod(), finallyCursor, getCompilationUnit());
+		}
 		return this;
 	}
 
 	@Override
 	public void finish(String eventName) {
-
+		if (isEventFitToContext(eventName)){
+			if (finallyCursor == null){
+				addCursorDataToCurrent(tryCursor);
+				for (FlowCursor cursor: catchCursors)
+					addCursorDataToCurrent(cursor);
+			}
+			else{
+				getCursor().clearParentIds();
+				addCursorDataToCurrent(finallyCursor);
+			}
+		}
 	}
 
 	@Override
@@ -37,4 +74,12 @@ public class TryCatchContext extends ControlFlowForkContextBase<TryExcept> {
 		return new String[] {"try"};
 	}
 
+	private int getLastCurrentId(){
+		int last = tryCursor.getCurrentId();
+		for (FlowCursor cursor: catchCursors)
+			if (cursor.getCurrentId() > last)
+				last = cursor.getCurrentId();
+		return last;
+	}
+	
 }

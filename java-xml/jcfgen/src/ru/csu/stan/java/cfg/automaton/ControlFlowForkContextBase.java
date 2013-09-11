@@ -97,9 +97,10 @@ abstract class ControlFlowForkContextBase<T extends BaseCfgElement> extends Cont
 		}
 	}
 	
-	protected IContext<Project> createStandardControlFlowContext(FlowCursor innerCursor){
+	protected IContext<Project> createStandardControlFlowContext(final FlowCursor innerCursor){
 		cursor.clearParentIds();
-		innerCursor = cursor.clone();
+		innerCursor.setCurrentId(cursor.getCurrentId());
+		innerCursor.clearParentIds();
 		innerCursor.addParentId(flowForkBlock.getId().intValue());
         return new ControlFlowContext(getResultRoot(), this, method, innerCursor, compilationUnit);
 	}

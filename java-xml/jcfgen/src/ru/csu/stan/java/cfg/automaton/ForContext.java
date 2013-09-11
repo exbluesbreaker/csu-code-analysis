@@ -23,6 +23,7 @@ public class ForContext extends ControlFlowForkContextBase<For> {
 	@Override
 	public IContext<Project> getNextState(IContext<Project> context, String eventName) {
 		if ("body".equals(eventName)){
+			bodyCursor = new FlowCursor();
 			return createStandardControlFlowContext(bodyCursor);
 		}
 		return this;
@@ -41,8 +42,10 @@ public class ForContext extends ControlFlowForkContextBase<For> {
 
 	@Override
 	public void finish(String eventName) {
-		if (isEventFitToContext(eventName))
+		if (isEventFitToContext(eventName)){
 			addCursorDataToCurrent(bodyCursor);
+			getCursor().addParentId(getFlowForkBlock().getId().intValue());
+		}
 	}
 
 	@Override

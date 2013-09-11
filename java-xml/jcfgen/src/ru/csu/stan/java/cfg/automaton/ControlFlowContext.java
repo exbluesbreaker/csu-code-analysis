@@ -19,12 +19,12 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
 class ControlFlowContext extends ContextBase{
 	
 	private Method method;
-    private FlowCursor cursor;
+    private final FlowCursor cursor;
     private CompilationUnit compilationUnit;
     private Block block;
     private String startTag = "";
 
-    ControlFlowContext(Project resultRoot, ContextBase previousState, Method method, FlowCursor cursor, CompilationUnit compilationUnit){
+    ControlFlowContext(Project resultRoot, ContextBase previousState, Method method, final FlowCursor cursor, CompilationUnit compilationUnit){
         super(resultRoot, previousState);
         this.method = method;
         this.cursor = cursor;
@@ -52,6 +52,14 @@ class ControlFlowContext extends ContextBase{
         	block = null;
         	return new WhileContext(getResultRoot(), this, cursor, compilationUnit, method);
         }
+        if ("for_loop".equals(eventName) || "enhanced_for_loop".equals(eventName)){
+        	block = null;
+        	return new ForContext(getResultRoot(), this, cursor, compilationUnit, method);
+        }
+        if ("try".equals(eventName)){
+        	block = null;
+        	return new TryCatchContext(getResultRoot(), this, cursor, compilationUnit, method);
+        }
         return this;
     }
 
@@ -61,7 +69,7 @@ class ControlFlowContext extends ContextBase{
     		return;
     	if (startTag == null || "".equals(startTag))
     		startTag = name;
-        if (block == null){
+        if (block == null && isNotOpeningTag(name)){
         	makeFlowsToCurrent();
             block = getObjectFactory().createBlock();
             block.setId(BigInteger.valueOf(cursor.getCurrentId()));
@@ -90,4 +98,7 @@ class ControlFlowContext extends ContextBase{
 
     }
 
+    private boolean isNotOpeningTag(String tag){
+    	return !("block".equals(tag) || "body".equals(tag) || "nodename.statements".equals(tag) || "then_part".equals(tag) || "else_part".equals(tag) || "finally".equals(tag) || "catch".equals(tag));
+    }
 }
