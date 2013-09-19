@@ -3,7 +3,6 @@ package ru.csu.stan.java.classgen.main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,13 +16,11 @@ import ru.csu.stan.java.classgen.automaton.ClassContext;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.HandlerFactory;
 import ru.csu.stan.java.classgen.handlers.IStaxHandler;
-import ru.csu.stan.java.classgen.jaxb.AggregatedType;
 import ru.csu.stan.java.classgen.jaxb.Argument;
 import ru.csu.stan.java.classgen.jaxb.Attribute;
 import ru.csu.stan.java.classgen.jaxb.BaseTypedElement;
 import ru.csu.stan.java.classgen.jaxb.Class;
 import ru.csu.stan.java.classgen.jaxb.Classes;
-import ru.csu.stan.java.classgen.jaxb.CommonType;
 import ru.csu.stan.java.classgen.jaxb.Method;
 import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
 import ru.csu.stan.java.classgen.jaxb.ParentClass;
@@ -44,7 +41,7 @@ import ru.csu.stan.java.classgen.util.ClassNameResolver;
  */
 public class UCRGenerator {
 
-	private ObjectFactory objectFactory;
+	public ObjectFactory objectFactory;
 	private HandlerFactory handlersFactory;
 	private XMLInputFactory xmlFactory;
 	
@@ -132,56 +129,19 @@ public class UCRGenerator {
 			// формируем полные типы для полей
 			if (clazz.getAttr() != null)
 				for (Attribute attr: clazz.getAttr()){
-					resolveTypeNames(attr, clazz, result, nameResolver);
+					nameResolver.resolveTypeNames(attr, clazz, result, objectFactory);
 				}
 			// формируем полные типы для возвращаемых значений из методов
 			if (clazz.getMethod() != null)
 				for (Method method: clazz.getMethod()){
-					resolveTypeNames(method, clazz, result, nameResolver);
+					nameResolver.resolveTypeNames(method, clazz, result, objectFactory);
 					
 					// формируем полные типы аргументов методов
 					if (method.getArg() != null)
 						for (Argument arg: method.getArg()){
-							resolveTypeNames(arg, clazz, result, nameResolver);
+							nameResolver.resolveTypeNames(arg, clazz, result, objectFactory);
 						}
 				}
-		}
-	}
-
-	/**
-	 * @param element
-	 * @param clazz
-	 * @param allClasses
-	 * @param nameResolver
-	 */
-	private void resolveTypeNames(BaseTypedElement element, Class clazz, Classes allClasses, ClassNameResolver nameResolver) {
-		List<CommonType> type = element.getCommonType();
-		if (type != null && type.size() > 0){
-			String fullTypeName = nameResolver.getFullTypeName(type.get(0).getName(), clazz, allClasses);
-			if (fullTypeName != null && !fullTypeName.isEmpty()){
-				type.get(0).setName(fullTypeName);
-			}
-			else
-				element.getCommonType().clear();
-		}
-		List<AggregatedType> aType = element.getAggregatedType();
-		if (aType != null && aType.size() > 0){
-			String fullTypeName = nameResolver.getFullTypeName(aType.get(0).getName(), clazz, allClasses);
-			String fullAgregatedTypeName = nameResolver.getFullTypeName(aType.get(0).getElementType(), clazz, allClasses);
-			if (fullTypeName != null && !fullTypeName.isEmpty()){
-				element.getAggregatedType().clear();
-				CommonType newType = objectFactory.createCommonType();
-				newType.setName(fullTypeName);
-				element.getCommonType().add(newType);
-			}
-			else
-				if (fullAgregatedTypeName != null && !fullAgregatedTypeName.isEmpty())
-				{
-					aType.get(0).setElementType(fullAgregatedTypeName);
-					aType.get(0).setId(BigInteger.valueOf(-1));
-				}
-				else
-					element.getAggregatedType().clear();
 		}
 	}
 

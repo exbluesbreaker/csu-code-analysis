@@ -6,6 +6,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import ru.csu.stan.java.cfg.jaxb.Project;
+
 /**
  * 
  * @author mz
@@ -39,7 +41,7 @@ public class Main {
 				e.printStackTrace();
 				System.exit(1);
 			}
-			Object result = generator.processInputFile(inputAst);
+			Project result = generator.processInputFile(inputAst);
 			try {
 				JAXBContext jcontext = JAXBContext.newInstance("ru.csu.stan.java.cfg.jaxb");
 				Marshaller marshaller = jcontext.createMarshaller();

@@ -1,71 +1,71 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Project>
-    <Method cfg_id="1" parent_class="" name="toArray">
+    <Method ucr_id="2" cfg_id="1" parent_class="com.example.MyClass$1" name="toArray">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="2" parent_class="" name="toArray">
+    <Method ucr_id="2" cfg_id="2" parent_class="com.example.MyClass$1" name="toArray">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="3" parent_class="" name="subList">
+    <Method ucr_id="2" cfg_id="3" parent_class="com.example.MyClass$1" name="subList">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="4" parent_class="" name="size">
+    <Method ucr_id="2" cfg_id="4" parent_class="com.example.MyClass$1" name="size">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="5" parent_class="" name="set">
+    <Method ucr_id="2" cfg_id="5" parent_class="com.example.MyClass$1" name="set">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="6" parent_class="" name="retainAll">
+    <Method ucr_id="2" cfg_id="6" parent_class="com.example.MyClass$1" name="retainAll">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="7" parent_class="" name="removeAll">
+    <Method ucr_id="2" cfg_id="7" parent_class="com.example.MyClass$1" name="removeAll">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="8" parent_class="" name="remove">
+    <Method ucr_id="2" cfg_id="8" parent_class="com.example.MyClass$1" name="remove">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="9" parent_class="" name="remove">
+    <Method ucr_id="2" cfg_id="9" parent_class="com.example.MyClass$1" name="remove">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="10" parent_class="" name="listIterator">
+    <Method ucr_id="2" cfg_id="10" parent_class="com.example.MyClass$1" name="listIterator">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="11" parent_class="" name="listIterator">
+    <Method ucr_id="2" cfg_id="11" parent_class="com.example.MyClass$1" name="listIterator">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="12" parent_class="" name="lastIndexOf">
+    <Method ucr_id="2" cfg_id="12" parent_class="com.example.MyClass$1" name="lastIndexOf">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="13" parent_class="" name="iterator">
+    <Method ucr_id="2" cfg_id="13" parent_class="com.example.MyClass$1" name="iterator">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="14" parent_class="" name="isEmpty">
+    <Method ucr_id="2" cfg_id="14" parent_class="com.example.MyClass$1" name="isEmpty">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="15" parent_class="" name="indexOf">
+    <Method ucr_id="2" cfg_id="15" parent_class="com.example.MyClass$1" name="indexOf">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="16" parent_class="" name="get">
+    <Method ucr_id="2" cfg_id="16" parent_class="com.example.MyClass$1" name="get">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="17" parent_class="" name="containsAll">
+    <Method ucr_id="2" cfg_id="17" parent_class="com.example.MyClass$1" name="containsAll">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="18" parent_class="" name="contains">
+    <Method ucr_id="2" cfg_id="18" parent_class="com.example.MyClass$1" name="contains">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="19" parent_class="" name="clear"/>
-    <Method cfg_id="20" parent_class="" name="addAll">
+    <Method ucr_id="2" cfg_id="19" parent_class="com.example.MyClass$1" name="clear"/>
+    <Method ucr_id="2" cfg_id="20" parent_class="com.example.MyClass$1" name="addAll">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="21" parent_class="" name="addAll">
+    <Method ucr_id="2" cfg_id="21" parent_class="com.example.MyClass$1" name="addAll">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="22" parent_class="" name="add"/>
-    <Method cfg_id="23" parent_class="" name="add">
+    <Method ucr_id="2" cfg_id="22" parent_class="com.example.MyClass$1" name="add"/>
+    <Method ucr_id="2" cfg_id="23" parent_class="com.example.MyClass$1" name="add">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="1" parent_class="com.example.MyClass" name="main">
+    <Method ucr_id="1" cfg_id="1" parent_class="com.example.MyClass" name="main">
         <Block id="1"/>
         <Flow from_id="1" to_id="2"/>
         <TryExcept col_offset="9" fromlineno="19" id="2"/>
@@ -126,10 +126,10 @@
         <Flow from_id="23" to_id="25"/>
         <Block id="25"/>
     </Method>
-    <Method cfg_id="2" parent_class="com.example.MyClass" name="bar">
+    <Method ucr_id="1" cfg_id="2" parent_class="com.example.MyClass" name="bar">
         <Block id="1"/>
     </Method>
-    <Method cfg_id="1" parent_class="com.example.MyClass.MyClass2" name="foo">
+    <Method ucr_id="3" cfg_id="1" parent_class="com.example.MyClass.MyClass2" name="foo">
         <Block id="1"/>
     </Method>
 </Project>

@@ -13,6 +13,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import ru.csu.stan.java.cfg.automaton.ContextFactory;
+import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.ObjectFactory;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.cfg.util.ImportedClassIdGenerator;
@@ -56,9 +57,11 @@ public class CFGGenerator {
 			idGenerator = ClassIdGenerator.getInstance();
 	}
 
-	public Object processInputFile(String filename){
+	public Project processInputFile(String filename){
 		
-		return firstPass(filename).getResultRoot();
+		Project p = firstPass(filename).getResultRoot();
+		secondPass(p);
+		return p;
 	}
 	
 	private IContext<Project> firstPass(String filename){
@@ -86,5 +89,14 @@ public class CFGGenerator {
 			e.printStackTrace();
 		}
 		return context;
+	}
+	
+	private void secondPass(Project project){
+		for (Object o: project.getMethodOrFunction()){
+			if (o instanceof Method){
+				Method method = (Method) o;
+				((Method) o).setUcrId(idGenerator.getClassId(method.getParentClass()));
+			}
+		}
 	}
 }

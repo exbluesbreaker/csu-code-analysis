@@ -1,12 +1,17 @@
 package ru.csu.stan.java.classgen.util;
 
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import ru.csu.stan.java.classgen.automaton.ClassContext;
+import ru.csu.stan.java.classgen.jaxb.AggregatedType;
+import ru.csu.stan.java.classgen.jaxb.BaseTypedElement;
 import ru.csu.stan.java.classgen.jaxb.Class;
 import ru.csu.stan.java.classgen.jaxb.Classes;
+import ru.csu.stan.java.classgen.jaxb.CommonType;
+import ru.csu.stan.java.classgen.jaxb.ObjectFactory;
 import ru.csu.stan.java.classgen.jaxb.ParentClass;
 
 public class ClassNameResolver {
@@ -173,6 +178,43 @@ public class ClassNameResolver {
 						return sameEndings.iterator().next();
 				}
 		return null;
+	}
+
+	/**
+	 * @param element
+	 * @param clazz
+	 * @param allClasses
+	 * @param objectFactory
+	 */
+	public void resolveTypeNames(BaseTypedElement element, Class clazz, Classes allClasses, ObjectFactory objectFactory) {
+		List<CommonType> type = element.getCommonType();
+		if (type != null && type.size() > 0){
+			String fullTypeName = getFullTypeName(type.get(0).getName(), clazz, allClasses);
+			if (fullTypeName != null && !fullTypeName.isEmpty()){
+				type.get(0).setName(fullTypeName);
+			}
+			else
+				element.getCommonType().clear();
+		}
+		List<AggregatedType> aType = element.getAggregatedType();
+		if (aType != null && aType.size() > 0){
+			String fullTypeName = getFullTypeName(aType.get(0).getName(), clazz, allClasses);
+			String fullAgregatedTypeName = getFullTypeName(aType.get(0).getElementType(), clazz, allClasses);
+			if (fullTypeName != null && !fullTypeName.isEmpty()){
+				element.getAggregatedType().clear();
+				CommonType newType = objectFactory.createCommonType();
+				newType.setName(fullTypeName);
+				element.getCommonType().add(newType);
+			}
+			else
+				if (fullAgregatedTypeName != null && !fullAgregatedTypeName.isEmpty())
+				{
+					aType.get(0).setElementType(fullAgregatedTypeName);
+					aType.get(0).setId(BigInteger.valueOf(-1));
+				}
+				else
+					element.getAggregatedType().clear();
+		}
 	}
 
 }

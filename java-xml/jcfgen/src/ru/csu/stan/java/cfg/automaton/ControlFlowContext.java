@@ -16,7 +16,7 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
  * @author mz
  *
  */
-class ControlFlowContext extends ContextBase{
+class ControlFlowContext extends ContextBase implements IClassNameHolder{
 	
 	private Method method;
     private final FlowCursor cursor;
@@ -101,4 +101,21 @@ class ControlFlowContext extends ContextBase{
     private boolean isNotOpeningTag(String tag){
     	return !("block".equals(tag) || "body".equals(tag) || "nodename.statements".equals(tag) || "then_part".equals(tag) || "else_part".equals(tag) || "finally".equals(tag) || "catch".equals(tag));
     }
+
+	@Override
+	public String getClassName() {
+		return findParentClassNameHolder().getClassName();
+	}
+
+	@Override
+	public int getNextInnerCount() {
+		return findParentClassNameHolder().getNextInnerCount();
+	}
+	
+	private IClassNameHolder findParentClassNameHolder(){
+		ContextBase ctx = this.getPreviousState();
+		while (!(ctx instanceof IClassNameHolder) && ctx != null)
+			ctx = ctx.getPreviousState();
+		return (IClassNameHolder) ctx;
+	}
 }
