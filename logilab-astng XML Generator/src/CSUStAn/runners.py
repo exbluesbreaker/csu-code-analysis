@@ -831,19 +831,35 @@ class ClassSlicer(ConfigurationMixIn,ClassIRHandler):
             self.slice_class(p)
             
 class CFGSlicer(CFGHandler):
-    _id = None
     _out_xml = None
-    _criteria = None
     _sliced_frames = None
     
-    def __init__(self,lcfg_xml,out_xml,target_id,criteria):
+    def __init__(self,lcfg_xml,out_xml):
         CFGHandler.__init__(self, lcfg_xml)
-        self._id = target_id
         self._out_xml = out_xml
-        self._criteria = criteria
-        self.run()
         
-    def run(self):
+    
+    def slice(self):
+        self.extract_slicing()
+        ''' Extract sliced methods/funcs from CFG'''
+        for frame in self._cfg_tree.xpath("//Method|//Function"):
+            if frame not in self._sliced_frames:
+                frame.getparent().remove(frame)
+        f = open(self._out_xml,'w')
+        f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
+        f.close()
+            
+class FlatCFGSlicer(CFGSlicer):
+    _id = None
+    _criteria = None
+    
+    def __init__(self,lcfg_xml,out_xml,target_id,criteria):
+        CFGSlicer.__init__(self, lcfg_xml,out_xml)
+        self._id = target_id
+        self._criteria = criteria
+        self.slice()
+        
+    def extract_slicing(self):
         if self._criteria == "callers":
             self.handle_callers()
         elif self._criteria == "tree":
@@ -852,16 +868,6 @@ class CFGSlicer(CFGHandler):
             print "Unknown CFG slicing criteria!"
             return
         print len(self._sliced_frames),"methods after slicing"
-        self.slice()
-    
-    def slice(self):
-        ''' Extract sliced methods/funcs from CFG'''
-        for frame in self._cfg_tree.xpath("//Method|//Function"):
-            if frame not in self._sliced_frames:
-                frame.getparent().remove(frame)
-        f = open(self._out_xml,'w')
-        f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
-        f.close()
     
     def handle_tree(self,node_id=None):
         ''' Slice methods/funcs called from given'''
@@ -881,3 +887,6 @@ class CFGSlicer(CFGHandler):
         ''' calls of method/func of interest'''
         for call in self._cfg_tree.xpath("//Target[@cfg_id=\""+self._id+"\"]"):
             self._sliced_frames.add(call.getparent().getparent().getparent().getparent())
+            
+class CFGUCRSlicer(CFGHandler):
+    pass
