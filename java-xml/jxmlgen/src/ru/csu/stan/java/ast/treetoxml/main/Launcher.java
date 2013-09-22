@@ -21,7 +21,7 @@ import ru.csu.stan.java.ast.treetoxml.stax.StaxXmlRepresentation;
  *
  */
 public class Launcher {
-	private static final String HELP = "USAGE: Launcher <project dir> <output file>";
+	private static final String HELP = "USAGE: ast <project dir> <output file>";
 	
 	public static void main(String[] args) throws BypassException, IOException, XMLStreamException {
 		if (args != null && args.length > 0 && args.length < 3){

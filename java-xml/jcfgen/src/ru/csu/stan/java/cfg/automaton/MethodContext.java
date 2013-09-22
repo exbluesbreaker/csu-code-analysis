@@ -2,6 +2,8 @@ package ru.csu.stan.java.cfg.automaton;
 
 import java.math.BigInteger;
 
+import ru.csu.stan.java.cfg.jaxb.Block;
+import ru.csu.stan.java.cfg.jaxb.Flow;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
@@ -22,6 +24,7 @@ class MethodContext extends ContextBase implements IClassNameHolder
     private String name;
     private CompilationUnit compilationUnit;
     private Method method;
+    private FlowCursor innerCursor = new FlowCursor();
 
     MethodContext(Project resultRoot, ContextBase previousState, String className, int id, CompilationUnit compilationUnit)
     {
@@ -45,7 +48,7 @@ class MethodContext extends ContextBase implements IClassNameHolder
     	if ("class".equals(eventName))
             return new ClassContext(getResultRoot(), this, compilationUnit);
     	if ("block".equals(eventName))
-    	    return new ControlFlowContext(getResultRoot(), this, method, new FlowCursor(), compilationUnit);
+    	    return new ControlFlowContext(getResultRoot(), this, method, innerCursor, compilationUnit);
         return this;
     }
 
@@ -68,8 +71,17 @@ class MethodContext extends ContextBase implements IClassNameHolder
     @Override
     public void finish(String eventName)
     {
-        if ("method".equals(eventName))
-        {
+        if ("method".equals(eventName)){
+        	for (Integer parent: innerCursor.getParentIds()){
+        		Flow flow = getObjectFactory().createFlow();
+        		flow.setFromId(BigInteger.valueOf(parent.longValue()));
+        		flow.setToId(innerCursor.getCurrentIdBigInteger());
+        		method.getTryExceptOrTryFinallyOrWith().add(flow);
+        	}
+        	Block exitBlock = getObjectFactory().createBlock();
+        	exitBlock.setType("<<Exit>>");
+        	exitBlock.setId(innerCursor.getCurrentIdBigInteger());
+        	method.getTryExceptOrTryFinallyOrWith().add(exitBlock);
             getResultRoot().getMethodOrFunction().add(method);
         }
     }

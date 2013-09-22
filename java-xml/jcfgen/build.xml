@@ -1,27 +1,24 @@
 <?xml version="1.0"?>
 
-<project name="jxmlgen" default="makeJar" basedir=".">
+<project name="jcfgen" default="makeJar" basedir=".">
 	<description>
-		Java XML-AST generator
+		Java control-flow graph (CFG) generator
 	</description>
 	
-    <property name="jarName" value="jxmlgen"/>
+    <property name="jarName" value="jcfgen"/>
     <property name="source" location="${basedir}/src"/>
     <property name="build" location="${basedir}/build"/>
 	<property name="target-build" location="${basedir}/../build"/>
 	<path id="dep">
-		<pathelement location="${target-build}/jastgen.jar"/>
-		<pathelement location="${target-build}/javac.jar"/>
+		<pathelement location="${target-build}/jclassgen.jar"/>
 	</path>
 	
 	<target name="dep-check" description="Check dependencies">
-		<available file="${target-build}/javac.jar" property="javac-available" />
-		<available file="${target-build}/jastgen.jar" property="jastgen-available" />
+		<available file="${target-build}/jclassgen.jar" property="jclassgen-available" />
 	</target>
 	
     <target name="build" depends="clean, dep-check" description="Build binary files">
-    	<fail unless="javac-available" message="Module 'javac' not found!" />
-    	<fail unless="jastgen-available" message="Module 'jastgen' not found!" />
+    	<fail unless="jclassgen-available" message="Module 'jclassgen' not found!" />
     	
         <mkdir dir="${build}"/>
  
@@ -36,7 +33,6 @@
     	<copy todir="${build}">
     		<fileset dir="${source}" excludes="**/*.java"/>
     	</copy>
-    	
     </target>
 	
 	<target name="makeJar" depends="build" description="Make result JAR">

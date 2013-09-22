@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<project name="javac" default="makeJar" basedir=".">
+	<description>
+		Java Compiler from OpenJDK
+	</description>
+	
+    <property name="jarName" value="javac"/>
+    <property name="source" location="${basedir}/src"/>
+    <property name="build" location="${basedir}/build"/>
+	<property name="target-build" location="${basedir}/../build"/>
+	
+    <target name="build" depends="clean" description="Build binary files">
+        <mkdir dir="${build}"/>
+ 
+        <javac srcdir="${source}"
+               destdir="${build}"
+               debug="false"
+               deprecation="true"
+               optimize="true" >
+        </javac>
+    	
+    	<copy todir="${build}">
+    		<fileset dir="${source}" excludes="**/*.java"/>
+    	</copy>
+    </target>
+	
+	<target name="makeJar" depends="build" description="Make result JAR">
+		<mkdir dir="${target-build}"/>
+		<jar jarfile="${target-build}/${jarName}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${build}"/>
+        </jar>
+	</target>
+ 
+    <target name="clean" description="Remove build files">
+        <delete dir="${build}"/>
+    	<delete file="${target-build}/${jarName}.jar"/>
+    </target>
+</project>

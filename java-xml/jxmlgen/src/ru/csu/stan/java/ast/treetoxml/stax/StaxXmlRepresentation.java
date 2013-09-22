@@ -11,8 +11,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.lang3.StringUtils;
-
 import ru.csu.stan.java.ast.core.ContentAssistant;
 import ru.csu.stan.java.ast.core.TraversalHandler;
 
@@ -198,7 +196,7 @@ public class StaxXmlRepresentation implements TraversalHandler {
 	@Override
 	public void onFlags(long flags) {
 		try {
-		String[] flagArray = StringUtils.split(Flags.toString(flags));
+		String[] flagArray = Flags.toString(flags).split(" ");
 		for (String flagName : flagArray){
 			writeOffset();
 			this.writer.writeStartElement("modifier");

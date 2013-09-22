@@ -1,2 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: ru.csu.stan.java.atb.main.Main
+Main-Class: ru.csu.stan.java.ast.main.Main
+Class-Path: javac.jar

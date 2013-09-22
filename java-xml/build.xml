@@ -1,28 +1,58 @@
 <?xml version="1.0"?>
 
-<project name="" default="makeJars" basedir=".">
+<project name="java-csu" default="make-jar-all" basedir=".">
 	<description>
 		Java CSU Static Analysis Tool
 	</description>
 	
-    <property name="workingDir" value="."/>
-    <property name="buildDir" location="${workingDir}/../build"/>
-		
-    <target name="build" depends="clean" description="Build binary files">
-    	
-    	<ant></ant>
-    	
-        
-    </target>
+    <property name="build" location="${basedir}/build"/>
+	<property name="buildfile.name" value="build.xml"/>
 	
-	<target name="makeJars" depends="build" description="Make result JAR">
-		<jar jarfile="${basedir}/${jarName}.jar" manifest="META-INF/MANIFEST.MF">
-            <fileset dir="${build.classes}"/>
-        </jar>
+	<property name="javac" value="javac"/>
+	<property name="jastgen" value="jastgen"/>
+	<property name="jxmlgen" value="jxmlgen"/>
+	<property name="jclassgen" value="jclassgen"/>
+	<property name="jcfgen" value="jcfgen"/>
+	
+	<target name="make-jar-all" description="Make result JARs">
+		<ant antfile="${buildfile.name}" dir="${javac}/" target="makeJar" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jastgen}/" target="makeJar" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jxmlgen}/" target="makeJar" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jclassgen}/" target="makeJar" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jcfgen}/" target="makeJar" inheritAll="false"/>
 	</target>
- 
-    <target name="clean" description="Remove build files">
-        <delete dir="${build.classes}"/>
-    	<delete file="${basedir}/${jarName}.jar"/>
-    </target>
+	
+	<target name="clean-all" description="Clean all projects">
+		<ant antfile="${buildfile.name}" dir="${javac}/" target="clean" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jastgen}/" target="clean" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jxmlgen}/" target="clean" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jclassgen}/" target="clean" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jcfgen}/" target="clean" inheritAll="false"/>
+		<delete dir="${build}"/>
+	</target>
+	
+	<target name="build-all" description="Build all projects">
+		<ant antfile="${buildfile.name}" dir="${javac}/" target="build" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jastgen}/" target="build" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jxmlgen}/" target="build" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jclassgen}/" target="build" inheritAll="false"/>
+		<ant antfile="${buildfile.name}" dir="${jcfgen}/" target="build" inheritAll="false"/>
+	</target>
+
+	<target name="help" description="Show help">
+		<echo message="This is Java static analysis tools from CSU. Here you can:"/>
+		<echo message=" * generate abstract syntax tree (AST)"/>
+		<echo message=" * generate universal class representation (UCR)"/>
+		<echo message=" * generate control-flow graph (CFG)"/>
+		<echo message=""/>
+		<echo message="If you want to work with some of these analisys you should use appropriate ant task:"/>
+		<echo message="- ast for AST"/>
+		<echo message="- ucr for UCR"/>
+		<echo message="- cfg for CFG"/>
+		<echo message=""/>
+		<echo message="For example:"/>
+		<echo message="$ ant ast ~/my_project/src user/ast.xml"/>
+		<echo message="will generate AST for project located at '~/my_project/src' and write result to 'user/ast.xml' file"/>
+	</target>
+
 </project>

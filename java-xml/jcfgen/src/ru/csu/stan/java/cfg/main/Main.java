@@ -15,7 +15,7 @@ import ru.csu.stan.java.cfg.jaxb.Project;
  */
 public class Main {
 	
-	private static final String HELP = "USAGE: Main <output file> <input AST> <input UCR(optional)>\n" +
+	private static final String HELP = "USAGE: cfg <output file> <input AST> <input UCR(optional)>\n" +
 			"You can specify UCR to import class IDs from it. Without UCR IDs will be generated automatically.";
 
 	/**

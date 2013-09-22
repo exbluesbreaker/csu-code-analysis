@@ -18,7 +18,7 @@ import ru.csu.stan.java.classgen.jaxb.Classes;
  */
 public class Main {
 	
-	private static final String HELP = "USAGE: Main <input file> <output file>";
+	private static final String HELP = "USAGE: ucr <input file> <output file>";
 	
 	/**
 	 * Точка входа

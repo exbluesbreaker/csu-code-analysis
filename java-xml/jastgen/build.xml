@@ -8,11 +8,18 @@
     <property name="jarName" value="jastgen"/>
     <property name="source" location="${basedir}/src"/>
     <property name="build" location="${basedir}/build"/>
+	<property name="target-build" location="${basedir}/../build"/>
 	<path id="javac">
-		<pathelement location="../javac/javac.jar"/>
+		<pathelement location="${target-build}/javac.jar"/>
 	</path>
 	
-    <target name="build" depends="clean" description="Build binary files">
+	<target name="dep-check" description="Check dependencies">
+		<available file="${target-build}/javac.jar" property="javac-available" />
+	</target>
+	
+    <target name="build" depends="clean, dep-check" description="Build binary files">
+    	<fail unless="javac-available" message="Module 'javac' not found!" />
+    	
         <mkdir dir="${build}"/>
  
         <javac srcdir="${source}"
@@ -22,20 +29,21 @@
                optimize="true" >
         	<classpath refid="javac"/>
         </javac>
- 
-        <copy todir="${build.classes}">
-            <fileset dir="${src.dir}" includes="**/*.*" excludes="**/*.java"/>
-        </copy>
+    	
+    	<copy todir="${build}">
+    		<fileset dir="${source}" excludes="**/*.java"/>
+    	</copy>
     </target>
 	
 	<target name="makeJar" depends="build" description="Make result JAR">
-		<jar jarfile="${basedir}/${jarName}.jar" manifest="META-INF/MANIFEST.MF">
-            <fileset dir="${build.classes}"/>
+		<mkdir dir="${target-build}"/>
+		<jar jarfile="${target-build}/${jarName}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${build}"/>
         </jar>
 	</target>
  
     <target name="clean" description="Remove build files">
-        <delete dir="${build.classes}"/>
-    	<delete file="${basedir}/${jarName}.jar"/>
+    	<delete dir="${build}"/>
+    	<delete file="${target-build}/${jarName}.jar"/>
     </target>
 </project>
