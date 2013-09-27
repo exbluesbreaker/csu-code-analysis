@@ -888,5 +888,31 @@ class FlatCFGSlicer(CFGSlicer):
         for call in self._cfg_tree.xpath("//Target[@cfg_id=\""+self._id+"\"]"):
             self._sliced_frames.add(call.getparent().getparent().getparent().getparent())
             
-class CFGUCRSlicer(CFGHandler):
-    pass
+class ClassCFGSlicer(CFGSlicer):
+    _ucr_id = None
+    _criteria = None  
+    
+    def __init__(self, lcfg_xml, out_xml, target_id, criteria):
+        CFGSlicer.__init__(self, lcfg_xml, out_xml)
+        self._ucr_id = target_id
+        self._criteria = criteria
+        self.slice()
+    
+    def extract_slicing(self):
+        if self._criteria == "creators":
+            self.handle_creators()
+        elif self._criteria == "created":
+            self.handle_created()
+        else:
+            print "Unknown CFG slicing criteria!"
+            return
+        print len(self._sliced_frames), "methods after slicing"
+        
+        
+    def handle_creators(self):
+        ''' Slice method/funcs,which created given class'''
+        self._sliced_frames = set([])
+        ''' calls of method/func of interest'''
+        for call in self._cfg_tree.xpath("//TargetClass[@ucr_id=\"" + self._ucr_id + "\"]"):
+            if call.getparent().getparent().tag=='Direct':
+                self._sliced_frames.add(call.getparent().getparent().getparent().getparent().getparent())

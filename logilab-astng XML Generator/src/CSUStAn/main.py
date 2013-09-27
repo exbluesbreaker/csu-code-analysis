@@ -195,5 +195,11 @@ elif(args.type=="FlatCFGSlicer"):
     target_id = cfg_parser.get(args.type,'id')
     criteria = cfg_parser.get(args.type,'criteria')
     runner = FlatCFGSlicer(in_file,out_file,target_id,criteria)
+elif(args.type=="ClassCFGSlicer"):
+    in_file = cfg_parser.get(args.type,'in_file')
+    out_file = cfg_parser.get(args.type,'out_file')
+    ucr_id = cfg_parser.get(args.type,'ucr_id')
+    criteria = cfg_parser.get(args.type,'criteria')
+    runner = ClassCFGSlicer(in_file,out_file,ucr_id,criteria)
 else:
     print "Unknown type!"
