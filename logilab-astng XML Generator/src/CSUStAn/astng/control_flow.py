@@ -60,13 +60,16 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             func_node = etree.Element("Function",cfg_id=str(node.id),name=node.name,label=node.root().name)
         self._stack[node] = func_node
         self._root.append(func_node)
-        id_count, prev = self.handle_flow_part(func_node,node.body, set([]),0)
+        returns = set([])
+        id_count, prev = self.handle_flow_part(func_node,node.body, set([]),0,returns)
         id_count +=1
         block_node = etree.Element("Block", type="<<Exit>>",id=str(id_count))
         func_node.append(block_node)
-        for p in prev:
+        ''' Flows to the end of function '''
+        for p in prev.union(returns):
             flow_node = etree.Element("Flow",from_id=str(p),to_id=str(id_count))
             func_node.append(flow_node)
+        
     def leave_function(self,node):
         ''' DEBUG '''
         if self._stop:
@@ -102,7 +105,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         del self._stack[node]
         self._stop = True
         
-    def handle_flow_part(self,func_node,flow_part, parent_ids,id_count):
+    def handle_flow_part(self,func_node,flow_part, parent_ids,id_count,returns):
         ''' Handle sequential paobjectrt of flow, e.g then or else body of If'''
         prev=parent_ids
         block_node = None
@@ -122,28 +125,28 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if_node.set("fromlineno",str(child.fromlineno))
                 if_node.set("col_offset",str(child.col_offset))
                 func_node.append(if_node)
-                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
+                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count,returns)
                 block_node = None
             elif isinstance(child, For):
                 for_node = etree.Element("For", id=str(id_count), iterate=child.iter.__class__.__name__)
                 for_node.set("fromlineno",str(child.fromlineno))
                 for_node.set("col_offset",str(child.col_offset))
                 func_node.append(for_node)
-                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
+                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count,returns)
                 block_node = None
             elif isinstance(child, While):
                 while_node = etree.Element("While", id=str(id_count), test=child.test.__class__.__name__)
                 while_node.set("fromlineno",str(child.fromlineno))
                 while_node.set("col_offset",str(child.col_offset))
                 func_node.append(while_node)
-                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
+                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count,returns)
                 block_node = None
             elif isinstance(child, (TryExcept, TryFinally, With)):
                 jump_node = etree.Element(child.__class__.__name__, id=str(id_count))
                 jump_node.set("fromlineno",str(child.fromlineno))
                 jump_node.set("col_offset",str(child.col_offset))
                 func_node.append(jump_node)
-                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count)
+                id_count, prev = self.handle_cross(child, func_node, curr_id, id_count,returns)
                 block_node = None
             else:
                 if block_node is None:
@@ -152,37 +155,39 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     block_node.set("col_offset",str(child.col_offset))
                     func_node.append(block_node)
                     prev = set([id_count])
+                    if(isinstance(child, Return)):
+                        returns.add(id_count)
                     id_count += 1
                 self.handle_simple_node(child, block_node)
         return id_count, prev
     
-    def handle_cross(self, node, func_node, parent_id,id_count):
+    def handle_cross(self, node, func_node, parent_id,id_count,returns):
         ''' Handle conditional part of flow, e.g. If block'''
         curr_id = id_count
         parent_ids = set([]) 
         if isinstance(node, (If,While, For)):
-            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
             parent_ids |=ids
-            id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count)
+            id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count,returns)
             parent_ids |=ids
             parent_ids.add(curr_id)
         elif isinstance(node, TryExcept):
-            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
             parent_ids |=ids
             for h in node.handlers:
-                id_count, ids = self.handle_flow_part(func_node,h.body, set([curr_id]), id_count)
+                id_count, ids = self.handle_flow_part(func_node,h.body, set([curr_id]), id_count,returns)
                 parent_ids |=ids
-            id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count)
+            id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count,returns)
             parent_ids |=ids
             parent_ids.add(curr_id)
         elif isinstance(node, TryFinally):
-            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
             parent_ids |=ids
-            id_count, ids = self.handle_flow_part(func_node,node.finalbody, set([curr_id]), id_count)
+            id_count, ids = self.handle_flow_part(func_node,node.finalbody, set([curr_id]), id_count,returns)
             parent_ids |=ids
             parent_ids.add(curr_id)
         elif isinstance(node, With):
-            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count)
+            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
             parent_ids |=ids
             parent_ids.add(curr_id)
         return id_count, parent_ids            
