@@ -91,9 +91,7 @@
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
     </Method>
     <Method ucr_id="2" cfg_id="19" parent_class="com.example.MyClass$1" name="clear">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
+        <Block type="&lt;&lt;Exit&gt;&gt;" id="1"/>
     </Method>
     <Method ucr_id="2" cfg_id="20" parent_class="com.example.MyClass$1" name="addAll">
         <Block id="1"/>
@@ -106,9 +104,7 @@
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
     </Method>
     <Method ucr_id="2" cfg_id="22" parent_class="com.example.MyClass$1" name="add">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
+        <Block type="&lt;&lt;Exit&gt;&gt;" id="1"/>
     </Method>
     <Method ucr_id="2" cfg_id="23" parent_class="com.example.MyClass$1" name="add">
         <Block id="1"/>
@@ -120,17 +116,15 @@
         <Flow from_id="1" to_id="2"/>
         <TryExcept col_offset="9" fromlineno="19" id="2"/>
         <Flow from_id="2" to_id="3"/>
-        <Block id="3"/>
+        <If test="condition" col_offset="10" fromlineno="21" id="3"/>
         <Flow from_id="3" to_id="4"/>
-        <If test="condition" col_offset="10" fromlineno="21" id="4"/>
-        <Flow from_id="4" to_id="5"/>
+        <Block id="4"/>
+        <Flow from_id="3" to_id="5"/>
         <Block id="5"/>
-        <Flow from_id="4" to_id="6"/>
+        <Flow from_id="2" to_id="6"/>
         <Block id="6"/>
-        <Flow from_id="2" to_id="7"/>
-        <Block id="7"/>
-        <Flow from_id="5" to_id="8"/>
-        <Flow from_id="6" to_id="8"/>
+        <Flow from_id="4" to_id="7"/>
+        <TryFinally id="7"/>
         <Flow from_id="7" to_id="8"/>
         <Block id="8"/>
         <Flow from_id="8" to_id="9"/>
@@ -177,6 +171,8 @@
         <Flow from_id="25" to_id="26"/>
         <Flow from_id="24" to_id="26"/>
         <Block id="26"/>
+        <Flow from_id="5" to_id="27"/>
+        <Flow from_id="6" to_id="27"/>
         <Flow from_id="26" to_id="27"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="27"/>
     </Method>

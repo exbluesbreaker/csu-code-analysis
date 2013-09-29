@@ -1,7 +1,6 @@
 package ru.csu.stan.java.cfg.automaton;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
 
 import ru.csu.stan.java.cfg.jaxb.Block;
 import ru.csu.stan.java.cfg.jaxb.Flow;
@@ -78,18 +77,28 @@ class ControlFlowContext extends ContextBase implements IClassNameHolder{
             if (attrs.isAttributeExist(NodeAttributes.COL_ATTRIBUTE))
             	block.setColOffset(BigInteger.valueOf(attrs.getIntAttribute(NodeAttributes.COL_ATTRIBUTE)));
             method.getTryExceptOrTryFinallyOrWith().add(block);
-            cursor.setParentIds(new LinkedList<Integer>());
+            cursor.clearParentIds();
             cursor.addParentId(cursor.getCurrentId());
             cursor.incrementCurrentId();
+        }
+        if ("return".equals(name)){
+        	cursor.clearParentIds();
+        	cursor.addParentId(-1 * block.getId().intValue());
+        }
+        if ("throw".equals(name)){
+        	cursor.clearParentIds();
+        	cursor.addParentId(-1 * block.getId().intValue());
         }
     }
     
     private void makeFlowsToCurrent(){
     	for (Integer parent: cursor.getParentIds()){
-    		Flow flow = getObjectFactory().createFlow();
-    		flow.setFromId(BigInteger.valueOf(parent.longValue()));
-    		flow.setToId(cursor.getCurrentIdBigInteger());
-    		method.getTryExceptOrTryFinallyOrWith().add(flow);
+    		if (parent.intValue() > 0){
+	    		Flow flow = getObjectFactory().createFlow();
+	    		flow.setFromId(BigInteger.valueOf(parent.longValue()));
+	    		flow.setToId(cursor.getCurrentIdBigInteger());
+	    		method.getTryExceptOrTryFinallyOrWith().add(flow);
+    		}
     	}
     }
 
@@ -99,7 +108,7 @@ class ControlFlowContext extends ContextBase implements IClassNameHolder{
     }
 
     private boolean isNotOpeningTag(String tag){
-    	return !("block".equals(tag) || "body".equals(tag) || "nodename.statements".equals(tag) || "then_part".equals(tag) || "else_part".equals(tag) || "finally".equals(tag) || "catch".equals(tag));
+    	return !("block".equals(tag) || "body".equals(tag) || "nodename.statements".equals(tag) || "then_part".equals(tag) || "else_part".equals(tag) || "finally".equals(tag) || "catch".equals(tag) || "modifier".equals(tag));
     }
 
 	@Override

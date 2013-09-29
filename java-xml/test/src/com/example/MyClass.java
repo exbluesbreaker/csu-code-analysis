@@ -21,10 +21,10 @@ public class MyClass extends ArrayList<Object>{
 	        if (1+2 > 2+3)
 	        	System.out.println("123");
 	        else
-	        	System.out.println("321");
+	        	return;
         }
         catch (Exception e){
-        	e.printStackTrace();
+        	throw new RuntimeException();
         }
         finally{
         	System.out.println("aaaaaa");
