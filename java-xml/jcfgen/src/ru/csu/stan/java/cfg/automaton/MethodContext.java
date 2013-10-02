@@ -73,8 +73,9 @@ class MethodContext extends ContextBase implements IClassNameHolder
     {
         if ("method".equals(eventName)){
         	for (Integer parent: innerCursor.getParentIds()){
+        		int flowParent = parent.intValue() > 0 ? parent.intValue() : (-1) * parent.intValue();
         		Flow flow = getObjectFactory().createFlow();
-        		flow.setFromId(BigInteger.valueOf(parent.longValue()));
+        		flow.setFromId(BigInteger.valueOf(flowParent));
         		flow.setToId(innerCursor.getCurrentIdBigInteger());
         		method.getTryExceptOrTryFinallyOrWith().add(flow);
         	}

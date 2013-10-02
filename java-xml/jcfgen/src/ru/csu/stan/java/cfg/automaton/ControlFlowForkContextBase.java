@@ -66,10 +66,12 @@ abstract class ControlFlowForkContextBase<T extends BaseCfgElement> extends Cont
 
 	protected void makeFlowsToCurrent(){
     	for (Integer parent: cursor.getParentIds()){
-    		Flow flow = getObjectFactory().createFlow();
-    		flow.setFromId(BigInteger.valueOf(parent.longValue()));
-    		flow.setToId(cursor.getCurrentIdBigInteger());
-    		method.getTryExceptOrTryFinallyOrWith().add(flow);
+    		if (parent.intValue() > 0){
+	    		Flow flow = getObjectFactory().createFlow();
+	    		flow.setFromId(BigInteger.valueOf(parent.longValue()));
+	    		flow.setToId(cursor.getCurrentIdBigInteger());
+	    		method.getTryExceptOrTryFinallyOrWith().add(flow);
+    		}
     	}
     }
 	

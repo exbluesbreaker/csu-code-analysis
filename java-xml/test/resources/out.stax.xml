@@ -228,20 +228,8 @@
                                           </expression_statement>
                                        </then_part>
                                        <else_part>
-                                          <expression_statement line="24" col="11">
-                                             <method_invocation line="24" col="29">
-                                                <member_select line="24" col="21" name="println">
-                                                   <member_select line="24" col="17" name="out">
-                                                      <identifier line="24" col="11" name="System">
-                                                      </identifier>
-                                                   </member_select>
-                                                </member_select>
-                                                <arguments>
-                                                   <string_literal line="24" col="30" type="string" value="321">
-                                                   </string_literal>
-                                                </arguments>
-                                             </method_invocation>
-                                          </expression_statement>
+                                          <return line="24" col="11">
+                                          </return>
                                        </else_part>
                                     </if>
                                  </nodename.statements>
@@ -261,14 +249,12 @@
                                  <block line="26" col="28">
                                     <modifier name=""></modifier>
                                     <nodename.statements>
-                                       <expression_statement line="27" col="10">
-                                          <method_invocation line="27" col="27">
-                                             <member_select line="27" col="11" name="printStackTrace">
-                                                <identifier line="27" col="10" name="e">
-                                                </identifier>
-                                             </member_select>
-                                          </method_invocation>
-                                       </expression_statement>
+                                       <throw line="27" col="10">
+                                          <new_class line="27" col="16">
+                                             <identifier line="27" col="20" name="RuntimeException">
+                                             </identifier>
+                                          </new_class>
+                                       </throw>
                                     </nodename.statements>
                                  </block>
                               </catch>

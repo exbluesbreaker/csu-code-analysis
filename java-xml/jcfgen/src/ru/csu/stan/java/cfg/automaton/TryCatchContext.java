@@ -6,6 +6,7 @@ import java.util.List;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.cfg.jaxb.TryExcept;
+import ru.csu.stan.java.cfg.jaxb.TryFinally;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
 
@@ -38,12 +39,17 @@ public class TryCatchContext extends ControlFlowForkContextBase<TryExcept> {
 			return new ControlFlowContext(getResultRoot(), this, getMethod(), cursor, getCompilationUnit());
 		}
 		if ("finally".equals(eventName)){
-			finallyCursor = new FlowCursor();
 			addCursorDataToCurrent(tryCursor);
 			for (FlowCursor cursor: catchCursors)
 				addCursorDataToCurrent(cursor);
+			TryFinally finallyBlock = getObjectFactory().createTryFinally();
+			finallyBlock.setId(getCursor().getCurrentIdBigInteger());
+			makeFlowsToCurrent();
+			getMethod().getTryExceptOrTryFinallyOrWith().add(finallyBlock);
+			getCursor().incrementCurrentId();
+			finallyCursor = new FlowCursor();
 			finallyCursor.setCurrentId(getCursor().getCurrentId());
-			finallyCursor.setParentIds(getCursor().getParentIds());
+			finallyCursor.addParentId(finallyBlock.getId().intValue());
 			return new ControlFlowContext(getResultRoot(), this, getMethod(), finallyCursor, getCompilationUnit());
 		}
 		return this;
