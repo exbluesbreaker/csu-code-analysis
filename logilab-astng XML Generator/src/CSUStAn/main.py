@@ -184,11 +184,11 @@ elif(args.type=="CFGVisualizer"):
     lcfg_xml = cfg_parser.get(args.type,'linked_cfg_xml')
     out_dir = cfg_parser.get(args.type,'out_dir')
     runner = CFGVisualizer(lcfg_xml,out_dir)
-elif(args.type=="ClassSlicer"):
+elif(args.type=="InheritanceSlicer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
     class_id = cfg_parser.get(args.type,'id')
-    runner = ClassSlicer(in_file,out_file,class_id)
+    runner = InheritanceSlicer(in_file,out_file,class_id)
 elif(args.type=="FlatCFGSlicer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
@@ -201,5 +201,11 @@ elif(args.type=="ClassCFGSlicer"):
     ucr_id = cfg_parser.get(args.type,'ucr_id')
     criteria = cfg_parser.get(args.type,'criteria')
     runner = ClassCFGSlicer(in_file,out_file,ucr_id,criteria)
+elif(args.type=="InstanceInitSlicer"):
+    ucr_xml = cfg_parser.get(args.type,'ucr_xml')
+    lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
+    ucr_id = cfg_parser.get(args.type,'ucr_id')
+    out_xml = cfg_parser.get(args.type,'out_xml')
+    runner = InstanceInitSlicer(ucr_xml,lcfg_xml,ucr_id,out_xml)
 else:
     print "Unknown type!"

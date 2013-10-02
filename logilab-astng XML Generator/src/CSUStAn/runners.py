@@ -798,35 +798,49 @@ class CFGVisualizer(CFGHandler):
                 dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
             graph.add_edge(dot_edge)
         graph.write_svg(self._out_dir+'/'+node.get("cfg_id")+'.svg')
+
+class UCRSlicer(ClassIRHandler):
+    # search for probable inheritance mistakes
+    _sliced_classes = set([])
+    _out_file = None
+    
+    def __init__(self, in_file,out_file):
+        ClassIRHandler.__init__(self, in_file)
+        self._out_file = out_file
         
-class ClassSlicer(ConfigurationMixIn,ClassIRHandler):
+        
+    def run(self):
+        self.slice()
+        self.extract_slicing()
+        
+    def extract_slicing(self):
+        root_node = etree.Element("Classes")
+        for c in self._sliced_classes:
+            root_node.append(c)
+        f = open(self._out_file,'w')
+        f.write(etree.tostring(root_node, pretty_print=True, encoding='utf-8', xml_declaration=True))
+        f.close()
+                
+
+class InheritanceSlicer(ConfigurationMixIn,UCRSlicer):
     # search for probable inheritance mistakes
     
     options = OPTIONS
     _methods = None
     _class_id = None
-    _related_classes = set([])
-    _out_file = None
     
     def __init__(self, in_file,out_file, class_id):
         ConfigurationMixIn.__init__(self, usage=__doc__)
-        ClassIRHandler.__init__(self, in_file)
-        self._out_file = out_file
+        UCRSlicer.__init__(self, in_file,out_file)
         self._methods = {}
         self._class_id = class_id
         self.run()
         
-    def run(self):
-        root_node = etree.Element("Classes")
+    def slice(self):
         self.slice_class(self._id_dict[self._class_id])
-        for c in self._related_classes:
-            root_node.append(c)
-        f = open(self._out_file,'w')
-        f.write(etree.tostring(root_node, pretty_print=True, encoding='utf-8', xml_declaration=True))
-        f.close()
         
     def slice_class(self,node):
-        self._related_classes.add(node)
+        self._sliced_classes.add(node)
         for p in self.get_parents(node):
             self.slice_class(p)
             
@@ -916,3 +930,17 @@ class ClassCFGSlicer(CFGSlicer):
         for call in self._cfg_tree.xpath("//TargetClass[@ucr_id=\"" + self._ucr_id + "\"]"):
             if call.getparent().getparent().tag=='Direct':
                 self._sliced_frames.add(call.getparent().getparent().getparent().getparent().getparent())
+                
+class InstanceInitSlicer(CFGHandler, UCRSlicer):
+    _ucr_id = None
+    def __init__(self,ucr_xml,lcfg_xml,ucr_id,out_xml):
+        UCRSlicer.__init__(self, ucr_xml,out_xml)
+        CFGHandler.__init__(self, lcfg_xml)
+        self._ucr_id = ucr_id
+        self.run()
+        
+    def slice(self):
+        self._sliced_classes.add(self.get_class_by_id(self._ucr_id))
+        for c in self._cfg_tree.xpath("//Method[@ucr_id=\""+self._ucr_id+"\"]//Direct//Target[@type=\"method\"]//TargetClass[@ucr_id]"):
+            self._sliced_classes.add(self.get_class_by_id(c.get("ucr_id")))
+    
