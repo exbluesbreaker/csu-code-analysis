@@ -3,6 +3,7 @@ package ru.csu.stan.java.cfg.main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.math.BigInteger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -64,6 +65,11 @@ public class CFGGenerator {
 		return p;
 	}
 	
+	/**
+	 * Первый проход генератора CFG. Создает основное дерево элементов для всех методов всех классов.
+	 * @param filename
+	 * @return
+	 */
 	private IContext<Project> firstPass(String filename){
 		IContext<Project> context = ContextFactory.getStartContext(objectFactory.createProject());
 		try{
@@ -91,11 +97,18 @@ public class CFGGenerator {
 		return context;
 	}
 	
+	/**
+	 * Второй проход генератора CFG. Проставляет ID для методов.
+	 * Устанавливает как CFG-ID, так и связанные UCR-ID.
+	 * @param project
+	 */
 	private void secondPass(Project project){
+		int cfgId = 1;
 		for (Object o: project.getMethodOrFunction()){
 			if (o instanceof Method){
 				Method method = (Method) o;
 				((Method) o).setUcrId(idGenerator.getClassId(method.getParentClass()));
+				((Method) o).setCfgId(BigInteger.valueOf(cfgId++));
 			}
 		}
 	}

@@ -19,18 +19,16 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
  */
 class MethodContext extends ContextBase implements IClassNameHolder
 {
-    private int id;
     private String className;
     private String name;
     private CompilationUnit compilationUnit;
     private Method method;
     private FlowCursor innerCursor = new FlowCursor();
 
-    MethodContext(Project resultRoot, ContextBase previousState, String className, int id, CompilationUnit compilationUnit)
+    MethodContext(Project resultRoot, ContextBase previousState, String className, CompilationUnit compilationUnit)
     {
         super(resultRoot, previousState);
         this.className = className;
-        this.id = id;
         this.compilationUnit = compilationUnit;
     }
 
@@ -63,7 +61,6 @@ class MethodContext extends ContextBase implements IClassNameHolder
 			this.name = nameAttr;
 			method = getObjectFactory().createMethod();
             method.setParentClass(className);
-            method.setCfgId(BigInteger.valueOf(id));
             method.setName(this.name);
 		}
     }
