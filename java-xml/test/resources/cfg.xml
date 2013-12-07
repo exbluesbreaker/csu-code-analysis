@@ -111,7 +111,7 @@
         <Flow from_id="1" to_id="2"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
     </Method>
-    <Method ucr_id="1" cfg_id="1" parent_class="com.example.MyClass" name="main">
+    <Method ucr_id="1" cfg_id="24" parent_class="com.example.MyClass" name="main">
         <Block id="1"/>
         <Flow from_id="1" to_id="2"/>
         <TryExcept col_offset="9" fromlineno="19" id="2"/>
@@ -176,12 +176,12 @@
         <Flow from_id="26" to_id="27"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="27"/>
     </Method>
-    <Method ucr_id="1" cfg_id="2" parent_class="com.example.MyClass" name="bar">
+    <Method ucr_id="1" cfg_id="25" parent_class="com.example.MyClass" name="bar">
         <Block id="1"/>
         <Flow from_id="1" to_id="2"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
     </Method>
-    <Method ucr_id="3" cfg_id="1" parent_class="com.example.MyClass.MyClass2" name="foo">
+    <Method ucr_id="3" cfg_id="26" parent_class="com.example.MyClass.MyClass2" name="foo">
         <Block id="1"/>
         <Flow from_id="1" to_id="2"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>

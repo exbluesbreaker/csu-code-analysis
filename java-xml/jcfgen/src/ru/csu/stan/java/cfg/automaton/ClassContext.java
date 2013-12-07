@@ -14,7 +14,6 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
 class ClassContext extends ContextBase implements IClassNameHolder
 {
     private String name = "";
-    private int methodId = 1;
     private int innerCount;
     private CompilationUnit compilationUnit;
 
@@ -37,7 +36,7 @@ class ClassContext extends ContextBase implements IClassNameHolder
     public IContext<Project> getNextState(IContext<Project> context, String eventName)
     {
         if ("method".equals(eventName))
-            return new MethodContext(getResultRoot(), this, name, methodId++, compilationUnit);
+            return new MethodContext(getResultRoot(), this, name, compilationUnit);
         if ("class".equals(eventName))
             return new ClassContext(getResultRoot(), this, compilationUnit);
         return this;
