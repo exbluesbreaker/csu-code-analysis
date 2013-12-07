@@ -105,6 +105,24 @@ class ClassIRRunner(ConfigurationMixIn):
             return 'Tuple'
         return None
 
+
+    def check_candidate(self,duck,cand_class):
+        duck_attrs, duck_methods = self.get_duck_signature(duck)
+        candidate_attrs = cand_class.cir_complete_attrs
+        candidate_methods = set([method.name for method in cand_class.methods()])
+        if(all(attr in candidate_attrs for attr in duck_attrs) and all(method in candidate_methods for method in duck_methods)):
+            duck['type'].append(cand_class)
+            self._prob_used_classes |= set([cand_class.cir_uid])
+            return True
+        return False
+    
+    def get_duck_signature(self,duck):
+        if(duck['complex_type']):
+            if duck.has_key('element_signature'):
+                # search for class of element is needed
+                return duck['element_signature']['attrs'],duck['element_signature']['methods']
+        return duck['attrs'], duck['methods']
+
     def run(self, args):
         """checking arguments and run project"""
         if not args:
@@ -118,56 +136,34 @@ class ClassIRRunner(ConfigurationMixIn):
         successes = 0
         ducks_num = len(list(linker.get_ducks()))
         count = 1
+        dbg = set([])
+        empty_ducks = 0
         """ Handle "duck" information and generate information about types """
         for current_class in linker.get_classes():
             for duck in current_class.cir_ducks.keys():
                 print "Processing ", count, " duck of ",ducks_num
                 count +=1
-                if(current_class.cir_ducks[duck]['complex_type']):
-                    #self._found_ducks+=1
-                    # duck is complex type, nothing to do with it
-                    # TODO recursively complex types
-                    if current_class.cir_ducks[duck].has_key('element_signature'):
-                        # search for class of element is needed 
-                        duck_attrs = current_class.cir_ducks[duck]['element_signature']['attrs']
-                        duck_methods = current_class.cir_ducks[duck]['element_signature']['methods']
-                    else:
-                        # duck of complex type and no duck info about element
-                        continue
-                else:
-                    duck_attrs = current_class.cir_ducks[duck]['attrs']
-                    duck_methods = current_class.cir_ducks[duck]['methods']
+                duck_attrs, duck_methods = self.get_duck_signature(current_class.cir_ducks[duck])
                 # ignore empty ducks
                 if((not duck_attrs) and (not duck_methods)):
+                    empty_ducks+=1
+                    continue
+                complex_type = self._check_complex_type(duck_attrs, duck_methods)
+                if(complex_type):
+                    current_class.cir_ducks[duck]['complex_type'] = complex_type
+                    self._found_ducks+=1
                     continue
                 duck_found = False
                 for field_candidate in linker.get_classes():
-                    complex_type = self._check_complex_type(duck_attrs, duck_methods)
-                    if(complex_type):
-                        #DEBUG
-                        if(current_class.cir_ducks[duck]['complex_type']):
-                            if((current_class.cir_ducks[duck]['complex_type'] != complex_type) 
-                               and (current_class.cir_ducks[duck]['complex_type'] !='Unknown')):
-                                print current_class.cir_ducks[duck]['complex_type'], complex_type
-                        #END DEBUG
-                        current_class.cir_ducks[duck]['complex_type'] = complex_type
-                        if(not duck_found):
-                            self._found_ducks+=1
-                            duck_found = True
-                    candidate_attrs = field_candidate.cir_complete_attrs
-                    candidate_methods = set([method.name for method in field_candidate.methods()])
-                    if(all(attr in candidate_attrs for attr in duck_attrs) and all(method in candidate_methods for method in duck_methods)):
-                        current_class.cir_ducks[duck]['type'].append(field_candidate)
-                        successes += 1
-                        self._prob_used_classes |= set([field_candidate.cir_uid])
-                        if(not duck_found):
-                            self._found_ducks+=1
-                            duck_found = True
+                    duck_found = self.check_candidate(current_class.cir_ducks[duck], field_candidate) or duck_found
                 #check if duck not found at all
                 if(not duck_found):
                     bad_ducks += 1
-                    print "Bad duck - ",duck_attrs, duck_methods  
-        empty_ducks = len(list(linker.get_empty_ducks()))   
+                    print "Bad duck - ",duck_attrs, duck_methods
+                else:
+                    self._found_ducks+=1  
+                    dbg.add(str(current_class)+duck)
+#        empty_ducks = len(list(linker.get_empty_ducks()))   
         print "Bad ducks ", bad_ducks
         print "Empty ducks ", empty_ducks                   
         print "Numbers of ducks: ", linker.get_ducks_count()
