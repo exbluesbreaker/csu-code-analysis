@@ -106,14 +106,18 @@ class ClassIRRunner(ConfigurationMixIn):
         return None
 
 
-    def check_candidate(self,duck,cand_class):
+    def check_candidate(self,duck,cand_class, criteria='default'):
         duck_attrs, duck_methods = self.get_duck_signature(duck)
         candidate_attrs = cand_class.cir_complete_attrs
         candidate_methods = set([method.name for method in cand_class.methods()])
-        if(all(attr in candidate_attrs for attr in duck_attrs) and all(method in candidate_methods for method in duck_methods)):
-            duck['type'].append(cand_class)
-            self._prob_used_classes |= set([cand_class.cir_uid])
-            return True
+        if criteria == 'default':
+            if(all(attr in candidate_attrs for attr in duck_attrs) and all(method in candidate_methods for method in duck_methods)):
+                duck['type'].append(cand_class)
+                self._prob_used_classes |= set([cand_class.cir_uid])
+                return True
+        if criteria == 'capacity':
+            if (float(len(candidate_attrs.intersection(duck_attrs))+len(candidate_methods.intersection(duck_methods)))/(len(duck_attrs)+len(duck_methods)))>= 0.5:
+                return True
         return False
     
     def get_duck_signature(self,duck):
@@ -148,14 +152,17 @@ class ClassIRRunner(ConfigurationMixIn):
                 if((not duck_attrs) and (not duck_methods)):
                     empty_ducks+=1
                     continue
-                complex_type = self._check_complex_type(duck_attrs, duck_methods)
-                if(complex_type):
-                    current_class.cir_ducks[duck]['complex_type'] = complex_type
-                    self._found_ducks+=1
-                    continue
+                if not hasattr(current_class.cir_ducks[duck], 'complex_type'):
+                    # if duck is not detected  as complex type on previous stage (according to [],{} etc. usage)
+                    # we need to check its methods and fields
+                    complex_type = self._check_complex_type(duck_attrs, duck_methods)
+                    if(complex_type):
+                        current_class.cir_ducks[duck]['complex_type'] = complex_type
+                        self._found_ducks+=1
+                        continue
                 duck_found = False
                 for field_candidate in linker.get_classes():
-                    duck_found = self.check_candidate(current_class.cir_ducks[duck], field_candidate) or duck_found
+                    duck_found = self.check_candidate(current_class.cir_ducks[duck], field_candidate,'capacity') or duck_found
                 #check if duck not found at all
                 if(not duck_found):
                     bad_ducks += 1
