@@ -90,6 +90,12 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
             node.parent.cir_methods.add(node.name)          
     
     
+    def add_duck_info(self,duck,name,label):
+        if not duck[label].has_key(name):
+            duck[label][name] = 1
+        else:
+            duck[label][name] += 1
+    
     def handle_attrs(self,node,class_node):
         """ ganerate attrs and handle duck info about this attrs """
         if isinstance(node, (AssAttr,Getattr)):
@@ -100,7 +106,7 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
                     if isinstance(node.parent, For):
                         if(not class_node.cir_ducks.has_key(node.attrname)):
                             self._ducks_count +=1
-                            class_node.cir_ducks[node.attrname] = {'attrs':set([]),'methods':set([]),'type':[],'complex_type':'Unknown','assigned':False}
+                            class_node.cir_ducks[node.attrname] = {'attrs':{},'methods':{},'type':[],'complex_type':'Unknown','assigned':False}
                         if isinstance(node.parent.target, AssName):
                             for body in node.parent.body:
                                 self._check_cycle(body, node.parent.target.name, node.attrname, class_node)
@@ -108,35 +114,34 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
                     	""" if additional info about attr's field may be obtained """
                     	if(not class_node.cir_ducks.has_key(node.attrname)):
                         	self._ducks_count += 1
-                        	class_node.cir_ducks[node.attrname] = {'attrs':set([]), 'methods':set([]), 'type':[], 'complex_type':None, 'assigned':False}
+                        	class_node.cir_ducks[node.attrname] = {'attrs':{}, 'methods':{}, 'type':[], 'complex_type':None, 'assigned':False}
                     	if isinstance(node.parent.parent, CallFunc):
-                    		print class_node.cir_ducks[node.attrname]['methods']
-                        	""" we get info about attr's method """
-                        	class_node.cir_ducks[node.attrname]['methods'].add(node.parent.attrname)
+                            """ we get info about attr's method """
+                            self.add_duck_info(class_node.cir_ducks[node.attrname],node.parent.attrname,'methods')
                     	else:
                         	""" we get info about attr's attr """
-                        	class_node.cir_ducks[node.attrname]['attrs'].add(node.parent.attrname)
+                        	self.add_duck_info(class_node.cir_ducks[node.attrname],node.parent.attrname,'attrs')
                     elif isinstance(node.parent, Subscript):
                 		""" attr of complex type (list, dict, tuple etc.) """
                 		if(not class_node.cir_ducks.has_key(node.attrname)):
                 			self._ducks_count +=1
-                			class_node.cir_ducks[node.attrname] = {'attrs':set([]),'methods':set([]),'type':[],'complex_type':'Unknown','assigned':False}
+                			class_node.cir_ducks[node.attrname] = {'attrs':{},'methods':{},'type':[],'complex_type':'Unknown','assigned':False}
                 		else:
                 			class_node.cir_ducks[node.attrname]['complex_type'] = 'Unknown'
                 		if(isinstance(node.parent.parent,Getattr)):
                 			""" get some info about element of complex type """
                 			if(not class_node.cir_ducks[node.attrname].has_key('element_signature')):
-                				class_node.cir_ducks[node.attrname]['element_signature']={'attrs':set([]),'methods':set([])}
+                				class_node.cir_ducks[node.attrname]['element_signature']={'attrs':{},'methods':{}}
                 			if isinstance(node.parent.parent.parent,CallFunc):
-                				class_node.cir_ducks[node.attrname]['element_signature']['methods'].add(node.parent.parent.attrname)
+                				self.add_duck_info(class_node.cir_ducks[node.attrname]['element_signature'],node.parent.parent.attrname,'methods')
                 			else:
-                				class_node.cir_ducks[node.attrname]['element_signature']['attrs'].add(node.parent.parent.attrname)
+                				self.add_duck_info(class_node.cir_ducks[node.attrname]['element_signature'],node.parent.parent.attrname,'attrs')
             elif isinstance(node, AssAttr):
             	if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
             		if(not class_node.cir_ducks.has_key(node.attrname)):
             			self._ducks_count +=1
             			self._assigned_ducks +=1
-            			class_node.cir_ducks[node.attrname] = {'attrs':set([]),'methods':set([]),'type':[],'complex_type':None,'assigned':True} 
+            			class_node.cir_ducks[node.attrname] = {'attrs':{},'methods':{},'type':[],'complex_type':None,'assigned':True} 
             		else:
             			if(not class_node.cir_ducks[node.attrname]['assigned']):
             				class_node.cir_ducks[node.attrname]['assigned'] = True
@@ -153,11 +158,11 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         if isinstance(node, Getattr):
             if(node.expr.as_string()==iter_name):
                 if(not class_node.cir_ducks[attr].has_key('element_signature')):
-                    class_node.cir_ducks[attr]['element_signature']={'attrs':set([]),'methods':set([])} 
+                    class_node.cir_ducks[attr]['element_signature']={'attrs':{},'methods':{}} 
                 if isinstance(node.parent,CallFunc):
-                    class_node.cir_ducks[attr]['element_signature']['methods'].add(node.attrname)
+                    self.add_duck_info(class_node.cir_ducks[attr]['element_signature'],node.attrname,'methods')
                 else:
-                    class_node.cir_ducks[attr]['element_signature']['attrs'].add(node.attrname)           
+                    self.add_duck_info(class_node.cir_ducks[attr]['element_signature'],node.attrname,'attrs')           
         for child in node.get_children():
             self._check_cycle(child,iter_name,attr,class_node)   
     

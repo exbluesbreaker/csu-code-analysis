@@ -110,13 +110,22 @@ class ClassIRRunner(ConfigurationMixIn):
         duck_attrs, duck_methods = self.get_duck_signature(duck)
         candidate_attrs = cand_class.cir_complete_attrs
         candidate_methods = set([method.name for method in cand_class.methods()])
+        proper_attrs = candidate_attrs.intersection(duck_attrs)
+        proper_methods = candidate_methods.intersection(duck_methods)
         if criteria == 'default':
             if(all(attr in candidate_attrs for attr in duck_attrs) and all(method in candidate_methods for method in duck_methods)):
                 duck['type'].append(cand_class)
                 self._prob_used_classes |= set([cand_class.cir_uid])
                 return True
         if criteria == 'capacity':
-            if (float(len(candidate_attrs.intersection(duck_attrs))+len(candidate_methods.intersection(duck_methods)))/(len(duck_attrs)+len(duck_methods)))>= 0.5:
+            if (float(len(proper_attrs)+len(proper_methods))/(len(duck_attrs)+len(duck_methods)))>= 0.5:
+                return True
+        if criteria == 'frequency':
+            attr_val = self.get_duck_val(duck, proper_attrs, 'attrs')
+            all_attr = self.get_duck_val(duck, duck_attrs, 'attrs')
+            meth_val = self.get_duck_val(duck, proper_methods, 'methods')
+            all_meth = self.get_duck_val(duck, duck_methods, 'methods')
+            if (float(attr_val+meth_val)/(all_attr+all_meth))>= 0.5:
                 return True
         return False
     
@@ -124,8 +133,14 @@ class ClassIRRunner(ConfigurationMixIn):
         if(duck['complex_type']):
             if duck.has_key('element_signature'):
                 # search for class of element is needed
-                return duck['element_signature']['attrs'],duck['element_signature']['methods']
-        return duck['attrs'], duck['methods']
+                return set(duck['element_signature']['attrs'].keys()),set(duck['element_signature']['methods'].keys())
+        return set(duck['attrs'].keys()), set(duck['methods'].keys())
+    
+    def get_duck_val(self,duck,names,label):
+        if(duck['complex_type']):
+            if duck.has_key('element_signature'):
+                return sum([duck['element_signature'][label][name] for name in names])
+        return sum([duck[label][name] for name in names])
 
     def run(self, args):
         """checking arguments and run project"""
@@ -162,7 +177,7 @@ class ClassIRRunner(ConfigurationMixIn):
                         continue
                 duck_found = False
                 for field_candidate in linker.get_classes():
-                    duck_found = self.check_candidate(current_class.cir_ducks[duck], field_candidate,'capacity') or duck_found
+                    duck_found = self.check_candidate(current_class.cir_ducks[duck], field_candidate,'frequency') or duck_found
                 #check if duck not found at all
                 if(not duck_found):
                     bad_ducks += 1
