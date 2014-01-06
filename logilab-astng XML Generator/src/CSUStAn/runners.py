@@ -65,6 +65,10 @@ class ClassIRRunner(ConfigurationMixIn):
     
     options = OPTIONS
     
+    # criteria for duck typing
+    _criteria = None
+    _out_file = None
+    _project = None
     _good_gettatr = 0
     _bad_gettatr = 0
     # numbers of "ducks" in project (for complexity estimation)
@@ -82,8 +86,11 @@ class ClassIRRunner(ConfigurationMixIn):
     _tuple_methods = [attr for attr in dir(()) if re.search('\A(?!_)',attr)]
     _attr_iteration_cycles = 0
     
-    def __init__(self, args):
+    def __init__(self, args,criteria='default',out_file='test.xml'):
         ConfigurationMixIn.__init__(self, usage=__doc__)
+        self._project = args[0]
+        self._out_file = out_file
+        self._criteria = criteria
         self._prob_used_classes = set([])
         self._dbg_assattr_parents = set([])
         insert_default_options()
@@ -106,26 +113,33 @@ class ClassIRRunner(ConfigurationMixIn):
         return None
 
 
-    def check_candidate(self,duck,cand_class, criteria='default'):
+    def check_candidate(self,duck,cand_class, criteria='default',add_value=False):
         duck_attrs, duck_methods = self.get_duck_signature(duck)
         candidate_attrs = cand_class.cir_complete_attrs
         candidate_methods = set([method.name for method in cand_class.methods()])
         proper_attrs = candidate_attrs.intersection(duck_attrs)
         proper_methods = candidate_methods.intersection(duck_methods)
+        value=None
         if criteria == 'default':
             if(all(attr in candidate_attrs for attr in duck_attrs) and all(method in candidate_methods for method in duck_methods)):
-                duck['type'].append(cand_class)
-                self._prob_used_classes |= set([cand_class.cir_uid])
                 return True
         if criteria == 'capacity':
-            if (float(len(proper_attrs)+len(proper_methods))/(len(duck_attrs)+len(duck_methods)))>= 0.5:
-                return True
+            value = float(len(proper_attrs)+len(proper_methods))/(len(duck_attrs)+len(duck_methods)) 
         if criteria == 'frequency':
             attr_val = self.get_duck_val(duck, proper_attrs, 'attrs')
             all_attr = self.get_duck_val(duck, duck_attrs, 'attrs')
             meth_val = self.get_duck_val(duck, proper_methods, 'methods')
             all_meth = self.get_duck_val(duck, duck_methods, 'methods')
-            if (float(attr_val+meth_val)/(all_attr+all_meth))>= 0.5:
+            value = float(attr_val+meth_val)/(all_attr+all_meth) 
+           
+        if value is not None:
+            if add_value:
+                if duck.has_key('type_values'):
+                    # save value for candidate
+                    duck['type_values'][cand_class.cir_uid]=value
+                else:
+                    duck['type_values']={cand_class.cir_uid:value}
+            if value>= 0.5:
                 return True
         return False
     
@@ -177,17 +191,22 @@ class ClassIRRunner(ConfigurationMixIn):
                         continue
                 duck_found = False
                 for field_candidate in linker.get_classes():
-                    duck_found = self.check_candidate(current_class.cir_ducks[duck], field_candidate,'frequency') or duck_found
+                    result = self.check_candidate(current_class.cir_ducks[duck], field_candidate,self._criteria,True)
+                    if(result):
+                        current_class.cir_ducks[duck]['type'].append(field_candidate)
+                        self._prob_used_classes |= set([field_candidate.cir_uid]) 
+                    duck_found = result or duck_found
+                      
                 #check if duck not found at all
                 if(not duck_found):
                     bad_ducks += 1
-                    print "Bad duck - ",duck_attrs, duck_methods
                 else:
                     self._found_ducks+=1  
                     dbg.add(str(current_class)+duck)
-#        empty_ducks = len(list(linker.get_empty_ducks()))   
-        print "Bad ducks ", bad_ducks
-        print "Empty ducks ", empty_ducks                   
+#        empty_ducks = len(list(linker.get_empty_ducks()))  
+        print len(dbg)
+        print "Project - ",self._project        
+        print "Duck typing criteria - ",self._criteria            
         print "Numbers of ducks: ", linker.get_ducks_count()
         print "Numbers of ducks with assignment in class: ", len(list(linker.get_assigned_ducks()))
         print "Numbers of ducks with complex type: ", len(list(linker.get_complex_ducks()))
@@ -218,7 +237,16 @@ class ClassIRRunner(ConfigurationMixIn):
                             attr_node.append(etree.Element('AggregatedType',name=str(obj.cir_ducks[attrname]['complex_type']),element_type=prob_type.name,element_id=str(prob_type.cir_uid)))
                     else:
                         for prob_type in obj.cir_ducks[attrname]['type']:
-                            attr_node.append(etree.Element('CommonType',name=prob_type.name,id=str(prob_type.cir_uid)))    
+                            if(obj.cir_ducks[attrname].has_key('type_values')):
+                                common_type_node = etree.Element('CommonType',
+                                                                 name=prob_type.name,
+                                                                 id=str(prob_type.cir_uid),
+                                                                 type_value=str(obj.cir_ducks[attrname]['type_values'][prob_type.cir_uid]))
+                            else:
+                                common_type_node = etree.Element('CommonType',
+                                                                 name=prob_type.name,
+                                                                 id=str(prob_type.cir_uid))
+                            attr_node.append(common_type_node)    
             for meth in linker.get_methods(obj):
                 meth_node = etree.Element('Method',name=meth.name)
                 meth_node.set("fromlineno",str(meth.fromlineno))
@@ -235,7 +263,8 @@ class ClassIRRunner(ConfigurationMixIn):
                 node.append(meth_node)
         for rel in linker.get_inheritances():
             mapper[rel[0]].append(etree.Element('Parent',name=rel[1].name,id=str(rel[1].cir_uid)))
-        f = open('test.xml','w')
+        print "Writing ", self._out_file
+        f = open(self._out_file,'w')
         f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
         
@@ -254,9 +283,9 @@ class ClassIRHandler:
             self._full_name_dict[class_node.get("label")+'.'+class_node.get("name")] = class_node
             self._id_dict[class_node.get("id")] = class_node      
     def get_methods(self,node):
-        return Set([meth.get("name") for meth in node.iter("Method")])
+        return set([meth.get("name") for meth in node.iter("Method")])
     def handle_attrs(self,node):
-        return Set([attr.get("name") for attr in node.iter("Attr")])
+        return set([attr.get("name") for attr in node.iter("Attr")])
     def get_attr(self,node, attrname):
         attrs = [attr for attr in node.iter("Attr") if (attr.get("name")==attrname)]
         if(len(attrs)==0):
@@ -487,6 +516,7 @@ class TypesComparator(ClassIRHandler):
                         self._result['correct_common_types']+=1
                     else:
                         self._result['not_found_common_types']+=1
+                        print current_class," = ",attrname," = ",type, self.handle_attrs(self.get_class_by_full_name(type))
                 for type in self._dynamic_types_info[current_class][1][attrname]['aggregated_type']:
                     if type in aggr_type:
                         self._result['correct_aggr_types']+=1
@@ -552,16 +582,17 @@ class TypesComparator(ClassIRHandler):
     
 
 class ObjectTracer(TypesComparator):
-    def __init__(self, project_tag, in_file, preload_file, skip_classes=(), delay=5):
+    def __init__(self, project_tag, in_file, preload_file, skip_classes=(), delay=5,only_preload=False):
         TypesComparator.__init__(self, in_file,project_tag,preload_file)
-        self._dbg = CSUDbg(project_mark=project_tag, skip_classes=skip_classes, delay=delay)
+        self._dbg = CSUDbg(project_mark=project_tag, skip_classes=skip_classes, delay=delay,preload_dt_info=self._preload_dt_info)
         self._dbg.set_trace()
         curr_dir = os.getcwd()
-        try:
-            self.run()
-        except SystemExit:
-            """ Catching sys.exit """
-            pass
+        if not only_preload:
+            try:
+                self.run()
+            except SystemExit:
+                """ Catching sys.exit """
+                pass
         os.chdir(curr_dir)
         self._dbg.disable_trace()
         used_classes = self._dbg.get_used_classes()
@@ -579,7 +610,7 @@ class ObjectTracer(TypesComparator):
 class LogilabObjectTracer(ObjectTracer):
     
     def __init__(self, in_file, preload_file):
-        ObjectTracer.__init__(self,'logilab', in_file ,preload_file,skip_classes=(Const))
+        ObjectTracer.__init__(self,'logilab', in_file ,preload_file,skip_classes=(Const),only_preload=True)
         
     def run(self):
         main.Run(sys.argv[1:])

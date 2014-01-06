@@ -125,8 +125,10 @@ cfg_parser = SafeConfigParser()
 cfg_parser.read(args.config_file)
 if(args.type=="ClassIR"):
     project = cfg_parser.get(args.type,'project')
+    criteria = cfg_parser.get(args.type,'criteria')
+    out_file = cfg_parser.get(args.type,'out_file')
     sys.argv = ["main.py",project]
-    runner = ClassIRRunner([project])
+    runner = ClassIRRunner([project],criteria,out_file)
 elif(args.type=="LogilabClassIR"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]
