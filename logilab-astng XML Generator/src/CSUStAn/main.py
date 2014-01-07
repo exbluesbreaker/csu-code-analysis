@@ -127,8 +127,9 @@ if(args.type=="ClassIR"):
     project = cfg_parser.get(args.type,'project')
     criteria = cfg_parser.get(args.type,'criteria')
     out_file = cfg_parser.get(args.type,'out_file')
+    treshold = cfg_parser.getfloat(args.type,'treshold')
     sys.argv = ["main.py",project]
-    runner = ClassIRRunner([project],criteria,out_file)
+    runner = ClassIRRunner([project],criteria,out_file,treshold)
 elif(args.type=="LogilabClassIR"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]
@@ -147,14 +148,16 @@ elif(args.type=="LogilabObjectTracer"):
     project = cfg_parser.get(args.type,'project')
     in_file = cfg_parser.get(args.type,'in_file')
     preload_file = cfg_parser.get(args.type,'preload_file')
+    only_preload = cfg_parser.getboolean(args.type,'only_preload')
     sys.argv = ["main.py",project]
-    runner = LogilabObjectTracer(in_file,preload_file)
+    runner = LogilabObjectTracer(in_file,preload_file,only_preload)
 elif(args.type=="PylintObjectTracer"):
     project = cfg_parser.get(args.type,'project')
     in_file = cfg_parser.get(args.type,'in_file')
     preload_file = cfg_parser.get(args.type,'preload_file')
+    only_preload = cfg_parser.getboolean(args.type,'only_preload')
     sys.argv = ["main.py",project]
-    runner = PylintObjectTracer(in_file,preload_file)
+    runner = PylintObjectTracer(in_file,preload_file,only_preload)
 elif(args.type=="TwistedObjectTracer"):
     sys.argv = ["main.py","-h ftp.mozilla.org"]
     runner = TwistedObjectTracer(args.in_file,args.preload_file)
@@ -166,8 +169,9 @@ elif(args.type=="BazaarObjectTracer"):
     preload_file = cfg_parser.get(args.type,'preload_file')
     work_dir = cfg_parser.get(args.type,'work_dir')
     repo = cfg_parser.get(args.type,'repo')
+    only_preload = cfg_parser.getboolean(args.type,'only_preload')
     sys.argv = ["bzr","branch",repo]
-    runner = BazaarObjectTracer(in_file,preload_file,work_dir)
+    runner = BazaarObjectTracer(in_file,preload_file,work_dir,only_preload)
 elif(args.type=="TestRunner"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]

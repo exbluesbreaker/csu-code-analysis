@@ -85,10 +85,12 @@ class ClassIRRunner(ConfigurationMixIn):
     _tuple_attrs = [attr for attr in dir(()) if not re.search('\A(?!_)',attr)]
     _tuple_methods = [attr for attr in dir(()) if re.search('\A(?!_)',attr)]
     _attr_iteration_cycles = 0
+    _treshold = None
     
-    def __init__(self, args,criteria='default',out_file='test.xml'):
+    def __init__(self, args,criteria='default',out_file='test.xml',treshold=None):
         ConfigurationMixIn.__init__(self, usage=__doc__)
         self._project = args[0]
+        self._treshold = treshold
         self._out_file = out_file
         self._criteria = criteria
         self._prob_used_classes = set([])
@@ -139,7 +141,7 @@ class ClassIRRunner(ConfigurationMixIn):
                     duck['type_values'][cand_class.cir_uid]=value
                 else:
                     duck['type_values']={cand_class.cir_uid:value}
-            if value>= 0.5:
+            if value>= self._treshold:
                 return True
         return False
     
@@ -536,13 +538,11 @@ class TypesComparator(ClassIRHandler):
                             type_val = float(type_val)
                             if type_val >= threshold:
                                 self._result['correct_common_types']+=1
-                                print node.get("name"),attrname,type, type_val
                             else:
                                 self._result['not_found_common_types']+=1
                         else:
                             #threshold will not be used
                             self._result['correct_common_types']+=1
-                            print node.get("name"),attrname,type
                     else:
                         self._result['not_found_common_types']+=1
                 for type in self._dynamic_types_info[current_class][1][attrname]['aggregated_type']:
@@ -627,7 +627,6 @@ class ObjectTracer(TypesComparator):
         self._dynamic_types_info = used_classes
         t=0.5
         while t <=1.0:
-            t=1.0
             self.compare_type_info(threshold=t)
             print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
             res =  self.get_result()
@@ -642,7 +641,7 @@ class ObjectTracer(TypesComparator):
 
 class LogilabObjectTracer(ObjectTracer):
     
-    def __init__(self, in_file, preload_file):
+    def __init__(self, in_file, preload_file,only_preload=False):
         ObjectTracer.__init__(self,'logilab', in_file ,preload_file,skip_classes=(Const),only_preload=True)
         
     def run(self):
@@ -658,7 +657,7 @@ class TwistedObjectTracer(ObjectTracer):
         
 class PylintObjectTracer(ObjectTracer):
     
-    def __init__(self, in_file, preload_file):
+    def __init__(self, in_file, preload_file,only_preload=False):
         ObjectTracer.__init__(self,'pylint', in_file ,preload_file,skip_classes=(Const),only_preload=True)
         
     def run(self):
@@ -688,12 +687,12 @@ class BazaarObjectTracer(ObjectTracer):
     
     _work_dir = None
     
-    def __init__(self, in_file, preload_file,work_dir):
+    def __init__(self, in_file, preload_file,work_dir,only_preload=False):
         import sys
         sys.setrecursionlimit(10000)
         from bzrlib.lazy_regex import LazyRegex
         self._work_dir = work_dir
-        ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex), delay=20,only_preload=True)
+        ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex), delay=20,only_preload=only_preload)
         
     def run(self):
         os.chdir(self._work_dir)
