@@ -292,6 +292,22 @@ class ClassIRHandler:
             return None
         else:
             return attrs[0]
+    def get_common_type_values(self,node, attrname, value_dict= None):
+        if value_dict is None:
+            value_dict = {}
+        attr = self.get_attr(node, attrname)
+        if attr is not None:
+            for type in attr.iter("CommonType"):
+                type_name = self._id_dict[type.get("id")].get("label")+'.'+self._id_dict[type.get("id")].get("name")
+                if (value_dict.has_key(type_name)):
+                    if value_dict[type_name] < type.get("type_value"):
+                        # use maximum value in inheritance hierarchy
+                        value_dict[type_name] = type.get("type_value")
+                else:
+                    value_dict[type_name] = type.get("type_value")
+        for parent in self.get_parents(node):
+            self.get_common_type_values(parent, attrname, value_dict)
+        return value_dict
     def get_type(self,type_mark,node, attrname, type_set= None):
         if type_set is None:
             type_set = set([])
@@ -501,9 +517,10 @@ class TypesComparator(ClassIRHandler):
             self._result_file = result_file
             self.preload_results()
         
-    def compare_type_info(self):
+    def compare_type_info(self,threshold=None):
         #Save result
         self.save_result()
+        self._result = {'not_found_common_types':0,'correct_common_types':0,'not_found_aggr_types':0,'correct_aggr_types':0}
         for current_class in self._dynamic_types_info.keys():
             node = self.get_class_by_full_name(current_class)
             if node is None:
@@ -512,11 +529,22 @@ class TypesComparator(ClassIRHandler):
                 common_type = self.get_type("CommonType",node,attrname)
                 aggr_type = self.get_type("AggregatedType",node,attrname)
                 for type in self._dynamic_types_info[current_class][1][attrname]['common_type']:
+                    common_type_vals = self.get_common_type_values(node, attrname)
                     if type in common_type:
-                        self._result['correct_common_types']+=1
+                        type_val = common_type_vals[type]
+                        if((threshold is not None) and (type_val is not None)):
+                            type_val = float(type_val)
+                            if type_val >= threshold:
+                                self._result['correct_common_types']+=1
+                                print node.get("name"),attrname,type, type_val
+                            else:
+                                self._result['not_found_common_types']+=1
+                        else:
+                            #threshold will not be used
+                            self._result['correct_common_types']+=1
+                            print node.get("name"),attrname,type
                     else:
                         self._result['not_found_common_types']+=1
-                        print current_class," = ",attrname," = ",type, self.handle_attrs(self.get_class_by_full_name(type))
                 for type in self._dynamic_types_info[current_class][1][attrname]['aggregated_type']:
                     if type in aggr_type:
                         self._result['correct_aggr_types']+=1
@@ -597,14 +625,19 @@ class ObjectTracer(TypesComparator):
         self._dbg.disable_trace()
         used_classes = self._dbg.get_used_classes()
         self._dynamic_types_info = used_classes
-        self.compare_type_info()
-        print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
-        res =  self.get_result()
-        print "Correctly detected common types: ",res['correct_common_types']
-        print "Correctly detected aggregated types: ",res['correct_aggr_types']
-        print "Not correctly detected common types: ",res['not_found_common_types']
-        print "Not correctly detected aggregated types: ",res['not_found_aggr_types']
-        print "Success percentage: ",(res['correct_common_types']+res['correct_aggr_types'])*100.0/(res['correct_common_types']+res['correct_aggr_types']+res['not_found_common_types']+res['not_found_aggr_types']),"%"
+        t=0.5
+        while t <=1.0:
+            t=1.0
+            self.compare_type_info(threshold=t)
+            print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
+            res =  self.get_result()
+            print "Threshold - ", t
+            print "Correctly detected common types: ",res['correct_common_types']
+            print "Correctly detected aggregated types: ",res['correct_aggr_types']
+            print "Not correctly detected common types: ",res['not_found_common_types']
+            print "Not correctly detected aggregated types: ",res['not_found_aggr_types']
+            print "Success percentage: ",(res['correct_common_types']+res['correct_aggr_types'])*100.0/(res['correct_common_types']+res['correct_aggr_types']+res['not_found_common_types']+res['not_found_aggr_types']),"%"
+            t += 0.05
                         
 
 class LogilabObjectTracer(ObjectTracer):
@@ -626,7 +659,7 @@ class TwistedObjectTracer(ObjectTracer):
 class PylintObjectTracer(ObjectTracer):
     
     def __init__(self, in_file, preload_file):
-        ObjectTracer.__init__(self,'pylint', in_file ,preload_file,skip_classes=(Const))
+        ObjectTracer.__init__(self,'pylint', in_file ,preload_file,skip_classes=(Const),only_preload=True)
         
     def run(self):
         from pylint import lint
@@ -660,7 +693,7 @@ class BazaarObjectTracer(ObjectTracer):
         sys.setrecursionlimit(10000)
         from bzrlib.lazy_regex import LazyRegex
         self._work_dir = work_dir
-        ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex), delay=20)
+        ObjectTracer.__init__(self,'bzrlib', in_file ,preload_file, skip_classes=(LazyRegex), delay=20,only_preload=True)
         
     def run(self):
         os.chdir(self._work_dir)
