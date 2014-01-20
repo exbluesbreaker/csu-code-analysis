@@ -128,8 +128,9 @@ if(args.type=="ClassIR"):
     criteria = cfg_parser.get(args.type,'criteria')
     out_file = cfg_parser.get(args.type,'out_file')
     treshold = cfg_parser.getfloat(args.type,'treshold')
+    add_value = cfg_parser.getboolean(args.type,'add_value')
     sys.argv = ["main.py",project]
-    runner = ClassIRRunner([project],criteria,out_file,treshold)
+    runner = ClassIRRunner([project],criteria,out_file,treshold,add_value)
 elif(args.type=="LogilabClassIR"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]
@@ -212,6 +213,7 @@ elif(args.type=="InstanceInitSlicer"):
     lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
     ucr_id = cfg_parser.get(args.type,'ucr_id')
     out_xml = cfg_parser.get(args.type,'out_xml')
-    runner = InstanceInitSlicer(ucr_xml,lcfg_xml,ucr_id,out_xml)
+    keep_parents = cfg_parser.getboolean(args.type,'keep_parents')
+    runner = InstanceInitSlicer(ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents)
 else:
     print "Unknown type!"

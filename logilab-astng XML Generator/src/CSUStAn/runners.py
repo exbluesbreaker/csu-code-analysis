@@ -86,9 +86,11 @@ class ClassIRRunner(ConfigurationMixIn):
     _tuple_methods = [attr for attr in dir(()) if re.search('\A(?!_)',attr)]
     _attr_iteration_cycles = 0
     _treshold = None
+    _add_value = None
     
-    def __init__(self, args,criteria='default',out_file='test.xml',treshold=None):
+    def __init__(self, args,criteria='default',out_file='test.xml',treshold=None,add_value=False):
         ConfigurationMixIn.__init__(self, usage=__doc__)
+        self._add_value = add_value
         self._project = args[0]
         self._treshold = treshold
         self._out_file = out_file
@@ -115,7 +117,7 @@ class ClassIRRunner(ConfigurationMixIn):
         return None
 
 
-    def check_candidate(self,duck,cand_class, criteria='default',add_value=False):
+    def check_candidate(self,duck,cand_class, criteria='default'):
         duck_attrs, duck_methods = self.get_duck_signature(duck)
         candidate_attrs = cand_class.cir_complete_attrs
         candidate_methods = set([method.name for method in cand_class.methods()])
@@ -135,7 +137,7 @@ class ClassIRRunner(ConfigurationMixIn):
             value = float(attr_val+meth_val)/(all_attr+all_meth) 
            
         if value is not None:
-            if add_value:
+            if self._add_value:
                 if duck.has_key('type_values'):
                     # save value for candidate
                     duck['type_values'][cand_class.cir_uid]=value
@@ -193,7 +195,7 @@ class ClassIRRunner(ConfigurationMixIn):
                         continue
                 duck_found = False
                 for field_candidate in linker.get_classes():
-                    result = self.check_candidate(current_class.cir_ducks[duck], field_candidate,self._criteria,True)
+                    result = self.check_candidate(current_class.cir_ducks[duck], field_candidate,self._criteria)
                     if(result):
                         current_class.cir_ducks[duck]['type'].append(field_candidate)
                         self._prob_used_classes |= set([field_candidate.cir_uid]) 
@@ -325,6 +327,14 @@ class ClassIRHandler:
         return type_set
     def get_parents(self,node):
         return [self._ucr_tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in node.iter("Parent")]
+    def get_all_parents(self,node,result=None):
+        if(result is None):
+            result = set([])
+        parents = [self._ucr_tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in node.iter("Parent")]
+        result|= set(parents)
+        for p in parents:
+            result = self.get_all_parents(p, result)
+        return result
     def get_class_by_full_name(self,full_name):
         if self._full_name_dict.has_key(full_name):
             return self._full_name_dict[full_name]
@@ -658,7 +668,7 @@ class TwistedObjectTracer(ObjectTracer):
 class PylintObjectTracer(ObjectTracer):
     
     def __init__(self, in_file, preload_file,only_preload=False):
-        ObjectTracer.__init__(self,'pylint', in_file ,preload_file,skip_classes=(Const),only_preload=True)
+        ObjectTracer.__init__(self,'pylint', in_file ,preload_file,skip_classes=(Const),only_preload=only_preload)
         
     def run(self):
         from pylint import lint
@@ -1014,14 +1024,33 @@ class ClassCFGSlicer(CFGSlicer):
                 
 class InstanceInitSlicer(CFGHandler, UCRSlicer):
     _ucr_id = None
-    def __init__(self,ucr_xml,lcfg_xml,ucr_id,out_xml):
+    _keep_parents = None
+    def __init__(self,ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents=False):
         UCRSlicer.__init__(self, ucr_xml,out_xml)
         CFGHandler.__init__(self, lcfg_xml)
         self._ucr_id = ucr_id
+        self._keep_parents = keep_parents
         self.run()
         
+        
     def slice(self):
-        self._sliced_classes.add(self.get_class_by_id(self._ucr_id))
+        current_class = self.get_class_by_id(self._ucr_id)
+        self._sliced_classes.add(current_class)
+        parents = None
+        if(self._keep_parents):
+                parents = self.get_all_parents(current_class,parents)
+        else:
+            for p in current_class.iter("Parent"):
+                    current_class.remove(p)
         for c in self._cfg_tree.xpath("//Method[@ucr_id=\""+self._ucr_id+"\"]//Direct//Target[@type=\"method\"]//TargetClass[@ucr_id]"):
-            self._sliced_classes.add(self.get_class_by_id(c.get("ucr_id")))
+            created_class = self.get_class_by_id(c.get("ucr_id"))
+            self._sliced_classes.add(created_class)
+            if(self._keep_parents):
+                parents = self.get_all_parents(created_class,parents)
+            else:
+                for p in created_class.iter("Parent"):
+                    created_class.remove(p)
+        if parents is not None:
+            for p in parents:
+                self._sliced_classes.add(p)
     
