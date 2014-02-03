@@ -159,7 +159,10 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                         returns.add(id_count)
                     id_count += 1
                 self.handle_simple_node(child, block_node)
-        return id_count, prev
+        if(flow_part):
+            return id_count, prev
+        else:
+            return id_count, set([])
     
     def handle_cross(self, node, func_node, parent_id,id_count,returns):
         ''' Handle conditional part of flow, e.g. If block'''
@@ -171,6 +174,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count,returns)
             parent_ids |=ids
             if (not node.orelse):
+                ''' If there are no else then no direct block from if is needed'''
                 parent_ids.add(curr_id)
         elif isinstance(node, TryExcept):
             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
@@ -180,13 +184,11 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 parent_ids |=ids
             id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count,returns)
             parent_ids |=ids
-            parent_ids.add(curr_id)
         elif isinstance(node, TryFinally):
             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
             parent_ids |=ids
             id_count, ids = self.handle_flow_part(func_node,node.finalbody, set([curr_id]), id_count,returns)
             parent_ids |=ids
-            parent_ids.add(curr_id)
         elif isinstance(node, With):
             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
             parent_ids |=ids
@@ -280,7 +282,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                         space_type = "external"
             self._dbg_call_lookup.add(asgn.__class__.__name__)
             if isinstance(asgn,AssAttr):
-                print name,asgn.as_string(), asgn.root()
+                print "DBG ",name,asgn.as_string(), asgn.root()
         return space_type,called,called_id, label
     
 class CFGHandler:
