@@ -192,7 +192,6 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         elif isinstance(node, With):
             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
             parent_ids |=ids
-            parent_ids.add(curr_id)
         return id_count, parent_ids            
     
     def handle_simple_node(self,node,block_node):
