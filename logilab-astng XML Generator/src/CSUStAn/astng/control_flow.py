@@ -170,7 +170,8 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             parent_ids |=ids
             id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count,returns)
             parent_ids |=ids
-            parent_ids.add(curr_id)
+            if (not node.orelse):
+                parent_ids.add(curr_id)
         elif isinstance(node, TryExcept):
             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
             parent_ids |=ids
