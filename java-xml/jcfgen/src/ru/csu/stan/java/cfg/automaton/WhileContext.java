@@ -41,7 +41,8 @@ class WhileContext extends ControlFlowForkContextBase<While> {
 	@Override
 	public void finish(String eventName) {
 		if (isEventFitToContext(eventName)){
-			addCursorDataToCurrent(bodyCursor);
+			makeFlowsFromCursorToId(bodyCursor, getFlowForkBlock().getId());
+			getCursor().setCurrentId(bodyCursor.getCurrentId());
 			getCursor().addParentId(getFlowForkBlock().getId().intValue());
 		}
 	}

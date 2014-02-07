@@ -37,8 +37,13 @@ public class MyClass extends ArrayList<Object>{
         		System.out.println("1");
         		System.out.println("1");
         	}
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++){
         	System.out.println(123);
+        	if (i > 5)
+        		System.out.println(123);
+        	else
+        		System.out.println(123);
+        }
         
         for (IAction act: actionList){
         	System.out.println(act.toString());
