@@ -8,7 +8,7 @@ Created on 02.04.2012
 from logilab.astng.node_classes import CallFunc, Getattr, Const, Name, Import, From
 from logilab.astng.scoped_nodes import Module, Class, Function
 from logilab.astng.utils import LocalsVisitor
-from CSUStAn.Exceptions import CSUStAnException
+from CSUStAn.exceptions import CSUStAnException
 import pydot
 import re
 from lxml import etree

@@ -296,3 +296,9 @@ class CFGHandler:
         self._cfg_tree = etree.parse(cfg_xml, parser)
         self._methods = [node for node in self._cfg_tree.iter("Method")]
         self._funcs = [node for node in self._cfg_tree.iter("Function")]
+        
+    def get_frame_by_id(self,id):
+        return self._cfg_tree.xpath("//Method[@cfg_id=\""+id+"\"]|Function[@cfg_id=\""+id+"\"]")
+    
+    def get_calls(self,frame):
+        pass

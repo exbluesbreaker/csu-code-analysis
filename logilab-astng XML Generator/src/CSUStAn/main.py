@@ -215,5 +215,11 @@ elif(args.type=="InstanceInitSlicer"):
     out_xml = cfg_parser.get(args.type,'out_xml')
     keep_parents = cfg_parser.getboolean(args.type,'keep_parents')
     runner = InstanceInitSlicer(ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents)
+elif(args.type=="ExecPathHandler"):
+    in_file = cfg_parser.get(args.type,'in_file')
+    out_file = cfg_parser.get(args.type,'out_file')
+    exec_path = cfg_parser.get(args.type,'exec_path')
+    exec_path = exec_path.split(',') 
+    runner = ExecPathHandler(in_file,out_file,exec_path)
 else:
     print "Unknown type!"

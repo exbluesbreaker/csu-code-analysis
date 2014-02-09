@@ -27,6 +27,7 @@ from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGe
 from CSUStAn.astng.inspector import NoInferLinker, ClassIRLinker
 from CSUStAn.astng.astng import ASTNGHandler
 from CSUStAn.astng.control_flow import CFGLinker,CFGHandler
+from CSUStAn.exceptions import CSUStAnException
 
 
 
@@ -205,7 +206,7 @@ class ClassIRRunner(ConfigurationMixIn):
                 if(not duck_found):
                     bad_ducks += 1
                 else:
-                    self._found_ducks+=1  
+                    self._found_ducks+=1 
                     dbg.add(str(current_class)+duck)
 #        empty_ducks = len(list(linker.get_empty_ducks()))  
         print len(dbg)
@@ -635,7 +636,7 @@ class ObjectTracer(TypesComparator):
         self._dbg.disable_trace()
         used_classes = self._dbg.get_used_classes()
         self._dynamic_types_info = used_classes
-        t=0.5
+        t=0.1
         while t <=1.0:
             self.compare_type_info(threshold=t)
             print len(self._dynamic_types_info.keys()), self.get_num_of_classes()
@@ -1021,6 +1022,30 @@ class ClassCFGSlicer(CFGSlicer):
         for call in self._cfg_tree.xpath("//TargetClass[@ucr_id=\"" + self._ucr_id + "\"]"):
             if call.getparent().getparent().tag=='Direct':
                 self._sliced_frames.add(call.getparent().getparent().getparent().getparent().getparent())
+                
+
+class ExecPathHandler(CFGHandler):
+    
+    def __init__(self,lcfg_xml,out_xml,exec_path):
+        CFGHandler.__init__(self, lcfg_xml)
+        self._out_xml = out_xml
+        self.get_exec_path(exec_path)
+        
+    def get_exec_path(self,exec_path):
+        curr_frame_calls = self.get_call_targets(exec_path[0])
+        for f in exec_path[1:]:
+            if f not in [c.get("cfg_id") for c in curr_frame_calls]:
+                raise CSUStAnException("No such exec path"+str(exec_path)+". Failed on "+str(f))
+            curr_frame_calls = self.get_call_targets(f)
+    
+    def get_call_targets(self,frame_id):
+        nodes =  self.get_frame_by_id(frame_id)
+        if(len(nodes)>1):
+            print "Warning: multiple nodes for exec path entry id(",frame_id,")"
+        if(len(nodes)==0):
+            raise CSUStAnException("Error: No nodes for exec path entry id("+str(frame_id)+")")
+            return None
+        return nodes[0].xpath(".//Target[@cfg_id]")
                 
 class InstanceInitSlicer(CFGHandler, UCRSlicer):
     _ucr_id = None
