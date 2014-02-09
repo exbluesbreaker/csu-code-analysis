@@ -43,7 +43,8 @@ public class ForContext extends ControlFlowForkContextBase<For> {
 	@Override
 	public void finish(String eventName) {
 		if (isEventFitToContext(eventName)){
-			addCursorDataToCurrent(bodyCursor);
+			makeFlowsFromCursorToId(bodyCursor, getFlowForkBlock().getId());
+			getCursor().setCurrentId(bodyCursor.getCurrentId());
 			getCursor().addParentId(getFlowForkBlock().getId().intValue());
 		}
 	}
