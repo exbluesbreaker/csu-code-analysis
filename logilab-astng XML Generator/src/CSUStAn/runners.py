@@ -1033,10 +1033,37 @@ class ExecPathHandler(CFGHandler):
         
     def get_exec_path(self,exec_path):
         curr_frame_calls = self.get_call_targets(exec_path[0])
+        frame = self.get_frame_by_id(exec_path[0])[0]
         for f in exec_path[1:]:
             if f not in [c.get("cfg_id") for c in curr_frame_calls]:
                 raise CSUStAnException("No such exec path"+str(exec_path)+". Failed on "+str(f))
+            for c in curr_frame_calls:
+                block = c.xpath("./ancestor::Block")[0]
+                print block.get("id"), len(self.extract_frame_path(frame, block))                
             curr_frame_calls = self.get_call_targets(f)
+            frame = self.get_frame_by_id(f)[0]
+            
+    def extract_frame_path(self,frame_node,block_node):
+        ''' Extract all possible paths from frame start to given block '''
+        flows = frame_node.xpath(".//Flow[@to_id=\'"+block_node.get("id")+"\']")
+        # local_path |= set(flows)
+        local_path = []
+        if len(flows)==0:
+            return[[block_node]]
+        for f in flows:
+            precending = frame_node.xpath(".//*[@id=\'"+f.get("from_id")+"\']")
+            paths = self.extract_frame_path(frame_node, precending[0])
+            #print paths
+            for p in paths:
+                p.append(f)
+                p.append(block_node)
+            local_path = local_path+paths
+        return local_path
+#             local_path |=set(precending)
+#             for p in precending:
+#                 self.extract_frame_path(frame_node, p, local_path)
+        return local_path
+        
     
     def get_call_targets(self,frame_id):
         nodes =  self.get_frame_by_id(frame_id)
