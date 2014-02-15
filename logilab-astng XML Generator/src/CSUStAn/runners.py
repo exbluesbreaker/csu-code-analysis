@@ -351,6 +351,10 @@ class ClassIRHandler:
         return self._ucr_tree.xpath("//Class[@label=\""+modname+"\"]")
     def get_num_of_classes(self):
         return len(self._classes)
+    
+    def forEachClass(self, function):
+        for c in self._classes:
+            function(c)
 
 class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
     # scan classes description for candidate for class's field
@@ -1105,4 +1109,33 @@ class InstanceInitSlicer(CFGHandler, UCRSlicer):
         if parents is not None:
             for p in parents:
                 self._sliced_classes.add(p)
+    
+    
+class BigClassAnalyzer(CFGHandler, ClassIRHandler):
+    
+    def __init__(self, ucr_xml, cfg_xml):
+        CFGHandler.__init__(self, cfg_xml)
+        ClassIRHandler.__init__(self, ucr_xml)
+        self.run()
+    
+    def run(self):
+        self.__counter = 1
+        self.__repot = ""
+        self.forEachClass(self.processClass())
+        print self.__repot
+        
+    def processClass(self):
+        def processClassInternal(c):
+            print "Processing class " + c + " (" + self.__counter + "/" + self.get_num_of_classes() + ")"
+            self.counter += 1
+            attrs = 0
+            for attr in self.handle_attrs(c):
+                attrs += 1
+            if attrs > 15:
+                self.__repot += "\nClass " + c + " has potential problem with too many fields (" + attrs + ")"
+            methods = 0
+            for method in c.iter("Method"):
+                methods += 1
+        
+        return processClassInternal
     
