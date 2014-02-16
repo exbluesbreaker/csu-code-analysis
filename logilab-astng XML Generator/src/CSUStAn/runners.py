@@ -1032,16 +1032,41 @@ class ExecPathHandler(CFGHandler):
         self.get_exec_path(exec_path)
         
     def get_exec_path(self,exec_path):
+        '''Extract given exec path from CFG'''
         curr_frame_calls = self.get_call_targets(exec_path[0])
         frame = self.get_frame_by_id(exec_path[0])[0]
+        frame_routes = []
         for f in exec_path[1:]:
-            if f not in [c.get("cfg_id") for c in curr_frame_calls]:
+            target_calls=[c for c in curr_frame_calls if c.get("cfg_id")==f]
+            if len(target_calls)==0:
                 raise CSUStAnException("No such exec path"+str(exec_path)+". Failed on "+str(f))
-            for c in curr_frame_calls:
+            for c in target_calls:
                 block = c.xpath("./ancestor::Block")[0]
-                print block.get("id"), len(self.extract_frame_path(frame, block))                
+                frame_routes.append(self.extract_frame_path(frame, block)) 
             curr_frame_calls = self.get_call_targets(f)
             frame = self.get_frame_by_id(f)[0]
+        result_routes = frame_routes[0]
+        for r in frame_routes[1:]:
+            result_routes = self.concat_routes(result_routes, r)
+        print result_routes
+        
+    def concat_routes(self,start_routes,end_routes):
+        result = []
+        for r0 in start_routes:
+            for r1 in end_routes:
+                result.append(r0+r1)
+        return result
+    
+    def get_call_route(self,block_path,call):
+        call_path=[]
+        for b in block_path[:-1]:
+            for c in b.iter("Call"):
+                call_path.append(c)
+        for c in block_path[-1].iter("Call"):
+            call_path.append(c)
+            if(c.xpath(".//Target[@cfg_id=\""+call+"\"]")):
+                break
+        return call_path
             
     def extract_frame_path(self,frame_node,block_node):
         ''' Extract all possible paths from frame start to given block '''
@@ -1055,7 +1080,6 @@ class ExecPathHandler(CFGHandler):
             paths = self.extract_frame_path(frame_node, precending[0])
             #print paths
             for p in paths:
-                p.append(f)
                 p.append(block_node)
             local_path = local_path+paths
         return local_path
