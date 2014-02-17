@@ -1112,6 +1112,12 @@ class InstanceInitSlicer(CFGHandler, UCRSlicer):
     
     
 class BigClassAnalyzer(CFGHandler, ClassIRHandler):
+    """
+        Analyzes classes responsibility and finds "big" classes, that carries about too many things.
+        These classes could be "God objects" or just overweighted with data.
+        Also winds big and complex methods in classes.
+    """
+    
     
     def __init__(self, ucr_xml, cfg_xml):
         CFGHandler.__init__(self, cfg_xml)
@@ -1124,18 +1130,29 @@ class BigClassAnalyzer(CFGHandler, ClassIRHandler):
         self.forEachClass(self.processClass())
         print self.__repot
         
-    def processClass(self):
-        def processClassInternal(c):
-            print "Processing class " + c + " (" + self.__counter + "/" + self.get_num_of_classes() + ")"
+    def process_class(self):
+        def process_class_internal(c):
+            print "Processing class " + c.get("name") + " (" + self.__counter + "/" + self.get_num_of_classes() + ")"
             self.counter += 1
-            attrs = 0
-            for attr in self.handle_attrs(c):
-                attrs += 1
+            attrs = len(self.handle_attrs(c))
             if attrs > 15:
-                self.__repot += "\nClass " + c + " has potential problem with too many fields (" + attrs + ")"
+                self.__repot += "\nClass " + c.get("name") + " has potential problem with too many fields (" + attrs + "). Maybe you should divide class responsibilities?"
             methods = 0
             for method in c.iter("Method"):
                 methods += 1
+                args = len([x.name for x in method.iter("Arg")])
+                if args > 7:
+                    self.__repot += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many arguments (" + args + "). Maybe some of it should be fields?"
+                flows = len(self._cfg_tree.xpath("//Method[@ucr_id=\"" + c.get("id") + "\"]//Flow"))
+                blocks = len(self._cfg_tree.xpath("//Method[@ucr_id=\"" + c.get("id") + "\"]//Block"))
+                if blocks > 10:
+                    self.__repot += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many blocks in control flow (" + blocks + "). Maybe you need to extract some to new method?"
+                if flows > 20:
+                    self.__repot += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many flows (" + flows + "). Maybe you need to extract a new method?"
+                if flows/blocks > 1.5:
+                    self.__repot += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with complex control flow. Maybe you need to extract a new methods or simplify this?"
+            if methods > 50 or methods - 2*args > 10 :
+                self.__repot += "\nClass " + c.get("name") + " has too many methods. Looks like it has too many responsibilities. Maybe you should divide it?"
         
-        return processClassInternal
+        return process_class_internal
     
