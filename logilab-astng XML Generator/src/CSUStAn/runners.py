@@ -285,7 +285,10 @@ class ClassIRHandler:
         self._full_name_dict = {}
         self._id_dict = {}
         for class_node in self._classes:
-            self._full_name_dict[class_node.get("label")+'.'+class_node.get("name")] = class_node
+            if class_node.get("label") != None:
+                self._full_name_dict[class_node.get("label")+'.'+class_node.get("name")] = class_node
+            else:
+                self._full_name_dict[class_node.get("name")] = class_node
             self._id_dict[class_node.get("id")] = class_node      
     def get_methods(self,node):
         return set([meth.get("name") for meth in node.iter("Method")])
@@ -1126,33 +1129,34 @@ class BigClassAnalyzer(CFGHandler, ClassIRHandler):
     
     def run(self):
         self.__counter = 1
-        self.__repot = ""
-        self.forEachClass(self.processClass())
-        print self.__repot
+        self.__report = ""
+        self.forEachClass(self.process_class())
+        print self.__report
         
     def process_class(self):
         def process_class_internal(c):
-            print "Processing class " + c.get("name") + " (" + self.__counter + "/" + self.get_num_of_classes() + ")"
-            self.counter += 1
+            print "Processing class " + c.get("name") + " (" + str(self.__counter) + "/" + str(self.get_num_of_classes()) + ")"
+            self.__counter += 1
             attrs = len(self.handle_attrs(c))
             if attrs > 15:
-                self.__repot += "\nClass " + c.get("name") + " has potential problem with too many fields (" + attrs + "). Maybe you should divide class responsibilities?"
+                self.__report += "\nClass " + c.get("name") + " has potential problem with too many fields (" + str(attrs) + "). Maybe you should divide this class into some smaller?"
             methods = 0
             for method in c.iter("Method"):
                 methods += 1
-                args = len([x.name for x in method.iter("Arg")])
+                args = len([x.get("name") for x in method.iter("Arg")])
                 if args > 7:
-                    self.__repot += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many arguments (" + args + "). Maybe some of it should be fields?"
-                flows = len(self._cfg_tree.xpath("//Method[@ucr_id=\"" + c.get("id") + "\"]//Flow"))
-                blocks = len(self._cfg_tree.xpath("//Method[@ucr_id=\"" + c.get("id") + "\"]//Block"))
-                if blocks > 10:
-                    self.__repot += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many blocks in control flow (" + blocks + "). Maybe you need to extract some to new method?"
-                if flows > 20:
-                    self.__repot += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many flows (" + flows + "). Maybe you need to extract a new method?"
-                if flows/blocks > 1.5:
-                    self.__repot += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with complex control flow. Maybe you need to extract a new methods or simplify this?"
-            if methods > 50 or methods - 2*args > 10 :
-                self.__repot += "\nClass " + c.get("name") + " has too many methods. Looks like it has too many responsibilities. Maybe you should divide it?"
+                    self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many arguments (" + str(args) + "). Maybe some of it should be fields?"
+                for cfg_method in self._cfg_tree.xpath("//Method[@ucr_id=\"" + c.get("id") + "\" and @name=\"" + method.get("name") + "\"]"):
+                    flows = len([x.get("name") for x in cfg_method.iter("Flow")])
+                    blocks = len([x.get("name") for x in cfg_method.iter("Block")])
+                    if blocks > 10:
+                        self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many blocks in control flow (" + str(blocks) + "). Maybe you need to extract some to new method?"
+                    if flows > 20:
+                        self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many flows (" + str(flows) + "). Maybe you need to extract a new method?"
+                    if float(flows)/float(blocks) > 2.0:
+                        self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with complex control flow. Maybe you need to extract a new methods or simplify this?"
+            if methods > 30 or (methods - 2*attrs > 10 and attrs > 5) :
+                self.__report += "\nClass " + c.get("name") + " has too many methods. Looks like it has too many responsibilities. Maybe you should divide it?"
         
         return process_class_internal
     
