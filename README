@@ -29,7 +29,7 @@ Requirenments:
 
 Supported run types:
 	ClassIR - generation of UCR for Python project(1)
-    LogilabClassIR - old-style UCR generation (deprecated)(1)
+	LogilabClassIR - old-style UCR generation (deprecated)(1)
 	PotentialSibling - search for potential siblings in class hierarchy(3)
 	VisualHierarchy - visual representation of class relations in UCR (UML-like)(2)
 	FieldCandidates - deprecated
