@@ -1030,12 +1030,14 @@ class ExecPathHandler(CFGHandler):
         CFGHandler.__init__(self, lcfg_xml)
         self._out_xml = out_xml
         self.get_exec_path(exec_path)
+        self.visualize_frames(exec_path)
         
     def get_exec_path(self,exec_path):
         '''Extract given exec path from CFG'''
         curr_frame_calls = self.get_call_targets(exec_path[0])
         frame = self.get_frame_by_id(exec_path[0])[0]
         frame_routes = []
+        frame_names = [frame.get("label")+'.'+frame.get("name")]
         for f in exec_path[1:]:
             target_calls=[c for c in curr_frame_calls if c.get("cfg_id")==f]
             if len(target_calls)==0:
@@ -1045,16 +1047,88 @@ class ExecPathHandler(CFGHandler):
                 frame_routes.append(self.extract_frame_path(frame, block)) 
             curr_frame_calls = self.get_call_targets(f)
             frame = self.get_frame_by_id(f)[0]
-        result_routes = frame_routes[0]
+            frame_names.append(frame.get("label")+'.'+frame.get("name"))
+        result_routes = [[f] for  f in frame_routes[0]]
+        i=0
         for r in frame_routes[1:]:
             result_routes = self.concat_routes(result_routes, r)
-        print result_routes
+        for route in result_routes:
+            graph = pydot.Dot(graph_type='digraph',compound='true')
+            prev = None
+            for r,f,f_name in zip(route,exec_path[:-1],frame_names[:-1]):
+                func_node = pydot.Cluster(f,shape='record',label=f_name)
+                blocks = []
+                c_id=0
+                for b in r:
+                    c_nodes = [c for c in b.iter("Call")]
+                    if(len(c_nodes)>0):
+                        block_node = pydot.Cluster(str(b.get("id"))+f,shape='record',label='Block '+str(b.get("id")))
+                        for c in c_nodes[:-1]:
+                            target = c.getchildren()[0]
+                            if(target.tag == "Getattr"):
+                                c_name =target.get("label")+'.'+target.get("name")
+                            else:
+                                c_name = target.get("name")
+                            call_node = pydot.Node('Call '+str(c_id)+f,shape='record',label=c_name)
+                            c_id += 1
+                            block_node.add_node(call_node)
+                        target = c_nodes[-1].getchildren()[0]
+                        if(target.tag == "Getattr"):
+                            c_name =target.get("label")+'.'+target.get("name")
+                        else:
+                            c_name = target.get("name")
+                        call_node = pydot.Node('Call '+str(c_id)+f,shape='record',label=c_name)
+                        c_id += 1
+                        block_node.add_node(call_node)
+                        blocks.append((block_node,call_node))
+                        func_node.add_subgraph(block_node)
+                    else:
+                        block_node = pydot.Node('Block '+str(b.get("id"))+f,shape='record',label='Block '+str(b.get("id")))
+                        func_node.add_node(block_node)
+                        blocks.append(block_node)
+                graph.add_subgraph(func_node)
+                route_edges = zip(blocks[:-1],blocks[1:])
+                if prev is not None:
+                    route_edges.append((prev,blocks[0]))
+                for from_node,to_node in route_edges:
+                    if isinstance(from_node,tuple):
+                        tail = from_node[1]
+                        tail_l = from_node[0]
+                    else:
+                        tail=from_node
+                        tail_l = None
+                    if isinstance(to_node,tuple):
+                        head = to_node[1]
+                        head_l = to_node[0]
+                    else:
+                        head = to_node
+                        head_l = None
+                    if((tail_l is None) and (head_l is None)):
+                        dot_edge = pydot.Edge(tail,head)
+                    elif((tail_l is not None) and (head_l is None)):
+                        dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name())
+                    elif((tail_l is None) and (head_l is not None)):
+                        dot_edge = pydot.Edge(tail,head,lhead=head_l.get_name())
+                    else:
+                        dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
+                    graph.add_edge(dot_edge)
+                prev = blocks[-1]
+            last_func = pydot.Cluster(exec_path[-1],shape='record',label=frame_names[-1])
+            graph.add_subgraph(last_func)
+            last_node = pydot.Node(f,shape='record',label='Func '+exec_path[-1])
+            dot_edge = pydot.Edge(prev[1],last_node,ltail=prev[0].get_name(),lhead=last_func.get_name())
+            last_func.add_node(last_node)
+            graph.add_edge(dot_edge)
+            graph.write('test'+str(i)+'.dot')
+            graph.write_svg('test'+str(i)+'.svg')
+            i+=1
         
     def concat_routes(self,start_routes,end_routes):
         result = []
         for r0 in start_routes:
             for r1 in end_routes:
-                result.append(r0+r1)
+                r0.append(r1)
+                result.append(r0)
         return result
     
     def get_call_route(self,block_path,call):
@@ -1087,6 +1161,87 @@ class ExecPathHandler(CFGHandler):
 #             for p in precending:
 #                 self.extract_frame_path(frame_node, p, local_path)
         return local_path
+    
+    def visualize_frames(self,exec_path):
+        frames = [self.get_frame_by_id(f)[0] for f in exec_path]
+        graph = pydot.Dot(graph_type='digraph',compound='true')
+        call_cnt = 0
+        for f in frames:
+            frame_graph = pydot.Cluster(f.get("cfg_id"),shape='record',label=f.get("label")+'.'+f.get("name"))
+            block_dict = {}
+            for block in f.iter("Block"):
+                block_node = pydot.Cluster(block.get("id")+'_'+f.get("cfg_id"),shape='record',label='Block '+str(block.get("id")))
+                dbg_cnt = call_cnt
+                call_node = None
+                for c in block.iter("Call"):
+                    target = c.getchildren()[0]
+                    if(target.tag == "Getattr"):
+                        call_node = pydot.Node('Call '+str(dbg_cnt),label=target.get("label")+'.'+target.get("name"),shape='record')
+                    else:
+                        call_node = pydot.Node('Call '+str(dbg_cnt),label=target.get("name"),shape='record')
+                    dbg_cnt += 1
+                    block_node.add_node(call_node)
+                if dbg_cnt == call_cnt:
+                    block_node = pydot.Node('Block '+str(block.get("id"))+'_'+f.get("cfg_id"),label='Block '+str(block.get("id")),shape='record')
+                    frame_graph.add_node(block_node)
+                    block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+                else:
+                    frame_graph.add_subgraph(block_node)
+                    block_dict[block.get("id")+'_'+f.get("cfg_id")] = (block_node,call_node)
+                    call_cnt = dbg_cnt
+            for block in f.iter("If"):
+                block_node = pydot.Node('If '+block.get("id")+'_'+f.get("cfg_id"),label='If',shape='diamond')
+                #block.get("test")
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("For"):
+                block_node = pydot.Node('For '+block.get("id")+'_'+f.get("cfg_id"),label='For',shape='diamond')
+                #block.get("iterate")
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("While"):
+                block_node = pydot.Node('While '+block.get("id")+'_'+f.get("cfg_id"),label='While',shape='diamond')
+                #block.get("test")
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("TryExcept"):
+                block_node = pydot.Node('TryExcept '+block.get("id")+'_'+f.get("cfg_id"),label='TryExcept',shape='diamond')
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("TryFinally"):
+                block_node = pydot.Node('TryFinally'+block.get("id")+'_'+f.get("cfg_id"),label='TryFinally',shape='diamond')
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("With"):
+                block_node = pydot.Node('With'+block.get("id")+'_'+f.get("cfg_id"),label='With',shape='diamond')
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for flow in f.iter("Flow"):
+                from_node = block_dict[flow.get("from_id")+'_'+f.get("cfg_id")]
+                if isinstance(from_node,tuple):
+                    tail = from_node[1]
+                    tail_l = from_node[0]
+                else:
+                    tail=from_node
+                    tail_l = None
+                to_node = block_dict[flow.get("to_id")+'_'+f.get("cfg_id")]
+                if isinstance(to_node,tuple):
+                    head = to_node[1]
+                    head_l = to_node[0]
+                else:
+                    head = to_node
+                    head_l = None
+                if((tail_l is None) and (head_l is None)):
+                    dot_edge = pydot.Edge(tail,head)
+                elif((tail_l is not None) and (head_l is None)):
+                    dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name())
+                elif((tail_l is None) and (head_l is not None)):
+                    dot_edge = pydot.Edge(tail,head,lhead=head_l.get_name())
+                else:
+                    dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
+                frame_graph.add_edge(dot_edge)
+            graph.add_subgraph(frame_graph)
+        graph.write_svg('12.svg')
         
     
     def get_call_targets(self,frame_id):
