@@ -1027,10 +1027,52 @@ class ClassCFGSlicer(CFGSlicer):
 
 class ExecPathHandler(CFGHandler,IdGeneratorMixIn):
     
-    def __init__(self,lcfg_xml,out_xml,exec_path):
+    def __init__(self,lcfg_xml):
         CFGHandler.__init__(self, lcfg_xml)
         IdGeneratorMixIn.__init__(self)
-        self._out_xml = out_xml
+    
+    def get_call_route(self,block_path,call):
+        call_path=[]
+        for b in block_path[:-1]:
+            for c in b.iter("Call"):
+                call_path.append(c)
+        for c in block_path[-1].iter("Call"):
+            call_path.append(c)
+            if(c.xpath(".//Target[@cfg_id=\""+call+"\"]")):
+                break
+        return call_path
+            
+    def extract_frame_path(self,frame_node,block_node):
+        ''' Extract all possible paths from frame start to given block '''
+        flows = frame_node.xpath(".//Flow[@to_id=\'"+block_node.get("id")+"\']")
+        # local_path |= set(flows)
+        local_path = []
+        if len(flows)==0:
+            return[[block_node]]
+        for f in flows:
+            precending = frame_node.xpath(".//*[@id=\'"+f.get("from_id")+"\']")
+            paths = self.extract_frame_path(frame_node, precending[0])
+            #print paths
+            for p in paths:
+                p.append(block_node)
+            local_path = local_path+paths
+        return local_path        
+    
+    def get_call_targets(self,frame_id):
+        nodes =  self.get_frame_by_id(frame_id)
+        if(len(nodes)>1):
+            print "Warning: multiple nodes for exec path entry id(",frame_id,")"
+        if(len(nodes)==0):
+            raise CSUStAnException("Error: No nodes for exec path entry id("+str(frame_id)+")")
+            return None
+        return nodes[0].xpath(".//Target[@cfg_id]")
+    
+class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
+       
+    def __init__(self,lcfg_xml,out_dir,exec_path):
+        ExecPathHandler.__init__(self, lcfg_xml)
+        IdGeneratorMixIn.__init__(self)
+        self._out_dir = out_dir
         self.get_exec_path(exec_path)
         self.visualize_frames(exec_path)
         
@@ -1082,8 +1124,8 @@ class ExecPathHandler(CFGHandler,IdGeneratorMixIn):
             dot_edge = pydot.Edge(prev[1],last_node,ltail=prev[0].get_name(),lhead=last_func.get_name())
             last_func.add_node(last_node)
             graph.add_edge(dot_edge)
-            graph.write('test'+str(i)+'.dot')
-            graph.write_svg('test'+str(i)+'.svg')
+            graph.write(self._out_dir+'/route'+str(i)+'.dot')
+            graph.write_svg(self._out_dir+'/route'+str(i)+'.svg')
             i+=1
         
     def concat_routes(self,start_routes,end_routes):
@@ -1093,37 +1135,6 @@ class ExecPathHandler(CFGHandler,IdGeneratorMixIn):
                 r0.append(r1)
                 result.append(r0)
         return result
-    
-    def get_call_route(self,block_path,call):
-        call_path=[]
-        for b in block_path[:-1]:
-            for c in b.iter("Call"):
-                call_path.append(c)
-        for c in block_path[-1].iter("Call"):
-            call_path.append(c)
-            if(c.xpath(".//Target[@cfg_id=\""+call+"\"]")):
-                break
-        return call_path
-            
-    def extract_frame_path(self,frame_node,block_node):
-        ''' Extract all possible paths from frame start to given block '''
-        flows = frame_node.xpath(".//Flow[@to_id=\'"+block_node.get("id")+"\']")
-        # local_path |= set(flows)
-        local_path = []
-        if len(flows)==0:
-            return[[block_node]]
-        for f in flows:
-            precending = frame_node.xpath(".//*[@id=\'"+f.get("from_id")+"\']")
-            paths = self.extract_frame_path(frame_node, precending[0])
-            #print paths
-            for p in paths:
-                p.append(block_node)
-            local_path = local_path+paths
-        return local_path
-#             local_path |=set(precending)
-#             for p in precending:
-#                 self.extract_frame_path(frame_node, p, local_path)
-        return local_path
     
     def dot_call(self,call_node):
         dot_id = self.generate_id()
@@ -1141,7 +1152,7 @@ class ExecPathHandler(CFGHandler,IdGeneratorMixIn):
     
     def dot_block(self,block):
         dot_id = self.generate_id()
-	cond_blocks = ["If","While","For","With","TryExcept","TryFinally"]
+        cond_blocks = ["If","While","For","With","TryExcept","TryFinally"]
         if block.tag in cond_blocks:
             block_node = pydot.Node(dot_id,label=block.tag,shape='diamond')
             return block_node
@@ -1225,17 +1236,7 @@ class ExecPathHandler(CFGHandler,IdGeneratorMixIn):
                 dot_edge = self.dot_flow_edge(from_node, to_node)
                 frame_graph.add_edge(dot_edge)
             graph.add_subgraph(frame_graph)
-        graph.write_svg('12.svg')
-        
-    
-    def get_call_targets(self,frame_id):
-        nodes =  self.get_frame_by_id(frame_id)
-        if(len(nodes)>1):
-            print "Warning: multiple nodes for exec path entry id(",frame_id,")"
-        if(len(nodes)==0):
-            raise CSUStAnException("Error: No nodes for exec path entry id("+str(frame_id)+")")
-            return None
-        return nodes[0].xpath(".//Target[@cfg_id]")
+        graph.write_svg(self._out_dir+'/frames.svg')
                 
 class InstanceInitSlicer(CFGHandler, UCRSlicer):
     _ucr_id = None
