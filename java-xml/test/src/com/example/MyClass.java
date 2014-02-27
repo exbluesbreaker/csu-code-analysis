@@ -16,6 +16,7 @@ public class MyClass extends ArrayList<Object>{
     
     public static void main(IAction action) {
         System.out.println(MyClass.A);
+        actionList.add(null);
         try
         {
 	        if (1+2 > 2+3)
@@ -210,6 +211,14 @@ public class MyClass extends ArrayList<Object>{
     
     public OurClass.MyClass2 bar(String a, boolean b, OurClass.MyClass2 c){
     	return null;
+    }
+    
+    public String bar() {
+    	String s = "";
+    	sb.append(s.toString());
+    	MyClass2 mc2 = new MyClass2();
+    	mc2.foo();
+    	return sb.toString();
     }
     
     private OurClass.MyClass2 hoho;
