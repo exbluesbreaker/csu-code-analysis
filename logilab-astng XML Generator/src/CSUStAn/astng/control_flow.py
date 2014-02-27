@@ -256,7 +256,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     continue    
                 if not hasattr(asgn, "id"):
                     asgn.id = self.generate_id()
-                    called_id = asgn.id
+                called_id = asgn.id
             elif isinstance(asgn, Class):
                 if(space_type is None):
                     space_type = "internal"
