@@ -221,5 +221,11 @@ elif(args.type=="ExecPathVisualizer"):
     exec_path = cfg_parser.get(args.type,'exec_path')
     exec_path = exec_path.split(',') 
     runner = ExecPathVisualizer(in_file,exec_path,out_dir)
+elif(args.type=="ExecPathObjectSlicer"):
+    in_file = cfg_parser.get(args.type,'in_file')
+    out_dir = cfg_parser.get(args.type,'out_dir')
+    exec_path = cfg_parser.get(args.type,'exec_path')
+    exec_path = exec_path.split(',') 
+    runner = ExecPathObjectSlicer(in_file,exec_path,out_dir)
 else:
     print "Unknown type!"

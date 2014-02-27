@@ -1056,7 +1056,25 @@ class ExecPathHandler(CFGHandler,IdGeneratorMixIn):
             for p in paths:
                 p.append(block_node)
             local_path = local_path+paths
-        return local_path        
+        return local_path
+    
+    def extract_frame_routes(self,exec_path):
+        '''Extract all possible global frame routes for given path'''
+        curr_frame_calls = self.get_call_targets(exec_path[0])
+        frame = self.get_frame_by_id(exec_path[0])[0]
+        frame_routes = []
+        frame_names = [frame.get("label")+'.'+frame.get("name")]
+        for f in exec_path[1:]:
+            target_calls=[c for c in curr_frame_calls if c.get("cfg_id")==f]
+            if len(target_calls)==0:
+                raise CSUStAnException("No such exec path"+str(exec_path)+". Failed on "+str(f))
+            for c in target_calls:
+                block = c.xpath("./ancestor::Block")[0]
+                frame_routes.append(self.extract_frame_path(frame, block)) 
+            curr_frame_calls = self.get_call_targets(f)
+            frame = self.get_frame_by_id(f)[0]
+            frame_names.append(frame.get("label")+'.'+frame.get("name"))  
+        return frame_names, frame_routes      
     
     def get_call_targets(self,frame_id):
         nodes =  self.get_frame_by_id(frame_id)
@@ -1068,6 +1086,7 @@ class ExecPathHandler(CFGHandler,IdGeneratorMixIn):
         return nodes[0].xpath(".//Target[@cfg_id]")
 
 class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
+    ''' Class for visualization of one exec route '''
     def __init__(self,lcfg_xml):
         ExecPathHandler.__init__(self, lcfg_xml)
         IdGeneratorMixIn.__init__(self)
@@ -1119,9 +1138,9 @@ class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
         else:
             cfg_target = ""
         if(target.tag == "Getattr"):
-            dot_call = pydot.Node(str(dot_id), label=target.get("label") + '.' + target.get("name")+cfg_target, shape='record')
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("label") + '.' + target.get("name")+cfg_target+"\"", shape='record')
         else:
-            dot_call = pydot.Node(str(dot_id), label=target.get("name")+cfg_target, shape='record')
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("name")+cfg_target+"\"", shape='record')
         return dot_call
     
     def dot_block(self,block):
@@ -1136,7 +1155,7 @@ class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
             for c in call_nodes[:-1]:
                 call_node = self.dot_call(c)
                 block_node.add_node(call_node)
-            call_node = self.dot_call(c)
+            call_node = self.dot_call(call_nodes[-1])
             block_node.add_node(call_node)
             return block_node,call_node
         else:
@@ -1167,29 +1186,17 @@ class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
         return dot_edge
     
 class ExecPathVisualizer(ExecRouteVisualizer):
+    ''' Visualizer for all routes of given exec path, also fuctions from CFG will be visualized '''
        
     def __init__(self,lcfg_xml,exec_path,out_dir='.'):
         ExecRouteVisualizer.__init__(self, lcfg_xml)
         self._out_dir = out_dir   
-        self.get_exec_path(exec_path)
         self.visualize_frames(exec_path)
+        self.visualize_exec_path(exec_path)
         
-    def get_exec_path(self,exec_path):
-        '''Extract given exec path from CFG'''
-        curr_frame_calls = self.get_call_targets(exec_path[0])
-        frame = self.get_frame_by_id(exec_path[0])[0]
-        frame_routes = []
-        frame_names = [frame.get("label")+'.'+frame.get("name")]
-        for f in exec_path[1:]:
-            target_calls=[c for c in curr_frame_calls if c.get("cfg_id")==f]
-            if len(target_calls)==0:
-                raise CSUStAnException("No such exec path"+str(exec_path)+". Failed on "+str(f))
-            for c in target_calls:
-                block = c.xpath("./ancestor::Block")[0]
-                frame_routes.append(self.extract_frame_path(frame, block)) 
-            curr_frame_calls = self.get_call_targets(f)
-            frame = self.get_frame_by_id(f)[0]
-            frame_names.append(frame.get("label")+'.'+frame.get("name"))
+    def visualize_exec_path(self,exec_path):
+        '''Visualize all possible routes for given exec path '''
+        frame_names, frame_routes = self.extract_frame_routes(exec_path)
         result_routes = [[f] for  f in frame_routes[0]]
         i=0
         for r in frame_routes[1:]:
@@ -1244,10 +1251,20 @@ class ExecPathVisualizer(ExecRouteVisualizer):
                 dot_edge = self.dot_flow_edge(from_node, to_node)
                 frame_graph.add_edge(dot_edge)
             graph.add_subgraph(frame_graph)
+        graph.write(self._out_dir+'/frames.dot')
         graph.write_svg(self._out_dir+'/frames.svg')
         
 class ExecPathObjectSlicer(ExecRouteVisualizer):
-    pass
+    def __init__(self,lcfg_xml,exec_path,out_dir='.'):
+        ExecRouteVisualizer.__init__(self, lcfg_xml)
+        frame_names, routes  = self.extract_frame_routes(exec_path)
+        self.run(routes)
+        
+    def run(self,routes):
+        for r in routes:
+            print len(r)
+            for f in r:
+                print f
                 
 class InstanceInitSlicer(CFGHandler, UCRSlicer):
     _ucr_id = None
