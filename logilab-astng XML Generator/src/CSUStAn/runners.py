@@ -332,7 +332,6 @@ class ClassIRHandler:
     def get_all_parents(self,node,result=None):
         if(result is None):
             result = set([])
-        print ["//Class[@id="+p.get("id")+"]" for p in node.iter("Parent")], [self._ucr_tree.xpath("//Class[@id="+p.get("id")+"]") for p in node.iter("Parent")]
         parents = [self._ucr_tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in node.iter("Parent")]
         result|= set(parents)
         for p in parents:
@@ -431,7 +430,7 @@ class UCRVisualizer:
         dot_classes = {} 
         #setup classes
         for node in classes:
-            class_text = node.get("name")
+            class_text = node.get("name")+"(ucr_id="+node.get("id")+")"
             attrs = [a for a in node.iter("Attr")]
             if(len(attrs)>0):
                 class_text += "|Attrs|"
@@ -1144,8 +1143,13 @@ class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
         dot_id = self.generate_id()
         target = call_node.getchildren()[0]
         cfg_targets = call_node.xpath(".//Target[@cfg_id]")
+        ucr_targets = call_node.xpath(".//Direct/Target/TargetClass")
         if len(cfg_targets)>0:
             cfg_target = "(cfg_id="+cfg_targets[0].get("cfg_id")+")"
+        else:
+            cfg_target = ""
+        if len(ucr_targets)>0:
+            cfg_target = "(ucr_id="+ucr_targets[0].get("ucr_id")+")"
         else:
             cfg_target = ""
         if(target.tag == "Getattr"):
