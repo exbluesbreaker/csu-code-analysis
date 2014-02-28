@@ -1149,13 +1149,13 @@ class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
         else:
             cfg_target = ""
         if len(ucr_targets)>0:
-            cfg_target = "(ucr_id="+ucr_targets[0].get("ucr_id")+")"
+            ucr_target = "(ucr_id="+ucr_targets[0].get("ucr_id")+")"
         else:
-            cfg_target = ""
+            ucr_target = ""
         if(target.tag == "Getattr"):
-            dot_call = pydot.Node(str(dot_id), label="\""+target.get("label") + '.' + target.get("name")+cfg_target+"\"", shape='record')
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("label") + '.' + target.get("name")+cfg_target+ucr_target+"\"", shape='record')
         else:
-            dot_call = pydot.Node(str(dot_id), label="\""+target.get("name")+cfg_target+"\"", shape='record')
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("name")+cfg_target+ucr_target+"\"", shape='record')
         return dot_call
     
     def dot_block(self,block):
