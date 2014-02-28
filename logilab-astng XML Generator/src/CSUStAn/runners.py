@@ -908,8 +908,7 @@ class UCRSlicer(ClassIRHandler):
         self.slice()
         return self.extract_slicing()
         
-    def write_slicing(self,out_file):
-        root_node = self.slice_ucr()
+    def write_slicing(self,out_file, root_node):
         f = open(out_file,'w')
         f.write(etree.tostring(root_node, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
@@ -1287,6 +1286,7 @@ class ExecPathObjectSlicer(ExecRouteVisualizer,UCRSlicer,UCRVisualizer):
             graph.write_svg(self._out_dir+'/route_'+str(i)+'.svg')
             self._cids = created_classes
             root_node = self.slice_ucr()
+            self.write_slicing(self._out_dir+'/route_'+str(i)+'_objects.xml',root_node)
             self.visual_classes(root_node, self._out_dir+'/route_'+str(i)+'_objects.svg')
             i+=1
             #print created_classes
