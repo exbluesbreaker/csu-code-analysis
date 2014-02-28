@@ -6,6 +6,7 @@ import ru.csu.stan.java.cfg.jaxb.Block;
 import ru.csu.stan.java.cfg.jaxb.Flow;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
+import ru.csu.stan.java.cfg.util.MethodRegistryItem;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
@@ -24,12 +25,15 @@ class MethodContext extends ContextBase implements IClassNameHolder
     private CompilationUnit compilationUnit;
     private Method method;
     private FlowCursor innerCursor = new FlowCursor();
+    private MethodRegistryItem registryItem = new MethodRegistryItem();
+    private final int id;
 
-    MethodContext(Project resultRoot, ContextBase previousState, String className, CompilationUnit compilationUnit)
+    MethodContext(ContextBase previousState, String className, CompilationUnit compilationUnit, int id)
     {
-        super(resultRoot, previousState);
+        super(previousState);
         this.className = className;
         this.compilationUnit = compilationUnit;
+        this.id = id;
     }
 
     @Override
@@ -44,9 +48,11 @@ class MethodContext extends ContextBase implements IClassNameHolder
     public IContext<Project> getNextState(IContext<Project> context, String eventName)
     {
     	if ("class".equals(eventName))
-            return new ClassContext(getResultRoot(), this, compilationUnit);
+            return new ClassContext(this, compilationUnit);
     	if ("block".equals(eventName))
-    	    return new ControlFlowContext(getResultRoot(), this, method, innerCursor, compilationUnit);
+    	    return new ControlFlowContext(this, method, innerCursor, compilationUnit);
+    	if ("variable".equals(eventName))
+    		return new ArgContext(this, this.registryItem);
         return this;
     }
 
@@ -80,7 +86,11 @@ class MethodContext extends ContextBase implements IClassNameHolder
         	exitBlock.setType("<<Exit>>");
         	exitBlock.setId(innerCursor.getCurrentIdBigInteger());
         	method.getTryExceptOrTryFinallyOrWith().add(exitBlock);
+        	method.setUcrMethodId(BigInteger.valueOf(id));
             getResultRoot().getMethodOrFunction().add(method);
+            registryItem.setName(name);
+            registryItem.setId(id);
+            getMethodRegistry().addMethodToRegistry(className, registryItem);
         }
     }
 

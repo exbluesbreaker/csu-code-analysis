@@ -25,8 +25,8 @@ abstract class ControlFlowForkContextBase<T extends BaseCfgElement> extends Cont
     private CompilationUnit compilationUnit;
     private Method method;
 
-	ControlFlowForkContextBase(Project resultRoot, ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
-		super(resultRoot, previousState);
+	ControlFlowForkContextBase(ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
+		super(previousState);
 		this.cursor = cursor;
 		this.compilationUnit = compilationUnit;
 		this.method = method;
@@ -108,6 +108,6 @@ abstract class ControlFlowForkContextBase<T extends BaseCfgElement> extends Cont
 		innerCursor.setCurrentId(cursor.getCurrentId());
 		innerCursor.clearParentIds();
 		innerCursor.addParentId(flowForkBlock.getId().intValue());
-        return new ControlFlowContext(getResultRoot(), this, method, innerCursor, compilationUnit);
+        return new ControlFlowContext(this, method, innerCursor, compilationUnit);
 	}
 }

@@ -17,20 +17,20 @@ class CompilationUnitContext extends ContextBase
     private static final String FILENAME_ATTRIBUTE = "filename";
     private CompilationUnit compilationUnit = new CompilationUnit();
 
-    CompilationUnitContext(Project resultRoot, ContextBase previousState)
+    CompilationUnitContext(ContextBase previousState)
     {
-        super(resultRoot, previousState);
+        super(previousState);
     }
 
     @Override
     public IContext<Project> getNextState(IContext<Project> context, String eventName)
     {
         if ("import".equals(eventName))
-            return new ImportContext(getResultRoot(), this, compilationUnit);
+            return new ImportContext(this, compilationUnit);
         if ("package".equals(eventName))
-            return new PackageContext(getResultRoot(), this, compilationUnit);
+            return new PackageContext(this, compilationUnit);
         if ("class".equals(eventName))
-            return new ClassContext(getResultRoot(), this, compilationUnit);
+            return new ClassContext(this, compilationUnit);
         return this;
     }
 
