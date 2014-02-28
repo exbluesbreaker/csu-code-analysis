@@ -227,5 +227,9 @@ elif(args.type=="ExecPathObjectSlicer"):
     exec_path = cfg_parser.get(args.type,'exec_path')
     exec_path = exec_path.split(',') 
     runner = ExecPathObjectSlicer(in_file,exec_path,out_dir)
+elif (args.type == "BigClassAnalyzer"):
+    ucr_xml = cfg_parser.get(args.type, "ucr_xml")
+    cfg_xml = cfg_parser.get(args.type, "cfg_xml")
+    runner = BigClassAnalyzer(ucr_xml, cfg_xml)
 else:
     print "Unknown type!"
