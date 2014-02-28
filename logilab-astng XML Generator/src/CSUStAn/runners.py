@@ -28,6 +28,7 @@ from CSUStAn.astng.inspector import NoInferLinker, ClassIRLinker
 from CSUStAn.astng.astng import ASTNGHandler
 from CSUStAn.astng.control_flow import CFGLinker,CFGHandler
 from CSUStAn.exceptions import CSUStAnException
+from logilab.astng.inspector import IdGeneratorMixIn
 
 
 
@@ -1031,24 +1032,22 @@ class ClassCFGSlicer(CFGSlicer):
                 self._sliced_frames.add(call.getparent().getparent().getparent().getparent().getparent())
                 
 
-class ExecPathHandler(CFGHandler):
+class ExecPathHandler(CFGHandler,IdGeneratorMixIn):
     
-    def __init__(self,lcfg_xml,out_xml,exec_path):
+    def __init__(self,lcfg_xml):
         CFGHandler.__init__(self, lcfg_xml)
-        self._out_xml = out_xml
-        self.get_exec_path(exec_path)
-        
-    def get_exec_path(self,exec_path):
-        curr_frame_calls = self.get_call_targets(exec_path[0])
-        frame = self.get_frame_by_id(exec_path[0])[0]
-        for f in exec_path[1:]:
-            if f not in [c.get("cfg_id") for c in curr_frame_calls]:
-                raise CSUStAnException("No such exec path"+str(exec_path)+". Failed on "+str(f))
-            for c in curr_frame_calls:
-                block = c.xpath("./ancestor::Block")[0]
-                print block.get("id"), len(self.extract_frame_path(frame, block))                
-            curr_frame_calls = self.get_call_targets(f)
-            frame = self.get_frame_by_id(f)[0]
+        IdGeneratorMixIn.__init__(self)
+    
+    def get_call_route(self,block_path,call):
+        call_path=[]
+        for b in block_path[:-1]:
+            for c in b.iter("Call"):
+                call_path.append(c)
+        for c in block_path[-1].iter("Call"):
+            call_path.append(c)
+            if(c.xpath(".//Target[@cfg_id=\""+call+"\"]")):
+                break
+        return call_path
             
     def extract_frame_path(self,frame_node,block_node):
         ''' Extract all possible paths from frame start to given block '''
@@ -1062,15 +1061,27 @@ class ExecPathHandler(CFGHandler):
             paths = self.extract_frame_path(frame_node, precending[0])
             #print paths
             for p in paths:
-                p.append(f)
                 p.append(block_node)
             local_path = local_path+paths
         return local_path
-#             local_path |=set(precending)
-#             for p in precending:
-#                 self.extract_frame_path(frame_node, p, local_path)
-        return local_path
-        
+    
+    def extract_frame_routes(self,exec_path):
+        '''Extract all possible global frame routes for given path'''
+        curr_frame_calls = self.get_call_targets(exec_path[0])
+        frame = self.get_frame_by_id(exec_path[0])[0]
+        frame_routes = []
+        frame_names = [frame.get("label")+'.'+frame.get("name")]
+        for f in exec_path[1:]:
+            target_calls=[c for c in curr_frame_calls if c.get("cfg_id")==f]
+            if len(target_calls)==0:
+                raise CSUStAnException("No such exec path"+str(exec_path)+". Failed on "+str(f))
+            for c in target_calls:
+                block = c.xpath("./ancestor::Block")[0]
+                frame_routes.append(self.extract_frame_path(frame, block)) 
+            curr_frame_calls = self.get_call_targets(f)
+            frame = self.get_frame_by_id(f)[0]
+            frame_names.append(frame.get("label")+'.'+frame.get("name"))  
+        return frame_names, frame_routes      
     
     def get_call_targets(self,frame_id):
         nodes =  self.get_frame_by_id(frame_id)
@@ -1080,6 +1091,187 @@ class ExecPathHandler(CFGHandler):
             raise CSUStAnException("Error: No nodes for exec path entry id("+str(frame_id)+")")
             return None
         return nodes[0].xpath(".//Target[@cfg_id]")
+
+class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
+    ''' Class for visualization of one exec route '''
+    def __init__(self,lcfg_xml):
+        ExecPathHandler.__init__(self, lcfg_xml)
+        IdGeneratorMixIn.__init__(self)
+    
+    def dot_route(self,route,exec_path,frame_names):
+        graph = pydot.Dot(graph_type='digraph',compound='true')
+        prev = None
+        for r,f,f_name in zip(route,exec_path[:-1],frame_names[:-1]):
+            func_node = pydot.Cluster(str(self.generate_id()),shape='record',label=f_name+"(cfg_id="+f+")")
+            blocks = []
+            for b in r:
+                block_node = self.dot_block(b)
+                if isinstance(block_node, tuple):
+                    func_node.add_subgraph(block_node[0])
+                    blocks.append(block_node)
+                else:
+                    func_node.add_node(block_node)
+                    blocks.append(block_node)
+            route_edges = zip(blocks[:-1],blocks[1:])
+            if prev is not None:
+                route_edges.append((prev,blocks[0]))
+            for from_node,to_node in route_edges:
+                dot_edge = self.dot_flow_edge(from_node,to_node)
+                graph.add_edge(dot_edge)
+            graph.add_subgraph(func_node)
+            prev = blocks[-1]
+        last_func = pydot.Cluster(str(self.generate_id()),shape='record',label=frame_names[-1])
+        graph.add_subgraph(last_func)
+        last_node = pydot.Node(str(self.generate_id()),shape='record',label='Func '+exec_path[-1])
+        dot_edge = pydot.Edge(prev[1],last_node,ltail=prev[0].get_name(),lhead=last_func.get_name())
+        last_func.add_node(last_node)
+        graph.add_edge(dot_edge)
+        return graph
+    
+    def concat_routes(self,start_routes,end_routes):
+        result = []
+        for r0 in start_routes:
+            for r1 in end_routes:
+                r0.append(r1)
+                result.append(r0)
+        return result
+    
+    def dot_call(self,call_node):
+        dot_id = self.generate_id()
+        target = call_node.getchildren()[0]
+        cfg_targets = call_node.xpath(".//Target[@cfg_id]")
+        if len(cfg_targets)>0:
+            cfg_target = "(cfg_id="+cfg_targets[0].get("cfg_id")+")"
+        else:
+            cfg_target = ""
+        if(target.tag == "Getattr"):
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("label") + '.' + target.get("name")+cfg_target+"\"", shape='record')
+        else:
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("name")+cfg_target+"\"", shape='record')
+        return dot_call
+    
+    def dot_block(self,block):
+        dot_id = self.generate_id()
+        cond_blocks = ["If","While","For","With","TryExcept","TryFinally"]
+        if block.tag in cond_blocks:
+            block_node = pydot.Node(dot_id,label=block.tag,shape='diamond')
+            return block_node
+        call_nodes = [c for c in block.iter("Call")]
+        if(len(call_nodes)>0):
+            block_node = pydot.Cluster(str(dot_id),shape='record',label='Block '+str(block.get("id")))
+            for c in call_nodes[:-1]:
+                call_node = self.dot_call(c)
+                block_node.add_node(call_node)
+            call_node = self.dot_call(call_nodes[-1])
+            block_node.add_node(call_node)
+            return block_node,call_node
+        else:
+            block_node = pydot.Node(str(dot_id),shape='record',label='Block '+str(block.get("id")))
+            return block_node
+    
+    def dot_flow_edge(self,from_node,to_node):
+        if isinstance(from_node,tuple):
+            tail = from_node[1]
+            tail_l = from_node[0]
+        else:
+            tail=from_node
+            tail_l = None
+        if isinstance(to_node,tuple):
+            head = to_node[1]
+            head_l = to_node[0]
+        else:
+            head = to_node
+            head_l = None
+        if((tail_l is None) and (head_l is None)):
+            dot_edge = pydot.Edge(tail,head)
+        elif((tail_l is not None) and (head_l is None)):
+            dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name())
+        elif((tail_l is None) and (head_l is not None)):
+            dot_edge = pydot.Edge(tail,head,lhead=head_l.get_name())
+        else:
+            dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
+        return dot_edge
+    
+class ExecPathVisualizer(ExecRouteVisualizer):
+    ''' Visualizer for all routes of given exec path, also fuctions from CFG will be visualized '''
+       
+    def __init__(self,lcfg_xml,exec_path,out_dir='.'):
+        ExecRouteVisualizer.__init__(self, lcfg_xml)
+        self._out_dir = out_dir   
+        self.visualize_frames(exec_path)
+        self.visualize_exec_path(exec_path)
+        
+    def visualize_exec_path(self,exec_path):
+        '''Visualize all possible routes for given exec path '''
+        frame_names, frame_routes = self.extract_frame_routes(exec_path)
+        result_routes = [[f] for  f in frame_routes[0]]
+        i=0
+        for r in frame_routes[1:]:
+            result_routes = self.concat_routes(result_routes, r)
+        for route in result_routes:
+            graph = self.dot_route(route,exec_path,frame_names)
+            graph.write(self._out_dir+'/route'+str(i)+'.dot')
+            graph.write_svg(self._out_dir+'/route'+str(i)+'.svg')
+            i+=1
+        
+    def visualize_frames(self,exec_path):
+        frames = [self.get_frame_by_id(f)[0] for f in exec_path]
+        graph = pydot.Dot(graph_type='digraph',compound='true')
+        for f in frames:
+            frame_graph = pydot.Cluster(f.get("cfg_id"),shape='record',label=f.get("label")+'.'+f.get("name")+"(cfg_id="+f.get("cfg_id")+")")
+            block_dict = {}
+            for block in f.iter("Block"):
+                block_node = self.dot_block(block)
+                if isinstance(block_node, tuple):
+                    frame_graph.add_subgraph(block_node[0])
+                    block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+                else:
+                    frame_graph.add_node(block_node)
+                    block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("If"):
+                block_node = self.dot_block(block)
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("For"):
+                block_node = self.dot_block(block)
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("While"):
+                block_node = self.dot_block(block)
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("TryExcept"):
+                block_node = self.dot_block(block)
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("TryFinally"):
+                block_node = self.dot_block(block)
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for block in f.iter("With"):
+                block_node = self.dot_block(block)
+                frame_graph.add_node(block_node)
+                block_dict[block.get("id")+'_'+f.get("cfg_id")] = block_node
+            for flow in f.iter("Flow"):
+                from_node = block_dict[flow.get("from_id")+'_'+f.get("cfg_id")]
+                to_node = block_dict[flow.get("to_id")+'_'+f.get("cfg_id")]
+                dot_edge = self.dot_flow_edge(from_node, to_node)
+                frame_graph.add_edge(dot_edge)
+            graph.add_subgraph(frame_graph)
+        graph.write(self._out_dir+'/frames.dot')
+        graph.write_svg(self._out_dir+'/frames.svg')
+        
+class ExecPathObjectSlicer(ExecRouteVisualizer):
+    def __init__(self,lcfg_xml,exec_path,out_dir='.'):
+        ExecRouteVisualizer.__init__(self, lcfg_xml)
+        frame_names, routes  = self.extract_frame_routes(exec_path)
+        self.run(routes)
+        
+    def run(self,routes):
+        for r in routes:
+            print len(r)
+            for f in r:
+                print f
                 
 class InstanceInitSlicer(CFGHandler, UCRSlicer):
     _ucr_id = None

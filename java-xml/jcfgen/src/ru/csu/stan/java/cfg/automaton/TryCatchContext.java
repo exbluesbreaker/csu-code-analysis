@@ -21,8 +21,8 @@ public class TryCatchContext extends ControlFlowForkContextBase<TryExcept> {
 	private List<FlowCursor> catchCursors = new LinkedList<FlowCursor>();
 	private FlowCursor finallyCursor;
 
-	TryCatchContext(Project resultRoot, ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
-		super(resultRoot, previousState, cursor, compilationUnit, method);
+	TryCatchContext(ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
+		super(previousState, cursor, compilationUnit, method);
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class TryCatchContext extends ControlFlowForkContextBase<TryExcept> {
 			catchCursors.add(cursor);
 			cursor.setCurrentId(getLastCurrentId());
 			cursor.addParentId(getFlowForkBlock().getId().intValue());
-			return new ControlFlowContext(getResultRoot(), this, getMethod(), cursor, getCompilationUnit());
+			return new ControlFlowContext(this, getMethod(), cursor, getCompilationUnit());
 		}
 		if ("finally".equals(eventName)){
 			addCursorDataToCurrent(tryCursor);
@@ -50,7 +50,7 @@ public class TryCatchContext extends ControlFlowForkContextBase<TryExcept> {
 			finallyCursor = new FlowCursor();
 			finallyCursor.setCurrentId(getCursor().getCurrentId());
 			finallyCursor.addParentId(finallyBlock.getId().intValue());
-			return new ControlFlowContext(getResultRoot(), this, getMethod(), finallyCursor, getCompilationUnit());
+			return new ControlFlowContext(this, getMethod(), finallyCursor, getCompilationUnit());
 		}
 		return this;
 	}

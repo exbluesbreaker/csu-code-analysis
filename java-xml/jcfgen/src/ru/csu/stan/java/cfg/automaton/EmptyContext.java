@@ -12,8 +12,8 @@ import ru.csu.stan.java.classgen.handlers.NodeAttributes;
  */
 class EmptyContext extends ContextBase {
 
-	EmptyContext(Project resultRoot, ContextBase previousState) {
-		super(resultRoot, previousState);
+	EmptyContext(ContextBase previousState) {
+		super(previousState);
 	}
 
 	@Override

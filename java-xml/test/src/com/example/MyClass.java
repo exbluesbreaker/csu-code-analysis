@@ -16,6 +16,7 @@ public class MyClass extends ArrayList<Object>{
     
     public static void main(IAction action) {
         System.out.println(MyClass.A);
+        int y = 0;
         try
         {
 	        if (1+2 > 2+3)

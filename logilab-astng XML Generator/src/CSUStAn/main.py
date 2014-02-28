@@ -215,12 +215,18 @@ elif(args.type=="InstanceInitSlicer"):
     out_xml = cfg_parser.get(args.type,'out_xml')
     keep_parents = cfg_parser.getboolean(args.type,'keep_parents')
     runner = InstanceInitSlicer(ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents)
-elif(args.type=="ExecPathHandler"):
+elif(args.type=="ExecPathVisualizer"):
     in_file = cfg_parser.get(args.type,'in_file')
-    out_file = cfg_parser.get(args.type,'out_file')
+    out_dir = cfg_parser.get(args.type,'out_dir')
     exec_path = cfg_parser.get(args.type,'exec_path')
     exec_path = exec_path.split(',') 
-    runner = ExecPathHandler(in_file,out_file,exec_path)
+    runner = ExecPathVisualizer(in_file,exec_path,out_dir)
+elif(args.type=="ExecPathObjectSlicer"):
+    in_file = cfg_parser.get(args.type,'in_file')
+    out_dir = cfg_parser.get(args.type,'out_dir')
+    exec_path = cfg_parser.get(args.type,'exec_path')
+    exec_path = exec_path.split(',') 
+    runner = ExecPathObjectSlicer(in_file,exec_path,out_dir)
 elif (args.type == "BigClassAnalyzer"):
     ucr_xml = cfg_parser.get(args.type, "ucr_xml")
     cfg_xml = cfg_parser.get(args.type, "cfg_xml")

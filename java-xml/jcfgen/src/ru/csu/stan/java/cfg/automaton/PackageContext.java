@@ -16,9 +16,9 @@ public class PackageContext extends ContextBase
     private CompilationUnit compilationUnit;
     private String currentPackage;
 
-    PackageContext(Project resultRoot, ContextBase previousState, CompilationUnit compilationUnit)
+    PackageContext(ContextBase previousState, CompilationUnit compilationUnit)
     {
-        super(resultRoot, previousState);
+        super(previousState);
         this.compilationUnit = compilationUnit;
     }
 

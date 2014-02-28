@@ -17,8 +17,8 @@ class IfContext extends ControlFlowForkContextBase<If>{
     private FlowCursor thenCursor;
     private FlowCursor elseCursor;
 
-    IfContext(Project resultRoot, ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method){
-        super(resultRoot, previousState, cursor, compilationUnit, method);
+    IfContext(ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method){
+        super(previousState, cursor, compilationUnit, method);
     }
 
 
@@ -34,7 +34,7 @@ class IfContext extends ControlFlowForkContextBase<If>{
             elseCursor.addParentId(getFlowForkBlock().getId().intValue());
             if (thenCursor != null)
                 elseCursor.setCurrentId(thenCursor.getCurrentId());
-            return new ControlFlowContext(getResultRoot(), this, getMethod(), elseCursor, getCompilationUnit());
+            return new ControlFlowContext(this, getMethod(), elseCursor, getCompilationUnit());
         }
         return this;
     }

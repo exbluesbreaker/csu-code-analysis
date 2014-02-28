@@ -16,10 +16,11 @@ class ClassContext extends ContextBase implements IClassNameHolder
     private String name = "";
     private int innerCount;
     private CompilationUnit compilationUnit;
+    private int methodId = 0;
 
-    ClassContext(Project resultRoot, ContextBase previousState, CompilationUnit compilationUnit)
+    ClassContext(ContextBase previousState, CompilationUnit compilationUnit)
     {
-        super(resultRoot, previousState);
+        super(previousState);
         this.compilationUnit = compilationUnit;
     }
 
@@ -36,9 +37,9 @@ class ClassContext extends ContextBase implements IClassNameHolder
     public IContext<Project> getNextState(IContext<Project> context, String eventName)
     {
         if ("method".equals(eventName))
-            return new MethodContext(getResultRoot(), this, name, compilationUnit);
+            return new MethodContext(this, name, compilationUnit, ++methodId);
         if ("class".equals(eventName))
-            return new ClassContext(getResultRoot(), this, compilationUnit);
+            return new ClassContext(this, compilationUnit);
         return this;
     }
 
