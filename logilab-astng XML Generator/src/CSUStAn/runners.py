@@ -1252,8 +1252,8 @@ class ExecPathVisualizer(ExecRouteVisualizer):
     def __init__(self,lcfg_xml,exec_path,out_dir='.'):
         ExecRouteVisualizer.__init__(self, lcfg_xml)
         self._out_dir = out_dir   
-        self.visualize_frames(exec_path)
-        self.visualize_exec_path(exec_path,out_dir)
+        self.visualize_frames(exec_path,out_dir)
+        self.visualize_exec_path(exec_path)
         
     def visualize_exec_path(self,exec_path):
         '''Visualize all possible routes for given exec path '''
