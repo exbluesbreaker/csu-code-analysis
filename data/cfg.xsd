@@ -27,6 +27,7 @@
     <xs:attribute name="label" type="xs:string"/>
     <xs:attribute name="cfg_id" type="xs:integer"/>
     <xs:attribute name="ucr_id" type="xs:integer" use="optional"/>
+    <xs:attribute name="ucr_method_id" type="xs:integer" use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="Function">

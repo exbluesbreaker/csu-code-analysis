@@ -23,8 +23,8 @@ class ControlFlowContext extends ContextBase implements IClassNameHolder{
     private Block block;
     private String startTag = "";
 
-    ControlFlowContext(Project resultRoot, ContextBase previousState, Method method, final FlowCursor cursor, CompilationUnit compilationUnit){
-        super(resultRoot, previousState);
+    ControlFlowContext(ContextBase previousState, Method method, final FlowCursor cursor, CompilationUnit compilationUnit){
+        super(previousState);
         this.method = method;
         this.cursor = cursor;
         this.compilationUnit = compilationUnit;
@@ -42,22 +42,22 @@ class ControlFlowContext extends ContextBase implements IClassNameHolder{
     @Override
     public IContext<Project> getNextState(IContext<Project> context, String eventName){
         if ("class".equals(eventName))
-            return new ClassContext(getResultRoot(), this, compilationUnit);
+            return new ClassContext(this, compilationUnit);
         if ("if".equals(eventName)){
             block = null;
-            return new IfContext(getResultRoot(), this, cursor, compilationUnit, method);
+            return new IfContext(this, cursor, compilationUnit, method);
         }
         if ("while_loop".equals(eventName) || "do_while_loop".equals(eventName)){
         	block = null;
-        	return new WhileContext(getResultRoot(), this, cursor, compilationUnit, method);
+        	return new WhileContext(this, cursor, compilationUnit, method);
         }
         if ("for_loop".equals(eventName) || "enhanced_for_loop".equals(eventName)){
         	block = null;
-        	return new ForContext(getResultRoot(), this, cursor, compilationUnit, method);
+        	return new ForContext(this, cursor, compilationUnit, method);
         }
         if ("try".equals(eventName)){
         	block = null;
-        	return new TryCatchContext(getResultRoot(), this, cursor, compilationUnit, method);
+        	return new TryCatchContext(this, cursor, compilationUnit, method);
         }
         return this;
     }

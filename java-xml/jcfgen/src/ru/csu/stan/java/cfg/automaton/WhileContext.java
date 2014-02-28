@@ -16,8 +16,8 @@ class WhileContext extends ControlFlowForkContextBase<While> {
 
     private FlowCursor bodyCursor;
 	
-	WhileContext(Project resultRoot, ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
-		super(resultRoot, previousState, cursor, compilationUnit, method);
+	WhileContext(ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
+		super(previousState, cursor, compilationUnit, method);
 	}
 
 	@Override

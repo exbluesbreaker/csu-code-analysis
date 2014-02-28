@@ -6,6 +6,7 @@ import javax.xml.stream.events.Attribute;
 
 import ru.csu.stan.java.cfg.jaxb.ObjectFactory;
 import ru.csu.stan.java.cfg.jaxb.Project;
+import ru.csu.stan.java.cfg.util.MethodRegistry;
 import ru.csu.stan.java.classgen.automaton.IContext;
 
 public abstract class ContextBase implements IContext<Project> {
@@ -14,10 +15,18 @@ public abstract class ContextBase implements IContext<Project> {
 	private ContextBase previousState;
 	protected final static String NAME_ATTRIBUTE = "name";
 	private static ObjectFactory objectFactory = new ObjectFactory();
+	private MethodRegistry registry;
 	
-	ContextBase(Project resultRoot, ContextBase previousState) {
-		this.resultRoot = resultRoot;
+	ContextBase(ContextBase previousState) {
+		this.resultRoot = previousState.getResultRoot();
 		this.previousState = previousState;
+		this.registry = previousState.getMethodRegistry();
+	}
+	
+	protected ContextBase(Project resultRoot, MethodRegistry registry){
+		this.resultRoot = resultRoot;
+		this.previousState = null;
+		this.registry = registry;
 	}
 
 	protected ContextBase getPreviousState() {
@@ -54,4 +63,7 @@ public abstract class ContextBase implements IContext<Project> {
         return objectFactory;
     }
 
+    public MethodRegistry getMethodRegistry() {
+		return registry;
+	}
 }

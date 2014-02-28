@@ -1,106 +1,107 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Classes>
-    <Class filename="/com/example/MyClass.java" id="2" name="com.example.MyClass$1" col_offset="45" fromlineno="64">
-        <Method name="toArray" col_offset="19" fromlineno="67">
-            <Modifier name="public" col_offset="4" fromlineno="66"/>
-            <Arg name="a" col_offset="31" fromlineno="67"/>
-        </Method>
-        <Method name="toArray" col_offset="20" fromlineno="73">
+    <Class filename="/com/example/MyClass.java" id="2" name="com.example.MyClass$1" col_offset="45" fromlineno="70">
+        <Modifier name="" col_offset="-1" fromlineno="-1"/>
+        <Method id="1" name="toArray" col_offset="19" fromlineno="73">
             <Modifier name="public" col_offset="4" fromlineno="72"/>
+            <Arg name="a" col_offset="31" fromlineno="73"/>
         </Method>
-        <Method name="subList" col_offset="24" fromlineno="79">
+        <Method id="2" name="toArray" col_offset="20" fromlineno="79">
             <Modifier name="public" col_offset="4" fromlineno="78"/>
-            <Arg name="fromIndex" col_offset="36" fromlineno="79"/>
-            <Arg name="toIndex" col_offset="51" fromlineno="79"/>
         </Method>
-        <Method name="size" col_offset="15" fromlineno="85">
+        <Method id="3" name="subList" col_offset="24" fromlineno="85">
             <Modifier name="public" col_offset="4" fromlineno="84"/>
+            <Arg name="fromIndex" col_offset="36" fromlineno="85"/>
+            <Arg name="toIndex" col_offset="51" fromlineno="85"/>
         </Method>
-        <Method name="set" col_offset="18" fromlineno="91">
+        <Method id="4" name="size" col_offset="15" fromlineno="91">
             <Modifier name="public" col_offset="4" fromlineno="90"/>
-            <Arg name="index" col_offset="26" fromlineno="91"/>
-            <Arg name="element" col_offset="40" fromlineno="91"/>
         </Method>
-        <Method name="retainAll" col_offset="19" fromlineno="97">
+        <Method id="5" name="set" col_offset="18" fromlineno="97">
             <Modifier name="public" col_offset="4" fromlineno="96"/>
-            <Arg name="c" col_offset="43" fromlineno="97"/>
+            <Arg name="index" col_offset="26" fromlineno="97"/>
+            <Arg name="element" col_offset="40" fromlineno="97"/>
         </Method>
-        <Method name="removeAll" col_offset="19" fromlineno="103">
+        <Method id="6" name="retainAll" col_offset="19" fromlineno="103">
             <Modifier name="public" col_offset="4" fromlineno="102"/>
             <Arg name="c" col_offset="43" fromlineno="103"/>
         </Method>
-        <Method name="remove" col_offset="18" fromlineno="109">
+        <Method id="7" name="removeAll" col_offset="19" fromlineno="109">
             <Modifier name="public" col_offset="4" fromlineno="108"/>
-            <Arg name="index" col_offset="29" fromlineno="109"/>
+            <Arg name="c" col_offset="43" fromlineno="109"/>
         </Method>
-        <Method name="remove" col_offset="19" fromlineno="115">
+        <Method id="8" name="remove" col_offset="18" fromlineno="115">
             <Modifier name="public" col_offset="4" fromlineno="114"/>
-            <Arg name="o" col_offset="33" fromlineno="115"/>
+            <Arg name="index" col_offset="29" fromlineno="115"/>
         </Method>
-        <Method name="listIterator" col_offset="32" fromlineno="121">
+        <Method id="9" name="remove" col_offset="19" fromlineno="121">
             <Modifier name="public" col_offset="4" fromlineno="120"/>
-            <Arg name="index" col_offset="49" fromlineno="121"/>
+            <Arg name="o" col_offset="33" fromlineno="121"/>
         </Method>
-        <Method name="listIterator" col_offset="32" fromlineno="127">
+        <Method id="10" name="listIterator" col_offset="32" fromlineno="127">
             <Modifier name="public" col_offset="4" fromlineno="126"/>
+            <Arg name="index" col_offset="49" fromlineno="127"/>
         </Method>
-        <Method name="lastIndexOf" col_offset="15" fromlineno="133">
+        <Method id="11" name="listIterator" col_offset="32" fromlineno="133">
             <Modifier name="public" col_offset="4" fromlineno="132"/>
-            <Arg name="o" col_offset="34" fromlineno="133"/>
         </Method>
-        <Method name="iterator" col_offset="28" fromlineno="139">
+        <Method id="12" name="lastIndexOf" col_offset="15" fromlineno="139">
             <Modifier name="public" col_offset="4" fromlineno="138"/>
+            <Arg name="o" col_offset="34" fromlineno="139"/>
         </Method>
-        <Method name="isEmpty" col_offset="19" fromlineno="145">
+        <Method id="13" name="iterator" col_offset="28" fromlineno="145">
             <Modifier name="public" col_offset="4" fromlineno="144"/>
         </Method>
-        <Method name="indexOf" col_offset="15" fromlineno="151">
+        <Method id="14" name="isEmpty" col_offset="19" fromlineno="151">
             <Modifier name="public" col_offset="4" fromlineno="150"/>
-            <Arg name="o" col_offset="30" fromlineno="151"/>
         </Method>
-        <Method name="get" col_offset="18" fromlineno="157">
+        <Method id="15" name="indexOf" col_offset="15" fromlineno="157">
             <Modifier name="public" col_offset="4" fromlineno="156"/>
-            <Arg name="index" col_offset="26" fromlineno="157"/>
+            <Arg name="o" col_offset="30" fromlineno="157"/>
         </Method>
-        <Method name="containsAll" col_offset="19" fromlineno="163">
+        <Method id="16" name="get" col_offset="18" fromlineno="163">
             <Modifier name="public" col_offset="4" fromlineno="162"/>
-            <Arg name="c" col_offset="45" fromlineno="163"/>
+            <Arg name="index" col_offset="26" fromlineno="163"/>
         </Method>
-        <Method name="contains" col_offset="19" fromlineno="169">
+        <Method id="17" name="containsAll" col_offset="19" fromlineno="169">
             <Modifier name="public" col_offset="4" fromlineno="168"/>
-            <Arg name="o" col_offset="35" fromlineno="169"/>
+            <Arg name="c" col_offset="45" fromlineno="169"/>
         </Method>
-        <Method name="clear" col_offset="16" fromlineno="175">
+        <Method id="18" name="contains" col_offset="19" fromlineno="175">
             <Modifier name="public" col_offset="4" fromlineno="174"/>
+            <Arg name="o" col_offset="35" fromlineno="175"/>
         </Method>
-        <Method name="addAll" col_offset="19" fromlineno="181">
+        <Method id="19" name="clear" col_offset="16" fromlineno="181">
             <Modifier name="public" col_offset="4" fromlineno="180"/>
-            <Arg name="index" col_offset="30" fromlineno="181"/>
-            <Arg name="c" col_offset="66" fromlineno="181"/>
         </Method>
-        <Method name="addAll" col_offset="19" fromlineno="187">
+        <Method id="20" name="addAll" col_offset="19" fromlineno="187">
             <Modifier name="public" col_offset="4" fromlineno="186"/>
-            <Arg name="c" col_offset="55" fromlineno="187"/>
+            <Arg name="index" col_offset="30" fromlineno="187"/>
+            <Arg name="c" col_offset="66" fromlineno="187"/>
         </Method>
-        <Method name="add" col_offset="16" fromlineno="193">
+        <Method id="21" name="addAll" col_offset="19" fromlineno="193">
             <Modifier name="public" col_offset="4" fromlineno="192"/>
-            <Arg name="index" col_offset="24" fromlineno="193"/>
-            <Arg name="element" col_offset="38" fromlineno="193"/>
+            <Arg name="c" col_offset="55" fromlineno="193"/>
         </Method>
-        <Method name="add" col_offset="19" fromlineno="199">
+        <Method id="22" name="add" col_offset="16" fromlineno="199">
             <Modifier name="public" col_offset="4" fromlineno="198"/>
-            <Arg name="e" col_offset="30" fromlineno="199"/>
+            <Arg name="index" col_offset="24" fromlineno="199"/>
+            <Arg name="element" col_offset="38" fromlineno="199"/>
+        </Method>
+        <Method id="23" name="add" col_offset="19" fromlineno="205">
+            <Modifier name="public" col_offset="4" fromlineno="204"/>
+            <Arg name="e" col_offset="30" fromlineno="205"/>
         </Method>
     </Class>
-    <Class filename="/com/example/MyClass.java" id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="23" fromlineno="218">
-        <Modifier name="public" col_offset="9" fromlineno="218"/>
-        <Modifier name="static" col_offset="9" fromlineno="218"/>
+    <Class filename="/com/example/MyClass.java" id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="23" fromlineno="224">
+        <Modifier name="public" col_offset="9" fromlineno="224"/>
+        <Modifier name="static" col_offset="9" fromlineno="224"/>
     </Class>
-    <Class filename="/com/example/MyClass.java" id="3" name="com.example.MyClass.MyClass2" col_offset="19" fromlineno="212">
-        <Modifier name="public" col_offset="5" fromlineno="212"/>
-        <Modifier name="static" col_offset="5" fromlineno="212"/>
-        <Method name="foo" col_offset="21" fromlineno="214">
-            <Modifier name="public" col_offset="9" fromlineno="214"/>
+    <Class filename="/com/example/MyClass.java" id="3" name="com.example.MyClass.MyClass2" col_offset="19" fromlineno="218">
+        <Modifier name="public" col_offset="5" fromlineno="218"/>
+        <Modifier name="static" col_offset="5" fromlineno="218"/>
+        <Method id="1" name="foo" col_offset="21" fromlineno="220">
+            <Modifier name="public" col_offset="9" fromlineno="220"/>
         </Method>
     </Class>
     <Class filename="/com/example/MyClass.java" id="1" name="com.example.MyClass" col_offset="8" fromlineno="9">
@@ -118,29 +119,30 @@
         </Attr>
         <Attr name="list" col_offset="23" fromlineno="14">
             <CommonType id="5" name="com.example.OurClass"/>
+            <Modifier name="" col_offset="-1" fromlineno="-1"/>
         </Attr>
         <Attr name="actionList" col_offset="26" fromlineno="15">
             <AggregatedType element_type="com.example.IAction" element_id="7" id="-1" name="List" col_offset="16" fromlineno="15"/>
             <Modifier name="static" col_offset="5" fromlineno="15"/>
         </Attr>
-        <Attr name="hoho" col_offset="31" fromlineno="210">
-            <CommonType id="6" name="com.example.OurClass.MyClass2" col_offset="21" fromlineno="210"/>
-            <Modifier name="private" col_offset="5" fromlineno="210"/>
+        <Attr name="hoho" col_offset="31" fromlineno="216">
+            <CommonType id="6" name="com.example.OurClass.MyClass2" col_offset="21" fromlineno="216"/>
+            <Modifier name="private" col_offset="5" fromlineno="216"/>
         </Attr>
-        <Method name="main" col_offset="24" fromlineno="17">
+        <Method id="1" name="main" col_offset="24" fromlineno="17">
             <Modifier name="public" col_offset="5" fromlineno="17"/>
             <Modifier name="static" col_offset="5" fromlineno="17"/>
             <Arg name="action" col_offset="37" fromlineno="17">
                 <CommonType id="7" name="com.example.IAction" col_offset="29" fromlineno="17"/>
             </Arg>
         </Method>
-        <Method name="bar" col_offset="30" fromlineno="206">
-            <CommonType id="6" name="com.example.OurClass.MyClass2" col_offset="20" fromlineno="206"/>
-            <Modifier name="public" col_offset="5" fromlineno="206"/>
-            <Arg name="a" col_offset="41" fromlineno="206"/>
-            <Arg name="b" col_offset="52" fromlineno="206"/>
-            <Arg name="c" col_offset="73" fromlineno="206">
-                <CommonType id="6" name="com.example.OurClass.MyClass2" col_offset="63" fromlineno="206"/>
+        <Method id="2" name="bar" col_offset="30" fromlineno="212">
+            <CommonType id="6" name="com.example.OurClass.MyClass2" col_offset="20" fromlineno="212"/>
+            <Modifier name="public" col_offset="5" fromlineno="212"/>
+            <Arg name="a" col_offset="41" fromlineno="212"/>
+            <Arg name="b" col_offset="52" fromlineno="212"/>
+            <Arg name="c" col_offset="73" fromlineno="212">
+                <CommonType id="6" name="com.example.OurClass.MyClass2" col_offset="63" fromlineno="212"/>
             </Arg>
         </Method>
     </Class>

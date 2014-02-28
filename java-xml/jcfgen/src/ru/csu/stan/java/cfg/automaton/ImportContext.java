@@ -17,9 +17,9 @@ class ImportContext extends ContextBase
     private CompilationUnit compilationUnit = new CompilationUnit();
     private String currentImport;
 
-    ImportContext(Project resultRoot, ContextBase previousState, CompilationUnit compilationUnit)
+    ImportContext(ContextBase previousState, CompilationUnit compilationUnit)
     {
-        super(resultRoot, previousState);
+        super(previousState);
         this.compilationUnit = compilationUnit;
     }
 
