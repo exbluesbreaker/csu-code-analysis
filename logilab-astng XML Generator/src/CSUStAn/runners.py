@@ -1148,7 +1148,7 @@ class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
             cfg_target = "(cfg_id="+cfg_targets[0].get("cfg_id")+")"
         else:
             cfg_target = ""
-        if len(ucr_targets)>0:
+        if (len(ucr_targets)>0) and (ucr_targets[0].get("ucr_id") is not None):
             ucr_target = "(ucr_id="+ucr_targets[0].get("ucr_id")+")"
         else:
             ucr_target = ""
@@ -1200,26 +1200,7 @@ class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
             dot_edge = pydot.Edge(tail,head,ltail=tail_l.get_name(),lhead=head_l.get_name())
         return dot_edge
     
-class ExecPathVisualizer(ExecRouteVisualizer):
-    ''' Visualizer for all routes of given exec path, also functions from CFG will be visualized '''
-       
-    def __init__(self,lcfg_xml,exec_path,out_dir='.'):
-        ExecRouteVisualizer.__init__(self, lcfg_xml)
-        self._out_dir = out_dir   
-        self.visualize_frames(exec_path)
-        self.visualize_exec_path(exec_path)
-        
-    def visualize_exec_path(self,exec_path):
-        '''Visualize all possible routes for given exec path '''
-        frame_names, result_routes = self.extract_frame_routes(exec_path)
-        i=0
-        for route in result_routes:
-            graph = self.dot_route(route,exec_path,frame_names)
-            graph.write(self._out_dir+'/route'+str(i)+'.dot')
-            graph.write_svg(self._out_dir+'/route'+str(i)+'.svg')
-            i+=1
-        
-    def visualize_frames(self,exec_path):
+    def visualize_frames(self,exec_path,out_dir):
         frames = [self.get_frame_by_id(f)[0] for f in exec_path]
         graph = pydot.Dot(graph_type='digraph',compound='true')
         for f in frames:
@@ -1263,8 +1244,27 @@ class ExecPathVisualizer(ExecRouteVisualizer):
                 dot_edge = self.dot_flow_edge(from_node, to_node)
                 frame_graph.add_edge(dot_edge)
             graph.add_subgraph(frame_graph)
-        graph.write(self._out_dir+'/frames.dot')
-        graph.write_svg(self._out_dir+'/frames.svg')
+        graph.write(out_dir+'/frames.dot')
+        graph.write_svg(out_dir+'/frames.svg')
+    
+class ExecPathVisualizer(ExecRouteVisualizer):
+    ''' Visualizer for all routes of given exec path, also functions from CFG will be visualized '''
+       
+    def __init__(self,lcfg_xml,exec_path,out_dir='.'):
+        ExecRouteVisualizer.__init__(self, lcfg_xml)
+        self._out_dir = out_dir   
+        self.visualize_frames(exec_path)
+        self.visualize_exec_path(exec_path,out_dir)
+        
+    def visualize_exec_path(self,exec_path):
+        '''Visualize all possible routes for given exec path '''
+        frame_names, result_routes = self.extract_frame_routes(exec_path)
+        i=0
+        for route in result_routes:
+            graph = self.dot_route(route,exec_path,frame_names)
+            graph.write(self._out_dir+'/route'+str(i)+'.dot')
+            graph.write_svg(self._out_dir+'/route'+str(i)+'.svg')
+            i+=1
         
 class ExecPathObjectSlicer(ExecRouteVisualizer,UCRSlicer,UCRVisualizer):
     def __init__(self,lcfg_xml,ucr_xml,exec_path,out_dir='.'):
@@ -1290,6 +1290,7 @@ class ExecPathObjectSlicer(ExecRouteVisualizer,UCRSlicer,UCRVisualizer):
             self.visual_classes(root_node, self._out_dir+'/route_'+str(i)+'_objects.svg')
             i+=1
             #print created_classes
+        self.visualize_frames(exec_path, self._out_dir)
     
     def slice(self):
         self._sliced_classes = set([])
