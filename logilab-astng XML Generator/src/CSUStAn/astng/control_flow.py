@@ -252,11 +252,12 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                     space_type = "internal"
                 called = "function"
                 label = asgn.root().name
-                if label == '__builtin__':
-                    continue    
+                if (label == '__builtin__') or (space_type == "external"):
+                    ''' No id generation for non-project calls '''
+                    continue 
                 if not hasattr(asgn, "id"):
                     asgn.id = self.generate_id()
-                    called_id = asgn.id
+                called_id = asgn.id
             elif isinstance(asgn, Class):
                 if(space_type is None):
                     space_type = "internal"
