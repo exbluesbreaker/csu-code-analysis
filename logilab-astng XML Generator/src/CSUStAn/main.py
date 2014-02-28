@@ -225,7 +225,8 @@ elif(args.type=="ExecPathObjectSlicer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_dir = cfg_parser.get(args.type,'out_dir')
     exec_path = cfg_parser.get(args.type,'exec_path')
+    ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     exec_path = exec_path.split(',') 
-    runner = ExecPathObjectSlicer(in_file,exec_path,out_dir)
+    runner = ExecPathObjectSlicer(in_file,ucr_xml,exec_path,out_dir)
 else:
     print "Unknown type!"

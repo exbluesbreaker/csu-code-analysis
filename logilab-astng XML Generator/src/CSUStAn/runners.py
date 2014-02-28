@@ -332,6 +332,7 @@ class ClassIRHandler:
     def get_all_parents(self,node,result=None):
         if(result is None):
             result = set([])
+        print ["//Class[@id="+p.get("id")+"]" for p in node.iter("Parent")], [self._ucr_tree.xpath("//Class[@id="+p.get("id")+"]") for p in node.iter("Parent")]
         parents = [self._ucr_tree.xpath("//Class[@id="+parent.get("id")+"]")[0] for parent in node.iter("Parent")]
         result|= set(parents)
         for p in parents:
@@ -422,23 +423,14 @@ class FieldCandidateFinder(ConfigurationMixIn,ClassIRHandler):
         print "Probably used (as field) classes: ",prob_used_classes," percentage: ",round(100*float(prob_used_classes)/len(self._complete_signatures.keys()),1), " %"
         #for class_node in classes:
 
-class ClassHierarchyVisualizer(ConfigurationMixIn,ClassIRHandler):
-    # generate dot from XML classes IR
+class UCRVisualizer:
+    ''' generate dot from XML classes IR '''
     
-    options = OPTIONS
-    _out_file = None
-    
-    def __init__(self, in_file,out_file):
-        ConfigurationMixIn.__init__(self, usage=__doc__)
-        ClassIRHandler.__init__(self, in_file)
-        self._out_file = out_file
-        self.run()
-    
-    def run(self):
+    def visual_classes(self,classes,out_file):
         graph = pydot.Dot(graph_type='digraph')
         dot_classes = {} 
         #setup classes
-        for node in self._classes:
+        for node in classes:
             class_text = node.get("name")
             attrs = [a for a in node.iter("Attr")]
             if(len(attrs)>0):
@@ -454,19 +446,29 @@ class ClassHierarchyVisualizer(ConfigurationMixIn,ClassIRHandler):
             dot_classes[node.get("id")] = class_node
             graph.add_node(class_node)
         #setup relations
-        for node in self._classes:
+        for node in classes:
             parents = [parent for parent in node.iter("Parent")]
             for parent in parents:
                 edge = pydot.Edge(dot_classes[node.get("id")], dot_classes[parent.get("id")])
                 graph.add_edge(edge)
-#        node_dict = {}
-#        for node in nodes:
-#            dot_node = pydot.Node(node)
-#            graph.add_node(dot_node)
-#            node_dict[node] = dot_node
-#        for source, target in deps:
-#            graph.add_edge(pydot.Edge(node_dict[source], node_dict[target]))
-        graph.write_svg(self._out_file)
+        graph.write_svg(out_file)
+
+
+
+class ClassHierarchyVisualizer(ConfigurationMixIn,ClassIRHandler,UCRVisualizer):
+    # generate dot from XML classes IR
+    
+    options = OPTIONS
+    _out_file = None
+    
+    def __init__(self, in_file,out_file):
+        ConfigurationMixIn.__init__(self, usage=__doc__)
+        ClassIRHandler.__init__(self, in_file)
+        self._out_file = out_file
+        self.run()
+    
+    def run(self):
+        self.visual_classes(self._classes, self._out_file)
         
 class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
     # search for probable inheritance mistakes
@@ -892,27 +894,33 @@ class CFGVisualizer(CFGHandler):
             graph.add_edge(dot_edge)
         graph.write_svg(self._out_dir+'/'+node.get("cfg_id")+'.svg')
 
+from copy import deepcopy
+
 class UCRSlicer(ClassIRHandler):
-    # search for probable inheritance mistakes
+    ''' Abstract UCR slicer '''
     _sliced_classes = set([])
     _out_file = None
     
-    def __init__(self, in_file,out_file):
+    def __init__(self, in_file):
         ClassIRHandler.__init__(self, in_file)
-        self._out_file = out_file
         
         
-    def run(self):
+    def slice_ucr(self):
         self.slice()
-        self.extract_slicing()
+        return self.extract_slicing()
+        
+    def write_slicing(self,out_file):
+        root_node = self.slice_ucr()
+        f = open(out_file,'w')
+        f.write(etree.tostring(root_node, pretty_print=True, encoding='utf-8', xml_declaration=True))
+        f.close()
         
     def extract_slicing(self):
         root_node = etree.Element("Classes")
         for c in self._sliced_classes:
-            root_node.append(c)
-        f = open(self._out_file,'w')
-        f.write(etree.tostring(root_node, pretty_print=True, encoding='utf-8', xml_declaration=True))
-        f.close()
+            root_node.append(deepcopy(c))
+        return root_node
+        
                 
 
 class InheritanceSlicer(ConfigurationMixIn,UCRSlicer):
@@ -924,10 +932,10 @@ class InheritanceSlicer(ConfigurationMixIn,UCRSlicer):
     
     def __init__(self, in_file,out_file, class_id):
         ConfigurationMixIn.__init__(self, usage=__doc__)
-        UCRSlicer.__init__(self, in_file,out_file)
+        UCRSlicer.__init__(self, in_file)
         self._methods = {}
         self._class_id = class_id
-        self.run()
+        self.write_slicing(out_file)
         
     def slice(self):
         self.slice_class(self._id_dict[self._class_id])
@@ -1073,8 +1081,11 @@ class ExecPathHandler(CFGHandler,IdGeneratorMixIn):
                 frame_routes.append(self.extract_frame_path(frame, block)) 
             curr_frame_calls = self.get_call_targets(f)
             frame = self.get_frame_by_id(f)[0]
-            frame_names.append(frame.get("label")+'.'+frame.get("name"))  
-        return frame_names, frame_routes      
+            frame_names.append(frame.get("label")+'.'+frame.get("name"))
+        result_routes = [[f] for  f in frame_routes[0]]
+        for r in frame_routes[1:]:
+            result_routes = self.concat_routes(result_routes, r)  
+        return frame_names, result_routes      
     
     def get_call_targets(self,frame_id):
         nodes =  self.get_frame_by_id(frame_id)
@@ -1186,7 +1197,7 @@ class ExecRouteVisualizer(ExecPathHandler,IdGeneratorMixIn):
         return dot_edge
     
 class ExecPathVisualizer(ExecRouteVisualizer):
-    ''' Visualizer for all routes of given exec path, also fuctions from CFG will be visualized '''
+    ''' Visualizer for all routes of given exec path, also functions from CFG will be visualized '''
        
     def __init__(self,lcfg_xml,exec_path,out_dir='.'):
         ExecRouteVisualizer.__init__(self, lcfg_xml)
@@ -1196,11 +1207,8 @@ class ExecPathVisualizer(ExecRouteVisualizer):
         
     def visualize_exec_path(self,exec_path):
         '''Visualize all possible routes for given exec path '''
-        frame_names, frame_routes = self.extract_frame_routes(exec_path)
-        result_routes = [[f] for  f in frame_routes[0]]
+        frame_names, result_routes = self.extract_frame_routes(exec_path)
         i=0
-        for r in frame_routes[1:]:
-            result_routes = self.concat_routes(result_routes, r)
         for route in result_routes:
             graph = self.dot_route(route,exec_path,frame_names)
             graph.write(self._out_dir+'/route'+str(i)+'.dot')
@@ -1254,27 +1262,51 @@ class ExecPathVisualizer(ExecRouteVisualizer):
         graph.write(self._out_dir+'/frames.dot')
         graph.write_svg(self._out_dir+'/frames.svg')
         
-class ExecPathObjectSlicer(ExecRouteVisualizer):
-    def __init__(self,lcfg_xml,exec_path,out_dir='.'):
+class ExecPathObjectSlicer(ExecRouteVisualizer,UCRSlicer,UCRVisualizer):
+    def __init__(self,lcfg_xml,ucr_xml,exec_path,out_dir='.'):
         ExecRouteVisualizer.__init__(self, lcfg_xml)
+        UCRSlicer.__init__(self, ucr_xml)
+        self._out_dir = out_dir
         frame_names, routes  = self.extract_frame_routes(exec_path)
-        self.run(routes)
+        self.run(routes,frame_names,exec_path)
         
-    def run(self,routes):
-        for r in routes:
-            print len(r)
-            for f in r:
-                print f
+    def run(self,routes,frame_names,exec_path):
+        i = 0
+        for route in routes:
+            created_classes=set([])
+            for frame in route:
+                for block in frame:
+                    for target_class in block.xpath(".//Direct/Target/TargetClass"):
+                        created_classes.add(target_class.get("ucr_id"))
+            graph = self.dot_route(route, exec_path, frame_names)
+            graph.write(self._out_dir+'/route_'+str(i)+'.dot')
+            graph.write_svg(self._out_dir+'/route_'+str(i)+'.svg')
+            self._cids = created_classes
+            root_node = self.slice_ucr()
+            self.visual_classes(root_node, self._out_dir+'/route_'+str(i)+'_objects.svg')
+            i+=1
+            #print created_classes
+    
+    def slice(self):
+        self._sliced_classes = set([])
+        for c in self._cids:
+            current_class = self.get_class_by_id(c)
+            self._sliced_classes.add(current_class)
+            parents = self.get_all_parents(current_class,None)
+            for p in parents:
+                self._sliced_classes.add(p)
+            
+            
                 
 class InstanceInitSlicer(CFGHandler, UCRSlicer):
     _ucr_id = None
     _keep_parents = None
     def __init__(self,ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents=False):
-        UCRSlicer.__init__(self, ucr_xml,out_xml)
+        UCRSlicer.__init__(self, ucr_xml)
         CFGHandler.__init__(self, lcfg_xml)
         self._ucr_id = ucr_id
         self._keep_parents = keep_parents
-        self.run()
+        self.write_slicing(out_xml)
         
         
     def slice(self):
