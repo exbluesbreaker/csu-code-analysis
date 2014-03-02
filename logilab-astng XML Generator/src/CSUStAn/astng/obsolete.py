@@ -227,8 +227,8 @@ def make_namespaces(root_astng):
     for child in root_astng.get_children():
         make_namespaces(child)
         
-class LogilabClassIRRunner(ConfigurationMixIn):
-    # generate XML, describing classes of project
+class LogilabUCRBuilder(ConfigurationMixIn):
+    ''' generate XML, describing classes of project '''
     
     options = OPTIONS
     

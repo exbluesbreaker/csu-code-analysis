@@ -11,7 +11,7 @@ import sys
 from CSUStAn.runners import *
 from CSUStAn.reflexion.rm_tools import RegexMapper
 from ConfigParser import SafeConfigParser
-from CSUStAn.astng.obsolete import LogilabClassIRRunner
+from CSUStAn.astng.obsolete import LogilabUCRBuilder
 
 if __name__ == '__main__':
     pass
@@ -123,18 +123,18 @@ args = parser.parse_args()
 print args.type
 cfg_parser = SafeConfigParser()
 cfg_parser.read(args.config_file)
-if(args.type=="ClassIR"):
+if(args.type=="UCRBuilder"):
     project = cfg_parser.get(args.type,'project')
     criteria = cfg_parser.get(args.type,'criteria')
     out_file = cfg_parser.get(args.type,'out_file')
     treshold = cfg_parser.getfloat(args.type,'treshold')
     add_value = cfg_parser.getboolean(args.type,'add_value')
     sys.argv = ["main.py",project]
-    runner = ClassIRRunner([project],criteria,out_file,treshold,add_value)
+    runner = UCRBuilder([project],criteria,out_file,treshold,add_value)
 elif(args.type=="LogilabClassIR"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]
-    runner = LogilabClassIRRunner([project],True)
+    runner = LogilabUCRBuilder([project],True)
 elif(args.type=="PotentialSiblings"):
     in_file = cfg_parser.get(args.type,'in_file')
     runner = PotentialSiblingsCounter([in_file])
@@ -142,9 +142,6 @@ elif(args.type=="VisualHierarchy"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
     runner = ClassHierarchyVisualizer(in_file,out_file)
-elif(args.type=="FieldCandidates"):
-    in_file = cfg_parser.get(args.type,'in_file')
-    runner = FieldCandidateFinder([in_file])
 elif(args.type=="LogilabObjectTracer"):
     project = cfg_parser.get(args.type,'project')
     in_file = cfg_parser.get(args.type,'in_file')
@@ -177,37 +174,37 @@ elif(args.type=="TestRunner"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]
     runner = TestRunner([project])
-elif(args.type=="CFGExtractor"):
+elif(args.type=="UCFRBuilder"):
     project = cfg_parser.get(args.type,'project')
     out_file = cfg_parser.get(args.type,'out_file')
     sys.argv = ["main.py",project]
-    runner = CFGExtractor(project,out_file)
+    runner = UCFRBuilder(project,out_file)
 elif(args.type=="DataflowLinker"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     cfg_xml = cfg_parser.get(args.type,'cfg_xml')
     out_xml = cfg_parser.get(args.type,'out_xml')
     runner = DataflowLinker(ucr_xml,cfg_xml,out_xml)
-elif(args.type=="CFGVisualizer"):
+elif(args.type=="UCFRVisualizer"):
     lcfg_xml = cfg_parser.get(args.type,'linked_cfg_xml')
     out_dir = cfg_parser.get(args.type,'out_dir')
-    runner = CFGVisualizer(lcfg_xml,out_dir)
+    runner = UCFRVisualizer(lcfg_xml,out_dir)
 elif(args.type=="InheritanceSlicer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
     class_id = cfg_parser.get(args.type,'id')
     runner = InheritanceSlicer(in_file,out_file,class_id)
-elif(args.type=="FlatCFGSlicer"):
+elif(args.type=="FlatUCFRSlicer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
     target_id = cfg_parser.get(args.type,'id')
     criteria = cfg_parser.get(args.type,'criteria')
-    runner = FlatCFGSlicer(in_file,out_file,target_id,criteria)
-elif(args.type=="ClassCFGSlicer"):
+    runner = FlatUCFRSlicer(in_file,out_file,target_id,criteria)
+elif(args.type=="ClassUCFRSlicer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
     ucr_id = cfg_parser.get(args.type,'ucr_id')
     criteria = cfg_parser.get(args.type,'criteria')
-    runner = ClassCFGSlicer(in_file,out_file,ucr_id,criteria)
+    runner = ClassUCFRSlicer(in_file,out_file,ucr_id,criteria)
 elif(args.type=="InstanceInitSlicer"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')

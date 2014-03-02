@@ -284,22 +284,3 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             if isinstance(asgn,AssAttr):
                 print "DBG ",name,asgn.as_string(), asgn.root()
         return space_type,called,called_id, label
-    
-class CFGHandler:
-    # Process XML CFG
-    _cfg_tree = None
-    _methods = None
-    _funcs = None
-    #_full_name_dict = None
-    #_id_dict = None
-    def __init__(self, cfg_xml):
-        parser = etree.XMLParser(remove_blank_text=True)
-        self._cfg_tree = etree.parse(cfg_xml, parser)
-        self._methods = [node for node in self._cfg_tree.iter("Method")]
-        self._funcs = [node for node in self._cfg_tree.iter("Function")]
-        
-    def get_frame_by_id(self,id):
-        return self._cfg_tree.xpath("//Method[@cfg_id=\""+id+"\"]|Function[@cfg_id=\""+id+"\"]")
-    
-    def get_calls(self,frame):
-        pass
