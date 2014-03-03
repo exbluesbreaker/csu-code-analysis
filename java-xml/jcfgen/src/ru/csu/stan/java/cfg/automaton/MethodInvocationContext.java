@@ -11,8 +11,8 @@ import ru.csu.stan.java.classgen.handlers.NodeAttributes;
  */
 public class MethodInvocationContext extends ContextBase {
 
-	MethodInvocationContext(Project resultRoot, ContextBase previousState) {
-		super(resultRoot, previousState);
+	MethodInvocationContext(ContextBase previousState) {
+		super(previousState);
 	}
 
 	@Override

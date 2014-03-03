@@ -16,8 +16,8 @@ public class ForContext extends ControlFlowForkContextBase<For> {
 
 	private FlowCursor bodyCursor;
 	
-	ForContext(Project resultRoot, ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
-		super(resultRoot, previousState, cursor, compilationUnit, method);
+	ForContext(ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
+		super(previousState, cursor, compilationUnit, method);
 	}
 
 	@Override

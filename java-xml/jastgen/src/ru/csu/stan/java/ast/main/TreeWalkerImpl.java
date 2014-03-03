@@ -224,18 +224,20 @@ public class TreeWalkerImpl implements TreeWalker, TraversalHandler {
 			onStartNode(node, name, position);
 			if (JCLiteral.class.isInstance(node)) {
 				onLiteral(JCLiteral.class.cast(node).getValue(), JCLiteral.class.cast(node).getKind());
-			} else if (JCSkip.class.isInstance(node)) {
-				onEmptyStatement();
-			} else if (TypeBoundKind.class.isInstance(node)) {
-				onBoundKind(TypeBoundKind.class.cast(node).kind);
-			} else {
-				try {
-					JCTreeHandler handler = getHandler(node);
-					handler.perform(node);
-				} catch (BypassException e) {
-					onErrorOcured(e);
-				}
-			}
+			} else 
+				if (JCSkip.class.isInstance(node)) {
+					onEmptyStatement();
+				} else 
+					if (TypeBoundKind.class.isInstance(node)) {
+						onBoundKind(TypeBoundKind.class.cast(node).kind);
+					} else {
+						try {
+							JCTreeHandler handler = getHandler(node);
+							handler.perform(node);
+						} catch (BypassException e) {
+							onErrorOcured(e);
+						}
+					}
 			onEndNode(node, name, position);
 			if (separateName)
 				onEndNode(null, name, position);

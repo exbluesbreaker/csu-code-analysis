@@ -11,8 +11,8 @@ import ru.csu.stan.java.classgen.handlers.NodeAttributes;
  */
 public class VariableContext extends ContextBase {
 
-	VariableContext(Project resultRoot, ContextBase previousState) {
-		super(resultRoot, previousState);
+	VariableContext(ContextBase previousState) {
+		super(previousState);
 	}
 
 	@Override

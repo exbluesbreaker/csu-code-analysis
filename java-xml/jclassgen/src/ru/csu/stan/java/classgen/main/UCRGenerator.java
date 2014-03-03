@@ -3,6 +3,7 @@ package ru.csu.stan.java.classgen.main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -75,14 +76,17 @@ public class UCRGenerator {
 	 */
 	private void thirdPass(Classes result) {
 		System.out.println("Generating IDs for classes");
+		int id = 0;
 		for (Class clazz : result.getClazz()){
 			for (ParentClass parent : clazz.getParent())
 				parent.setId(ClassIdGenerator.getInstance().getClassId(parent.getName()));
 			for (Attribute attr: clazz.getAttr()){
 				generateIdForTypes(attr);
 			}
+			id = 0;
 			for (Method method: clazz.getMethod()){
 				generateIdForTypes(method);
+				method.setId(BigInteger.valueOf(++id));
 				for (Argument arg: method.getArg()){
 					generateIdForTypes(arg);
 				}

@@ -66,6 +66,7 @@
 		      <xs:element name="Arg" type="Argument" minOccurs="0" maxOccurs="unbounded"/>
 		      <xs:element name="Template" type="Template" minOccurs="0" maxOccurs="unbounded"/>
 		    </xs:sequence>
+		    <xs:attribute name="id" type="xs:integer"/>
     	</xs:extension>
     </xs:complexContent>
   </xs:complexType>

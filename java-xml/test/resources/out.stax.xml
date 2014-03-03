@@ -202,6 +202,20 @@
                            </method_invocation>
                         </expression_statement>
                         <try line="20" col="9">
+                        <variable line="19" col="13" name="y">
+                           <modifiers line="-1" col="-1">
+                              <modifier name=""></modifier>
+                           </modifiers>
+                           <vartype>
+                              <primitive_type line="19" col="9" name="int">
+                              </primitive_type>
+                           </vartype>
+                           <init>
+                              <int_literal line="19" col="17" type="int" value="0">
+                              </int_literal>
+                           </init>
+                        </variable>
+                        <try line="20" col="9">
                            <body>
                               <block line="21" col="9">
                                  <modifier name=""></modifier>
@@ -1594,30 +1608,40 @@
                </method>
                <variable line="224" col="31" name="hoho">
                   <modifiers line="224" col="5">
+               <variable line="216" col="31" name="hoho">
+                  <modifiers line="216" col="5">
                      <modifier name="private"></modifier>
                   </modifiers>
                   <vartype>
                      <member_select line="224" col="21" name="MyClass2">
                         <identifier line="224" col="13" name="OurClass">
+                     <member_select line="216" col="21" name="MyClass2">
+                        <identifier line="216" col="13" name="OurClass">
                         </identifier>
                      </member_select>
                   </vartype>
                </variable>
                <class line="226" col="19" name="MyClass2">
                   <modifiers line="226" col="5">
+               <class line="218" col="19" name="MyClass2">
+                  <modifiers line="218" col="5">
                      <modifier name="public"></modifier>
                      <modifier name="static"></modifier>
                   </modifiers>
                   <body>
                      <method line="228" col="21" name="foo">
                         <modifiers line="228" col="9">
+                     <method line="220" col="21" name="foo">
+                        <modifiers line="220" col="9">
                            <modifier name="public"></modifier>
                         </modifiers>
                         <resulttype>
                            <primitive_type line="228" col="16" name="void">
+                           <primitive_type line="220" col="16" name="void">
                            </primitive_type>
                         </resulttype>
                         <block line="228" col="27">
+                        <block line="220" col="27">
                            <modifier name=""></modifier>
                            <nodename.statements>
                               <expression_statement line="229" col="13">
@@ -1625,12 +1649,19 @@
                                     <member_select line="229" col="23" name="println">
                                        <member_select line="229" col="19" name="out">
                                           <identifier line="229" col="13" name="System">
+                              <expression_statement line="221" col="13">
+                                 <method_invocation line="221" col="31">
+                                    <member_select line="221" col="23" name="println">
+                                       <member_select line="221" col="19" name="out">
+                                          <identifier line="221" col="13" name="System">
                                           </identifier>
                                        </member_select>
                                     </member_select>
                                     <arguments>
                                        <member_select line="229" col="39" name="A">
                                           <identifier line="229" col="32" name="MyClass">
+                                       <member_select line="221" col="39" name="A">
+                                          <identifier line="221" col="32" name="MyClass">
                                           </identifier>
                                        </member_select>
                                     </arguments>
@@ -1641,6 +1672,8 @@
                      </method>
                      <class line="232" col="23" name="MyClass3">
                         <modifiers line="232" col="9">
+                     <class line="224" col="23" name="MyClass3">
+                        <modifiers line="224" col="9">
                            <modifier name="public"></modifier>
                            <modifier name="static"></modifier>
                         </modifiers>

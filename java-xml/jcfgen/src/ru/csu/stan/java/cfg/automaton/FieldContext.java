@@ -6,8 +6,8 @@ import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 
 public class FieldContext extends ContextBase {
 
-	FieldContext(Project resultRoot, ContextBase previousState) {
-		super(resultRoot, previousState);
+	FieldContext(ContextBase previousState) {
+		super(previousState);
 	}
 
 	@Override
