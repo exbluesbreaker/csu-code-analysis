@@ -15,7 +15,7 @@ from CSUStAn.ucr.visual import UCRVisualizer
 from CSUStAn.ucfr.builder import UCFRBuilder
 from CSUStAn.ucfr.handling import FlatUCFRSlicer,ClassUCFRSlicer
 from CSUStAn.tracing.tracers import *
-from CSUStAn.ucfr.visual import UCFRVisualizer, ExecPathVisualizer
+from CSUStAn.ucfr.visual import UCFRVisualizer, ExecPathVisualizer,ExecPathCallsSearch
 from CSUStAn.cross.visual import ExecPathObjectSlicer
 from CSUStAn.cross.handling import DataflowLinker
 from CSUStAn.ucr.handling import PotentialSiblingsCounter,InheritanceSlicer
