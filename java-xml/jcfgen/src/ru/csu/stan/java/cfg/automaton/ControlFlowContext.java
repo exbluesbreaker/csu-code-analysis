@@ -2,10 +2,14 @@ package ru.csu.stan.java.cfg.automaton;
 
 import java.math.BigInteger;
 
+import ru.csu.stan.java.cfg.automaton.base.ContextBase;
+import ru.csu.stan.java.cfg.automaton.base.FlowCursor;
+import ru.csu.stan.java.cfg.automaton.base.IClassInsidePart;
 import ru.csu.stan.java.cfg.jaxb.Block;
 import ru.csu.stan.java.cfg.jaxb.Flow;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
+import ru.csu.stan.java.cfg.util.scope.VariableScope;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
@@ -15,7 +19,7 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
  * @author mz
  *
  */
-class ControlFlowContext extends ContextBase implements IClassNameHolder{
+public class ControlFlowContext extends ContextBase implements IClassInsidePart{
 	
 	private Method method;
     private final FlowCursor cursor;
@@ -23,7 +27,7 @@ class ControlFlowContext extends ContextBase implements IClassNameHolder{
     private Block block;
     private String startTag = "";
 
-    ControlFlowContext(ContextBase previousState, Method method, final FlowCursor cursor, CompilationUnit compilationUnit){
+    public ControlFlowContext(ContextBase previousState, Method method, final FlowCursor cursor, CompilationUnit compilationUnit){
         super(previousState);
         this.method = method;
         this.cursor = cursor;
@@ -33,9 +37,9 @@ class ControlFlowContext extends ContextBase implements IClassNameHolder{
     @Override
     public IContext<Project> getPreviousState(String eventName){   
         if ("block".equals(eventName))
-            return getPreviousState();
+            return getUpperState();
         if (startTag.equals(eventName))
-        	return getPreviousState();
+        	return getUpperState();
         return this;
     }
 
@@ -121,10 +125,15 @@ class ControlFlowContext extends ContextBase implements IClassNameHolder{
 		return findParentClassNameHolder().getNextInnerCount();
 	}
 	
-	private IClassNameHolder findParentClassNameHolder(){
-		ContextBase ctx = this.getPreviousState();
-		while (!(ctx instanceof IClassNameHolder) && ctx != null)
-			ctx = ctx.getPreviousState();
-		return (IClassNameHolder) ctx;
+	private IClassInsidePart findParentClassNameHolder(){
+		ContextBase ctx = this.getUpperState();
+		while (!(ctx instanceof IClassInsidePart) && ctx != null)
+			ctx = ctx.getUpperState();
+		return (IClassInsidePart) ctx;
+	}
+
+	@Override
+	public VariableScope getVariableScope() {
+		return findParentClassNameHolder().getVariableScope();
 	}
 }

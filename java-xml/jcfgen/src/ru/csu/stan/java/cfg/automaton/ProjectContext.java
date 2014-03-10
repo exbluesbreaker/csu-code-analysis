@@ -1,5 +1,6 @@
 package ru.csu.stan.java.cfg.automaton;
 
+import ru.csu.stan.java.cfg.automaton.base.ContextBase;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.cfg.util.MethodRegistry;
 import ru.csu.stan.java.classgen.automaton.IContext;

@@ -1,5 +1,6 @@
 package ru.csu.stan.java.cfg.automaton;
 
+import ru.csu.stan.java.cfg.automaton.base.ContextBase;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.NodeAttributes;
@@ -18,7 +19,7 @@ public class VariableContext extends ContextBase {
 	@Override
 	public IContext<Project> getPreviousState(String eventName) {
 		if ("variable".equals(eventName))
-			return getPreviousState();
+			return getUpperState();
 		else
 			return this;
 	}

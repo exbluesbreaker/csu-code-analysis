@@ -1,5 +1,6 @@
 package ru.csu.stan.java.cfg.automaton;
 
+import ru.csu.stan.java.cfg.automaton.base.ContextBase;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.NodeAttributes;
@@ -53,7 +54,7 @@ class ImportContext extends ContextBase
     public ContextBase getPreviousState(String eventName)
     {
         if ("import".equals(eventName))
-            return getPreviousState();
+            return getUpperState();
         else
             return this;
     }

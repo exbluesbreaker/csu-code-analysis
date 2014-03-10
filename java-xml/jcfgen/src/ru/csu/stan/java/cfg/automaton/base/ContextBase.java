@@ -1,4 +1,4 @@
-package ru.csu.stan.java.cfg.automaton;
+package ru.csu.stan.java.cfg.automaton.base;
 
 import java.util.Iterator;
 
@@ -17,7 +17,7 @@ public abstract class ContextBase implements IContext<Project> {
 	private static ObjectFactory objectFactory = new ObjectFactory();
 	private MethodRegistry registry;
 	
-	ContextBase(ContextBase previousState) {
+	protected ContextBase(ContextBase previousState) {
 		this.resultRoot = previousState.getResultRoot();
 		this.previousState = previousState;
 		this.registry = previousState.getMethodRegistry();
@@ -29,7 +29,7 @@ public abstract class ContextBase implements IContext<Project> {
 		this.registry = registry;
 	}
 
-	protected ContextBase getPreviousState() {
+	public ContextBase getUpperState() {
 		return previousState;
 	}
 
