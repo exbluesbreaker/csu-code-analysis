@@ -14,7 +14,7 @@ from CSUStAn.ucr.handling import ClassIRHandler
 from CSUStAn.ucr.visual import UCRVisualizer
 from CSUStAn.ucfr.builder import UCFRBuilder
 from CSUStAn.ucfr.handling import FlatUCFRSlicer,ClassUCFRSlicer
-from CSUStAn.tracing.tracers import *
+from CSUStAn.tracing.class_tracer import *
 from CSUStAn.ucfr.visual import UCFRVisualizer, ExecPathVisualizer
 from CSUStAn.cross.visual import ExecPathObjectSlicer
 from CSUStAn.cross.handling import DataflowLinker
@@ -87,7 +87,7 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
     def run(self):
         self.__counter = 1
         self.__report = ""
-        self.forEachClass(self.process_class())
+        self.for_each_class(self.process_class())
         print self.__report
         
     def process_class(self):
@@ -117,3 +117,35 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
         
         return process_class_internal
     
+
+class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
+    """
+        Analyzes functions for being "greedy", i.e. using some field or variable very much.
+        These greedy functions might be moved to another class, which is used much.
+    """
+    
+    def __init__(self, ucr_xml, cfg_xml):
+        UCFRHandler.__init__(self, cfg_xml)
+        ClassIRHandler.__init__(self, ucr_xml)
+        self.run()
+        
+    def run(self):
+        self.__counter = 1
+        self.for_each_method(self.process_method())
+    
+    def process_method(self):
+        def process_method_internal(method):
+            print "Processing method {0} from class {1} ({2}/{3})".format(method.get("name"), method.get("parent_class"), str(self.__counter), self.get_num_of_methods())
+            self.__counter += 1
+            classes_used = {}
+            for get_attr in method.xpath("//Getattr"):
+                ucr_id = get_attr.get("Target").get("TargetClass").get("ucr_id")
+                if ucr_id in classes_used:
+                    classes_used[ucr_id] += 1
+                else:
+                    classes_used[ucr_id] = 1
+            for k, v in classes_used.items():
+                if v > 5:
+                    print "Method {0} is probably greedy".format(method.get("name"))
+            
+        return process_method_internal

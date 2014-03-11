@@ -26,6 +26,13 @@ class UCFRHandler:
     def get_calls(self,frame):
         pass
     
+    def for_each_method(self, function):
+        for method in self._methods:
+            function(method)
+            
+    def get_num_of_methods(self):
+        return len(self._methods)
+    
 class UCFRSlicer(UCFRHandler):
     ''' Abstract UCFR-slicer '''
     _out_xml = None

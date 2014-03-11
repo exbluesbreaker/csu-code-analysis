@@ -93,7 +93,7 @@ class ClassIRHandler:
     def get_num_of_classes(self):
         return len(self._classes)
     
-    def forEachClass(self, function):
+    def for_each_class(self, function):
         for c in self._classes:
             function(c)
             

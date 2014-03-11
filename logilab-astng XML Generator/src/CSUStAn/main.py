@@ -229,5 +229,9 @@ elif (args.type == "BigClassAnalyzer"):
     ucr_xml = cfg_parser.get(args.type, "ucr_xml")
     cfg_xml = cfg_parser.get(args.type, "cfg_xml")
     runner = BigClassAnalyzer(ucr_xml, cfg_xml)
+elif (args.type == "GreedyFunctionsAnalyzer"):
+    ucr_xml = cfg_parser.get(args.type, "ucr_xml")
+    cfg_xml = cfg_parser.get(args.type, "cfg_xml")
+    runner = GreedyFunctionsAnalyzer(ucr_xml, cfg_xml)
 else:
     print "Unknown type!"
