@@ -63,13 +63,16 @@ public class ControlFlowContext extends ContextBase implements IClassInsidePart{
         	block = null;
         	return new TryCatchContext(this, cursor, compilationUnit, method);
         }
+        if ("method_invocation".equals(eventName)){
+        	return new MethodInvocationContext(this, block, getClassName());
+        }
         return this;
     }
 
     @Override
     public void processTag(String name, NodeAttributes attrs){
-    	if ("body".equals(name))
-    		return;
+//    	if ("body".equals(name))
+//    		return;
     	if (startTag == null || "".equals(startTag))
     		startTag = name;
         if (block == null && isNotOpeningTag(name)){

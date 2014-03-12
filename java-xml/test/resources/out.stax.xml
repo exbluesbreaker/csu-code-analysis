@@ -201,60 +201,59 @@
                               </arguments>
                            </method_invocation>
                         </expression_statement>
-                        <try line="20" col="9">
-                        <variable line="19" col="13" name="y">
+                        <variable line="20" col="13" name="y">
                            <modifiers line="-1" col="-1">
                               <modifier name=""></modifier>
                            </modifiers>
                            <vartype>
-                              <primitive_type line="19" col="9" name="int">
+                              <primitive_type line="20" col="9" name="int">
                               </primitive_type>
                            </vartype>
                            <init>
-                              <int_literal line="19" col="17" type="int" value="0">
+                              <int_literal line="20" col="17" type="int" value="0">
                               </int_literal>
                            </init>
                         </variable>
-                        <try line="20" col="9">
+                        <try line="21" col="9">
                            <body>
-                              <block line="21" col="9">
+                              <block line="22" col="9">
                                  <modifier name=""></modifier>
                                  <nodename.statements>
-                                    <if line="22" col="10">
+                                    <if line="23" col="10">
                                        <condition>
-                                          <tags.grater_than line="22" col="21">
-                                             <plus line="22" col="15">
-                                                <int_literal line="22" col="14" type="int" value="1">
+                                          <tags.grater_than line="23" col="21">
+                                             <plus line="23" col="15">
+                                                <int_literal line="23" col="14" type="int" value="1">
                                                 </int_literal>
-                                                <int_literal line="22" col="16" type="int" value="2">
+                                                <int_literal line="23" col="16" type="int" value="2">
                                                 </int_literal>
                                              </plus>
-                                             <plus line="22" col="21">
-                                                <int_literal line="22" col="20" type="int" value="2">
+                                             <plus line="23" col="21">
+                                                <int_literal line="23" col="20" type="int" value="2">
                                                 </int_literal>
-                                                <int_literal line="22" col="22" type="int" value="3">
+                                                <int_literal line="23" col="22" type="int" value="3">
                                                 </int_literal>
                                              </plus>
                                           </tags.grater_than>
                                        </condition>
                                        <then_part>
-                                          <expression_statement line="23" col="11">
-                                             <method_invocation line="23" col="29">
-                                                <member_select line="23" col="21" name="println">
-                                                   <member_select line="23" col="17" name="out">
-                                                      <identifier line="23" col="11" name="System">
+                                          <expression_statement line="24" col="11">
+                                             <method_invocation line="24" col="29">
+                                                <member_select line="24" col="21" name="println">
+                                                   <member_select line="24" col="17" name="out">
+                                                      <identifier line="24" col="11" name="System">
                                                       </identifier>
                                                    </member_select>
                                                 </member_select>
                                                 <arguments>
-                                                   <string_literal line="23" col="30" type="string" value="123">
+                                                   <string_literal line="24" col="30" type="string" value="123">
                                                    </string_literal>
                                                 </arguments>
                                              </method_invocation>
                                           </expression_statement>
                                        </then_part>
                                        <else_part>
-                                          <return line="25" col="11">
+                                          <return line="26" col="11">
                                           </return>
                                        </else_part>
                                     </if>
@@ -262,22 +261,22 @@
                               </block>
                            </body>
                            <catchers>
-                              <catch line="27" col="9">
-                                 <variable line="27" col="26" name="e">
+                              <catch line="28" col="9">
+                                 <variable line="28" col="26" name="e">
                                     <modifiers line="-1" col="-1">
                                        <modifier name="parameter"></modifier>
                                     </modifiers>
                                     <vartype>
-                                       <identifier line="27" col="16" name="Exception">
+                                       <identifier line="28" col="16" name="Exception">
                                        </identifier>
                                     </vartype>
                                  </variable>
-                                 <block line="27" col="28">
+                                 <block line="28" col="28">
                                     <modifier name=""></modifier>
                                     <nodename.statements>
-                                       <throw line="28" col="10">
-                                          <new_class line="28" col="16">
-                                             <identifier line="28" col="20" name="RuntimeException">
+                                       <throw line="29" col="10">
+                                          <new_class line="29" col="16">
+                                             <identifier line="29" col="20" name="RuntimeException">
                                              </identifier>
                                           </new_class>
                                        </throw>
@@ -286,19 +285,19 @@
                               </catch>
                            </catchers>
                            <finally>
-                              <block line="30" col="16">
+                              <block line="31" col="16">
                                  <modifier name=""></modifier>
                                  <nodename.statements>
-                                    <expression_statement line="31" col="10">
-                                       <method_invocation line="31" col="28">
-                                          <member_select line="31" col="20" name="println">
-                                             <member_select line="31" col="16" name="out">
-                                                <identifier line="31" col="10" name="System">
+                                    <expression_statement line="32" col="10">
+                                       <method_invocation line="32" col="28">
+                                          <member_select line="32" col="20" name="println">
+                                             <member_select line="32" col="16" name="out">
+                                                <identifier line="32" col="10" name="System">
                                                 </identifier>
                                              </member_select>
                                           </member_select>
                                           <arguments>
-                                             <string_literal line="31" col="29" type="string" value="aaaaaa">
+                                             <string_literal line="32" col="29" type="string" value="aaaaaa">
                                              </string_literal>
                                           </arguments>
                                        </method_invocation>
@@ -307,73 +306,134 @@
                               </block>
                            </finally>
                         </try>
-                        <if line="34" col="9">
+                        <for_loop line="35" col="9">
+                           <initialize_section>
+                              <variable line="35" col="18" name="i">
+                                 <modifiers line="-1" col="-1">
+                                    <modifier name=""></modifier>
+                                 </modifiers>
+                                 <vartype>
+                                    <primitive_type line="35" col="14" name="int">
+                                    </primitive_type>
+                                 </vartype>
+                                 <init>
+                                    <int_literal line="35" col="22" type="int" value="0">
+                                    </int_literal>
+                                 </init>
+                              </variable>
+                           </initialize_section>
+                           <condition_section>
+                              <less_than line="35" col="27">
+                                 <identifier line="35" col="25" name="i">
+                                 </identifier>
+                                 <int_literal line="35" col="29" type="int" value="10">
+                                 </int_literal>
+                              </less_than>
+                           </condition_section>
+                           <step_section>
+                              <expression_statement line="35" col="33">
+                                 <postfix_increment line="35" col="34">
+                                    <identifier line="35" col="33" name="i">
+                                    </identifier>
+                                 </postfix_increment>
+                              </expression_statement>
+                           </step_section>
+                           <body>
+                              <if line="36" col="10">
+                                 <condition>
+                                    <tags.grater_than line="36" col="15">
+                                       <int_literal line="36" col="14" type="int" value="2">
+                                       </int_literal>
+                                       <int_literal line="36" col="16" type="int" value="3">
+                                       </int_literal>
+                                    </tags.grater_than>
+                                 </condition>
+                                 <then_part>
+                                    <expression_statement line="37" col="11">
+                                       <method_invocation line="37" col="29">
+                                          <member_select line="37" col="21" name="println">
+                                             <member_select line="37" col="17" name="out">
+                                                <identifier line="37" col="11" name="System">
+                                                </identifier>
+                                             </member_select>
+                                          </member_select>
+                                          <arguments>
+                                             <string_literal line="37" col="30" type="string" value="2&gt;3!">
+                                             </string_literal>
+                                          </arguments>
+                                       </method_invocation>
+                                    </expression_statement>
+                                 </then_part>
+                              </if>
+                           </body>
+                        </for_loop>
+                        <if line="39" col="9">
                            <condition>
-                              <method_invocation line="34" col="26">
-                                 <member_select line="34" col="19" name="equals">
-                                    <identifier line="34" col="13" name="action">
+                              <method_invocation line="39" col="26">
+                                 <member_select line="39" col="19" name="equals">
+                                    <identifier line="39" col="13" name="action">
                                     </identifier>
                                  </member_select>
                                  <arguments>
-                                    <identifier line="34" col="27" name="A">
+                                    <identifier line="39" col="27" name="A">
                                     </identifier>
                                  </arguments>
                               </method_invocation>
                            </condition>
                            <then_part>
-                              <if line="35" col="10">
+                              <if line="40" col="10">
                                  <condition>
-                                    <tags.grater_than line="35" col="16">
-                                       <int_literal line="35" col="14" type="int" value="2">
+                                    <tags.grater_than line="40" col="16">
+                                       <int_literal line="40" col="14" type="int" value="2">
                                        </int_literal>
-                                       <int_literal line="35" col="18" type="int" value="3">
+                                       <int_literal line="40" col="18" type="int" value="3">
                                        </int_literal>
                                     </tags.grater_than>
                                  </condition>
                                  <then_part>
-                                    <expression_statement line="36" col="11">
-                                       <method_invocation line="36" col="29">
-                                          <member_select line="36" col="21" name="println">
-                                             <member_select line="36" col="17" name="out">
-                                                <identifier line="36" col="11" name="System">
+                                    <expression_statement line="41" col="11">
+                                       <method_invocation line="41" col="29">
+                                          <member_select line="41" col="21" name="println">
+                                             <member_select line="41" col="17" name="out">
+                                                <identifier line="41" col="11" name="System">
                                                 </identifier>
                                              </member_select>
                                           </member_select>
                                           <arguments>
-                                             <string_literal line="36" col="30" type="string" value="000">
+                                             <string_literal line="41" col="30" type="string" value="000">
                                              </string_literal>
                                           </arguments>
                                        </method_invocation>
                                     </expression_statement>
                                  </then_part>
                                  <else_part>
-                                    <block line="37" col="14">
+                                    <block line="42" col="14">
                                        <modifier name=""></modifier>
                                        <nodename.statements>
-                                          <expression_statement line="38" col="11">
-                                             <method_invocation line="38" col="29">
-                                                <member_select line="38" col="21" name="println">
-                                                   <member_select line="38" col="17" name="out">
-                                                      <identifier line="38" col="11" name="System">
+                                          <expression_statement line="43" col="11">
+                                             <method_invocation line="43" col="29">
+                                                <member_select line="43" col="21" name="println">
+                                                   <member_select line="43" col="17" name="out">
+                                                      <identifier line="43" col="11" name="System">
                                                       </identifier>
                                                    </member_select>
                                                 </member_select>
                                                 <arguments>
-                                                   <string_literal line="38" col="30" type="string" value="1">
+                                                   <string_literal line="43" col="30" type="string" value="1">
                                                    </string_literal>
                                                 </arguments>
                                              </method_invocation>
                                           </expression_statement>
-                                          <expression_statement line="39" col="11">
-                                             <method_invocation line="39" col="29">
-                                                <member_select line="39" col="21" name="println">
-                                                   <member_select line="39" col="17" name="out">
-                                                      <identifier line="39" col="11" name="System">
+                                          <expression_statement line="44" col="11">
+                                             <method_invocation line="44" col="29">
+                                                <member_select line="44" col="21" name="println">
+                                                   <member_select line="44" col="17" name="out">
+                                                      <identifier line="44" col="11" name="System">
                                                       </identifier>
                                                    </member_select>
                                                 </member_select>
                                                 <arguments>
-                                                   <string_literal line="39" col="30" type="string" value="1">
+                                                   <string_literal line="44" col="30" type="string" value="1">
                                                    </string_literal>
                                                 </arguments>
                                              </method_invocation>
@@ -384,92 +444,92 @@
                               </if>
                            </then_part>
                         </if>
-                        <for_loop line="41" col="9">
+                        <for_loop line="46" col="9">
                            <initialize_section>
-                              <variable line="41" col="18" name="i">
+                              <variable line="46" col="18" name="i">
                                  <modifiers line="-1" col="-1">
                                     <modifier name=""></modifier>
                                  </modifiers>
                                  <vartype>
-                                    <primitive_type line="41" col="14" name="int">
+                                    <primitive_type line="46" col="14" name="int">
                                     </primitive_type>
                                  </vartype>
                                  <init>
-                                    <int_literal line="41" col="22" type="int" value="0">
+                                    <int_literal line="46" col="22" type="int" value="0">
                                     </int_literal>
                                  </init>
                               </variable>
                            </initialize_section>
                            <condition_section>
-                              <less_than line="41" col="27">
-                                 <identifier line="41" col="25" name="i">
+                              <less_than line="46" col="27">
+                                 <identifier line="46" col="25" name="i">
                                  </identifier>
-                                 <int_literal line="41" col="29" type="int" value="10">
+                                 <int_literal line="46" col="29" type="int" value="10">
                                  </int_literal>
                               </less_than>
                            </condition_section>
                            <step_section>
-                              <expression_statement line="41" col="33">
-                                 <postfix_increment line="41" col="34">
-                                    <identifier line="41" col="33" name="i">
+                              <expression_statement line="46" col="33">
+                                 <postfix_increment line="46" col="34">
+                                    <identifier line="46" col="33" name="i">
                                     </identifier>
                                  </postfix_increment>
                               </expression_statement>
                            </step_section>
                            <body>
-                              <block line="41" col="37">
+                              <block line="46" col="37">
                                  <modifier name=""></modifier>
                                  <nodename.statements>
-                                    <expression_statement line="42" col="10">
-                                       <method_invocation line="42" col="28">
-                                          <member_select line="42" col="20" name="println">
-                                             <member_select line="42" col="16" name="out">
-                                                <identifier line="42" col="10" name="System">
+                                    <expression_statement line="47" col="10">
+                                       <method_invocation line="47" col="28">
+                                          <member_select line="47" col="20" name="println">
+                                             <member_select line="47" col="16" name="out">
+                                                <identifier line="47" col="10" name="System">
                                                 </identifier>
                                              </member_select>
                                           </member_select>
                                           <arguments>
-                                             <int_literal line="42" col="29" type="int" value="123">
+                                             <int_literal line="47" col="29" type="int" value="123">
                                              </int_literal>
                                           </arguments>
                                        </method_invocation>
                                     </expression_statement>
-                                    <if line="43" col="10">
+                                    <if line="48" col="10">
                                        <condition>
-                                          <tags.grater_than line="43" col="16">
-                                             <identifier line="43" col="14" name="i">
+                                          <tags.grater_than line="48" col="16">
+                                             <identifier line="48" col="14" name="i">
                                              </identifier>
-                                             <int_literal line="43" col="18" type="int" value="5">
+                                             <int_literal line="48" col="18" type="int" value="5">
                                              </int_literal>
                                           </tags.grater_than>
                                        </condition>
                                        <then_part>
-                                          <expression_statement line="44" col="11">
-                                             <method_invocation line="44" col="29">
-                                                <member_select line="44" col="21" name="println">
-                                                   <member_select line="44" col="17" name="out">
-                                                      <identifier line="44" col="11" name="System">
+                                          <expression_statement line="49" col="11">
+                                             <method_invocation line="49" col="29">
+                                                <member_select line="49" col="21" name="println">
+                                                   <member_select line="49" col="17" name="out">
+                                                      <identifier line="49" col="11" name="System">
                                                       </identifier>
                                                    </member_select>
                                                 </member_select>
                                                 <arguments>
-                                                   <int_literal line="44" col="30" type="int" value="123">
+                                                   <int_literal line="49" col="30" type="int" value="123">
                                                    </int_literal>
                                                 </arguments>
                                              </method_invocation>
                                           </expression_statement>
                                        </then_part>
                                        <else_part>
-                                          <expression_statement line="46" col="11">
-                                             <method_invocation line="46" col="29">
-                                                <member_select line="46" col="21" name="println">
-                                                   <member_select line="46" col="17" name="out">
-                                                      <identifier line="46" col="11" name="System">
+                                          <expression_statement line="51" col="11">
+                                             <method_invocation line="51" col="29">
+                                                <member_select line="51" col="21" name="println">
+                                                   <member_select line="51" col="17" name="out">
+                                                      <identifier line="51" col="11" name="System">
                                                       </identifier>
                                                    </member_select>
                                                 </member_select>
                                                 <arguments>
-                                                   <int_literal line="46" col="30" type="int" value="123">
+                                                   <int_literal line="51" col="30" type="int" value="123">
                                                    </int_literal>
                                                 </arguments>
                                              </method_invocation>
@@ -480,38 +540,38 @@
                               </block>
                            </body>
                         </for_loop>
-                        <enhanced_for_loop line="49" col="9">
+                        <enhanced_for_loop line="54" col="9">
                            <variable>
-                              <variable line="49" col="22" name="act">
+                              <variable line="54" col="22" name="act">
                                  <modifiers line="-1" col="-1">
                                     <modifier name=""></modifier>
                                  </modifiers>
                                  <vartype>
-                                    <identifier line="49" col="14" name="IAction">
+                                    <identifier line="54" col="14" name="IAction">
                                     </identifier>
                                  </vartype>
                               </variable>
                            </variable>
                            <expression>
-                              <identifier line="49" col="27" name="actionList">
+                              <identifier line="54" col="27" name="actionList">
                               </identifier>
                            </expression>
                            <body>
-                              <block line="49" col="38">
+                              <block line="54" col="38">
                                  <modifier name=""></modifier>
                                  <nodename.statements>
-                                    <expression_statement line="50" col="10">
-                                       <method_invocation line="50" col="28">
-                                          <member_select line="50" col="20" name="println">
-                                             <member_select line="50" col="16" name="out">
-                                                <identifier line="50" col="10" name="System">
+                                    <expression_statement line="55" col="10">
+                                       <method_invocation line="55" col="28">
+                                          <member_select line="55" col="20" name="println">
+                                             <member_select line="55" col="16" name="out">
+                                                <identifier line="55" col="10" name="System">
                                                 </identifier>
                                              </member_select>
                                           </member_select>
                                           <arguments>
-                                             <method_invocation line="50" col="41">
-                                                <member_select line="50" col="32" name="toString">
-                                                   <identifier line="50" col="29" name="act">
+                                             <method_invocation line="55" col="41">
+                                                <member_select line="55" col="32" name="toString">
+                                                   <identifier line="55" col="29" name="act">
                                                    </identifier>
                                                 </member_select>
                                              </method_invocation>
@@ -522,35 +582,35 @@
                               </block>
                            </body>
                         </enhanced_for_loop>
-                        <variable line="52" col="17" name="x">
+                        <variable line="57" col="17" name="x">
                            <modifiers line="-1" col="-1">
                               <modifier name=""></modifier>
                            </modifiers>
                            <vartype>
-                              <primitive_type line="52" col="9" name="boolean">
+                              <primitive_type line="57" col="9" name="boolean">
                               </primitive_type>
                            </vartype>
                            <init>
-                              <boolean_literal line="52" col="21" type="boolean" value="false">
+                              <boolean_literal line="57" col="21" type="boolean" value="false">
                               </boolean_literal>
                            </init>
                         </variable>
-                        <while_loop line="54" col="9">
+                        <while_loop line="59" col="9">
                            <condition>
-                              <logical_complement line="54" col="16">
-                                 <identifier line="54" col="17" name="x">
+                              <logical_complement line="59" col="16">
+                                 <identifier line="59" col="17" name="x">
                                  </identifier>
                               </logical_complement>
                            </condition>
                            <body>
-                              <block line="54" col="19">
+                              <block line="59" col="19">
                                  <modifier name=""></modifier>
                                  <nodename.statements>
-                                    <expression_statement line="55" col="10">
-                                       <assignment line="55" col="12">
-                                          <identifier line="55" col="10" name="x">
+                                    <expression_statement line="60" col="10">
+                                       <assignment line="60" col="12">
+                                          <identifier line="60" col="10" name="x">
                                           </identifier>
-                                          <boolean_literal line="55" col="14" type="boolean" value="true">
+                                          <boolean_literal line="60" col="14" type="boolean" value="true">
                                           </boolean_literal>
                                        </assignment>
                                     </expression_statement>
@@ -558,50 +618,50 @@
                               </block>
                            </body>
                         </while_loop>
-                        <while_loop line="58" col="9">
+                        <while_loop line="63" col="9">
                            <condition>
-                              <identifier line="58" col="16" name="x">
+                              <identifier line="63" col="16" name="x">
                               </identifier>
                            </condition>
                            <body>
-                              <expression_statement line="59" col="10">
-                                 <assignment line="59" col="12">
-                                    <identifier line="59" col="10" name="x">
+                              <expression_statement line="64" col="10">
+                                 <assignment line="64" col="12">
+                                    <identifier line="64" col="10" name="x">
                                     </identifier>
-                                    <boolean_literal line="59" col="14" type="boolean" value="false">
+                                    <boolean_literal line="64" col="14" type="boolean" value="false">
                                     </boolean_literal>
                                  </assignment>
                               </expression_statement>
                            </body>
                         </while_loop>
-                        <do_while_loop line="61" col="9">
+                        <do_while_loop line="66" col="9">
                            <body>
-                              <expression_statement line="62" col="10">
-                                 <assignment line="62" col="12">
-                                    <identifier line="62" col="10" name="x">
+                              <expression_statement line="67" col="10">
+                                 <assignment line="67" col="12">
+                                    <identifier line="67" col="10" name="x">
                                     </identifier>
-                                    <boolean_literal line="62" col="14" type="boolean" value="true">
+                                    <boolean_literal line="67" col="14" type="boolean" value="true">
                                     </boolean_literal>
                                  </assignment>
                               </expression_statement>
                            </body>
                            <condition>
-                              <logical_complement line="63" col="16">
-                                 <identifier line="63" col="17" name="x">
+                              <logical_complement line="68" col="16">
+                                 <identifier line="68" col="17" name="x">
                                  </identifier>
                               </logical_complement>
                            </condition>
                         </do_while_loop>
-                        <do_while_loop line="65" col="9">
+                        <do_while_loop line="70" col="9">
                            <body>
-                              <block line="65" col="11">
+                              <block line="70" col="11">
                                  <modifier name=""></modifier>
                                  <nodename.statements>
-                                    <expression_statement line="66" col="10">
-                                       <assignment line="66" col="12">
-                                          <identifier line="66" col="10" name="x">
+                                    <expression_statement line="71" col="10">
+                                       <assignment line="71" col="12">
+                                          <identifier line="71" col="10" name="x">
                                           </identifier>
-                                          <boolean_literal line="66" col="14" type="boolean" value="false">
+                                          <boolean_literal line="71" col="14" type="boolean" value="false">
                                           </boolean_literal>
                                        </assignment>
                                     </expression_statement>
@@ -609,996 +669,213 @@
                               </block>
                            </body>
                            <condition>
-                              <identifier line="68" col="16" name="x">
+                              <identifier line="73" col="16" name="x">
                               </identifier>
                            </condition>
                         </do_while_loop>
-                        <variable line="70" col="22" name="a">
-                           <modifiers line="-1" col="-1">
-                              <modifier name=""></modifier>
-                           </modifiers>
-                           <vartype>
-                              <parameterized_type line="70" col="13">
-                                 <identifier line="70" col="9" name="List">
-                                 </identifier>
-                                 <arguments>
-                                    <identifier line="70" col="14" name="Object">
-                                    </identifier>
-                                 </arguments>
-                              </parameterized_type>
-                           </vartype>
-                           <init>
-                              <new_class line="70" col="26">
-                                 <parameterized_type line="70" col="34">
-                                    <identifier line="70" col="30" name="List">
-                                    </identifier>
-                                    <arguments>
-                                       <identifier line="70" col="35" name="Object">
-                                       </identifier>
-                                    </arguments>
-                                 </parameterized_type>
-                                 <class line="70" col="45" name="">
-                                    <modifiers line="-1" col="-1">
-                                       <modifier name=""></modifier>
-                                    </modifiers>
-                                    <body>
-                                       <method line="73" col="19" name="toArray">
-                                          <modifiers line="72" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="72" col="4">
-                                                   <identifier line="72" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <array_type line="73" col="16">
-                                                <identifier line="73" col="15" name="T">
-                                                </identifier>
-                                             </array_type>
-                                          </resulttype>
-                                          <generics>
-                                             <type_parameter line="73" col="12" name="T">
-                                             </type_parameter>
-                                          </generics>
-                                          <parameters>
-                                             <variable line="73" col="31" name="a">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <array_type line="73" col="28">
-                                                      <identifier line="73" col="27" name="T">
-                                                      </identifier>
-                                                   </array_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="73" col="34">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="75" col="5">
-                                                   <null_literal line="75" col="12" type="null" value="null">
-                                                   </null_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="79" col="20" name="toArray">
-                                          <modifiers line="78" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="78" col="4">
-                                                   <identifier line="78" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <array_type line="79" col="17">
-                                                <identifier line="79" col="11" name="Object">
-                                                </identifier>
-                                             </array_type>
-                                          </resulttype>
-                                          <block line="79" col="30">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="81" col="5">
-                                                   <null_literal line="81" col="12" type="null" value="null">
-                                                   </null_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="85" col="24" name="subList">
-                                          <modifiers line="84" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="84" col="4">
-                                                   <identifier line="84" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <parameterized_type line="85" col="15">
-                                                <identifier line="85" col="11" name="List">
-                                                </identifier>
-                                                <arguments>
-                                                   <identifier line="85" col="16" name="Object">
-                                                   </identifier>
-                                                </arguments>
-                                             </parameterized_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="85" col="36" name="fromIndex">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <primitive_type line="85" col="32" name="int">
-                                                   </primitive_type>
-                                                </vartype>
-                                             </variable>
-                                             <variable line="85" col="51" name="toIndex">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <primitive_type line="85" col="47" name="int">
-                                                   </primitive_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="85" col="60">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="87" col="5">
-                                                   <null_literal line="87" col="12" type="null" value="null">
-                                                   </null_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="91" col="15" name="size">
-                                          <modifiers line="90" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="90" col="4">
-                                                   <identifier line="90" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="91" col="11" name="int">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <block line="91" col="22">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="93" col="5">
-                                                   <int_literal line="93" col="12" type="int" value="0">
-                                                   </int_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="97" col="18" name="set">
-                                          <modifiers line="96" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="96" col="4">
-                                                   <identifier line="96" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <identifier line="97" col="11" name="Object">
-                                             </identifier>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="97" col="26" name="index">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <primitive_type line="97" col="22" name="int">
-                                                   </primitive_type>
-                                                </vartype>
-                                             </variable>
-                                             <variable line="97" col="40" name="element">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <identifier line="97" col="33" name="Object">
-                                                   </identifier>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="97" col="49">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="99" col="5">
-                                                   <null_literal line="99" col="12" type="null" value="null">
-                                                   </null_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="103" col="19" name="retainAll">
-                                          <modifiers line="102" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="102" col="4">
-                                                   <identifier line="102" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="103" col="11" name="boolean">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="103" col="43" name="c">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <parameterized_type line="103" col="39">
-                                                      <identifier line="103" col="29" name="Collection">
-                                                      </identifier>
-                                                      <arguments>
-                                                         <unbounded_wildcard line="103" col="40">
-                                                         </unbounded_wildcard>
-                                                      </arguments>
-                                                   </parameterized_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="103" col="46">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="105" col="5">
-                                                   <boolean_literal line="105" col="12" type="boolean" value="false">
-                                                   </boolean_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="109" col="19" name="removeAll">
-                                          <modifiers line="108" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="108" col="4">
-                                                   <identifier line="108" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="109" col="11" name="boolean">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="109" col="43" name="c">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <parameterized_type line="109" col="39">
-                                                      <identifier line="109" col="29" name="Collection">
-                                                      </identifier>
-                                                      <arguments>
-                                                         <unbounded_wildcard line="109" col="40">
-                                                         </unbounded_wildcard>
-                                                      </arguments>
-                                                   </parameterized_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="109" col="46">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="111" col="5">
-                                                   <boolean_literal line="111" col="12" type="boolean" value="false">
-                                                   </boolean_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="115" col="18" name="remove">
-                                          <modifiers line="114" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="114" col="4">
-                                                   <identifier line="114" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <identifier line="115" col="11" name="Object">
-                                             </identifier>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="115" col="29" name="index">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <primitive_type line="115" col="25" name="int">
-                                                   </primitive_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="115" col="36">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="117" col="5">
-                                                   <null_literal line="117" col="12" type="null" value="null">
-                                                   </null_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="121" col="19" name="remove">
-                                          <modifiers line="120" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="120" col="4">
-                                                   <identifier line="120" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="121" col="11" name="boolean">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="121" col="33" name="o">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <identifier line="121" col="26" name="Object">
-                                                   </identifier>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="121" col="36">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="123" col="5">
-                                                   <boolean_literal line="123" col="12" type="boolean" value="false">
-                                                   </boolean_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="127" col="32" name="listIterator">
-                                          <modifiers line="126" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="126" col="4">
-                                                   <identifier line="126" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <parameterized_type line="127" col="23">
-                                                <identifier line="127" col="11" name="ListIterator">
-                                                </identifier>
-                                                <arguments>
-                                                   <identifier line="127" col="24" name="Object">
-                                                   </identifier>
-                                                </arguments>
-                                             </parameterized_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="127" col="49" name="index">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <primitive_type line="127" col="45" name="int">
-                                                   </primitive_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="127" col="56">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="129" col="5">
-                                                   <null_literal line="129" col="12" type="null" value="null">
-                                                   </null_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="133" col="32" name="listIterator">
-                                          <modifiers line="132" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="132" col="4">
-                                                   <identifier line="132" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <parameterized_type line="133" col="23">
-                                                <identifier line="133" col="11" name="ListIterator">
-                                                </identifier>
-                                                <arguments>
-                                                   <identifier line="133" col="24" name="Object">
-                                                   </identifier>
-                                                </arguments>
-                                             </parameterized_type>
-                                          </resulttype>
-                                          <block line="133" col="47">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="135" col="5">
-                                                   <null_literal line="135" col="12" type="null" value="null">
-                                                   </null_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="139" col="15" name="lastIndexOf">
-                                          <modifiers line="138" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="138" col="4">
-                                                   <identifier line="138" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="139" col="11" name="int">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="139" col="34" name="o">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <identifier line="139" col="27" name="Object">
-                                                   </identifier>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="139" col="37">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="141" col="5">
-                                                   <int_literal line="141" col="12" type="int" value="0">
-                                                   </int_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="145" col="28" name="iterator">
-                                          <modifiers line="144" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="144" col="4">
-                                                   <identifier line="144" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <parameterized_type line="145" col="19">
-                                                <identifier line="145" col="11" name="Iterator">
-                                                </identifier>
-                                                <arguments>
-                                                   <identifier line="145" col="20" name="Object">
-                                                   </identifier>
-                                                </arguments>
-                                             </parameterized_type>
-                                          </resulttype>
-                                          <block line="145" col="39">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="147" col="5">
-                                                   <null_literal line="147" col="12" type="null" value="null">
-                                                   </null_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="151" col="19" name="isEmpty">
-                                          <modifiers line="150" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="150" col="4">
-                                                   <identifier line="150" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="151" col="11" name="boolean">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <block line="151" col="29">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="153" col="5">
-                                                   <boolean_literal line="153" col="12" type="boolean" value="false">
-                                                   </boolean_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="157" col="15" name="indexOf">
-                                          <modifiers line="156" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="156" col="4">
-                                                   <identifier line="156" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="157" col="11" name="int">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="157" col="30" name="o">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <identifier line="157" col="23" name="Object">
-                                                   </identifier>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="157" col="33">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="159" col="5">
-                                                   <int_literal line="159" col="12" type="int" value="0">
-                                                   </int_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="163" col="18" name="get">
-                                          <modifiers line="162" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="162" col="4">
-                                                   <identifier line="162" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <identifier line="163" col="11" name="Object">
-                                             </identifier>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="163" col="26" name="index">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <primitive_type line="163" col="22" name="int">
-                                                   </primitive_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="163" col="33">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="165" col="5">
-                                                   <null_literal line="165" col="12" type="null" value="null">
-                                                   </null_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="169" col="19" name="containsAll">
-                                          <modifiers line="168" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="168" col="4">
-                                                   <identifier line="168" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="169" col="11" name="boolean">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="169" col="45" name="c">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <parameterized_type line="169" col="41">
-                                                      <identifier line="169" col="31" name="Collection">
-                                                      </identifier>
-                                                      <arguments>
-                                                         <unbounded_wildcard line="169" col="42">
-                                                         </unbounded_wildcard>
-                                                      </arguments>
-                                                   </parameterized_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="169" col="48">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="171" col="5">
-                                                   <boolean_literal line="171" col="12" type="boolean" value="false">
-                                                   </boolean_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="175" col="19" name="contains">
-                                          <modifiers line="174" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="174" col="4">
-                                                   <identifier line="174" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="175" col="11" name="boolean">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="175" col="35" name="o">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <identifier line="175" col="28" name="Object">
-                                                   </identifier>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="175" col="38">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="177" col="5">
-                                                   <boolean_literal line="177" col="12" type="boolean" value="false">
-                                                   </boolean_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="181" col="16" name="clear">
-                                          <modifiers line="180" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="180" col="4">
-                                                   <identifier line="180" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="181" col="11" name="void">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <block line="181" col="24">
-                                             <modifier name=""></modifier>
-                                          </block>
-                                       </method>
-                                       <method line="187" col="19" name="addAll">
-                                          <modifiers line="186" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="186" col="4">
-                                                   <identifier line="186" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="187" col="11" name="boolean">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="187" col="30" name="index">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <primitive_type line="187" col="26" name="int">
-                                                   </primitive_type>
-                                                </vartype>
-                                             </variable>
-                                             <variable line="187" col="66" name="c">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <parameterized_type line="187" col="47">
-                                                      <identifier line="187" col="37" name="Collection">
-                                                      </identifier>
-                                                      <arguments>
-                                                         <extends_wildcard line="187" col="58">
-                                                            <identifier line="187" col="58" name="Object">
-                                                            </identifier>
-                                                         </extends_wildcard>
-                                                      </arguments>
-                                                   </parameterized_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="187" col="69">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="189" col="5">
-                                                   <boolean_literal line="189" col="12" type="boolean" value="false">
-                                                   </boolean_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="193" col="19" name="addAll">
-                                          <modifiers line="192" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="192" col="4">
-                                                   <identifier line="192" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="193" col="11" name="boolean">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="193" col="55" name="c">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <parameterized_type line="193" col="36">
-                                                      <identifier line="193" col="26" name="Collection">
-                                                      </identifier>
-                                                      <arguments>
-                                                         <extends_wildcard line="193" col="47">
-                                                            <identifier line="193" col="47" name="Object">
-                                                            </identifier>
-                                                         </extends_wildcard>
-                                                      </arguments>
-                                                   </parameterized_type>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="193" col="58">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="195" col="5">
-                                                   <boolean_literal line="195" col="12" type="boolean" value="false">
-                                                   </boolean_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                       <method line="199" col="16" name="add">
-                                          <modifiers line="198" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="198" col="4">
-                                                   <identifier line="198" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="199" col="11" name="void">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="199" col="24" name="index">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <primitive_type line="199" col="20" name="int">
-                                                   </primitive_type>
-                                                </vartype>
-                                             </variable>
-                                             <variable line="199" col="38" name="element">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <identifier line="199" col="31" name="Object">
-                                                   </identifier>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="199" col="47">
-                                             <modifier name=""></modifier>
-                                          </block>
-                                       </method>
-                                       <method line="205" col="19" name="add">
-                                          <modifiers line="204" col="4">
-                                             <modifier name="public"></modifier>
-                                             <nodename.annotations>
-                                                <annotation line="204" col="4">
-                                                   <identifier line="204" col="5" name="Override">
-                                                   </identifier>
-                                                </annotation>
-                                             </nodename.annotations>
-                                          </modifiers>
-                                          <resulttype>
-                                             <primitive_type line="205" col="11" name="boolean">
-                                             </primitive_type>
-                                          </resulttype>
-                                          <parameters>
-                                             <variable line="205" col="30" name="e">
-                                                <modifiers line="-1" col="-1">
-                                                   <modifier name="parameter"></modifier>
-                                                </modifiers>
-                                                <vartype>
-                                                   <identifier line="205" col="23" name="Object">
-                                                   </identifier>
-                                                </vartype>
-                                             </variable>
-                                          </parameters>
-                                          <block line="205" col="33">
-                                             <modifier name=""></modifier>
-                                             <nodename.statements>
-                                                <return line="207" col="5">
-                                                   <boolean_literal line="207" col="12" type="boolean" value="false">
-                                                   </boolean_literal>
-                                                </return>
-                                             </nodename.statements>
-                                          </block>
-                                       </method>
-                                    </body>
-                                 </class>
-                              </new_class>
-                           </init>
-                        </variable>
                      </nodename.statements>
                   </block>
                </method>
-               <method line="212" col="30" name="bar">
-                  <modifiers line="212" col="5">
+               <method line="77" col="30" name="bar">
+                  <modifiers line="77" col="5">
                      <modifier name="public"></modifier>
                   </modifiers>
                   <resulttype>
-                     <member_select line="212" col="20" name="MyClass2">
-                        <identifier line="212" col="12" name="OurClass">
+                     <member_select line="77" col="20" name="MyClass2">
+                        <identifier line="77" col="12" name="OurClass">
                         </identifier>
                      </member_select>
                   </resulttype>
                   <parameters>
-                     <variable line="212" col="41" name="a">
+                     <variable line="77" col="41" name="a">
                         <modifiers line="-1" col="-1">
                            <modifier name="parameter"></modifier>
                         </modifiers>
                         <vartype>
-                           <identifier line="212" col="34" name="String">
+                           <identifier line="77" col="34" name="String">
                            </identifier>
                         </vartype>
                      </variable>
-                     <variable line="212" col="52" name="b">
+                     <variable line="77" col="52" name="b">
                         <modifiers line="-1" col="-1">
                            <modifier name="parameter"></modifier>
                         </modifiers>
                         <vartype>
-                           <primitive_type line="212" col="44" name="boolean">
+                           <primitive_type line="77" col="44" name="boolean">
                            </primitive_type>
                         </vartype>
                      </variable>
-                     <variable line="212" col="73" name="c">
+                     <variable line="77" col="73" name="c">
                         <modifiers line="-1" col="-1">
                            <modifier name="parameter"></modifier>
                         </modifiers>
                         <vartype>
-                           <member_select line="212" col="63" name="MyClass2">
-                              <identifier line="212" col="55" name="OurClass">
+                           <member_select line="77" col="63" name="MyClass2">
+                              <identifier line="77" col="55" name="OurClass">
                               </identifier>
                            </member_select>
                         </vartype>
                      </variable>
                   </parameters>
-                  <block line="212" col="75">
+                  <block line="77" col="75">
                      <modifier name=""></modifier>
                      <nodename.statements>
-                        <return line="213" col="6">
-                           <null_literal line="213" col="13" type="null" value="null">
+                        <expression_statement line="78" col="6">
+                           <method_invocation line="78" col="9">
+                              <identifier line="78" col="6" name="bar">
+                              </identifier>
+                           </method_invocation>
+                        </expression_statement>
+                        <expression_statement line="79" col="6">
+                           <method_invocation line="79" col="14">
+                              <member_select line="79" col="10" name="bar">
+                                 <identifier line="79" col="6" name="this">
+                                 </identifier>
+                              </member_select>
+                           </method_invocation>
+                        </expression_statement>
+                        <expression_statement line="80" col="6">
+                           <method_invocation line="80" col="25">
+                              <member_select line="80" col="21" name="bar">
+                                 <method_invocation line="80" col="19">
+                                    <member_select line="80" col="10" name="getValue">
+                                       <identifier line="80" col="6" name="this">
+                                       </identifier>
+                                    </member_select>
+                                 </method_invocation>
+                              </member_select>
+                           </method_invocation>
+                        </expression_statement>
+                        <expression_statement line="81" col="6">
+                           <method_invocation line="81" col="28">
+                              <member_select line="81" col="19" name="getValue">
+                                 <member_select line="81" col="10" name="intValue">
+                                    <identifier line="81" col="6" name="this">
+                                    </identifier>
+                                 </member_select>
+                              </member_select>
+                           </method_invocation>
+                        </expression_statement>
+                        <variable line="82" col="14" name="x">
+                           <modifiers line="-1" col="-1">
+                              <modifier name=""></modifier>
+                           </modifiers>
+                           <vartype>
+                              <identifier line="82" col="6" name="MyClass">
+                              </identifier>
+                           </vartype>
+                           <init>
+                              <new_class line="82" col="18">
+                                 <identifier line="82" col="22" name="MyClass">
+                                 </identifier>
+                              </new_class>
+                           </init>
+                        </variable>
+                        <return line="83" col="6">
+                           <null_literal line="83" col="13" type="null" value="null">
                            </null_literal>
                         </return>
                      </nodename.statements>
                   </block>
                </method>
-               <method line="216" col="19" name="bar">
-                  <modifiers line="216" col="5">
+               <method line="86" col="20" name="getValue">
+                  <modifiers line="86" col="5">
                      <modifier name="public"></modifier>
                   </modifiers>
                   <resulttype>
-                     <identifier line="216" col="12" name="String">
+                     <identifier line="86" col="12" name="MyClass">
                      </identifier>
                   </resulttype>
-                  <block line="216" col="25">
+                  <block line="86" col="30">
                      <modifier name=""></modifier>
                      <nodename.statements>
-                        <variable line="217" col="13" name="s">
+                        <return line="87" col="6">
+                           <identifier line="87" col="13" name="this">
+                           </identifier>
+                        </return>
+                     </nodename.statements>
+                  </block>
+               </method>
+               <variable line="90" col="21" name="intValue">
+                  <modifiers line="90" col="5">
+                     <modifier name="private"></modifier>
+                  </modifiers>
+                  <vartype>
+                     <identifier line="90" col="13" name="MyClass">
+                     </identifier>
+                  </vartype>
+                  <init>
+                     <identifier line="90" col="32" name="this">
+                     </identifier>
+                  </init>
+               </variable>
+               <method line="92" col="19" name="bar">
+                  <modifiers line="92" col="5">
+                     <modifier name="public"></modifier>
+                  </modifiers>
+                  <resulttype>
+                     <identifier line="92" col="12" name="String">
+                     </identifier>
+                  </resulttype>
+                  <block line="92" col="25">
+                     <modifier name=""></modifier>
+                     <nodename.statements>
+                        <variable line="93" col="13" name="s">
                            <modifiers line="-1" col="-1">
                               <modifier name=""></modifier>
                            </modifiers>
                            <vartype>
-                              <identifier line="217" col="6" name="String">
+                              <identifier line="93" col="6" name="String">
                               </identifier>
                            </vartype>
                            <init>
-                              <string_literal line="217" col="17" type="string" value="">
+                              <string_literal line="93" col="17" type="string" value="">
                               </string_literal>
                            </init>
                         </variable>
-                        <expression_statement line="218" col="6">
-                           <method_invocation line="218" col="15">
-                              <member_select line="218" col="8" name="append">
-                                 <identifier line="218" col="6" name="sb">
+                        <expression_statement line="94" col="6">
+                           <method_invocation line="94" col="15">
+                              <member_select line="94" col="8" name="append">
+                                 <identifier line="94" col="6" name="sb">
                                  </identifier>
                               </member_select>
                               <arguments>
-                                 <method_invocation line="218" col="26">
-                                    <member_select line="218" col="17" name="toString">
-                                       <identifier line="218" col="16" name="s">
+                                 <method_invocation line="94" col="26">
+                                    <member_select line="94" col="17" name="toString">
+                                       <identifier line="94" col="16" name="s">
                                        </identifier>
                                     </member_select>
                                  </method_invocation>
                               </arguments>
                            </method_invocation>
                         </expression_statement>
-                        <variable line="219" col="15" name="mc2">
+                        <variable line="95" col="15" name="mc2">
                            <modifiers line="-1" col="-1">
                               <modifier name=""></modifier>
                            </modifiers>
                            <vartype>
-                              <identifier line="219" col="6" name="MyClass2">
+                              <identifier line="95" col="6" name="MyClass2">
                               </identifier>
                            </vartype>
                            <init>
-                              <new_class line="219" col="21">
-                                 <identifier line="219" col="25" name="MyClass2">
+                              <new_class line="95" col="21">
+                                 <identifier line="95" col="25" name="MyClass2">
                                  </identifier>
                               </new_class>
                            </init>
                         </variable>
-                        <expression_statement line="220" col="6">
-                           <method_invocation line="220" col="13">
-                              <member_select line="220" col="9" name="foo">
-                                 <identifier line="220" col="6" name="mc2">
+                        <expression_statement line="96" col="6">
+                           <method_invocation line="96" col="13">
+                              <member_select line="96" col="9" name="foo">
+                                 <identifier line="96" col="6" name="mc2">
                                  </identifier>
                               </member_select>
                            </method_invocation>
                         </expression_statement>
-                        <return line="221" col="6">
-                           <method_invocation line="221" col="24">
-                              <member_select line="221" col="15" name="toString">
-                                 <identifier line="221" col="13" name="sb">
+                        <return line="97" col="6">
+                           <method_invocation line="97" col="24">
+                              <member_select line="97" col="15" name="toString">
+                                 <identifier line="97" col="13" name="sb">
                                  </identifier>
                               </member_select>
                            </method_invocation>
@@ -1606,62 +883,45 @@
                      </nodename.statements>
                   </block>
                </method>
-               <variable line="224" col="31" name="hoho">
-                  <modifiers line="224" col="5">
-               <variable line="216" col="31" name="hoho">
-                  <modifiers line="216" col="5">
+               <variable line="100" col="31" name="hoho">
+                  <modifiers line="100" col="5">
                      <modifier name="private"></modifier>
                   </modifiers>
                   <vartype>
-                     <member_select line="224" col="21" name="MyClass2">
-                        <identifier line="224" col="13" name="OurClass">
-                     <member_select line="216" col="21" name="MyClass2">
-                        <identifier line="216" col="13" name="OurClass">
+                     <member_select line="100" col="21" name="MyClass2">
+                        <identifier line="100" col="13" name="OurClass">
                         </identifier>
                      </member_select>
                   </vartype>
                </variable>
-               <class line="226" col="19" name="MyClass2">
-                  <modifiers line="226" col="5">
-               <class line="218" col="19" name="MyClass2">
-                  <modifiers line="218" col="5">
+               <class line="102" col="19" name="MyClass2">
+                  <modifiers line="102" col="5">
                      <modifier name="public"></modifier>
                      <modifier name="static"></modifier>
                   </modifiers>
                   <body>
-                     <method line="228" col="21" name="foo">
-                        <modifiers line="228" col="9">
-                     <method line="220" col="21" name="foo">
-                        <modifiers line="220" col="9">
+                     <method line="104" col="21" name="foo">
+                        <modifiers line="104" col="9">
                            <modifier name="public"></modifier>
                         </modifiers>
                         <resulttype>
-                           <primitive_type line="228" col="16" name="void">
-                           <primitive_type line="220" col="16" name="void">
+                           <primitive_type line="104" col="16" name="void">
                            </primitive_type>
                         </resulttype>
-                        <block line="228" col="27">
-                        <block line="220" col="27">
+                        <block line="104" col="27">
                            <modifier name=""></modifier>
                            <nodename.statements>
-                              <expression_statement line="229" col="13">
-                                 <method_invocation line="229" col="31">
-                                    <member_select line="229" col="23" name="println">
-                                       <member_select line="229" col="19" name="out">
-                                          <identifier line="229" col="13" name="System">
-                              <expression_statement line="221" col="13">
-                                 <method_invocation line="221" col="31">
-                                    <member_select line="221" col="23" name="println">
-                                       <member_select line="221" col="19" name="out">
-                                          <identifier line="221" col="13" name="System">
+                              <expression_statement line="105" col="13">
+                                 <method_invocation line="105" col="31">
+                                    <member_select line="105" col="23" name="println">
+                                       <member_select line="105" col="19" name="out">
+                                          <identifier line="105" col="13" name="System">
                                           </identifier>
                                        </member_select>
                                     </member_select>
                                     <arguments>
-                                       <member_select line="229" col="39" name="A">
-                                          <identifier line="229" col="32" name="MyClass">
-                                       <member_select line="221" col="39" name="A">
-                                          <identifier line="221" col="32" name="MyClass">
+                                       <member_select line="105" col="39" name="A">
+                                          <identifier line="105" col="32" name="MyClass">
                                           </identifier>
                                        </member_select>
                                     </arguments>
@@ -1670,10 +930,8 @@
                            </nodename.statements>
                         </block>
                      </method>
-                     <class line="232" col="23" name="MyClass3">
-                        <modifiers line="232" col="9">
-                     <class line="224" col="23" name="MyClass3">
-                        <modifiers line="224" col="9">
+                     <class line="108" col="23" name="MyClass3">
+                        <modifiers line="108" col="9">
                            <modifier name="public"></modifier>
                            <modifier name="static"></modifier>
                         </modifiers>
