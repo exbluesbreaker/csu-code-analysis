@@ -181,7 +181,8 @@ class UCRBuilder(ConfigurationMixIn):
         root = etree.Element("Classes")
         for obj in linker.get_classes():
             self._all_classes +=1
-            node = etree.Element("Class",name=obj.name,fromlineno=str(obj.fromlineno),col_offset=str(obj.col_offset),id=str(obj.cir_uid),label=obj.root().name)
+            node = etree.Element("Class",name=obj.name,fromlineno=str(obj.fromlineno)#,col_offset=str(obj.col_offset)
+                                 ,id=str(obj.cir_uid),label=obj.root().name)
             mapper[obj] = node
             root.append(node)
             for attrname in obj.cir_attrs:
@@ -208,7 +209,7 @@ class UCRBuilder(ConfigurationMixIn):
             for meth in linker.get_methods(obj):
                 meth_node = etree.Element('Method',name=meth.name)
                 meth_node.set("fromlineno",str(meth.fromlineno))
-                meth_node.set("col_offset",str(meth.col_offset))
+                #meth_node.set("col_offset",str(meth.col_offset))
                 mod_node = etree.Element('Modifier',name=get_visibility(meth.name))
                 meth_node.append(mod_node)
                 """ This is needed for some native libs(pyx) """
