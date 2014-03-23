@@ -31,6 +31,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     _func_calls = 0
     _class_calls = 0
     _out_xml = None
+    _ids = set([])
 
     def __init__(self, project_name, out_xml):
         IdGeneratorMixIn.__init__(self)
@@ -40,24 +41,41 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     
     def visit_project(self,node):
         self._root = etree.Element("Project",name=self._project_name)
+        
     def leave_project(self,node):
         print self._dbg_calls
         print self._dbg_call_lookup
         print "Func calls ",self._func_calls
         print "Class calls ",self._class_calls
         print "Getattr calls ",self._getattr_calls
+        for t in self._root.xpath("//Target[@cfg_id]"):
+            if not int(t.get("cfg_id")) in self._ids:
+                t.attrib.pop("cfg_id")
         f = open(self._out_xml,'w')
         f.write(etree.tostring(self._root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
+    
+    def handle_id(self,func_node):
+        if isinstance(func_node.parent,Class):
+            if not hasattr(func_node, "id"):
+                func_node.id = self.generate_id()
+            return func_node.id
+        else:
+            if hasattr(func_node.root(),'func_dict'):
+                func_node.root.func_dict = {}
+            if not func_node.root.func_dict.has_key(func_node.name):
+                func_node.root.func_dict[func_node.name] =self.generate_id()
+            return func_node.root.func_dict[func_node.name]   
+    
     def visit_function(self,node):
-        if not hasattr(node, "id"):
-            node.id = self.generate_id()
+        func_id = self.handle_id(node)
+        self._ids.add(func_id)
         if(len(node.body)>8):
             self._dbg = True
         if isinstance(node.parent,Class):
-            func_node = etree.Element("Method",cfg_id=str(node.id),name=node.name,parent_class=node.parent.name,label=node.root().name)
+            func_node = etree.Element("Method",cfg_id=str(func_id),name=node.name,parent_class=node.parent.name,label=node.root().name)
         else:
-            func_node = etree.Element("Function",cfg_id=str(node.id),name=node.name,label=node.root().name)
+            func_node = etree.Element("Function",cfg_id=str(func_id),name=node.name,label=node.root().name)
         self._stack[node] = func_node
         self._root.append(func_node)
         returns = set([])
@@ -255,9 +273,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if (label == '__builtin__') or (space_type == "external"):
                     ''' No id generation for non-project calls '''
                     continue 
-                if not hasattr(asgn, "id"):
-                    asgn.id = self.generate_id()
-                called_id = asgn.id
+                called_id = self.handle_id(asgn)
             elif isinstance(asgn, Class):
                 if(space_type is None):
                     space_type = "internal"
@@ -266,9 +282,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if label == '__builtin__':
                     continue             
                 for cstr in [meth for meth in asgn.methods() if ((re.split('\W+', meth.parent.root().name)[0] == self._project_name)and(meth.name == '__init__'))]:
-                    if not hasattr(cstr, "id"):
-                        cstr.id = self.generate_id()
-                    called_id = cstr.id
+                    called_id = self.handle_id(cstr)
             elif isinstance(asgn, From):
                 try:
                     module = asgn.do_import_module(asgn.modname)

@@ -237,5 +237,9 @@ elif (args.type == "BigClassAnalyzer"):
     ucr_xml = cfg_parser.get(args.type, "ucr_xml")
     cfg_xml = cfg_parser.get(args.type, "cfg_xml")
     runner = BigClassAnalyzer(ucr_xml, cfg_xml)
+elif(args.type=="UnreachableCodeSearch"):
+    ucr_xml = cfg_parser.get(args.type,'ucr_xml')
+    lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
+    runner = UnreachableCodeSearch(ucr_xml,lcfg_xml)
 else:
     print "Unknown type!"
