@@ -12,7 +12,7 @@ public class MyClass extends ArrayList<Object>{
     private StringBuffer sb = new StringBuffer();
     private int x = Integer.valueOf(sb.toString());
     OurClass<IAction> list;
-    static List<IAction> actionList;
+    static java.util.List<IAction> actionList;
     
     public static void main(IAction action) {
         System.out.println(MyClass.A);
@@ -79,6 +79,7 @@ public class MyClass extends ArrayList<Object>{
     	this.bar();
     	this.getValue().bar();
     	this.intValue.getValue();
+    	this.intValue.intValue.getValue();
     	MyClass x = new MyClass();
     	return null;
     }

@@ -26,6 +26,7 @@ public class ControlFlowContext extends ContextBase implements IClassInsidePart{
     private CompilationUnit compilationUnit;
     private Block block;
     private String startTag = "";
+    private VariableScope scope = new VariableScope();
 
     public ControlFlowContext(ContextBase previousState, Method method, final FlowCursor cursor, CompilationUnit compilationUnit){
         super(previousState);
@@ -66,6 +67,8 @@ public class ControlFlowContext extends ContextBase implements IClassInsidePart{
         if ("method_invocation".equals(eventName)){
         	return new MethodInvocationContext(this, block, getClassName());
         }
+        if ("variable".equals(eventName))
+        	return new VariableContext(this, scope);
         return this;
     }
 
@@ -111,7 +114,10 @@ public class ControlFlowContext extends ContextBase implements IClassInsidePart{
 
     @Override
     public void finish(String eventName){
-
+    	if ("block".equals(eventName) || startTag.equals(eventName)){
+    		this.scope.setName(method.getName());
+    		this.scope.setParentScope(getVariableScope());
+    	}
     }
 
     private boolean isNotOpeningTag(String tag){

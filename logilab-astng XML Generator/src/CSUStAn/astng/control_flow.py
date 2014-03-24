@@ -123,28 +123,28 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             if isinstance(child, If):
                 if_node = etree.Element("If", id=str(id_count), test=child.test.__class__.__name__)
                 if_node.set("fromlineno",str(child.fromlineno))
-                if_node.set("col_offset",str(child.col_offset))
+                #if_node.set("col_offset",str(child.col_offset))
                 func_node.append(if_node)
                 id_count, prev = self.handle_cross(child, func_node, curr_id, id_count,returns)
                 block_node = None
             elif isinstance(child, For):
                 for_node = etree.Element("For", id=str(id_count), iterate=child.iter.__class__.__name__)
                 for_node.set("fromlineno",str(child.fromlineno))
-                for_node.set("col_offset",str(child.col_offset))
+                #for_node.set("col_offset",str(child.col_offset))
                 func_node.append(for_node)
                 id_count, prev = self.handle_cross(child, func_node, curr_id, id_count,returns)
                 block_node = None
             elif isinstance(child, While):
                 while_node = etree.Element("While", id=str(id_count), test=child.test.__class__.__name__)
                 while_node.set("fromlineno",str(child.fromlineno))
-                while_node.set("col_offset",str(child.col_offset))
+                #while_node.set("col_offset",str(child.col_offset))
                 func_node.append(while_node)
                 id_count, prev = self.handle_cross(child, func_node, curr_id, id_count,returns)
                 block_node = None
             elif isinstance(child, (TryExcept, TryFinally, With)):
                 jump_node = etree.Element(child.__class__.__name__, id=str(id_count))
                 jump_node.set("fromlineno",str(child.fromlineno))
-                jump_node.set("col_offset",str(child.col_offset))
+                #jump_node.set("col_offset",str(child.col_offset))
                 func_node.append(jump_node)
                 id_count, prev = self.handle_cross(child, func_node, curr_id, id_count,returns)
                 block_node = None
@@ -152,7 +152,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if block_node is None:
                     block_node = etree.Element("Block", id=str(id_count))
                     block_node.set("fromlineno",str(child.fromlineno))
-                    block_node.set("col_offset",str(child.col_offset))
+                    #block_node.set("col_offset",str(child.col_offset))
                     func_node.append(block_node)
                     prev = set([id_count])
                     if(isinstance(child, Return)):
@@ -202,7 +202,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
             call_node = etree.Element("Call")
             self._dbg_calls.add(node.func.__class__.__name__)
             call_node.set("fromlineno",str(node.fromlineno))
-            call_node.set("col_offset",str(node.col_offset))
+            #call_node.set("col_offset",str(node.col_offset))
             if isinstance(node.func, Name):
                 space_type,called,called_id, label = self.handle_lookup(node.func, node.func.name)
                 if called == 'function':
@@ -276,6 +276,15 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                         space_type = "cross"
                     else:
                         space_type = "external"
+                    label = asgn.root().name
+
+                    # Here is the situation when we have lib/builtin module with same name that in project.
+
+                    # It imports correctly and causes infinite recursion.
+
+                    if label == '__builtin__' and space_type == "external" and module.name == asgn.modname:
+
+                        raise InferenceError(module.name)
                     space_type,called,called_id, label = self.handle_lookup(module, name, space_type)
                 except InferenceError:
                     if(space_type is None):

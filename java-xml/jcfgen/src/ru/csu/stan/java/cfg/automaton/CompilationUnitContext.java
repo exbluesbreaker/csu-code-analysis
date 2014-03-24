@@ -46,7 +46,9 @@ class CompilationUnitContext extends ContextBase
     @Override
     public void finish(String eventName)
     {
-
+    	if ("compilation_unit".equals(eventName)){
+            getImportRegistry().addCompilationUnit(compilationUnit);
+        }
     }
 
     @Override

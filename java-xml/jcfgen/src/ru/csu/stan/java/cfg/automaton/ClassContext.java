@@ -3,6 +3,7 @@ package ru.csu.stan.java.cfg.automaton;
 import ru.csu.stan.java.cfg.automaton.base.ContextBase;
 import ru.csu.stan.java.cfg.automaton.base.IClassInsidePart;
 import ru.csu.stan.java.cfg.jaxb.Project;
+import ru.csu.stan.java.cfg.util.scope.ScopeRegistry;
 import ru.csu.stan.java.cfg.util.scope.VariableScope;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.NodeAttributes;
@@ -44,6 +45,8 @@ class ClassContext extends ContextBase implements IClassInsidePart
             return new MethodContext(this, name, compilationUnit, ++methodId);
         if ("class".equals(eventName))
             return new ClassContext(this, compilationUnit);
+        if ("variable".equals(eventName))
+        	return new VariableContext(this, scope);
         return this;
     }
 
@@ -77,7 +80,12 @@ class ClassContext extends ContextBase implements IClassInsidePart
     @Override
     public void finish(String eventName)
     {
-
+    	if ("class".equals(eventName)){
+    		scope.setName(this.name);
+    		ScopeRegistry.getInstance().addScope(scope);
+    		String currentPackage = compilationUnit.getPackageName();
+    		getPackageRegistry().addClassToPackage(name.substring(currentPackage.length()+1), currentPackage.substring(0, currentPackage.length()));
+    	}
     }
     
     @Override

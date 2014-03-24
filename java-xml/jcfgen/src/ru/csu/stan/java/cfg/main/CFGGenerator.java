@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.math.BigInteger;
+import java.util.Iterator;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -14,12 +15,20 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import ru.csu.stan.java.cfg.automaton.ContextFactory;
+import ru.csu.stan.java.cfg.jaxb.Block;
+import ru.csu.stan.java.cfg.jaxb.Call;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.ObjectFactory;
 import ru.csu.stan.java.cfg.jaxb.Project;
+import ru.csu.stan.java.cfg.jaxb.Target;
+import ru.csu.stan.java.cfg.jaxb.TargetClass;
 import ru.csu.stan.java.cfg.util.ImportedClassIdGenerator;
 import ru.csu.stan.java.cfg.util.MethodRegistry;
 import ru.csu.stan.java.cfg.util.MethodRegistryItem;
+import ru.csu.stan.java.cfg.util.UCFRClassNameResolver;
+import ru.csu.stan.java.cfg.util.scope.ScopeRegistry;
+import ru.csu.stan.java.cfg.util.scope.VariableFromScope;
+import ru.csu.stan.java.cfg.util.scope.VariableScope;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.HandlerFactory;
 import ru.csu.stan.java.classgen.handlers.IStaxHandler;
@@ -28,6 +37,8 @@ import ru.csu.stan.java.classgen.jaxb.Class;
 import ru.csu.stan.java.classgen.jaxb.Classes;
 import ru.csu.stan.java.classgen.util.ClassIdGenerator;
 import ru.csu.stan.java.classgen.util.IClassIdGenerator;
+import ru.csu.stan.java.classgen.util.ImportRegistry;
+import ru.csu.stan.java.classgen.util.PackageRegistry;
 
 /**
  * 
@@ -42,6 +53,10 @@ public class CFGGenerator {
 	private ObjectFactory objectFactory;
 	private MethodRegistry cfgRegistry;
 	private MethodRegistry ucrRegistry;
+	private ImportRegistry imports;
+	private PackageRegistry packages;
+	private Classes classes;
+	private UCFRClassNameResolver nameResolver;
 	
 	private CFGGenerator(){
 		xmlFactory = XMLInputFactory.newInstance();
@@ -57,7 +72,7 @@ public class CFGGenerator {
 		if (inputUcr != null && !"".equals(inputUcr)) {
 			JAXBContext jcontext = JAXBContext.newInstance("ru.csu.stan.java.classgen.jaxb");
 			Unmarshaller unmarshall = jcontext.createUnmarshaller();
-			Classes classes = (Classes) unmarshall.unmarshal(new File(inputUcr));
+			classes = (Classes) unmarshall.unmarshal(new File(inputUcr));
 			idGenerator = ImportedClassIdGenerator.getInstanceImportClasses(classes);
 			importMethodregistry(classes);
 		}
@@ -80,9 +95,9 @@ public class CFGGenerator {
 	}
 
 	public Project processInputFile(String filename){
-		
 		Project p = firstPass(filename).getResultRoot();
 		secondPass(p);
+		thirdPass(p);
 		return p;
 	}
 	
@@ -93,7 +108,9 @@ public class CFGGenerator {
 	 */
 	private IContext<Project> firstPass(String filename){
 		this.cfgRegistry = MethodRegistry.getInstance();
-		IContext<Project> context = ContextFactory.getStartContext(objectFactory.createProject(), this.cfgRegistry);
+		this.imports = new ImportRegistry();
+		this.packages = new PackageRegistry();
+		IContext<Project> context = ContextFactory.getStartContext(objectFactory.createProject(), this.cfgRegistry, this.imports, this.packages);
 		try{
 			File f = new File(filename);
 			XMLEventReader reader = xmlFactory.createXMLEventReader(new FileInputStream(f));
@@ -106,6 +123,7 @@ public class CFGGenerator {
 			}
 			finally{
 				reader.close();
+				this.nameResolver = UCFRClassNameResolver.getInstance(imports, packages);
 			}
 		}
 		catch (FileNotFoundException e) {
@@ -140,5 +158,106 @@ public class CFGGenerator {
 					((Method) o).setUcrMethodId(null);
 			}
 		}
+	}
+	
+	/**
+	 * Третий проход. Устанавливает id для вызовов.
+	 * @param project
+	 */
+	private void thirdPass(Project project){
+		for (VariableScope scope: ScopeRegistry.getInstance().getScopes()){
+			System.out.println(scope.getName());
+			for (VariableFromScope var: scope.listVars()){
+				System.out.println(var.getName() + " : " + var.getType());
+			}
+			for (VariableScope scope1: scope.listChildren()){
+				for (VariableFromScope var1: scope1.listVars()){
+					System.out.println(var1.getName() + " : " + var1.getType());
+				}
+			}
+		}
+		for (Object o: project.getMethodOrFunction()){
+			if (o instanceof Method){
+				Method method = (Method) o;
+				VariableScope rootScope = ScopeRegistry.getInstance().findScopeByClass(method.getParentClass());
+				VariableScope methodScope = rootScope.findScopeInChildren(method.getName());
+				for (Object bo: method.getTryExceptOrTryFinallyOrWith()){
+					if (bo instanceof Block){
+						Block block = (Block) bo;
+						for (Iterator<Call> it = block.getCall().iterator();it.hasNext();){
+							Call call = it.next();
+							String varName = "";
+							String callName = "";
+							if (call.getGetattr() != null){
+								if (call.getGetattr().getLabel().equals("this")){
+									String name = call.getGetattr().getName();
+									if (name.lastIndexOf('.') < 0)
+										varName = name;
+									else
+										varName = name.substring(0, name.lastIndexOf('.'));
+									String leastName = name.substring(name.lastIndexOf('.')+1, name.length());
+									if (leastName.lastIndexOf('.') < 0)
+										callName = leastName;
+									else
+										callName = leastName.substring(0, name.lastIndexOf('.'));
+									
+								}
+								else{
+									varName = call.getGetattr().getLabel();
+									callName = call.getGetattr().getName();
+								}
+							}
+							if (call.getDirect() != null){
+								
+							}
+							VariableFromScope var = getScopedVar(varName, rootScope);
+							if (var == null){
+								var = getScopedVar(varName, rootScope);
+							}
+							String fullName = "";
+							if (var != null)
+								fullName = nameResolver.getFullTypeName(var.getType(), method.getParentClass(), this.classes);
+							if (fullName == null || fullName.isEmpty()){
+								it.remove();
+								System.out.println(varName);
+							}
+							else{
+								if (call.getGetattr() != null){
+									TargetClass tc = new ObjectFactory().createTargetClass();
+									tc.setUcrId(idGenerator.getClassId(fullName));
+									Target target = new ObjectFactory().createTarget();
+									target.setCfgId(getCfgId(fullName, callName, project));
+									target.setTargetClass(tc);
+									call.getGetattr().getTarget().add(target);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private BigInteger getCfgId(String fullClassName, String call, Project project){
+		for (Object o: project.getMethodOrFunction()){
+			if (o instanceof Method){
+				Method method = (Method) o;
+				if (method.getParentClass().equals(fullClassName) && call.equals(method.getName()))
+					return method.getCfgId();
+			}
+		}
+		return null;		
+	}
+	
+	private VariableFromScope getScopedVar(String name, VariableScope rootScope){
+		for (VariableFromScope var: rootScope.listVars())
+			if (var.getName().equals(name))
+				return var;
+		for (VariableScope childScope: rootScope.listChildren()){
+			VariableFromScope found = getScopedVar(name, childScope);
+			if (found != null)
+				return found;
+		}
+		return null;
 	}
 }

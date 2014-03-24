@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Classes>
-    <Class filename="/com/example/MyClass.java" id="3" name="com.example.MyClass.MyClass2.MyClass3" col_offset="23" fromlineno="108">
-        <Modifier name="public" col_offset="9" fromlineno="108"/>
-        <Modifier name="static" col_offset="9" fromlineno="108"/>
+    <Class filename="/com/example/MyClass.java" id="3" name="com.example.MyClass.MyClass2.MyClass3" col_offset="23" fromlineno="109">
+        <Modifier name="public" col_offset="9" fromlineno="109"/>
+        <Modifier name="static" col_offset="9" fromlineno="109"/>
     </Class>
-    <Class filename="/com/example/MyClass.java" id="2" name="com.example.MyClass.MyClass2" col_offset="19" fromlineno="102">
-        <Modifier name="public" col_offset="5" fromlineno="102"/>
-        <Modifier name="static" col_offset="5" fromlineno="102"/>
-        <Method id="1" name="foo" col_offset="21" fromlineno="104">
-            <Modifier name="public" col_offset="9" fromlineno="104"/>
+    <Class filename="/com/example/MyClass.java" id="2" name="com.example.MyClass.MyClass2" col_offset="19" fromlineno="103">
+        <Modifier name="public" col_offset="5" fromlineno="103"/>
+        <Modifier name="static" col_offset="5" fromlineno="103"/>
+        <Method id="1" name="foo" col_offset="21" fromlineno="105">
+            <Modifier name="public" col_offset="9" fromlineno="105"/>
         </Method>
     </Class>
     <Class filename="/com/example/MyClass.java" id="1" name="com.example.MyClass" col_offset="8" fromlineno="9">
@@ -28,17 +28,17 @@
             <CommonType id="4" name="com.example.OurClass"/>
             <Modifier name="" col_offset="-1" fromlineno="-1"/>
         </Attr>
-        <Attr name="actionList" col_offset="26" fromlineno="15">
-            <AggregatedType element_type="com.example.IAction" element_id="6" id="-1" name="List" col_offset="16" fromlineno="15"/>
+        <Attr name="actionList" col_offset="36" fromlineno="15">
+            <AggregatedType element_type="com.example.IAction" element_id="6" id="-1" name="java.util.List" col_offset="26" fromlineno="15"/>
             <Modifier name="static" col_offset="5" fromlineno="15"/>
         </Attr>
-        <Attr name="intValue" col_offset="21" fromlineno="90">
-            <CommonType id="1" name="com.example.MyClass" col_offset="13" fromlineno="90"/>
-            <Modifier name="private" col_offset="5" fromlineno="90"/>
+        <Attr name="intValue" col_offset="21" fromlineno="91">
+            <CommonType id="1" name="com.example.MyClass" col_offset="13" fromlineno="91"/>
+            <Modifier name="private" col_offset="5" fromlineno="91"/>
         </Attr>
-        <Attr name="hoho" col_offset="31" fromlineno="100">
-            <CommonType id="5" name="com.example.OurClass.MyClass2" col_offset="21" fromlineno="100"/>
-            <Modifier name="private" col_offset="5" fromlineno="100"/>
+        <Attr name="hoho" col_offset="31" fromlineno="101">
+            <CommonType id="5" name="com.example.OurClass.MyClass2" col_offset="21" fromlineno="101"/>
+            <Modifier name="private" col_offset="5" fromlineno="101"/>
         </Attr>
         <Method id="1" name="main" col_offset="24" fromlineno="17">
             <Modifier name="public" col_offset="5" fromlineno="17"/>
@@ -56,12 +56,12 @@
                 <CommonType id="5" name="com.example.OurClass.MyClass2" col_offset="63" fromlineno="77"/>
             </Arg>
         </Method>
-        <Method id="3" name="getValue" col_offset="20" fromlineno="86">
-            <CommonType id="1" name="com.example.MyClass" col_offset="12" fromlineno="86"/>
-            <Modifier name="public" col_offset="5" fromlineno="86"/>
+        <Method id="3" name="getValue" col_offset="20" fromlineno="87">
+            <CommonType id="1" name="com.example.MyClass" col_offset="12" fromlineno="87"/>
+            <Modifier name="public" col_offset="5" fromlineno="87"/>
         </Method>
-        <Method id="4" name="bar" col_offset="19" fromlineno="92">
-            <Modifier name="public" col_offset="5" fromlineno="92"/>
+        <Method id="4" name="bar" col_offset="19" fromlineno="93">
+            <Modifier name="public" col_offset="5" fromlineno="93"/>
         </Method>
     </Class>
     <Class filename="/com/example/OurClass.java" id="5" name="com.example.OurClass.MyClass2" col_offset="16" fromlineno="4">

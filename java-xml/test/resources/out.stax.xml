@@ -135,16 +135,20 @@
                      </parameterized_type>
                   </vartype>
                </variable>
-               <variable line="15" col="26" name="actionList">
+               <variable line="15" col="36" name="actionList">
                   <modifiers line="15" col="5">
                      <modifier name="static"></modifier>
                   </modifiers>
                   <vartype>
-                     <parameterized_type line="15" col="16">
-                        <identifier line="15" col="12" name="List">
-                        </identifier>
+                     <parameterized_type line="15" col="26">
+                        <member_select line="15" col="21" name="List">
+                           <member_select line="15" col="16" name="util">
+                              <identifier line="15" col="12" name="java">
+                              </identifier>
+                           </member_select>
+                        </member_select>
                         <arguments>
-                           <identifier line="15" col="17" name="IAction">
+                           <identifier line="15" col="27" name="IAction">
                            </identifier>
                         </arguments>
                      </parameterized_type>
@@ -756,126 +760,138 @@
                               </member_select>
                            </method_invocation>
                         </expression_statement>
-                        <variable line="82" col="14" name="x">
+                        <expression_statement line="82" col="6">
+                           <method_invocation line="82" col="37">
+                              <member_select line="82" col="28" name="getValue">
+                                 <member_select line="82" col="19" name="intValue">
+                                    <member_select line="82" col="10" name="intValue">
+                                       <identifier line="82" col="6" name="this">
+                                       </identifier>
+                                    </member_select>
+                                 </member_select>
+                              </member_select>
+                           </method_invocation>
+                        </expression_statement>
+                        <variable line="83" col="14" name="x">
                            <modifiers line="-1" col="-1">
                               <modifier name=""></modifier>
                            </modifiers>
                            <vartype>
-                              <identifier line="82" col="6" name="MyClass">
+                              <identifier line="83" col="6" name="MyClass">
                               </identifier>
                            </vartype>
                            <init>
-                              <new_class line="82" col="18">
-                                 <identifier line="82" col="22" name="MyClass">
+                              <new_class line="83" col="18">
+                                 <identifier line="83" col="22" name="MyClass">
                                  </identifier>
                               </new_class>
                            </init>
                         </variable>
-                        <return line="83" col="6">
-                           <null_literal line="83" col="13" type="null" value="null">
+                        <return line="84" col="6">
+                           <null_literal line="84" col="13" type="null" value="null">
                            </null_literal>
                         </return>
                      </nodename.statements>
                   </block>
                </method>
-               <method line="86" col="20" name="getValue">
-                  <modifiers line="86" col="5">
+               <method line="87" col="20" name="getValue">
+                  <modifiers line="87" col="5">
                      <modifier name="public"></modifier>
                   </modifiers>
                   <resulttype>
-                     <identifier line="86" col="12" name="MyClass">
+                     <identifier line="87" col="12" name="MyClass">
                      </identifier>
                   </resulttype>
-                  <block line="86" col="30">
+                  <block line="87" col="30">
                      <modifier name=""></modifier>
                      <nodename.statements>
-                        <return line="87" col="6">
-                           <identifier line="87" col="13" name="this">
+                        <return line="88" col="6">
+                           <identifier line="88" col="13" name="this">
                            </identifier>
                         </return>
                      </nodename.statements>
                   </block>
                </method>
-               <variable line="90" col="21" name="intValue">
-                  <modifiers line="90" col="5">
+               <variable line="91" col="21" name="intValue">
+                  <modifiers line="91" col="5">
                      <modifier name="private"></modifier>
                   </modifiers>
                   <vartype>
-                     <identifier line="90" col="13" name="MyClass">
+                     <identifier line="91" col="13" name="MyClass">
                      </identifier>
                   </vartype>
                   <init>
-                     <identifier line="90" col="32" name="this">
+                     <identifier line="91" col="32" name="this">
                      </identifier>
                   </init>
                </variable>
-               <method line="92" col="19" name="bar">
-                  <modifiers line="92" col="5">
+               <method line="93" col="19" name="bar">
+                  <modifiers line="93" col="5">
                      <modifier name="public"></modifier>
                   </modifiers>
                   <resulttype>
-                     <identifier line="92" col="12" name="String">
+                     <identifier line="93" col="12" name="String">
                      </identifier>
                   </resulttype>
-                  <block line="92" col="25">
+                  <block line="93" col="25">
                      <modifier name=""></modifier>
                      <nodename.statements>
-                        <variable line="93" col="13" name="s">
+                        <variable line="94" col="13" name="s">
                            <modifiers line="-1" col="-1">
                               <modifier name=""></modifier>
                            </modifiers>
                            <vartype>
-                              <identifier line="93" col="6" name="String">
+                              <identifier line="94" col="6" name="String">
                               </identifier>
                            </vartype>
                            <init>
-                              <string_literal line="93" col="17" type="string" value="">
+                              <string_literal line="94" col="17" type="string" value="">
                               </string_literal>
                            </init>
                         </variable>
-                        <expression_statement line="94" col="6">
-                           <method_invocation line="94" col="15">
-                              <member_select line="94" col="8" name="append">
-                                 <identifier line="94" col="6" name="sb">
+                        <expression_statement line="95" col="6">
+                           <method_invocation line="95" col="15">
+                              <member_select line="95" col="8" name="append">
+                                 <identifier line="95" col="6" name="sb">
                                  </identifier>
                               </member_select>
                               <arguments>
-                                 <method_invocation line="94" col="26">
-                                    <member_select line="94" col="17" name="toString">
-                                       <identifier line="94" col="16" name="s">
+                                 <method_invocation line="95" col="26">
+                                    <member_select line="95" col="17" name="toString">
+                                       <identifier line="95" col="16" name="s">
                                        </identifier>
                                     </member_select>
                                  </method_invocation>
                               </arguments>
                            </method_invocation>
                         </expression_statement>
-                        <variable line="95" col="15" name="mc2">
+                        <variable line="96" col="15" name="mc2">
                            <modifiers line="-1" col="-1">
                               <modifier name=""></modifier>
                            </modifiers>
                            <vartype>
-                              <identifier line="95" col="6" name="MyClass2">
+                              <identifier line="96" col="6" name="MyClass2">
                               </identifier>
                            </vartype>
                            <init>
-                              <new_class line="95" col="21">
-                                 <identifier line="95" col="25" name="MyClass2">
+                              <new_class line="96" col="21">
+                                 <identifier line="96" col="25" name="MyClass2">
                                  </identifier>
                               </new_class>
                            </init>
                         </variable>
-                        <expression_statement line="96" col="6">
-                           <method_invocation line="96" col="13">
-                              <member_select line="96" col="9" name="foo">
-                                 <identifier line="96" col="6" name="mc2">
+                        <expression_statement line="97" col="6">
+                           <method_invocation line="97" col="13">
+                              <member_select line="97" col="9" name="foo">
+                                 <identifier line="97" col="6" name="mc2">
                                  </identifier>
                               </member_select>
                            </method_invocation>
                         </expression_statement>
-                        <return line="97" col="6">
-                           <method_invocation line="97" col="24">
-                              <member_select line="97" col="15" name="toString">
-                                 <identifier line="97" col="13" name="sb">
+                        <return line="98" col="6">
+                           <method_invocation line="98" col="24">
+                              <member_select line="98" col="15" name="toString">
+                                 <identifier line="98" col="13" name="sb">
                                  </identifier>
                               </member_select>
                            </method_invocation>
@@ -883,45 +899,45 @@
                      </nodename.statements>
                   </block>
                </method>
-               <variable line="100" col="31" name="hoho">
-                  <modifiers line="100" col="5">
+               <variable line="101" col="31" name="hoho">
+                  <modifiers line="101" col="5">
                      <modifier name="private"></modifier>
                   </modifiers>
                   <vartype>
-                     <member_select line="100" col="21" name="MyClass2">
-                        <identifier line="100" col="13" name="OurClass">
+                     <member_select line="101" col="21" name="MyClass2">
+                        <identifier line="101" col="13" name="OurClass">
                         </identifier>
                      </member_select>
                   </vartype>
                </variable>
-               <class line="102" col="19" name="MyClass2">
-                  <modifiers line="102" col="5">
+               <class line="103" col="19" name="MyClass2">
+                  <modifiers line="103" col="5">
                      <modifier name="public"></modifier>
                      <modifier name="static"></modifier>
                   </modifiers>
                   <body>
-                     <method line="104" col="21" name="foo">
-                        <modifiers line="104" col="9">
+                     <method line="105" col="21" name="foo">
+                        <modifiers line="105" col="9">
                            <modifier name="public"></modifier>
                         </modifiers>
                         <resulttype>
-                           <primitive_type line="104" col="16" name="void">
+                           <primitive_type line="105" col="16" name="void">
                            </primitive_type>
                         </resulttype>
-                        <block line="104" col="27">
+                        <block line="105" col="27">
                            <modifier name=""></modifier>
                            <nodename.statements>
-                              <expression_statement line="105" col="13">
-                                 <method_invocation line="105" col="31">
-                                    <member_select line="105" col="23" name="println">
-                                       <member_select line="105" col="19" name="out">
-                                          <identifier line="105" col="13" name="System">
+                              <expression_statement line="106" col="13">
+                                 <method_invocation line="106" col="31">
+                                    <member_select line="106" col="23" name="println">
+                                       <member_select line="106" col="19" name="out">
+                                          <identifier line="106" col="13" name="System">
                                           </identifier>
                                        </member_select>
                                     </member_select>
                                     <arguments>
-                                       <member_select line="105" col="39" name="A">
-                                          <identifier line="105" col="32" name="MyClass">
+                                       <member_select line="106" col="39" name="A">
+                                          <identifier line="106" col="32" name="MyClass">
                                           </identifier>
                                        </member_select>
                                     </arguments>
@@ -930,8 +946,8 @@
                            </nodename.statements>
                         </block>
                      </method>
-                     <class line="108" col="23" name="MyClass3">
-                        <modifiers line="108" col="9">
+                     <class line="109" col="23" name="MyClass3">
+                        <modifiers line="109" col="9">
                            <modifier name="public"></modifier>
                            <modifier name="static"></modifier>
                         </modifiers>
