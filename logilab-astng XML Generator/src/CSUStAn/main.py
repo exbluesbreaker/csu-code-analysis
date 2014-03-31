@@ -237,5 +237,10 @@ elif (args.type == "BigClassAnalyzer"):
     ucr_xml = cfg_parser.get(args.type, "ucr_xml")
     cfg_xml = cfg_parser.get(args.type, "cfg_xml")
     runner = BigClassAnalyzer(ucr_xml, cfg_xml)
+elif (args.type == "ObjectCreationAnalysis"):
+    ucr_xml = cfg_parser.get(args.type, "ucr_xml")
+    cfg_xml = cfg_parser.get(args.type, "cfg_xml")
+    cfg_id = cfg_parser.get(args.type, "cfg_id")
+    runner = ObjectCreationAnalysis(ucr_xml, cfg_xml, cfg_id)
 else:
     print "Unknown type!"
