@@ -12,6 +12,7 @@ from logilab.astng.inspector import IdGeneratorMixIn
 from logilab.astng.scoped_nodes import *
 from logilab.astng.node_classes import *
 from pylint.pyreverse.utils import get_visibility
+from CSUStAn.cross.duck_typing import DuckTypeHandler
 
 class NoInferLinker(Linker):
     """ 
@@ -43,19 +44,117 @@ class NoInferLinker(Linker):
 
     
     def handle_assattr_type(self, node, parent):
-        parent.instance_attrs_type[node.attrname] = [YES]       
+        parent.instance_attrs_type[node.attrname] = [YES]  
+        
+class DuckLinker:
+    
+    _ducks_count = 0
+    _linker = None
+    
+    def handle_getattr_local(self,node,ducks,save_calls=False):
+        ''' Handle Getattr node during duck typing for local names access 
+            ducks - dictionary of processed ducks 
+            save_calls flag for saving related to method ASTNG calls'''
+        if(node.expr.as_string()!="self"):
+            if not isinstance(node.expr, Getattr):
+                ''' Handle duck typing for function/method arguments '''
+                if not ducks.has_key(node.expr.as_string()):
+                    if(save_calls):
+                        ducks[node.expr.as_string()]={'attrs':set([]),'methods':{}}
+                    else:
+                        ducks[node.expr.as_string()]={'attrs':set([]),'methods':set([])}
+                if isinstance(node.parent, CallFunc):
+                    node.parent.g = '==><=='
+                    if(save_calls):
+                        if(ducks[node.expr.as_string()]['methods'].has_key(node.attrname)):
+                            ducks[node.expr.as_string()]['methods'][node.attrname].add(node.parent)
+                        else:
+                            ducks[node.expr.as_string()]['methods'][node.attrname]=set([node.parent])
+                    else:
+                        ducks[node.expr.as_string()]['methods'].add(node.attrname)
+                else:
+                    ducks[node.expr.as_string()]['attrs'].add(node.attrname)
+                        
+    def handle_getattr_self(self,node,ducks):
+        ''' Handle Getattr node during duck typing for "self"  names access 
+            ducks - dictionary of processed ducks '''
+        if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
+            if isinstance(node.parent, For):
+                if(not ducks.has_key(node.attrname)):
+                    self._ducks_count +=1
+                    ducks[node.attrname] = {'attrs':{},'methods':{},'type':[],'complex_type':'Unknown','assigned':False}
+                    if isinstance(node.parent.target, AssName):
+                        for body in node.parent.body:
+                            self._check_cycle(body, node.parent.target.name, node.attrname, ducks)
+            if isinstance(node.parent, Getattr):
+                """ if additional info about attr's field may be obtained """
+                if(not ducks.has_key(node.attrname)):
+                    self._ducks_count += 1
+                    ducks[node.attrname] = {'attrs':{}, 'methods':{}, 'type':[], 'complex_type':None, 'assigned':False}
+                if isinstance(node.parent.parent, CallFunc):
+                    """ we get info about attr's method """
+                    self.add_duck_info(ducks[node.attrname],node.parent.attrname,'methods')
+                else:
+                    """ we get info about attr's attr """
+                    self.add_duck_info(ducks[node.attrname],node.parent.attrname,'attrs')
+            elif isinstance(node.parent, Subscript):
+                """ attr of complex type (list, dict, tuple etc.) """
+                if(not ducks.has_key(node.attrname)):
+                    self._ducks_count +=1
+                    ducks[node.attrname] = {'attrs':{},'methods':{},'type':[],'complex_type':'Unknown','assigned':False}
+                else:
+                    ducks[node.attrname]['complex_type'] = 'Unknown'
+                if(isinstance(node.parent.parent,Getattr)):
+                    """ get some info about element of complex type """
+                    if(not ducks[node.attrname].has_key('element_signature')):
+                        ducks[node.attrname]['element_signature']={'attrs':{},'methods':{}}
+                    if isinstance(node.parent.parent.parent,CallFunc):
+                        self.add_duck_info(ducks[node.attrname]['element_signature'],node.parent.parent.attrname,'methods')
+                    else:
+                        self.add_duck_info(ducks[node.attrname]['element_signature'],node.parent.parent.attrname,'attrs')
+        
+    def _check_cycle(self,node,iter_name,attr,ducks):
+            """ Check body of cycle, which iterating over class's field"""
+            if isinstance(node, Getattr):
+                if(node.expr.as_string()==iter_name):
+                    if(not ducks[attr].has_key('element_signature')):
+                        ducks[attr]['element_signature']={'attrs':{},'methods':{}}
+                    if isinstance(node.parent,CallFunc):
+                        self.add_duck_info(ducks[attr]['element_signature'],node.attrname,'methods')
+                    else:
+                        self.add_duck_info(ducks[attr]['element_signature'],node.attrname,'attrs')
+            for child in node.get_children():
+                self._check_cycle(child,iter_name,attr,ducks)
+                
+    def handle_assattr_self(self,node,ducks):
+        if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
+            if(not ducks.has_key(node.attrname)):
+                self._ducks_count +=1
+                self._assigned_ducks +=1
+                ducks[node.attrname] = {'attrs':{},'methods':{},'type':[],'complex_type':None,'assigned':True} 
+            else:
+                if(not ducks[node.attrname]['assigned']):
+                    ducks[node.attrname]['assigned'] = True
+                    self._assigned_ducks+=1
+            if(isinstance(node.parent, (Assign,AugAssign))):
+                if(isinstance(node.parent.value, (Tuple,Dict,List))):
+                    ducks[node.attrname]['complex_type'] = node.parent.value.__class__.__name__ 
+    
+    def handle_assattr_local(self,node,ducks):
+        pass
 
-class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
+class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor,DuckLinker):
     _num_attrs = 0
     _inherit = []
     _classes = []
-    _ducks_count = 0
     _assigned_ducks = 0
     _processed_methods = 0
+    _duck_handler = None
     
     def __init__(self, project):
         IdGeneratorMixIn.__init__(self)
         LocalsVisitor.__init__(self)
+        self._duck_handler = DuckTypeHandler()
         
     def visit_class(self, node):
         self._classes.append(node)
@@ -84,12 +183,22 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         print "Processed methods ", self._processed_methods
         
     def visit_function(self, node):
+        node.duck_info = {}
+        if(node.args.args is not None):
+            for arg in node.args.args:
+                if not arg.name == 'self':
+                    node.duck_info[arg.name]={'attrs':set([]),'methods':set([])}
         if isinstance(node.parent,Class):
             self._processed_methods +=1
             self.handle_attrs(node,node.parent)
-            node.parent.cir_methods.add(node.name)          
-    
-    
+            node.parent.cir_methods.add(node.name)  
+            
+    def leave_function(self, node):
+        for c in self._classes:
+            for n in node.duck_info:
+                if self._duck_handler.check_candidate(node.duck_info[n]['attrs'],node.duck_info[n]['methods'], c):
+                    print c,n
+        
     def add_duck_info(self,duck,name,label):
         if not duck[label].has_key(name):
             duck[label][name] = 1
@@ -97,74 +206,19 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
             duck[label][name] += 1
     
     def handle_attrs(self,node,class_node):
-        """ ganerate attrs and handle duck info about this attrs """
+        """ generate attrs and handle duck info about this attrs """
         if isinstance(node, (AssAttr,Getattr)):
             if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
                 class_node.cir_attrs.add(node.attrname)
             if isinstance(node, Getattr):
-                if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
-                    if isinstance(node.parent, For):
-                        if(not class_node.cir_ducks.has_key(node.attrname)):
-                            self._ducks_count +=1
-                            class_node.cir_ducks[node.attrname] = {'attrs':{},'methods':{},'type':[],'complex_type':'Unknown','assigned':False}
-                        if isinstance(node.parent.target, AssName):
-                            for body in node.parent.body:
-                                self._check_cycle(body, node.parent.target.name, node.attrname, class_node)
-                    if isinstance(node.parent, Getattr):
-                    	""" if additional info about attr's field may be obtained """
-                    	if(not class_node.cir_ducks.has_key(node.attrname)):
-                        	self._ducks_count += 1
-                        	class_node.cir_ducks[node.attrname] = {'attrs':{}, 'methods':{}, 'type':[], 'complex_type':None, 'assigned':False}
-                    	if isinstance(node.parent.parent, CallFunc):
-                            """ we get info about attr's method """
-                            self.add_duck_info(class_node.cir_ducks[node.attrname],node.parent.attrname,'methods')
-                    	else:
-                        	""" we get info about attr's attr """
-                        	self.add_duck_info(class_node.cir_ducks[node.attrname],node.parent.attrname,'attrs')
-                    elif isinstance(node.parent, Subscript):
-                		""" attr of complex type (list, dict, tuple etc.) """
-                		if(not class_node.cir_ducks.has_key(node.attrname)):
-                			self._ducks_count +=1
-                			class_node.cir_ducks[node.attrname] = {'attrs':{},'methods':{},'type':[],'complex_type':'Unknown','assigned':False}
-                		else:
-                			class_node.cir_ducks[node.attrname]['complex_type'] = 'Unknown'
-                		if(isinstance(node.parent.parent,Getattr)):
-                			""" get some info about element of complex type """
-                			if(not class_node.cir_ducks[node.attrname].has_key('element_signature')):
-                				class_node.cir_ducks[node.attrname]['element_signature']={'attrs':{},'methods':{}}
-                			if isinstance(node.parent.parent.parent,CallFunc):
-                				self.add_duck_info(class_node.cir_ducks[node.attrname]['element_signature'],node.parent.parent.attrname,'methods')
-                			else:
-                				self.add_duck_info(class_node.cir_ducks[node.attrname]['element_signature'],node.parent.parent.attrname,'attrs')
+                self.handle_getattr_local(node, node.frame().duck_info)
+                self.handle_getattr_self(node, class_node.cir_ducks)
             elif isinstance(node, AssAttr):
-            	if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
-            		if(not class_node.cir_ducks.has_key(node.attrname)):
-            			self._ducks_count +=1
-            			self._assigned_ducks +=1
-            			class_node.cir_ducks[node.attrname] = {'attrs':{},'methods':{},'type':[],'complex_type':None,'assigned':True} 
-            		else:
-            			if(not class_node.cir_ducks[node.attrname]['assigned']):
-            				class_node.cir_ducks[node.attrname]['assigned'] = True
-            				self._assigned_ducks+=1
-            		if(isinstance(node.parent, (Assign,AugAssign))):
-            			if(isinstance(node.parent.value, (Tuple,Dict,List))):
-            				class_node.cir_ducks[node.attrname]['complex_type'] = node.parent.value.__class__.__name__     	
+                self.handle_assattr_self(node, class_node.cir_ducks)    	
         for child in node.get_children():
-            self.handle_attrs(child,class_node)
-    
-    
-    def _check_cycle(self,node,iter_name,attr,class_node):
-        """ Check body of cycle, which iterating over class's field"""
-        if isinstance(node, Getattr):
-            if(node.expr.as_string()==iter_name):
-                if(not class_node.cir_ducks[attr].has_key('element_signature')):
-                    class_node.cir_ducks[attr]['element_signature']={'attrs':{},'methods':{}} 
-                if isinstance(node.parent,CallFunc):
-                    self.add_duck_info(class_node.cir_ducks[attr]['element_signature'],node.attrname,'methods')
-                else:
-                    self.add_duck_info(class_node.cir_ducks[attr]['element_signature'],node.attrname,'attrs')           
-        for child in node.get_children():
-            self._check_cycle(child,iter_name,attr,class_node)   
+            # Ignoring handling nested functions, it will be handled in another visit
+            if not isinstance(child, (Function,Lambda)):
+                self.handle_attrs(child,class_node)
     
     def get_classes(self):
         for cl in self._classes:
@@ -188,6 +242,8 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor):
         for p in class_node.ancestors(recurs=True):
             if p in self._classes:
                 yield p
+            else:
+                print p.root().name.split('.')
                 
     def get_complex_ducks(self):
         for cl in self._classes:
