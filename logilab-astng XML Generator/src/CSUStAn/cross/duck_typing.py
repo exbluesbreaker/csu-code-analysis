@@ -23,7 +23,7 @@ class DuckTypeHandler:
         if hasattr(class_node, 'ucr_complete_signature'):
             return class_node.ucr_complete_signature
         ucr_complete_signature = {'attrs':set([item[0] for item in class_node.items() if (isinstance(item[1], AssName) and (get_visibility(item[0])!= 'special'))]),
-                                  'methods':set([m.name for m in class_node.methods()])}
+                                  'methods':{m.name: m for m in class_node.methods()}}
         for p in self.get_all_parents(class_node):
             ucr_signature = self.get_complete_signature(p)
             ucr_complete_signature['attrs'] |= ucr_signature['attrs']
@@ -37,7 +37,7 @@ class DuckTypeHandler:
             return False
         candidate_signature = self.get_complete_signature(cand_class)
         candidate_attrs = candidate_signature['attrs']
-        candidate_methods = candidate_signature['methods']
+        candidate_methods = set([m for m in candidate_signature['methods'].keys()])
         proper_attrs = candidate_attrs.intersection(duck_attrs)
         proper_methods = candidate_methods.intersection(duck_methods)
         value=None

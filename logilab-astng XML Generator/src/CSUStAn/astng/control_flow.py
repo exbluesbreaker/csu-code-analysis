@@ -37,6 +37,8 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
     _frames = set([])
     ''' Map of ASTNG calls to UCFR calls '''
     _call_dict = {}
+    '''DEBUG'''
+    dbg = 0
 
     def __init__(self, project_name, out_xml):
         IdGeneratorMixIn.__init__(self)
@@ -67,6 +69,7 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
         if isinstance(func_node.parent,Class):
             if not hasattr(func_node, "id"):
                 func_node.id = self.generate_id()
+            func_node.visited=True
             return func_node.id
         else:
             if hasattr(func_node.root(),'func_dict'):
@@ -85,6 +88,7 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
         return self._classes
     
     def visit_function(self,node):
+        self.dbg += 1
         self._frames.add(node)
         func_id = self.handle_id(node)
         self._ids.add(func_id)
