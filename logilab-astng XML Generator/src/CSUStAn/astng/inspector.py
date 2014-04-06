@@ -46,10 +46,14 @@ class NoInferLinker(Linker):
     def handle_assattr_type(self, node, parent):
         parent.instance_attrs_type[node.attrname] = [YES]  
         
-class DuckLinker:
+class DuckLinker(LocalsVisitor):
     
     _ducks_count = 0
     _linker = None
+    _classes = []
+    
+    def __init__(self):
+        LocalsVisitor.__init__(self)
     
     def handle_getattr_local(self,node,ducks,save_calls=False):
         ''' Handle Getattr node during duck typing for local names access 
@@ -142,33 +146,51 @@ class DuckLinker:
     
     def handle_assattr_local(self,node,ducks):
         pass
+    
+    def visit_class(self,node):
+        self._classes.append(node)
+        node.ucr_attrs = set([item[0] for item in node.items() if (isinstance(item[1], AssName) and (get_visibility(item[0])!= 'special'))])
+        node.ucr_complete_attrs = node.ucr_attrs.copy()
+    
+    def leave_project(self,node):
+        for cl in self.get_classes():
+            map(lambda x: cl.ucr_complete_attrs.update(x.ucr_attrs), self.get_all_parents(cl))
+            
+    def handle_attrs(self,node,class_node):
+        if class_node is None:
+            return
+        if isinstance(node, (AssAttr,Getattr)):
+            if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
+                class_node.ucr_attrs.add(node.attrname)
+                
+    def get_all_parents(self,class_node):
+        for p in class_node.ancestors(recurs=True):
+            if p in self._classes:
+                yield p
 
-class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor,DuckLinker):
+class ClassIRLinker(IdGeneratorMixIn, DuckLinker):
     _num_attrs = 0
     _inherit = []
-    _classes = []
     _assigned_ducks = 0
     _processed_methods = 0
     _duck_handler = None
     
     def __init__(self, project):
         IdGeneratorMixIn.__init__(self)
-        LocalsVisitor.__init__(self)
+        DuckLinker.__init__(self)
         self._duck_handler = DuckTypeHandler()
         
     def visit_class(self, node):
-        self._classes.append(node)
         node.cir_uid = self.generate_id()
-        node.cir_attrs = set([item[0] for item in node.items() if (isinstance(item[1], AssName) and (get_visibility(item[0])!= 'special'))])
+        DuckLinker.visit_class(self, node)
         node.cir_methods = set([]) 
         node.cir_parents = set([])
         node.cir_ducks = {}
-        node.cir_complete_attrs = node.cir_attrs.copy()
         for parent in node.ancestors(recurs=False):
             self._inherit.append((node,parent))
         
     def leave_class(self, node):
-        self._num_attrs += len(node.cir_attrs)
+        self._num_attrs += len(node.ucr_attrs)
         
     def leave_project(self, node):
         """ delete non-project parents """
@@ -178,9 +200,7 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor,DuckLinker):
             else:
                 spec[0].cir_parents.add(spec[1])
         """ add complete class signatures """
-        for cl in self._classes:
-            map(lambda x: cl.cir_complete_attrs.update(x.cir_attrs), self.get_all_parents(cl))
-        print "Processed methods ", self._processed_methods
+        DuckLinker.leave_project(self, node)
         
     def visit_function(self, node):
         node.duck_info = {}
@@ -192,12 +212,6 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor,DuckLinker):
             self._processed_methods +=1
             self.handle_attrs(node,node.parent)
             node.parent.cir_methods.add(node.name)  
-            
-    def leave_function(self, node):
-        for c in self._classes:
-            for n in node.duck_info:
-                if self._duck_handler.check_candidate(node.duck_info[n]['attrs'],node.duck_info[n]['methods'], c):
-                    print c,n
         
     def add_duck_info(self,duck,name,label):
         if not duck[label].has_key(name):
@@ -207,9 +221,8 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor,DuckLinker):
     
     def handle_attrs(self,node,class_node):
         """ generate attrs and handle duck info about this attrs """
+        DuckLinker.handle_attrs(self, node, class_node)
         if isinstance(node, (AssAttr,Getattr)):
-            if((node.expr.as_string()=="self") and (get_visibility(node.attrname)!= 'special')):
-                class_node.cir_attrs.add(node.attrname)
             if isinstance(node, Getattr):
                 self.handle_getattr_local(node, node.frame().duck_info)
                 self.handle_getattr_self(node, class_node.cir_ducks)
@@ -237,13 +250,6 @@ class ClassIRLinker(IdGeneratorMixIn, LocalsVisitor,DuckLinker):
     def get_inheritances(self):
         for inh in self._inherit:
             yield inh
-            
-    def get_all_parents(self,class_node):
-        for p in class_node.ancestors(recurs=True):
-            if p in self._classes:
-                yield p
-            else:
-                print p.root().name.split('.')
                 
     def get_complex_ducks(self):
         for cl in self._classes:
