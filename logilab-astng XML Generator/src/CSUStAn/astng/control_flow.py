@@ -345,13 +345,11 @@ class UCFRLinker(IdGeneratorMixIn, DuckLinker):
                     else:
                         space_type = "external"
                     label = asgn.root().name
-
                     # Here is the situation when we have lib/builtin module with same name that in project.
 
                     # It imports correctly and causes infinite recursion.
 
                     if label == '__builtin__' and space_type == "external" and module.name == asgn.modname:
-
                         raise InferenceError(module.name)
                     space_type,called,called_id, label = self.handle_lookup(module, name, space_type)
                 except InferenceError:
