@@ -15,7 +15,7 @@ from lxml import etree
 
 JUMP_NODES = ( If, For, While, TryExcept, TryFinally, IfExp, With)
 
-class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
+class UCFRLinker(IdGeneratorMixIn, DuckLinker):
     '''
     classdocs
     '''
@@ -33,7 +33,6 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
     _class_calls = 0
     _out_xml = None
     _ids = set([])
-    _classes = set([])
     _frames = set([])
     ''' Map of ASTNG calls to UCFR calls '''
     _call_dict = {}
@@ -42,16 +41,13 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
 
     def __init__(self, project_name, out_xml):
         IdGeneratorMixIn.__init__(self)
-        LocalsVisitor.__init__(self)
+        DuckLinker.__init__(self)
         self._project_name = project_name
         self._out_xml = out_xml
     
     def visit_project(self,node):
         self._root = etree.Element("Project",name=self._project_name)
-        
-    def leave_project(self,node):
-        pass#print self._call_dict
-        
+              
     def write_result(self,node):
         print self._dbg_calls
         print self._dbg_call_lookup
@@ -79,7 +75,7 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
             return func_node.root.func_dict[func_node.name]   
     
     def visit_class(self,node):
-        self._classes.add(node)
+        DuckLinker.visit_class(self, node)
         
     def get_frames(self):
         return self._frames
@@ -96,8 +92,10 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
             self._dbg = True
         if isinstance(node.parent,Class):
             func_node = etree.Element("Method",cfg_id=str(func_id),name=node.name,parent_class=node.parent.name,label=node.root().name)
+            class_node = node.parent
         else:
             func_node = etree.Element("Function",cfg_id=str(func_id),name=node.name,label=node.root().name)
+            class_node = None
         self._stack[node] = func_node
         self._root.append(func_node)
         returns = set([])
@@ -107,7 +105,7 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
             for arg in node.args.args:
                 if not arg.name == 'self':
                     node.duck_info[arg.name]={'attrs':set([]),'methods':{}}
-        self.extract_duck_types(node)
+        self.extract_duck_types(node,class_node)
         id_count, prev = self.handle_flow_part(func_node,node.body, set([]),0,returns)
         id_count +=1
         block_node = etree.Element("Block", type="<<Exit>>",id=str(id_count))
@@ -117,8 +115,9 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
             flow_node = etree.Element("Flow",from_id=str(p),to_id=str(id_count))
             func_node.append(flow_node)
             
-    def extract_duck_types(self,node):
+    def extract_duck_types(self,node,class_node):
         """ generate attrs and handle duck info about this attrs """
+        DuckLinker.handle_attrs(self, node, class_node)
         if isinstance(node, (AssAttr,Getattr)):
             if isinstance(node, Getattr):
                 self.handle_getattr_local(node, node.frame().duck_info,True)
@@ -129,7 +128,7 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
         for child in node.get_children():
             # Ignoring handling nested functions, it will be handled in another visit
             if not isinstance(child, (Function,Lambda)):
-                self.extract_duck_types(child)
+                self.extract_duck_types(child,class_node)
         
     def leave_function(self,node):
         ''' DEBUG '''
@@ -165,6 +164,10 @@ class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
         f.close()
         del self._stack[node]
         self._stop = True
+        
+    def leave_project(self, node):
+        """ add complete class signatures """
+        DuckLinker.leave_project(self, node)
         
     def handle_flow_part(self,func_node,flow_part, parent_ids,id_count,returns):
         ''' Handle sequential object of flow, e.g then or else body of If'''
