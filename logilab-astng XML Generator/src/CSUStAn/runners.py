@@ -116,7 +116,49 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
                 self.__report += "\nClass " + c.get("name") + " has too many methods. Looks like it has too many responsibilities. Maybe you should divide it?"
         
         return process_class_internal
+
+class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
+    """
+        Analyzes conditions of places where instance of classes are created (constructors called).
+    """
     
+    def __init__(self, ucr_xml, cfg_xml, cfg_id):
+        UCFRHandler.__init__(self, cfg_xml)
+        ClassIRHandler.__init__(self, ucr_xml)
+        self.__method_id = cfg_id
+        self.__count = {}
+        self.run()
+    
+    def run(self):
+        self.__counter = 1
+        self.__report = ""
+        self.__count = {}
+        self.forEachClass(self.process_class())
+        for clazz, cnt in self.__count.items():
+            if cnt <= 2 and cnt > 0:
+                self.__report += "\nClass {className} created only in few methods: {methods}".format(className = clazz, methods = cnt)
+        print self.__report
+        
+    def process_class(self):
+        def process_class_internal(c):
+            print "Processing class " + c.get("name") + " (" + str(self.__counter) + "/" + str(self.get_num_of_classes()) + ")"
+            self.__counter += 1
+            if c.get("name") not in self.__count.keys():
+                self.__count[c.get("name")] = 0
+            if self.__method_id != None and len(self.__method_id)>0:
+                for direct in self._cfg_tree.xpath("//Method[@cfg_id='{cfg_id}']/Block/Call/Direct[@name='{class_name}']".format(cfg_id = self.__method_id, class_name = c.get("name"))):
+                    target = direct.get("Target")
+                    self.__report += "\nClass {clazz} created in {method_id}".format(clazz = c.get("name"), method_id = (target.get("cfg_id") if target != None else direct.get("name")))
+                    self.__count[c.get("name")] += 1
+            else:
+                for direct in self._cfg_tree.xpath("//Method/Block/Call/Direct[@name='{class_name}']".format(class_name = c.get("name"))):
+                    target = direct.get("Target")
+                    method_name = direct.getparent().getparent().getparent().get("name")
+                    class_name = direct.getparent().getparent().getparent().get("parent_class")
+                    self.__report += "\nClass {clazz} created in {method_id} from {parent_class}".format(clazz = c.get("name"), method_id = target.get("cfg_id") if target != None else method_name, parent_class = class_name)
+                    self.__count[c.get("name")] += 1
+        
+        return process_class_internal
 
 class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
     """
