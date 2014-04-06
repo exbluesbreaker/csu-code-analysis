@@ -9,7 +9,7 @@ print_help() {
   echo "If you want to work with some of these analisys you should use appropriate mode-parameter:"
   echo "- ast for AST"
   echo "- ucr for UCR"
-  echo "- cfg for CFG"
+  echo "- ucfr for UCFR"
   echo "USAGE: <mode-parameter> [<param1>..]"
   echo
   echo "For example:"
@@ -32,7 +32,7 @@ case $1 in
   ucr)
     java -jar build/jclassgen.jar $2 $3
     ;;
-  cfg)
+  ucfr)
     java -jar build/jcfgen.jar $2 $3 $4
     ;;
   help)
