@@ -230,7 +230,7 @@ class ClassIRLinker(IdGeneratorMixIn, DuckLinker):
                 self.handle_assattr_self(node, class_node.cir_ducks)    	
         for child in node.get_children():
             # Ignoring handling nested functions, it will be handled in another visit
-            if not isinstance(child, (Function,Lambda)):
+            if not isinstance(child, (Function,Lambda,Class)):
                 self.handle_attrs(child,class_node)
     
     def get_classes(self):
