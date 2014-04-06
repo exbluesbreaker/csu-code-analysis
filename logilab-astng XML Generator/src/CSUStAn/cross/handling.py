@@ -90,3 +90,26 @@ class InstanceInitSlicer(UCFRHandler, UCRSlicer):
         if parents is not None:
             for p in parents:
                 self._sliced_classes.add(p)
+                
+class UnreachableCodeSearch(UCFRHandler, ClassIRHandler):
+    _ucr_id = None
+    _keep_parents = None
+    _call_map = {}
+    def __init__(self,ucr_xml,lcfg_xml):
+        ClassIRHandler.__init__(self, ucr_xml)
+        UCFRHandler.__init__(self, lcfg_xml)
+        self.get_call_map()
+        print "Reachable ",len(self._call_map)," from ", len(self.get_frames())
+        all_frames = set([f.get("cfg_id") for f in self.get_frames()])
+        all_called = set(self._call_map.keys())
+        print len(all_frames)
+        print len(all_called)
+        print len(all_frames-all_called)
+        print all_called-all_frames
+    
+    def get_call_map(self):
+        for call in  self.get_targeted_calls():
+            if self._call_map.has_key(call.get("cfg_id")):
+                self._call_map[call.get("cfg_id")].add(call)
+            else:
+                self._call_map[call.get("cfg_id")] = set([call])

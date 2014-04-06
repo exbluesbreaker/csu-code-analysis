@@ -1,5 +1,8 @@
 package ru.csu.stan.java.cfg.automaton;
 
+import ru.csu.stan.java.cfg.automaton.base.ContextBase;
+import ru.csu.stan.java.cfg.automaton.base.ControlFlowForkContextBase;
+import ru.csu.stan.java.cfg.automaton.base.FlowCursor;
 import ru.csu.stan.java.cfg.jaxb.For;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;

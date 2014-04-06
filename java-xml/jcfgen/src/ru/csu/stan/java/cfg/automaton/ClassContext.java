@@ -1,6 +1,10 @@
 package ru.csu.stan.java.cfg.automaton;
 
+import ru.csu.stan.java.cfg.automaton.base.ContextBase;
+import ru.csu.stan.java.cfg.automaton.base.IClassInsidePart;
 import ru.csu.stan.java.cfg.jaxb.Project;
+import ru.csu.stan.java.cfg.util.scope.ScopeRegistry;
+import ru.csu.stan.java.cfg.util.scope.VariableScope;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
@@ -11,12 +15,13 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
  * @author mzubov
  *
  */
-class ClassContext extends ContextBase implements IClassNameHolder
+class ClassContext extends ContextBase implements IClassInsidePart
 {
     private String name = "";
     private int innerCount;
     private CompilationUnit compilationUnit;
     private int methodId = 0;
+    private VariableScope scope = new VariableScope();
 
     ClassContext(ContextBase previousState, CompilationUnit compilationUnit)
     {
@@ -28,7 +33,7 @@ class ClassContext extends ContextBase implements IClassNameHolder
     public IContext<Project> getPreviousState(String eventName)
     {
         if ("class".equals(eventName))
-            return getPreviousState();
+            return getUpperState();
         else
             return this;
     }
@@ -40,6 +45,8 @@ class ClassContext extends ContextBase implements IClassNameHolder
             return new MethodContext(this, name, compilationUnit, ++methodId);
         if ("class".equals(eventName))
             return new ClassContext(this, compilationUnit);
+        if ("variable".equals(eventName))
+        	return new VariableContext(this, scope);
         return this;
     }
 
@@ -51,17 +58,17 @@ class ClassContext extends ContextBase implements IClassNameHolder
             String nameAttr = attrs.getNameAttribute();
             if (nameAttr == null || "".equals(nameAttr))
             {
-                if (getPreviousState() instanceof IClassNameHolder)
+                if (getUpperState() instanceof IClassInsidePart)
                 {
-                    String upperName = ((IClassNameHolder)getPreviousState()).getClassName();
-                    int innerCount = ((IClassNameHolder)getPreviousState()).getNextInnerCount();
+                    String upperName = ((IClassInsidePart)getUpperState()).getClassName();
+                    int innerCount = ((IClassInsidePart)getUpperState()).getNextInnerCount();
                     this.name = upperName + '$' + innerCount;
                 }
             }
             else
             {
-                if (getPreviousState() instanceof IClassNameHolder)
-                	this.name = ((IClassNameHolder)getPreviousState()).getClassName() + "." + nameAttr;
+                if (getUpperState() instanceof IClassInsidePart)
+                	this.name = ((IClassInsidePart)getUpperState()).getClassName() + "." + nameAttr;
                 else
                 	this.name = compilationUnit.getPackageName() + "." + nameAttr;
             }
@@ -73,7 +80,12 @@ class ClassContext extends ContextBase implements IClassNameHolder
     @Override
     public void finish(String eventName)
     {
-
+    	if ("class".equals(eventName)){
+    		scope.setName(this.name);
+    		ScopeRegistry.getInstance().addScope(scope);
+    		String currentPackage = compilationUnit.getPackageName();
+    		getPackageRegistry().addClassToPackage(name.substring(currentPackage.length()+1), currentPackage.substring(0, currentPackage.length()));
+    	}
     }
     
     @Override
@@ -85,5 +97,10 @@ class ClassContext extends ContextBase implements IClassNameHolder
     public int getNextInnerCount(){
         return ++innerCount;
     }
+
+	@Override
+	public VariableScope getVariableScope() {
+		return scope;
+	}
     
 }

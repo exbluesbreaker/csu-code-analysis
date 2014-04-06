@@ -58,11 +58,11 @@ E.G.:
 * 2) Java-XML
 
 This is Java util for static analysis. It analyse source code written in Java. It's main features:
-	- generation of control-flow graph (CFG) for Java projects
+	- generation of universal control-flow graph representation (UCFR) for Java projects
 	- generation of universal class intermediate representation (UCR) for Java projects
-	- generation of abstract syntax tree XML representation
+	- generation of abstract syntax tree XML (AST) representation
 
 AST generation modules are based on javac compiler's sources from OpenJDK, distributed under GNU GPL.
 
-To build all tools use Apache Ant int java-xml directory. Default target will build all modules.
+To build all tools use Apache Ant in java-xml directory. Default target will build all modules.
 To use tools simply run tools.sh script and follow it's instructions.
