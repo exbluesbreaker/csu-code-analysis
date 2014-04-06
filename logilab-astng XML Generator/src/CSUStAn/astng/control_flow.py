@@ -127,7 +127,7 @@ class UCFRLinker(IdGeneratorMixIn, DuckLinker):
             return     
         for child in node.get_children():
             # Ignoring handling nested functions, it will be handled in another visit
-            if not isinstance(child, (Function,Lambda)):
+            if not isinstance(child, (Function,Lambda,Class)):
                 self.extract_duck_types(child,class_node)
         
     def leave_function(self,node):
