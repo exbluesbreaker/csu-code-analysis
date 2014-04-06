@@ -1,7 +1,8 @@
-package ru.csu.stan.java.cfg.automaton;
+package ru.csu.stan.java.cfg.automaton.base;
 
 import java.math.BigInteger;
 
+import ru.csu.stan.java.cfg.automaton.ControlFlowContext;
 import ru.csu.stan.java.cfg.jaxb.BaseCfgElement;
 import ru.csu.stan.java.cfg.jaxb.Flow;
 import ru.csu.stan.java.cfg.jaxb.Method;
@@ -18,14 +19,14 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
  *
  * @param <T> конкретный тип блока
  */
-abstract class ControlFlowForkContextBase<T extends BaseCfgElement> extends ContextBase {
+public abstract class ControlFlowForkContextBase<T extends BaseCfgElement> extends ContextBase {
 	
 	private FlowCursor cursor;
     private T flowForkBlock;
     private CompilationUnit compilationUnit;
     private Method method;
 
-	ControlFlowForkContextBase(ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
+	protected ControlFlowForkContextBase(ContextBase previousState, FlowCursor cursor, CompilationUnit compilationUnit, Method method) {
 		super(previousState);
 		this.cursor = cursor;
 		this.compilationUnit = compilationUnit;
@@ -36,7 +37,7 @@ abstract class ControlFlowForkContextBase<T extends BaseCfgElement> extends Cont
 	public IContext<Project> getPreviousState(String eventName) {
 		for (String tag: getTagNames())
 			if (tag.equals(eventName))
-				return getPreviousState();
+				return getUpperState();
 		return this;
 	}
 

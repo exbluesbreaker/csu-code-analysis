@@ -1,122 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Project>
-    <Method ucr_method_id="1" ucr_id="2" cfg_id="1" parent_class="com.example.MyClass$1" name="toArray">
+    <Method ucr_method_id="1" ucr_id="1" cfg_id="1" parent_class="com.example.MyClass" name="main">
         <Block id="1"/>
         <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="2" ucr_id="2" cfg_id="2" parent_class="com.example.MyClass$1" name="toArray">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="3" ucr_id="2" cfg_id="3" parent_class="com.example.MyClass$1" name="subList">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="4" ucr_id="2" cfg_id="4" parent_class="com.example.MyClass$1" name="size">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="5" ucr_id="2" cfg_id="5" parent_class="com.example.MyClass$1" name="set">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="6" ucr_id="2" cfg_id="6" parent_class="com.example.MyClass$1" name="retainAll">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="7" ucr_id="2" cfg_id="7" parent_class="com.example.MyClass$1" name="removeAll">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="8" ucr_id="2" cfg_id="8" parent_class="com.example.MyClass$1" name="remove">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="9" ucr_id="2" cfg_id="9" parent_class="com.example.MyClass$1" name="remove">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="10" ucr_id="2" cfg_id="10" parent_class="com.example.MyClass$1" name="listIterator">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="11" ucr_id="2" cfg_id="11" parent_class="com.example.MyClass$1" name="listIterator">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="12" ucr_id="2" cfg_id="12" parent_class="com.example.MyClass$1" name="lastIndexOf">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="13" ucr_id="2" cfg_id="13" parent_class="com.example.MyClass$1" name="iterator">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="14" ucr_id="2" cfg_id="14" parent_class="com.example.MyClass$1" name="isEmpty">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="15" ucr_id="2" cfg_id="15" parent_class="com.example.MyClass$1" name="indexOf">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="16" ucr_id="2" cfg_id="16" parent_class="com.example.MyClass$1" name="get">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="17" ucr_id="2" cfg_id="17" parent_class="com.example.MyClass$1" name="containsAll">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="18" ucr_id="2" cfg_id="18" parent_class="com.example.MyClass$1" name="contains">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="19" ucr_id="2" cfg_id="19" parent_class="com.example.MyClass$1" name="clear">
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="1"/>
-    </Method>
-    <Method ucr_method_id="20" ucr_id="2" cfg_id="20" parent_class="com.example.MyClass$1" name="addAll">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="21" ucr_id="2" cfg_id="21" parent_class="com.example.MyClass$1" name="addAll">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="22" ucr_id="2" cfg_id="22" parent_class="com.example.MyClass$1" name="add">
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="1"/>
-    </Method>
-    <Method ucr_method_id="23" ucr_id="2" cfg_id="23" parent_class="com.example.MyClass$1" name="add">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
-    </Method>
-    <Method ucr_method_id="1" ucr_id="1" cfg_id="24" parent_class="com.example.MyClass" name="main">
-        <Block id="1"/>
-        <Flow from_id="1" to_id="2"/>
-        <TryExcept col_offset="9" fromlineno="20" id="2"/>
+        <TryExcept col_offset="9" fromlineno="21" id="2"/>
         <Flow from_id="2" to_id="3"/>
-        <If test="condition" col_offset="10" fromlineno="22" id="3"/>
+        <If test="condition" col_offset="10" fromlineno="23" id="3"/>
         <Flow from_id="3" to_id="4"/>
         <Block id="4"/>
         <Flow from_id="3" to_id="5"/>
@@ -128,67 +17,89 @@
         <Flow from_id="7" to_id="8"/>
         <Block id="8"/>
         <Flow from_id="8" to_id="9"/>
-        <If test="condition" col_offset="9" fromlineno="34" id="9"/>
+        <For iterate="initialize_section" col_offset="9" fromlineno="35" id="9"/>
         <Flow from_id="9" to_id="10"/>
-        <If test="condition" col_offset="10" fromlineno="35" id="10"/>
+        <If test="condition" col_offset="10" fromlineno="36" id="10"/>
         <Flow from_id="10" to_id="11"/>
         <Block id="11"/>
-        <Flow from_id="10" to_id="12"/>
-        <Block id="12"/>
-        <Flow from_id="11" to_id="13"/>
+        <Flow from_id="11" to_id="9"/>
+        <Flow from_id="10" to_id="9"/>
+        <Flow from_id="9" to_id="12"/>
+        <If test="condition" col_offset="9" fromlineno="39" id="12"/>
         <Flow from_id="12" to_id="13"/>
-        <Flow from_id="9" to_id="13"/>
-        <For iterate="initialize_section" col_offset="9" fromlineno="41" id="13"/>
+        <If test="condition" col_offset="10" fromlineno="40" id="13"/>
         <Flow from_id="13" to_id="14"/>
         <Block id="14"/>
-        <Flow from_id="14" to_id="15"/>
-        <If test="condition" col_offset="10" fromlineno="43" id="15"/>
+        <Flow from_id="13" to_id="15"/>
+        <Block id="15"/>
+        <Flow from_id="14" to_id="16"/>
         <Flow from_id="15" to_id="16"/>
-        <Block id="16"/>
-        <Flow from_id="15" to_id="17"/>
+        <Flow from_id="12" to_id="16"/>
+        <For iterate="initialize_section" col_offset="9" fromlineno="46" id="16"/>
+        <Flow from_id="16" to_id="17"/>
         <Block id="17"/>
-        <Flow from_id="16" to_id="13"/>
-        <Flow from_id="17" to_id="13"/>
-        <Flow from_id="13" to_id="18"/>
-        <For iterate="expression" col_offset="9" fromlineno="49" id="18"/>
+        <Flow from_id="17" to_id="18"/>
+        <If test="condition" col_offset="10" fromlineno="48" id="18"/>
         <Flow from_id="18" to_id="19"/>
         <Block id="19"/>
-        <Flow from_id="19" to_id="18"/>
         <Flow from_id="18" to_id="20"/>
         <Block id="20"/>
-        <Flow from_id="20" to_id="21"/>
-        <While test="condition" col_offset="9" fromlineno="54" id="21"/>
+        <Flow from_id="19" to_id="16"/>
+        <Flow from_id="20" to_id="16"/>
+        <Flow from_id="16" to_id="21"/>
+        <For iterate="expression" col_offset="9" fromlineno="54" id="21"/>
         <Flow from_id="21" to_id="22"/>
         <Block id="22"/>
         <Flow from_id="22" to_id="21"/>
         <Flow from_id="21" to_id="23"/>
-        <While test="condition" col_offset="9" fromlineno="58" id="23"/>
+        <While test="condition" col_offset="9" fromlineno="59" id="23"/>
         <Flow from_id="23" to_id="24"/>
         <Block id="24"/>
         <Flow from_id="24" to_id="23"/>
         <Flow from_id="23" to_id="25"/>
-        <While test="condition" col_offset="9" fromlineno="61" id="25"/>
+        <While test="condition" col_offset="9" fromlineno="63" id="25"/>
         <Flow from_id="25" to_id="26"/>
         <Block id="26"/>
         <Flow from_id="26" to_id="25"/>
         <Flow from_id="25" to_id="27"/>
-        <While test="condition" col_offset="9" fromlineno="65" id="27"/>
+        <While test="condition" col_offset="9" fromlineno="66" id="27"/>
         <Flow from_id="27" to_id="28"/>
         <Block id="28"/>
         <Flow from_id="28" to_id="27"/>
         <Flow from_id="27" to_id="29"/>
-        <Block id="29"/>
-        <Flow from_id="5" to_id="30"/>
-        <Flow from_id="6" to_id="30"/>
+        <While test="condition" col_offset="9" fromlineno="70" id="29"/>
         <Flow from_id="29" to_id="30"/>
-        <Block type="&lt;&lt;Exit&gt;&gt;" id="30"/>
+        <Block id="30"/>
+        <Flow from_id="30" to_id="29"/>
+        <Flow from_id="5" to_id="31"/>
+        <Flow from_id="6" to_id="31"/>
+        <Flow from_id="29" to_id="31"/>
+        <Block type="&lt;&lt;Exit&gt;&gt;" id="31"/>
     </Method>
-    <Method ucr_method_id="2" ucr_id="1" cfg_id="25" parent_class="com.example.MyClass" name="bar">
+    <Method ucr_method_id="2" ucr_id="1" cfg_id="2" parent_class="com.example.MyClass" name="bar">
+        <Block id="1">
+            <Call>
+                <Getattr label="this" name="intValue.getValue">
+                    <Target cfg_id="3">
+                        <TargetClass ucr_id="1"/>
+                    </Target>
+                </Getattr>
+            </Call>
+        </Block>
+        <Flow from_id="1" to_id="2"/>
+        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
+    </Method>
+    <Method ucr_method_id="3" ucr_id="1" cfg_id="3" parent_class="com.example.MyClass" name="getValue">
         <Block id="1"/>
         <Flow from_id="1" to_id="2"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
     </Method>
-    <Method ucr_method_id="1" ucr_id="3" cfg_id="26" parent_class="com.example.MyClass.MyClass2" name="foo">
+    <Method ucr_method_id="4" ucr_id="1" cfg_id="4" parent_class="com.example.MyClass" name="bar">
+        <Block id="1"/>
+        <Flow from_id="1" to_id="2"/>
+        <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
+    </Method>
+    <Method ucr_method_id="1" ucr_id="2" cfg_id="5" parent_class="com.example.MyClass.MyClass2" name="foo">
         <Block id="1"/>
         <Flow from_id="1" to_id="2"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>

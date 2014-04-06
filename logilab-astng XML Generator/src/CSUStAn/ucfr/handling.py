@@ -23,8 +23,21 @@ class UCFRHandler:
     def get_frame_by_id(self,id):
         return self._cfg_tree.xpath("//Method[@cfg_id=\""+id+"\"]|Function[@cfg_id=\""+id+"\"]")
     
+    def get_targeted_calls(self):
+        return self._cfg_tree.xpath("//Target[@cfg_id]")
+    
+    def get_frames(self):
+        return self._cfg_tree.xpath("//Method|Function")
+    
     def get_calls(self,frame):
         pass
+    
+    def for_each_method(self, function):
+        for method in self._methods:
+            function(method)
+            
+    def get_num_of_methods(self):
+        return len(self._methods)
     
 class UCFRSlicer(UCFRHandler):
     ''' Abstract UCFR-slicer '''

@@ -2,11 +2,15 @@ package ru.csu.stan.java.cfg.automaton;
 
 import java.math.BigInteger;
 
+import ru.csu.stan.java.cfg.automaton.base.ContextBase;
+import ru.csu.stan.java.cfg.automaton.base.FlowCursor;
+import ru.csu.stan.java.cfg.automaton.base.IClassInsidePart;
 import ru.csu.stan.java.cfg.jaxb.Block;
 import ru.csu.stan.java.cfg.jaxb.Flow;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.cfg.util.MethodRegistryItem;
+import ru.csu.stan.java.cfg.util.scope.VariableScope;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.NodeAttributes;
 import ru.csu.stan.java.classgen.util.CompilationUnit;
@@ -18,7 +22,7 @@ import ru.csu.stan.java.classgen.util.CompilationUnit;
  * @author mzubov
  *
  */
-class MethodContext extends ContextBase implements IClassNameHolder
+class MethodContext extends ContextBase implements IClassInsidePart
 {
     private String className;
     private String name;
@@ -40,7 +44,7 @@ class MethodContext extends ContextBase implements IClassNameHolder
     public IContext<Project> getPreviousState(String eventName)
     {
         if ("method".equals(eventName))
-            return getPreviousState();
+            return getUpperState();
         return this;
     }
 
@@ -101,10 +105,18 @@ class MethodContext extends ContextBase implements IClassNameHolder
 
 	@Override
 	public int getNextInnerCount() {
-		if (getPreviousState() instanceof IClassNameHolder)
-			return ((IClassNameHolder)getPreviousState()).getNextInnerCount();
+		if (getUpperState() instanceof IClassInsidePart)
+			return ((IClassInsidePart)getUpperState()).getNextInnerCount();
 		else
 			return 0;
+	}
+
+	@Override
+	public VariableScope getVariableScope() {
+		if (getUpperState() instanceof IClassInsidePart)
+			return ((IClassInsidePart)getUpperState()).getVariableScope();
+		else
+			return null;
 	}
 
 }
