@@ -87,7 +87,7 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
     def run(self):
         self.__counter = 1
         self.__report = ""
-        self.forEachClass(self.process_class())
+        self.for_each_class(self.process_class())
         print self.__report
         
     def process_class(self):
@@ -117,3 +117,55 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
         
         return process_class_internal
     
+
+class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
+    """
+        Analyzes functions for being "greedy", i.e. using some field or variable very much.
+        These greedy functions might be moved to another class, which is used much.
+    """
+    
+    __GREEDY_METHOD = "\nMethod {0} from class {1} is probably greedy and should be moved to {2}."
+    __MB_GREEDY_METHOD = ("\nMethod {0} from class {1} may be greedy. It uses too much variable {2} ({3}). But class of variable wasn't recognized."
+                            "\nIt may happens when class isn't in project or variable of this class wasn't found or it is external module, not a class.\n")
+    
+    def __init__(self, ucr_xml, cfg_xml):
+        UCFRHandler.__init__(self, cfg_xml)
+        ClassIRHandler.__init__(self, ucr_xml)
+        self.run()
+        
+    def run(self):
+        self.__counter = 1
+        self.__report = ""
+        self.for_each_method(self.process_method())
+        print self.__report
+    
+    def process_method(self):
+        def process_method_internal(method):
+            print "Processing method {0} from class {1} ({2}/{3})".format(method.get("name"), method.get("parent_class"), str(self.__counter), self.get_num_of_methods())
+            self.__counter += 1
+            classes_used = {}
+            names_used = {}
+            for get_attr in method.xpath("Block/Call/Getattr"):
+                label = get_attr.get("label")
+                if label != "self" and label != "this": 
+                    if label in names_used:
+                        names_used[label] += 1
+                    else:
+                        names_used[label] = 1
+                target = get_attr.get("Target")
+                if target != None:
+                    targetClass = target.get("TargetClass")
+                    if targetClass != None:
+                        ucr_id = targetClass.get("ucr_id")
+                        if ucr_id in classes_used:
+                            classes_used[ucr_id] += 1
+                        else:
+                            classes_used[ucr_id] = 1
+            for k, v in classes_used.items():
+                if v > 5:
+                    self.__report += self.__GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), self.get_class_by_id(k).get("name"))
+            for k, v in names_used.items():
+                if v > 7:
+                    self.__report += self.__MB_GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), k, str(v))
+            
+        return process_method_internal
