@@ -3,6 +3,9 @@ package ru.csu.stan.java.cfg.automaton;
 import java.util.LinkedList;
 import java.util.List;
 
+import ru.csu.stan.java.cfg.automaton.base.ContextBase;
+import ru.csu.stan.java.cfg.automaton.base.ControlFlowForkContextBase;
+import ru.csu.stan.java.cfg.automaton.base.FlowCursor;
 import ru.csu.stan.java.cfg.jaxb.Method;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.cfg.jaxb.TryExcept;

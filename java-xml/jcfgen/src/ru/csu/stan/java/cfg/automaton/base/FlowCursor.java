@@ -1,4 +1,4 @@
-package ru.csu.stan.java.cfg.automaton;
+package ru.csu.stan.java.cfg.automaton.base;
 
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -12,7 +12,7 @@ import java.util.Set;
  * @author mz
  *
  */
-class FlowCursor implements Cloneable
+public class FlowCursor implements Cloneable
 {
     private int currentId = 1;
     private Set<Integer> parentIds = new LinkedHashSet<Integer>();
@@ -59,7 +59,7 @@ class FlowCursor implements Cloneable
     }
 
     @Override
-    protected FlowCursor clone()
+    public FlowCursor clone()
     {
         FlowCursor newObject = new FlowCursor();
         newObject.currentId = this.currentId;
