@@ -6,15 +6,16 @@ Created on 14.04.2013
 from logilab.astng.utils import LocalsVisitor
 from logilab.astng.inspector import IdGeneratorMixIn
 from logilab.astng.node_classes import *
-from logilab.astng.scoped_nodes import Class, Function
+from logilab.astng.scoped_nodes import Class, Function, Lambda
 from logilab.astng.exceptions import InferenceError
+from CSUStAn.astng.inspector import DuckLinker
 import pydot
 import re 
 from lxml import etree
 
 JUMP_NODES = ( If, For, While, TryExcept, TryFinally, IfExp, With)
 
-class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
+class UCFRLinker(IdGeneratorMixIn, LocalsVisitor, DuckLinker):
     '''
     classdocs
     '''
@@ -31,6 +32,11 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     _func_calls = 0
     _class_calls = 0
     _out_xml = None
+    _ids = set([])
+    _classes = set([])
+    _frames = set([])
+    ''' Map of ASTNG calls to UCFR calls '''
+    _call_dict = {}
 
     def __init__(self, project_name, out_xml):
         IdGeneratorMixIn.__init__(self)
@@ -40,27 +46,64 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
     
     def visit_project(self,node):
         self._root = etree.Element("Project",name=self._project_name)
+        
     def leave_project(self,node):
+        pass#print self._call_dict
+        
+    def write_result(self,node):
         print self._dbg_calls
         print self._dbg_call_lookup
         print "Func calls ",self._func_calls
         print "Class calls ",self._class_calls
         print "Getattr calls ",self._getattr_calls
+        for t in self._root.xpath("//Target[@cfg_id]"):
+            if not int(t.get("cfg_id")) in self._ids:
+                t.attrib.pop("cfg_id")
         f = open(self._out_xml,'w')
         f.write(etree.tostring(self._root, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
+    
+    def handle_id(self,func_node):
+        if isinstance(func_node.parent,Class):
+            if not hasattr(func_node, "id"):
+                func_node.id = self.generate_id()
+            return func_node.id
+        else:
+            if hasattr(func_node.root(),'func_dict'):
+                func_node.root.func_dict = {}
+            if not func_node.root.func_dict.has_key(func_node.name):
+                func_node.root.func_dict[func_node.name] =self.generate_id()
+            return func_node.root.func_dict[func_node.name]   
+    
+    def visit_class(self,node):
+        self._classes.add(node)
+        
+    def get_frames(self):
+        return self._frames
+    
+    def get_classes(self):
+        return self._classes
+    
     def visit_function(self,node):
-        if not hasattr(node, "id"):
-            node.id = self.generate_id()
+        self._frames.add(node)
+        func_id = self.handle_id(node)
+        self._ids.add(func_id)
         if(len(node.body)>8):
             self._dbg = True
         if isinstance(node.parent,Class):
-            func_node = etree.Element("Method",cfg_id=str(node.id),name=node.name,parent_class=node.parent.name,label=node.root().name)
+            func_node = etree.Element("Method",cfg_id=str(func_id),name=node.name,parent_class=node.parent.name,label=node.root().name)
         else:
-            func_node = etree.Element("Function",cfg_id=str(node.id),name=node.name,label=node.root().name)
+            func_node = etree.Element("Function",cfg_id=str(func_id),name=node.name,label=node.root().name)
         self._stack[node] = func_node
         self._root.append(func_node)
         returns = set([])
+        ''' extract duck typing '''
+        node.duck_info = {}
+        if(node.args.args is not None):
+            for arg in node.args.args:
+                if not arg.name == 'self':
+                    node.duck_info[arg.name]={'attrs':set([]),'methods':{}}
+        self.extract_duck_types(node)
         id_count, prev = self.handle_flow_part(func_node,node.body, set([]),0,returns)
         id_count +=1
         block_node = etree.Element("Block", type="<<Exit>>",id=str(id_count))
@@ -69,6 +112,20 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         for p in prev.union(returns):
             flow_node = etree.Element("Flow",from_id=str(p),to_id=str(id_count))
             func_node.append(flow_node)
+            
+    def extract_duck_types(self,node):
+        """ generate attrs and handle duck info about this attrs """
+        if isinstance(node, (AssAttr,Getattr)):
+            if isinstance(node, Getattr):
+                self.handle_getattr_local(node, node.frame().duck_info,True)
+            elif isinstance(node, AssAttr):
+                self.handle_assattr_local(node, node.frame().duck_info)   
+            ''' Handle only 1 level Getattr-s'''
+            return     
+        for child in node.get_children():
+            # Ignoring handling nested functions, it will be handled in another visit
+            if not isinstance(child, (Function,Lambda)):
+                self.extract_duck_types(child)
         
     def leave_function(self,node):
         ''' DEBUG '''
@@ -106,7 +163,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
         self._stop = True
         
     def handle_flow_part(self,func_node,flow_part, parent_ids,id_count,returns):
-        ''' Handle sequential paobjectrt of flow, e.g then or else body of If'''
+        ''' Handle sequential object of flow, e.g then or else body of If'''
         prev=parent_ids
         block_node = None
         for child in flow_part:
@@ -236,10 +293,18 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 call_subnode.set("label",node.func.expr.as_string())
                 call_node.append(call_subnode)
             block_node.append(call_node)
+            ''' save call for further access '''
+            self._call_dict[node]=call_node
             #print node.as_string(),node.func
             #print node.scope().lookup(node.func)
         for child in node.get_children():
             self.handle_simple_node(child,block_node)
+            
+    def get_call(self,call):
+        if self._call_dict.has_key(call):
+            return self._call_dict[call]
+        else:
+            return None
     
     def handle_lookup(self,node,name,space_type=None):
         lookup = node.lookup(name)
@@ -255,9 +320,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if (label == '__builtin__') or (space_type == "external"):
                     ''' No id generation for non-project calls '''
                     continue 
-                if not hasattr(asgn, "id"):
-                    asgn.id = self.generate_id()
-                called_id = asgn.id
+                called_id = self.handle_id(asgn)
             elif isinstance(asgn, Class):
                 if(space_type is None):
                     space_type = "internal"
@@ -266,9 +329,7 @@ class CFGLinker(IdGeneratorMixIn, LocalsVisitor):
                 if label == '__builtin__':
                     continue             
                 for cstr in [meth for meth in asgn.methods() if ((re.split('\W+', meth.parent.root().name)[0] == self._project_name)and(meth.name == '__init__'))]:
-                    if not hasattr(cstr, "id"):
-                        cstr.id = self.generate_id()
-                    called_id = cstr.id
+                    called_id = self.handle_id(cstr)
             elif isinstance(asgn, From):
                 try:
                     module = asgn.do_import_module(asgn.modname)

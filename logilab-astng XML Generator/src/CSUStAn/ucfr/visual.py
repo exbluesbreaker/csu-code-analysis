@@ -273,3 +273,46 @@ class ExecPathVisualizer(ExecRouteVisualizer):
             graph.write(self._out_dir+'/route'+str(i)+'.dot')
             graph.write_svg(self._out_dir+'/route'+str(i)+'.svg')
             i+=1
+            
+            
+class ExecPathCallsSearch(ExecRouteVisualizer):
+    ''' Search for given untrsusted calls for given exec path'''
+    def __init__(self,lcfg_xml,exec_path,calls,out_dir):
+        ExecRouteVisualizer.__init__(self, lcfg_xml)
+        self._out_dir = out_dir
+        frame_names, routes  = self.extract_frame_routes(exec_path)
+        self._calls = calls
+        self.visualize_frames(exec_path,out_dir)
+        self.visualize_exec_path(exec_path)
+        
+    def visualize_exec_path(self,exec_path):
+        '''Visualize all possible routes for given exec path '''
+        frame_names, result_routes = self.extract_frame_routes(exec_path)
+        i=0
+        for route in result_routes:
+            graph = self.dot_route(route,exec_path,frame_names)
+            graph.write(self._out_dir+'/route'+str(i)+'.dot')
+            graph.write_svg(self._out_dir+'/route'+str(i)+'.svg')
+            i+=1
+        
+    def dot_call(self,call_node):
+        dot_id = self.generate_id()
+        target = call_node.getchildren()[0]
+        cfg_targets = call_node.xpath(".//Target[@cfg_id]")
+        ucr_targets = call_node.xpath(".//Direct/Target/TargetClass")
+        color='black'
+        if len(cfg_targets)>0:
+            cfg_target = "(cfg_id="+cfg_targets[0].get("cfg_id")+")"
+            if(cfg_targets[0].get("cfg_id") in self._calls):
+                color = 'red'
+        else:
+            cfg_target = ""
+        if (len(ucr_targets)>0) and (ucr_targets[0].get("ucr_id") is not None):
+            ucr_target = "(ucr_id="+ucr_targets[0].get("ucr_id")+")"
+        else:
+            ucr_target = ""
+        if(target.tag == "Getattr"):
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("label") + '.' + target.get("name")+cfg_target+ucr_target+"\"", shape='record',color=color)
+        else:
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("name")+cfg_target+ucr_target+"\"", shape='record',color=color)
+        return dot_call

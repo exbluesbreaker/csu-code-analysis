@@ -7,6 +7,7 @@ Created on 02.03.2014
 import re
 from lxml import etree
 from CSUStAn.astng.inspector import ClassIRLinker
+from CSUStAn.cross.duck_typing import DuckTypeHandler 
 from logilab.common.configuration import ConfigurationMixIn
 from logilab.astng.manager import astng_wrapper, ASTNGManager
 from pylint.pyreverse.utils import get_visibility
@@ -14,7 +15,7 @@ from pylint.pyreverse.main import OPTIONS
 from pylint.pyreverse.utils import insert_default_options
 
 
-class UCRBuilder(ConfigurationMixIn):
+class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
     # generate XML, describing classes of project
     
     options = OPTIONS
@@ -69,37 +70,6 @@ class UCRBuilder(ConfigurationMixIn):
              all(attr in self._tuple_attrs for attr in attrs)):
             return 'Tuple'
         return None
-
-
-    def check_candidate(self,duck,cand_class, criteria='default'):
-        duck_attrs, duck_methods = self.get_duck_signature(duck)
-        candidate_attrs = cand_class.cir_complete_attrs
-        candidate_methods = set([method.name for method in cand_class.methods()])
-        proper_attrs = candidate_attrs.intersection(duck_attrs)
-        proper_methods = candidate_methods.intersection(duck_methods)
-        value=None
-        if criteria == 'default':
-            if(all(attr in candidate_attrs for attr in duck_attrs) and all(method in candidate_methods for method in duck_methods)):
-                return True
-        if criteria == 'capacity':
-            value = float(len(proper_attrs)+len(proper_methods))/(len(duck_attrs)+len(duck_methods)) 
-        if criteria == 'frequency':
-            attr_val = self.get_duck_val(duck, proper_attrs, 'attrs')
-            all_attr = self.get_duck_val(duck, duck_attrs, 'attrs')
-            meth_val = self.get_duck_val(duck, proper_methods, 'methods')
-            all_meth = self.get_duck_val(duck, duck_methods, 'methods')
-            value = float(attr_val+meth_val)/(all_attr+all_meth) 
-           
-        if value is not None:
-            if self._add_value:
-                if duck.has_key('type_values'):
-                    # save value for candidate
-                    duck['type_values'][cand_class.cir_uid]=value
-                else:
-                    duck['type_values']={cand_class.cir_uid:value}
-            if value>= self._treshold:
-                return True
-        return False
     
     def get_duck_signature(self,duck):
         if(duck['complex_type']):
@@ -107,12 +77,6 @@ class UCRBuilder(ConfigurationMixIn):
                 # search for class of element is needed
                 return set(duck['element_signature']['attrs'].keys()),set(duck['element_signature']['methods'].keys())
         return set(duck['attrs'].keys()), set(duck['methods'].keys())
-    
-    def get_duck_val(self,duck,names,label):
-        if(duck['complex_type']):
-            if duck.has_key('element_signature'):
-                return sum([duck['element_signature'][label][name] for name in names])
-        return sum([duck[label][name] for name in names])
 
     def run(self, args):
         """checking arguments and run project"""
@@ -149,7 +113,7 @@ class UCRBuilder(ConfigurationMixIn):
                         continue
                 duck_found = False
                 for field_candidate in linker.get_classes():
-                    result = self.check_candidate(current_class.cir_ducks[duck], field_candidate,self._criteria)
+                    result = self.check_candidate(duck_attrs, duck_methods, field_candidate,self._criteria)
                     if(result):
                         current_class.cir_ducks[duck]['type'].append(field_candidate)
                         self._prob_used_classes |= set([field_candidate.cir_uid]) 

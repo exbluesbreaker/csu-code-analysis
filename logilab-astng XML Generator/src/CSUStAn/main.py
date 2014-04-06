@@ -225,9 +225,21 @@ elif(args.type=="ExecPathObjectSlicer"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     exec_path = exec_path.split(',') 
     runner = ExecPathObjectSlicer(in_file,ucr_xml,exec_path,out_dir)
+elif(args.type=="ExecPathCallsSearch"):
+    in_file = cfg_parser.get(args.type,'in_file')
+    calls = cfg_parser.get(args.type,'calls')
+    out_dir = cfg_parser.get(args.type,'out_dir')
+    exec_path = cfg_parser.get(args.type,'exec_path')
+    exec_path = exec_path.split(',') 
+    calls = calls.split(',') 
+    runner = ExecPathCallsSearch(in_file,exec_path,calls,out_dir)
 elif (args.type == "BigClassAnalyzer"):
     ucr_xml = cfg_parser.get(args.type, "ucr_xml")
     cfg_xml = cfg_parser.get(args.type, "cfg_xml")
     runner = BigClassAnalyzer(ucr_xml, cfg_xml)
+elif(args.type=="UnreachableCodeSearch"):
+    ucr_xml = cfg_parser.get(args.type,'ucr_xml')
+    lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
+    runner = UnreachableCodeSearch(ucr_xml,lcfg_xml)
 else:
     print "Unknown type!"

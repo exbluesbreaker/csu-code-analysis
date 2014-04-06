@@ -9,6 +9,7 @@ from CSUStAn.ucr.visual import UCRVisualizer
 from CSUStAn.ucr.handling import UCRSlicer
 
 class ExecPathObjectSlicer(ExecRouteVisualizer,UCRSlicer,UCRVisualizer):
+    ''' Slice UCR according to objects, which created during given exec path'''
     def __init__(self,lcfg_xml,ucr_xml,exec_path,out_dir='.'):
         ExecRouteVisualizer.__init__(self, lcfg_xml)
         UCRSlicer.__init__(self, ucr_xml)
@@ -43,3 +44,4 @@ class ExecPathObjectSlicer(ExecRouteVisualizer,UCRSlicer,UCRVisualizer):
             parents = self.get_all_parents(current_class,None)
             for p in parents:
                 self._sliced_classes.add(p)
+                
