@@ -55,6 +55,7 @@ class UCFRSlicer(UCFRHandler):
 class FlatUCFRSlicer(UCFRSlicer):
     _id = None
     _criteria = None
+    _visited = set([])
     
     def __init__(self,lcfg_xml,out_xml,target_id,criteria):
         UCFRSlicer.__init__(self, lcfg_xml,out_xml)
@@ -77,9 +78,13 @@ class FlatUCFRSlicer(UCFRSlicer):
         if node_id is None:
             self._sliced_frames = set([])
             node_id = self._id
+        if node_id in self._visited:
+            return
+        self._visited.add(node_id)
         self._sliced_frames|=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+node_id+"\"]|//Method[@cfg_id=\""+node_id+"\"]"))
         calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]|\
                                                         //Function[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]")
+        print node_id
         for id in set([c.get("cfg_id") for c in calls]):
             self.handle_tree(id)
             
