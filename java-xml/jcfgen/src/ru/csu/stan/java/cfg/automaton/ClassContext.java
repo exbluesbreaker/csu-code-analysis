@@ -46,7 +46,7 @@ class ClassContext extends ContextBase implements IClassInsidePart
         if ("class".equals(eventName))
             return new ClassContext(this, compilationUnit);
         if ("variable".equals(eventName))
-        	return new VariableContext(this, scope);
+        	return new VariableContext(this, scope, null);
         return this;
     }
 

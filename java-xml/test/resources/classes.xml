@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Classes>
-    <Class filename="/com/example/MyClass.java" id="3" name="com.example.MyClass.MyClass2.MyClass3" col_offset="23" fromlineno="109">
-        <Modifier name="public" col_offset="9" fromlineno="109"/>
-        <Modifier name="static" col_offset="9" fromlineno="109"/>
+    <Class filename="/ru/test/ITesting.java" id="1" name="ru.test.ITesting" col_offset="8" fromlineno="3">
+        <Modifier name="public" col_offset="1" fromlineno="3"/>
+        <Modifier name="interface" col_offset="1" fromlineno="3"/>
     </Class>
-    <Class filename="/com/example/MyClass.java" id="2" name="com.example.MyClass.MyClass2" col_offset="19" fromlineno="103">
-        <Modifier name="public" col_offset="5" fromlineno="103"/>
-        <Modifier name="static" col_offset="5" fromlineno="103"/>
-        <Method id="1" name="foo" col_offset="21" fromlineno="105">
-            <Modifier name="public" col_offset="9" fromlineno="105"/>
+    <Class filename="/com/example/MyClass.java" id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="23" fromlineno="111">
+        <Modifier name="public" col_offset="9" fromlineno="111"/>
+        <Modifier name="static" col_offset="9" fromlineno="111"/>
+    </Class>
+    <Class filename="/com/example/MyClass.java" id="3" name="com.example.MyClass.MyClass2" col_offset="19" fromlineno="105">
+        <Modifier name="public" col_offset="5" fromlineno="105"/>
+        <Modifier name="static" col_offset="5" fromlineno="105"/>
+        <Method id="1" name="foo" col_offset="21" fromlineno="107">
+            <Modifier name="public" col_offset="9" fromlineno="107"/>
         </Method>
     </Class>
-    <Class filename="/com/example/MyClass.java" id="1" name="com.example.MyClass" col_offset="8" fromlineno="9">
+    <Class filename="/com/example/MyClass.java" id="2" name="com.example.MyClass" col_offset="8" fromlineno="9">
         <Modifier name="public" col_offset="1" fromlineno="9"/>
         <Attr name="A" col_offset="32" fromlineno="11">
             <Modifier name="public" col_offset="5" fromlineno="11"/>
@@ -25,92 +29,109 @@
             <Modifier name="private" col_offset="5" fromlineno="13"/>
         </Attr>
         <Attr name="list" col_offset="23" fromlineno="14">
-            <CommonType id="4" name="com.example.OurClass"/>
+            <CommonType id="5" name="com.example.OurClass"/>
             <Modifier name="" col_offset="-1" fromlineno="-1"/>
         </Attr>
         <Attr name="actionList" col_offset="36" fromlineno="15">
-            <AggregatedType element_type="com.example.IAction" element_id="6" id="-1" name="java.util.List" col_offset="26" fromlineno="15"/>
+            <AggregatedType element_type="com.example.IAction" element_id="7" id="-1" name="java.util.List" col_offset="26" fromlineno="15"/>
             <Modifier name="static" col_offset="5" fromlineno="15"/>
         </Attr>
         <Attr name="intValue" col_offset="21" fromlineno="91">
-            <CommonType id="1" name="com.example.MyClass" col_offset="13" fromlineno="91"/>
+            <CommonType id="2" name="com.example.MyClass" col_offset="13" fromlineno="91"/>
             <Modifier name="private" col_offset="5" fromlineno="91"/>
         </Attr>
-        <Attr name="hoho" col_offset="31" fromlineno="101">
-            <CommonType id="5" name="com.example.OurClass.MyClass2" col_offset="21" fromlineno="101"/>
+        <Attr name="mcmc2" col_offset="22" fromlineno="101">
+            <CommonType id="3" name="com.example.MyClass.MyClass2" col_offset="13" fromlineno="101"/>
             <Modifier name="private" col_offset="5" fromlineno="101"/>
+        </Attr>
+        <Attr name="hoho" col_offset="31" fromlineno="103">
+            <CommonType id="6" name="com.example.OurClass.MyClass2" col_offset="21" fromlineno="103"/>
+            <Modifier name="private" col_offset="5" fromlineno="103"/>
         </Attr>
         <Method id="1" name="main" col_offset="24" fromlineno="17">
             <Modifier name="public" col_offset="5" fromlineno="17"/>
             <Modifier name="static" col_offset="5" fromlineno="17"/>
             <Arg name="action" col_offset="37" fromlineno="17">
-                <CommonType id="6" name="com.example.IAction" col_offset="29" fromlineno="17"/>
+                <CommonType id="7" name="com.example.IAction" col_offset="29" fromlineno="17"/>
             </Arg>
         </Method>
         <Method id="2" name="bar" col_offset="30" fromlineno="77">
-            <CommonType id="5" name="com.example.OurClass.MyClass2" col_offset="20" fromlineno="77"/>
+            <CommonType id="6" name="com.example.OurClass.MyClass2" col_offset="20" fromlineno="77"/>
             <Modifier name="public" col_offset="5" fromlineno="77"/>
             <Arg name="a" col_offset="41" fromlineno="77"/>
             <Arg name="b" col_offset="52" fromlineno="77"/>
             <Arg name="c" col_offset="73" fromlineno="77">
-                <CommonType id="5" name="com.example.OurClass.MyClass2" col_offset="63" fromlineno="77"/>
+                <CommonType id="6" name="com.example.OurClass.MyClass2" col_offset="63" fromlineno="77"/>
             </Arg>
         </Method>
         <Method id="3" name="getValue" col_offset="20" fromlineno="87">
-            <CommonType id="1" name="com.example.MyClass" col_offset="12" fromlineno="87"/>
+            <CommonType id="2" name="com.example.MyClass" col_offset="12" fromlineno="87"/>
             <Modifier name="public" col_offset="5" fromlineno="87"/>
         </Method>
         <Method id="4" name="bar" col_offset="19" fromlineno="93">
             <Modifier name="public" col_offset="5" fromlineno="93"/>
         </Method>
     </Class>
-    <Class filename="/com/example/OurClass.java" id="5" name="com.example.OurClass.MyClass2" col_offset="16" fromlineno="4">
+    <Class filename="/com/example/OurClass.java" id="6" name="com.example.OurClass.MyClass2" col_offset="16" fromlineno="4">
         <Modifier name="public" col_offset="2" fromlineno="4"/>
         <Modifier name="static" col_offset="2" fromlineno="4"/>
     </Class>
-    <Class filename="/com/example/OurClass.java" id="4" name="com.example.OurClass" col_offset="8" fromlineno="3">
+    <Class filename="/com/example/OurClass.java" id="5" name="com.example.OurClass" col_offset="8" fromlineno="3">
         <Modifier name="public" col_offset="1" fromlineno="3"/>
     </Class>
-    <Class filename="/com/example/IAction.java" id="6" name="com.example.IAction" col_offset="8" fromlineno="3">
+    <Class filename="/com/example/IAction.java" id="7" name="com.example.IAction" col_offset="8" fromlineno="3">
         <Modifier name="public" col_offset="1" fromlineno="3"/>
         <Modifier name="interface" col_offset="1" fromlineno="3"/>
     </Class>
-    <Class filename="/com/example/OtherClass.java" id="9" name="com.example.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" col_offset="17" fromlineno="9">
-        <Modifier name="public" col_offset="3" fromlineno="9"/>
-        <Modifier name="static" col_offset="3" fromlineno="9"/>
-        <Parent id="3" name="com.example.MyClass.MyClass2.MyClass3" col_offset="66" fromlineno="9"/>
+    <Class filename="/com/example/OtherClass.java" id="10" name="com.example.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" col_offset="17" fromlineno="10">
+        <Modifier name="public" col_offset="3" fromlineno="10"/>
+        <Modifier name="static" col_offset="3" fromlineno="10"/>
+        <Parent id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="66" fromlineno="10"/>
     </Class>
-    <Class filename="/com/example/OtherClass.java" id="8" name="com.example.OtherClass.AnotherOtherClass" col_offset="16" fromlineno="6">
+    <Class filename="/com/example/OtherClass.java" id="9" name="com.example.OtherClass.AnotherOtherClass" col_offset="16" fromlineno="6">
         <Modifier name="public" col_offset="2" fromlineno="6"/>
         <Modifier name="static" col_offset="2" fromlineno="6"/>
         <Attr name="field" col_offset="20" fromlineno="7">
-            <CommonType id="3" name="com.example.MyClass.MyClass2.MyClass3" col_offset="11" fromlineno="7"/>
+            <CommonType id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="11" fromlineno="7"/>
             <Modifier name="private" col_offset="3" fromlineno="7"/>
         </Attr>
-        <Parent id="2" name="com.example.MyClass.MyClass2" col_offset="48" fromlineno="6"/>
-    </Class>
-    <Class filename="/com/example/OtherClass.java" id="7" name="com.example.OtherClass" col_offset="8" fromlineno="4">
-        <Modifier name="public" col_offset="1" fromlineno="4"/>
-        <Parent id="1" name="com.example.MyClass" col_offset="33" fromlineno="4"/>
-        <Parent id="6" name="com.example.IAction" col_offset="52" fromlineno="4"/>
-    </Class>
-    <Class filename="/com/example/util/OtherClass.java" id="12" name="com.example.util.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" col_offset="17" fromlineno="12">
-        <Modifier name="public" col_offset="3" fromlineno="12"/>
-        <Modifier name="static" col_offset="3" fromlineno="12"/>
-        <Parent id="3" name="com.example.MyClass.MyClass2.MyClass3" col_offset="66" fromlineno="12"/>
-    </Class>
-    <Class filename="/com/example/util/OtherClass.java" id="11" name="com.example.util.OtherClass.AnotherOtherClass" col_offset="16" fromlineno="9">
-        <Modifier name="public" col_offset="2" fromlineno="9"/>
-        <Modifier name="static" col_offset="2" fromlineno="9"/>
-        <Attr name="field" col_offset="20" fromlineno="10">
-            <CommonType id="3" name="com.example.MyClass.MyClass2.MyClass3" col_offset="11" fromlineno="10"/>
-            <Modifier name="private" col_offset="3" fromlineno="10"/>
+        <Attr name="field1" col_offset="20" fromlineno="8">
+            <CommonType id="3" name="com.example.MyClass.MyClass2" col_offset="11" fromlineno="8"/>
+            <Modifier name="private" col_offset="3" fromlineno="8"/>
         </Attr>
-        <Parent id="2" name="com.example.MyClass.MyClass2" col_offset="48" fromlineno="9"/>
+        <Parent id="3" name="com.example.MyClass.MyClass2" col_offset="48" fromlineno="6"/>
     </Class>
-    <Class filename="/com/example/util/OtherClass.java" id="10" name="com.example.util.OtherClass" col_offset="8" fromlineno="7">
-        <Modifier name="public" col_offset="1" fromlineno="7"/>
-        <Parent id="1" name="com.example.MyClass" col_offset="33" fromlineno="7"/>
-        <Parent id="6" name="com.example.IAction" col_offset="52" fromlineno="7"/>
+    <Class filename="/com/example/OtherClass.java" id="8" name="com.example.OtherClass" col_offset="8" fromlineno="4">
+        <Modifier name="public" col_offset="1" fromlineno="4"/>
+        <Parent id="2" name="com.example.MyClass" col_offset="33" fromlineno="4"/>
+        <Parent id="7" name="com.example.IAction" col_offset="52" fromlineno="4"/>
+    </Class>
+    <Class filename="/com/example/util/OtherClass.java" id="13" name="com.example.util.OtherClass.AnotherOtherClass.AndNowSomethingCompletelyDifferent" col_offset="17" fromlineno="16">
+        <Modifier name="public" col_offset="3" fromlineno="16"/>
+        <Modifier name="static" col_offset="3" fromlineno="16"/>
+        <Parent id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="66" fromlineno="16"/>
+    </Class>
+    <Class filename="/com/example/util/OtherClass.java" id="12" name="com.example.util.OtherClass.AnotherOtherClass" col_offset="16" fromlineno="11">
+        <Modifier name="public" col_offset="2" fromlineno="11"/>
+        <Modifier name="static" col_offset="2" fromlineno="11"/>
+        <Attr name="field" col_offset="20" fromlineno="12">
+            <CommonType id="4" name="com.example.MyClass.MyClass2.MyClass3" col_offset="11" fromlineno="12"/>
+            <Modifier name="private" col_offset="3" fromlineno="12"/>
+        </Attr>
+        <Attr name="field1" col_offset="20" fromlineno="13">
+            <CommonType id="3" name="com.example.MyClass.MyClass2" col_offset="11" fromlineno="13"/>
+            <Modifier name="private" col_offset="3" fromlineno="13"/>
+        </Attr>
+        <Attr name="field2" col_offset="20" fromlineno="14">
+            <CommonType id="1" name="ru.test.ITesting" col_offset="11" fromlineno="14"/>
+            <Modifier name="private" col_offset="3" fromlineno="14"/>
+        </Attr>
+        <Parent id="3" name="com.example.MyClass.MyClass2" col_offset="48" fromlineno="11"/>
+    </Class>
+    <Class filename="/com/example/util/OtherClass.java" id="11" name="com.example.util.OtherClass" col_offset="8" fromlineno="9">
+        <Modifier name="public" col_offset="1" fromlineno="9"/>
+        <Parent id="2" name="com.example.MyClass" col_offset="33" fromlineno="9"/>
+        <Parent id="7" name="com.example.IAction" col_offset="52" fromlineno="9"/>
+        <Parent id="1" name="ru.test.ITesting" col_offset="61" fromlineno="9"/>
     </Class>
 </Classes>
