@@ -133,7 +133,7 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
         self.__counter = 1
         self.__report = ""
         self.__count = {}
-        self.forEachClass(self.process_class())
+        self.for_each_class(self.process_class())
         for clazz, cnt in self.__count.items():
             if cnt <= 2 and cnt > 0:
                 self.__report += "\nClass {className} created only in few methods: {methods}".format(className = clazz, methods = cnt)
@@ -155,7 +155,13 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
                     target = direct.get("Target")
                     method_name = direct.getparent().getparent().getparent().get("name")
                     class_name = direct.getparent().getparent().getparent().get("parent_class")
-                    self.__report += "\nClass {clazz} created in {method_id} from {parent_class}".format(clazz = c.get("name"), method_id = target.get("cfg_id") if target != None else method_name, parent_class = class_name)
+                    self.__report += "\nClass {clazz} created in {method_name} (target id {method_id}) from {parent_class}".format(clazz = c.get("name"), method_name = method_name, method_id = target.get("cfg_id"), parent_class = class_name)
+                    self.__count[c.get("name")] += 1
+                for tc in self._cfg_tree.xpath("//Method/Block/Call/Direct/Target/TargetClass[@label='{class_name}']".format(class_name = c.get("name"))):
+                    target = tc.getparent()
+                    method_name = tc.getparent().getparent().getparent().getparent().getparent().get("name")
+                    class_name = tc.getparent().getparent().getparent().getparent().getparent().get("parent_class")
+                    self.__report += "\nClass {clazz} created in {method_name} (target id {method_id}) from {parent_class}".format(clazz = c.get("name"), method_name = method_name, method_id = target.get("cfg_id"), parent_class = class_name)
                     self.__count[c.get("name")] += 1
         
         return process_class_internal

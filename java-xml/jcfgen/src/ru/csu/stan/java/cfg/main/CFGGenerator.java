@@ -169,7 +169,6 @@ public class CFGGenerator {
 			if (o instanceof Method){
 				Method method = (Method) o;
 				VariableScope rootScope = ScopeRegistry.getInstance().findScopeByClass(method.getParentClass());
-				VariableScope methodScope = rootScope.findScopeInChildren(method.getName());
 				for (Object bo: method.getTryExceptOrTryFinallyOrWith()){
 					if (bo instanceof Block){
 						Block block = (Block) bo;
@@ -203,7 +202,10 @@ public class CFGGenerator {
 								}
 							}
 							if (call.getDirect() != null){
-								varName = "this";
+								if (call.getDirect().getTarget() != null)
+									varName = "this";
+								else
+									varName = "";
 								callName = call.getDirect().getName();
 							}
 							VariableFromScope var = getScopedVar(varName, rootScope);
@@ -215,11 +217,15 @@ public class CFGGenerator {
 								fullName = nameResolver.getFullTypeName(var.getType(), method.getParentClass(), this.classes);
 							if ("this".equals(varName))
 								fullName = method.getParentClass();
+							if ("".equals(varName))
+								fullName = nameResolver.getFullTypeName(callName, method.getParentClass(), this.classes);
 							if (fullName == null || fullName.isEmpty()){
-								it.remove();
-								System.out.println("Excluded: " + varName + " and it's call " + callName + " from " + method.getParentClass());
-								if (call.getGetattr() != null)
-									System.out.println("label - " + call.getGetattr().getLabel() + "; name - " + call.getGetattr().getName());
+								if (call.getDirect() != null){
+									Target target = new ObjectFactory().createTarget();
+									target.setType("method");
+									call.getDirect().setTarget(target);
+									call.getDirect().setSpaceType("external");
+								}
 							}
 							else{
 								if (call.getGetattr() != null){
@@ -233,14 +239,26 @@ public class CFGGenerator {
 									call.getGetattr().getTarget().add(target);
 								}
 								if (call.getDirect() != null){
-									TargetClass tc = new ObjectFactory().createTargetClass();
-									tc.setUcrId(method.getUcrId());
-									tc.setLabel(method.getParentClass());
-									Target target = new ObjectFactory().createTarget();
-									target.setCfgId(getCfgId(method.getParentClass(), callName, project));
-									target.setType("method");
-									target.setTargetClass(tc);
-									call.getDirect().setTarget(target);
+									if ("".equals(varName)){
+										TargetClass tc = new ObjectFactory().createTargetClass();
+										tc.setUcrId(idGenerator.getClassId(fullName));
+										tc.setLabel(fullName);
+										Target target = new ObjectFactory().createTarget();
+										target.setCfgId(getCfgId(fullName, callName, project));
+										target.setType("method");
+										target.setTargetClass(tc);
+										call.getDirect().setTarget(target);
+									}
+									else{
+										TargetClass tc = new ObjectFactory().createTargetClass();
+										tc.setUcrId(method.getUcrId());
+										tc.setLabel(method.getParentClass());
+										Target target = new ObjectFactory().createTarget();
+										target.setCfgId(getCfgId(method.getParentClass(), callName, project));
+										target.setType("method");
+										target.setTargetClass(tc);
+										call.getDirect().setTarget(target);
+									}
 								}
 							}
 						}

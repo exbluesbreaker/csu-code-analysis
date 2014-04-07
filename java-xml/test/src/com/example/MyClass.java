@@ -98,6 +98,8 @@ public class MyClass extends ArrayList<Object>{
     	return sb.toString();
     }
     
+    private MyClass2 mcmc2;
+    
     private OurClass.MyClass2 hoho;
     
     public static class MyClass2 {

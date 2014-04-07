@@ -1,27 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Project>
-    <Method ucr_method_id="1" ucr_id="1" cfg_id="1" parent_class="com.example.MyClass" name="main">
-        <Block id="1"/>
+    <Method ucr_method_id="1" ucr_id="2" cfg_id="1" parent_class="com.example.MyClass" name="main">
+        <Block id="1">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+            <Call>
+                <Getattr label="actionList" name="add"/>
+            </Call>
+        </Block>
         <Flow from_id="1" to_id="2"/>
         <TryExcept col_offset="9" fromlineno="21" id="2"/>
         <Flow from_id="2" to_id="3"/>
         <If test="condition" col_offset="10" fromlineno="23" id="3"/>
         <Flow from_id="3" to_id="4"/>
-        <Block id="4"/>
+        <Block id="4">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="3" to_id="5"/>
         <Block id="5"/>
         <Flow from_id="2" to_id="6"/>
-        <Block id="6"/>
+        <Block id="6">
+            <Call>
+                <Direct space_type="external" name="RuntimeException">
+                    <Target type="method"/>
+                </Direct>
+            </Call>
+        </Block>
         <Flow from_id="4" to_id="7"/>
         <TryFinally id="7"/>
         <Flow from_id="7" to_id="8"/>
-        <Block id="8"/>
+        <Block id="8">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="8" to_id="9"/>
         <For iterate="initialize_section" col_offset="9" fromlineno="35" id="9"/>
         <Flow from_id="9" to_id="10"/>
         <If test="condition" col_offset="10" fromlineno="36" id="10"/>
         <Flow from_id="10" to_id="11"/>
-        <Block id="11"/>
+        <Block id="11">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="11" to_id="9"/>
         <Flow from_id="10" to_id="9"/>
         <Flow from_id="9" to_id="12"/>
@@ -29,27 +54,54 @@
         <Flow from_id="12" to_id="13"/>
         <If test="condition" col_offset="10" fromlineno="40" id="13"/>
         <Flow from_id="13" to_id="14"/>
-        <Block id="14"/>
+        <Block id="14">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="13" to_id="15"/>
-        <Block id="15"/>
+        <Block id="15">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="14" to_id="16"/>
         <Flow from_id="15" to_id="16"/>
         <Flow from_id="12" to_id="16"/>
         <For iterate="initialize_section" col_offset="9" fromlineno="46" id="16"/>
         <Flow from_id="16" to_id="17"/>
-        <Block id="17"/>
+        <Block id="17">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="17" to_id="18"/>
         <If test="condition" col_offset="10" fromlineno="48" id="18"/>
         <Flow from_id="18" to_id="19"/>
-        <Block id="19"/>
+        <Block id="19">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="18" to_id="20"/>
-        <Block id="20"/>
+        <Block id="20">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="19" to_id="16"/>
         <Flow from_id="20" to_id="16"/>
         <Flow from_id="16" to_id="21"/>
         <For iterate="expression" col_offset="9" fromlineno="54" id="21"/>
         <Flow from_id="21" to_id="22"/>
-        <Block id="22"/>
+        <Block id="22">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="22" to_id="21"/>
         <Flow from_id="21" to_id="23"/>
         <While test="condition" col_offset="9" fromlineno="59" id="23"/>
@@ -76,59 +128,91 @@
         <Flow from_id="29" to_id="31"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="31"/>
     </Method>
-    <Method ucr_method_id="2" ucr_id="1" cfg_id="2" parent_class="com.example.MyClass" name="bar">
+    <Method ucr_method_id="2" ucr_id="2" cfg_id="2" parent_class="com.example.MyClass" name="bar">
         <Block id="1">
             <Call>
                 <Direct name="bar">
                     <Target cfg_id="2" type="method">
-                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
+                        <TargetClass ucr_id="2" label="com.example.MyClass"/>
                     </Target>
                 </Direct>
             </Call>
             <Call>
                 <Getattr label="this" name="bar">
                     <Target cfg_id="2" type="method">
-                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
+                        <TargetClass ucr_id="2" label="com.example.MyClass"/>
                     </Target>
                 </Getattr>
             </Call>
             <Call>
                 <Getattr label="this" name="getValue">
                     <Target cfg_id="3" type="method">
-                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
+                        <TargetClass ucr_id="2" label="com.example.MyClass"/>
                     </Target>
                 </Getattr>
             </Call>
             <Call>
                 <Getattr label="this.intValue" name="getValue">
                     <Target cfg_id="3" type="method">
-                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
+                        <TargetClass ucr_id="2" label="com.example.MyClass"/>
                     </Target>
                 </Getattr>
             </Call>
             <Call>
                 <Getattr label="this.intValue" name="intValue">
                     <Target type="method">
-                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
+                        <TargetClass ucr_id="2" label="com.example.MyClass"/>
                     </Target>
                 </Getattr>
+            </Call>
+            <Call>
+                <Direct name="MyClass">
+                    <Target type="method">
+                        <TargetClass ucr_id="2" label="com.example.MyClass"/>
+                    </Target>
+                </Direct>
             </Call>
         </Block>
         <Flow from_id="1" to_id="2"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
     </Method>
-    <Method ucr_method_id="3" ucr_id="1" cfg_id="3" parent_class="com.example.MyClass" name="getValue">
+    <Method ucr_method_id="3" ucr_id="2" cfg_id="3" parent_class="com.example.MyClass" name="getValue">
         <Block id="1"/>
         <Flow from_id="1" to_id="2"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
     </Method>
-    <Method ucr_method_id="4" ucr_id="1" cfg_id="4" parent_class="com.example.MyClass" name="bar">
-        <Block id="1"/>
+    <Method ucr_method_id="4" ucr_id="2" cfg_id="4" parent_class="com.example.MyClass" name="bar">
+        <Block id="1">
+            <Call>
+                <Getattr label="sb" name="append"/>
+            </Call>
+            <Call>
+                <Direct name="MyClass2">
+                    <Target type="method">
+                        <TargetClass ucr_id="3" label="com.example.MyClass.MyClass2"/>
+                    </Target>
+                </Direct>
+            </Call>
+            <Call>
+                <Getattr label="mc2" name="foo">
+                    <Target cfg_id="5" type="method">
+                        <TargetClass ucr_id="3" label="com.example.MyClass.MyClass2"/>
+                    </Target>
+                </Getattr>
+            </Call>
+            <Call>
+                <Getattr label="sb" name="toString"/>
+            </Call>
+        </Block>
         <Flow from_id="1" to_id="2"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
     </Method>
-    <Method ucr_method_id="1" ucr_id="2" cfg_id="5" parent_class="com.example.MyClass.MyClass2" name="foo">
-        <Block id="1"/>
+    <Method ucr_method_id="1" ucr_id="3" cfg_id="5" parent_class="com.example.MyClass.MyClass2" name="foo">
+        <Block id="1">
+            <Call>
+                <Getattr label="System" name="out.println"/>
+            </Call>
+        </Block>
         <Flow from_id="1" to_id="2"/>
         <Block type="&lt;&lt;Exit&gt;&gt;" id="2"/>
     </Method>

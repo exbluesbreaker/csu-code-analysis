@@ -47,6 +47,10 @@ public class MethodInvocationContext extends ContextBase {
 			hasInternalCall = true;
         	return new MethodInvocationContext(this, block, className);
         }
+		if ("new_class".equals(eventName)){
+			hasInternalCall = true;
+        	return new NewClassContext(this, block, className);
+        }
 		if ("arguments".equals(eventName))
 			return new MethodArgumentsContext(this);
 		return this;
