@@ -79,9 +79,37 @@
     <Method ucr_method_id="2" ucr_id="1" cfg_id="2" parent_class="com.example.MyClass" name="bar">
         <Block id="1">
             <Call>
-                <Getattr label="this" name="intValue.getValue">
-                    <Target cfg_id="3">
-                        <TargetClass ucr_id="1"/>
+                <Direct name="bar">
+                    <Target cfg_id="2" type="method">
+                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
+                    </Target>
+                </Direct>
+            </Call>
+            <Call>
+                <Getattr label="this" name="bar">
+                    <Target cfg_id="2" type="method">
+                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
+                    </Target>
+                </Getattr>
+            </Call>
+            <Call>
+                <Getattr label="this" name="getValue">
+                    <Target cfg_id="3" type="method">
+                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
+                    </Target>
+                </Getattr>
+            </Call>
+            <Call>
+                <Getattr label="this.intValue" name="getValue">
+                    <Target cfg_id="3" type="method">
+                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
+                    </Target>
+                </Getattr>
+            </Call>
+            <Call>
+                <Getattr label="this.intValue" name="intValue">
+                    <Target type="method">
+                        <TargetClass ucr_id="1" label="com.example.MyClass"/>
                     </Target>
                 </Getattr>
             </Call>
