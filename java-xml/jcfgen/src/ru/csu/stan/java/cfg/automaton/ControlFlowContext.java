@@ -67,8 +67,11 @@ public class ControlFlowContext extends ContextBase implements IClassInsidePart{
         if ("method_invocation".equals(eventName)){
         	return new MethodInvocationContext(this, block, getClassName());
         }
+        if ("new_class".equals(eventName)){
+        	return new NewClassContext(this, block, getClassName());
+        }
         if ("variable".equals(eventName))
-        	return new VariableContext(this, scope);
+        	return new VariableContext(this, scope, block);
         return this;
     }
 

@@ -57,6 +57,9 @@ public class ClassNameResolver {
 		// Получаем метаданные о файле сборки
 		CompilationUnit unit = imports.findUnitByClass(currentClass.getName());
 		
+		if (packages.isClassInRegistry(currentClass.getName() + '.' + name))
+			return currentClass.getName() + '.' + name;
+		
 		String currentPackageName = findNameInCurrentPackage(name, unit);
 		if (currentPackageName != null)
 			return currentPackageName;

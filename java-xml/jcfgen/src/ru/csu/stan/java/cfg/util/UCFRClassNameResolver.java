@@ -59,6 +59,9 @@ public class UCFRClassNameResolver {
 		// Получаем метаданные о файле сборки
 		CompilationUnit unit = imports.findUnitByClass(fullClassname);
 		
+		if (packages.isClassInRegistry(fullClassname + '.' + name))
+			return fullClassname + '.' + name;
+		
 		String currentPackageName = findNameInCurrentPackage(name, unit);
 		if (currentPackageName != null)
 			return currentPackageName;
