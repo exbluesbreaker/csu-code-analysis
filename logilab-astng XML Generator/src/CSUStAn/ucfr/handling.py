@@ -91,7 +91,6 @@ class FlatUCFRSlicer(UCFRSlicer):
         self._sliced_frames|=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+node_id+"\"]|//Method[@cfg_id=\""+node_id+"\"]"))
         calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]|\
                                                         //Function[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]")
-        print node_id
         for id in set([c.get("cfg_id") for c in calls]):
             self.handle_tree(id)
             
@@ -104,6 +103,7 @@ class FlatUCFRSlicer(UCFRSlicer):
             self._sliced_frames.add(call.getparent().getparent().getparent().getparent())
             
 class ClassUCFRSlicer(UCFRSlicer):
+    ''' Slice methods-creators of given class '''
     _ucr_id = None
     _criteria = None  
     

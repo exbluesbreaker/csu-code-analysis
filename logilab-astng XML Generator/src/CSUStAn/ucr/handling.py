@@ -343,7 +343,7 @@ class UCRSlicer(ClassIRHandler):
         return root_node
     
 class InheritanceSlicer(ConfigurationMixIn,UCRSlicer):
-    ''' search for probable inheritance(methods) mistakes '''
+    ''' Slice given class and all inheritance-related classes '''
     
     options = OPTIONS
     _methods = None

@@ -60,6 +60,7 @@ class DataflowLinker(UCFRHandler,ClassIRHandler):
         print "Found getattr calls ",self._typed_ga_calls,"  unknown - ", self._unknown_ga_calls   
 
 class InstanceInitSlicer(UCFRHandler, UCRSlicer):
+    ''' Search for all classes, which methods creates given class '''
     _ucr_id = None
     _keep_parents = None
     def __init__(self,ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents=False):
@@ -99,12 +100,16 @@ class UnreachableCodeSearch(UCFRHandler, ClassIRHandler):
         ClassIRHandler.__init__(self, ucr_xml)
         UCFRHandler.__init__(self, lcfg_xml)
         self.get_call_map()
-        print "Reachable ",len(self._call_map)," from ", len(self.get_frames())
         all_frames = set([f.get("cfg_id") for f in self.get_frames()])
         all_called = set(self._call_map.keys())
+        not_called = all_frames-all_called
+        not_called_frames = set([f for f in self.get_frames() if f.get("cfg_id") in not_called])
+        for f in not_called_frames:
+            print "Not found calls for",f.tag, f.get("name"),"[cfg_id="+f.get("cfg_id")+"]", "from",f.get("label") 
+        print "Reachable ",len(all_called)," from ", len(all_frames)
         print len(all_frames)
         print len(all_called)
-        print len(all_frames-all_called)
+        print len(not_called)
         print all_called-all_frames
     
     def get_call_map(self):
