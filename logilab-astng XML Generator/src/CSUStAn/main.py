@@ -210,8 +210,9 @@ elif(args.type=="InstanceInitSlicer"):
     lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
     ucr_id = cfg_parser.get(args.type,'ucr_id')
     out_xml = cfg_parser.get(args.type,'out_xml')
+    criteria = cfg_parser.get(args.type,'criteria')
     keep_parents = cfg_parser.getboolean(args.type,'keep_parents')
-    runner = InstanceInitSlicer(ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents)
+    runner = InstanceInitSlicer(ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents,criteria)
 elif(args.type=="ExecPathVisualizer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_dir = cfg_parser.get(args.type,'out_dir')
