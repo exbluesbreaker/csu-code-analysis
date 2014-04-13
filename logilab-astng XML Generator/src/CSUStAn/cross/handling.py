@@ -7,6 +7,7 @@ Created on 02.03.2014
 from lxml import etree
 from CSUStAn.ucfr.handling import UCFRHandler
 from CSUStAn.ucr.handling import ClassIRHandler,UCRSlicer
+from CSUStAn.exceptions import CSUStAnException
 
 class DataflowLinker(UCFRHandler,ClassIRHandler):
     _targeted = 0
@@ -60,17 +61,36 @@ class DataflowLinker(UCFRHandler,ClassIRHandler):
         print "Found getattr calls ",self._typed_ga_calls,"  unknown - ", self._unknown_ga_calls   
 
 class InstanceInitSlicer(UCFRHandler, UCRSlicer):
+    ''' Search for all classes, created in methods of given class '''
     _ucr_id = None
     _keep_parents = None
-    def __init__(self,ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents=False):
+    _criteria = None
+    def __init__(self,ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents=False,criteria='creators'):
         UCRSlicer.__init__(self, ucr_xml)
         UCFRHandler.__init__(self, lcfg_xml)
         self._ucr_id = ucr_id
         self._keep_parents = keep_parents
-        self.write_slicing(out_xml)
+        self._criteria = criteria
+        root_node = self.slice_ucr()
+        self.write_slicing(out_xml,root_node)
         
         
     def slice(self):
+        if self._criteria == 'creators':
+            self.slice_creators()
+        elif self._criteria == 'created':
+            self.slice_created()
+        elif self._criteria == 'summary':
+            self.show_all()
+        else:
+            raise CSUStAnException("Unknown criteria - "+self._criteria+"!")
+        
+    def show_all(self):
+        for c in self._cfg_tree.xpath("//Method//Direct//Target[@type=\"method\"]//TargetClass[@ucr_id]"):
+            creator = c.getparent().getparent().getparent().getparent().getparent()
+            print "Method",creator.get("name")+"[cfg_id="+creator.get("cfg_id")+"] of",creator.get("parent_class")+"[ucr_id="+creator.get("ucr_id")+"] creates object of class",c.getparent().getparent().get("name")+"[ucr_id="+c.get("ucr_id")+"]" 
+                
+    def slice_creators(self):
         current_class = self.get_class_by_id(self._ucr_id)
         self._sliced_classes.add(current_class)
         parents = None
@@ -80,13 +100,33 @@ class InstanceInitSlicer(UCFRHandler, UCRSlicer):
             for p in current_class.iter("Parent"):
                     current_class.remove(p)
         for c in self._cfg_tree.xpath("//Method[@ucr_id=\""+self._ucr_id+"\"]//Direct//Target[@type=\"method\"]//TargetClass[@ucr_id]"):
-            created_class = self.get_class_by_id(c.get("ucr_id"))
+            created_class = self.get_class_by_id(c.get("ucr_id")) 
             self._sliced_classes.add(created_class)
             if(self._keep_parents):
                 parents = self.get_all_parents(created_class,parents)
             else:
                 for p in created_class.iter("Parent"):
                     created_class.remove(p)
+        if parents is not None:
+            for p in parents:
+                self._sliced_classes.add(p)
+    def slice_created(self):
+        current_class = self.get_class_by_id(self._ucr_id)
+        self._sliced_classes.add(current_class)
+        parents = None
+        if(self._keep_parents):
+                parents = self.get_all_parents(current_class,parents)
+        else:
+            for p in current_class.iter("Parent"):
+                    current_class.remove(p)
+        for c in self._cfg_tree.xpath("//Method//Direct//Target[@type=\"method\"]//TargetClass[@ucr_id=\""+self._ucr_id+"\"]"):
+            creator_class = self.get_class_by_id(c.getparent().getparent().getparent().getparent().getparent().get("ucr_id")) 
+            self._sliced_classes.add(creator_class)
+            if(self._keep_parents):
+                parents = self.get_all_parents(creator_class,parents)
+            else:
+                for p in creator_class.iter("Parent"):
+                    creator_class.remove(p)
         if parents is not None:
             for p in parents:
                 self._sliced_classes.add(p)
@@ -99,12 +139,16 @@ class UnreachableCodeSearch(UCFRHandler, ClassIRHandler):
         ClassIRHandler.__init__(self, ucr_xml)
         UCFRHandler.__init__(self, lcfg_xml)
         self.get_call_map()
-        print "Reachable ",len(self._call_map)," from ", len(self.get_frames())
         all_frames = set([f.get("cfg_id") for f in self.get_frames()])
         all_called = set(self._call_map.keys())
+        not_called = all_frames-all_called
+        not_called_frames = set([f for f in self.get_frames() if f.get("cfg_id") in not_called])
+        for f in not_called_frames:
+            print "Not found calls for",f.tag, f.get("name"),"[cfg_id="+f.get("cfg_id")+"]", "from",f.get("label") 
+        print "Reachable ",len(all_called)," from ", len(all_frames)
         print len(all_frames)
         print len(all_called)
-        print len(all_frames-all_called)
+        print len(not_called)
         print all_called-all_frames
     
     def get_call_map(self):

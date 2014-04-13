@@ -91,7 +91,6 @@ class FlatUCFRSlicer(UCFRSlicer):
         self._sliced_frames|=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+node_id+"\"]|//Method[@cfg_id=\""+node_id+"\"]"))
         calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]|\
                                                         //Function[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]")
-        print node_id
         for id in set([c.get("cfg_id") for c in calls]):
             self.handle_tree(id)
             
@@ -104,6 +103,7 @@ class FlatUCFRSlicer(UCFRSlicer):
             self._sliced_frames.add(call.getparent().getparent().getparent().getparent())
             
 class ClassUCFRSlicer(UCFRSlicer):
+    ''' Slice methods-creators of given class '''
     _ucr_id = None
     _criteria = None  
     
@@ -116,8 +116,8 @@ class ClassUCFRSlicer(UCFRSlicer):
     def extract_slicing(self):
         if self._criteria == "creators":
             self.handle_creators()
-        elif self._criteria == "created":
-            self.handle_created()
+        elif self._criteria == "methods":
+            self.handle_methods()
         else:
             print "Unknown CFG slicing criteria!"
             return
@@ -131,6 +131,13 @@ class ClassUCFRSlicer(UCFRSlicer):
         for call in self._cfg_tree.xpath("//TargetClass[@ucr_id=\"" + self._ucr_id + "\"]"):
             if call.getparent().getparent().tag=='Direct':
                 self._sliced_frames.add(call.getparent().getparent().getparent().getparent().getparent())
+                
+    def handle_methods(self):
+        ''' Slice all methods of given class '''
+        self._sliced_frames = set([])
+        for method in self._cfg_tree.xpath("//Method[@ucr_id=\"" + self._ucr_id + "\"]"):
+            self._sliced_frames.add(method)
+    
                 
                 
 class ExecPathHandler(UCFRHandler,IdGeneratorMixIn):
