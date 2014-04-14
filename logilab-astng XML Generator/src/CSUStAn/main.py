@@ -251,5 +251,8 @@ elif(args.type=="UnreachableCodeSearch"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
     runner = UnreachableCodeSearch(ucr_xml,lcfg_xml)
+elif (args.type == "BigClassAnalyzer-Java-AST"):
+    ast_xml = cfg_parser.get(args.type, "ast_xml")
+    runner = BigClassAnalyzerJavaAst(ast_xml)
 else:
     print "Unknown type!"

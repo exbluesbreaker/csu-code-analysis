@@ -20,6 +20,7 @@ from CSUStAn.cross.visual import ExecPathObjectSlicer
 from CSUStAn.cross.handling import DataflowLinker, UnreachableCodeSearch,InstanceInitSlicer
 from CSUStAn.ucr.handling import PotentialSiblingsCounter,InheritanceSlicer
 from CSUStAn.ucfr.handling import UCFRHandler
+from lxml import etree
 
 
 '''Entry points for different ASTNG processing'''
@@ -217,3 +218,53 @@ class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
                     self.__report += self.__MB_GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), k, str(v))
             
         return process_method_internal
+
+class BigClassAnalyzerJavaAst(UCFRHandler, ClassIRHandler):
+    """
+        Analyzes classes responsibility and finds "big" classes, that carries about too many things.
+        These classes could be "God objects" or just overweighted with data.
+        Also winds big and complex methods in classes.
+    """
+    
+    def __init__(self, ast_xml):
+        parser = etree.XMLParser(remove_blank_text=True)
+        self.__ast_tree = etree.parse(ast_xml, parser)
+        self.run()
+    
+    def run(self):
+        self.__counter = 1
+        self.__report = ""
+        self.process_ast()
+        self.for_each_class(self.process_class())
+        print self.__report
+        
+    def process_ast(self):
+        for node in self.__ast_tree.iter("compilation_unit"):
+            pass
+        
+    def process_class(self):
+        def process_class_internal(c):
+            print "Processing class " + c.get("name") + " (" + str(self.__counter) + "/" + str(self.get_num_of_classes()) + ")"
+            self.__counter += 1
+            attrs = len(self.handle_attrs(c))
+            if attrs > 15:
+                self.__report += "\nClass " + c.get("name") + " has potential problem with too many fields (" + str(attrs) + "). Maybe you should divide this class into some smaller?"
+            methods = 0
+            for method in c.iter("Method"):
+                methods += 1
+                args = len([x.get("name") for x in method.iter("Arg")])
+                if args > 7:
+                    self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many arguments (" + str(args) + "). Maybe some of it should be fields?"
+                for cfg_method in self._cfg_tree.xpath("//Method[@ucr_id=\"" + c.get("id") + "\" and @name=\"" + method.get("name") + "\"]"):
+                    flows = len([x.get("name") for x in cfg_method.iter("Flow")])
+                    blocks = len([x.get("name") for x in cfg_method.iter("Block")])
+                    if blocks > 10:
+                        self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many blocks in control flow (" + str(blocks) + "). Maybe you need to extract some to new method?"
+                    if flows > 20:
+                        self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many flows (" + str(flows) + "). Maybe you need to extract a new method?"
+                    if float(flows)/float(blocks) > 2.0:
+                        self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with complex control flow. Maybe you need to extract a new methods or simplify this?"
+            if methods > 30 or (methods - 2*attrs > 10 and attrs > 5) :
+                self.__report += "\nClass " + c.get("name") + " has too many methods. Looks like it has too many responsibilities. Maybe you should divide it?"
+        
+        return process_class_internal
