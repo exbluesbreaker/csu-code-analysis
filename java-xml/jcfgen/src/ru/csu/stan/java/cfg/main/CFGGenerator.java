@@ -150,8 +150,9 @@ public class CFGGenerator {
 				int id = method.getUcrMethodId().intValue();
 				MethodRegistryItem item = cfgRegistry.getItem(method.getParentClass(), id);
 				MethodRegistryItem ucrItem = ucrRegistry.findSame(method.getParentClass(), item);
-				((Method) o).setUcrId(idGenerator.getClassId(method.getParentClass()));
-				((Method) o).setCfgId(BigInteger.valueOf(cfgId++));
+				method.setUcrId(idGenerator.getClassId(method.getParentClass()));
+				method.setCfgId(BigInteger.valueOf(cfgId++));
+				method.setLabel(method.getParentClass());
 				if (ucrItem != null)
 					((Method) o).setUcrMethodId(BigInteger.valueOf(ucrItem.getId()));
 				else
