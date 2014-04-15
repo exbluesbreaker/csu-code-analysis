@@ -20,6 +20,7 @@ from CSUStAn.cross.visual import ExecPathObjectSlicer
 from CSUStAn.cross.handling import DataflowLinker, UnreachableCodeSearch,InstanceInitSlicer
 from CSUStAn.ucr.handling import PotentialSiblingsCounter,InheritanceSlicer
 from CSUStAn.ucfr.handling import UCFRHandler
+from lxml import etree
 
 
 '''Entry points for different ASTNG processing'''
@@ -101,7 +102,7 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
             for method in c.iter("Method"):
                 methods += 1
                 args = len([x.get("name") for x in method.iter("Arg")])
-                if args > 7:
+                if args > 5:
                     self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many arguments (" + str(args) + "). Maybe some of it should be fields?"
                 for cfg_method in self._cfg_tree.xpath("//Method[@ucr_id=\"" + c.get("id") + "\" and @name=\"" + method.get("name") + "\"]"):
                     flows = len([x.get("name") for x in cfg_method.iter("Flow")])
@@ -217,3 +218,82 @@ class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
                     self.__report += self.__MB_GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), k, str(v))
             
         return process_method_internal
+
+class BigClassAnalyzerJavaAst(UCFRHandler, ClassIRHandler):
+    """
+        Analyzes classes responsibility and finds "big" classes, that carries about too many things.
+        These classes could be "God objects" or just overweighted with data.
+        Also winds big and complex methods in classes.
+    """
+    
+    def __init__(self, ast_xml):
+        parser = etree.XMLParser(remove_blank_text=True)
+        self.__ast_tree = etree.parse(ast_xml, parser)
+        self.run()
+    
+    def run(self):
+        self.__counter = 1
+        self.__report = ""
+	self.__classes = {}
+	self.find_classes()
+        self.process_classes()
+        print self.__report
+        
+    def find_classes(self):
+        for node in self.__ast_tree.iter("compilation_unit"):
+	    package = ""
+	    for package_node in node.iter("package"):
+                package = self.get_package_name(package_node)
+	    for clazz in node.xpath("./definitions/class"):
+	        current_class_name = package+"."+clazz.get("name")
+	        self.__classes[current_class_name] = clazz
+		self.find_inner_classes(clazz, current_class_name)
+            
+    def get_package_name(self, package_tree):
+        for child in package_tree.iterchildren("member_select", "identifier"):
+	    prefix = self.get_package_name(child)
+	    if prefix != None and len(prefix) > 0:
+	        return prefix + "." + child.get("name")
+	    else:
+	        return child.get("name")
+
+    def find_inner_classes(self, clazz, current_name):
+        for child in clazz.iterchildren():
+	    if "class" == child.tag:
+	        inner_name = current_name + "." + child.get("name")
+	        self.__classes[inner_name] = child
+		self.find_inner_classes(child, inner_name)
+	    else:
+	        self.find_inner_classes(child, current_name)
+
+    def process_classes(self):
+        counter = 0
+        for clazz, node in self.__classes.items():
+	    counter += 1
+	    print "Processing class {0} ({1}/{2})".format(clazz, counter, len(self.__classes))
+	    fields = len([v.get("name") for v in node.xpath("./body/variable")])
+	    if fields > 15:
+	        self.__report += "\nClass {0} has potential problem with too many fields ({1}). Maybe you should divide this class into some smaller?".format(clazz, fields)
+	    methods = 0
+            for method in node.xpath("./body/method"):
+	        methods += 1
+		args = len([v.get("name") for v in method.xpath("./parameters/variable")])
+                if args > 5:
+		    self.__report += "\nClass {0} has method {1}() with too many arguments ({2}). Maybe some of it should be fields?".format(clazz, method.get("name"), args)
+		flows = 0
+		blocks = 0
+		for i in method.xpath("./block//*[self::for_loop or self::enhanced_for_loop]"): flows += 3
+		for i in method.xpath("./block//*[self::while_loop or self::do_while_loop]"): flows += 3
+		for i in method.xpath("./block//if"): flows += 2
+		for i in method.xpath("./block//*[self::then_part or self::else_part]"): flows += 1
+		for i in method.xpath("./block//*[self::try or self::catch or self::finally]"): flows += 2
+		for i in method.xpath(".//*[self::block or self::body]"): blocks += 1
+                if blocks > 10:
+                    self.__report += "\nClass {0} has method {1}() with too many blocks in control flow ({2}). Maybe you need to extract some to new method?".format(clazz, method.get("name"), blocks)
+                if flows > 20:
+                    self.__report += "\nClass {0} has method {1}() with too many flows ({2}). Maybe you need to extract a new method?".format(clazz, method.get("name"), flows)
+                if blocks != 0 and float(flows)/float(blocks) > 2.0:
+                    self.__report += "\nClass {0} has method {1}() with complex control flow. Maybe you need to extract a new methods or simplify this?".format(clazz, method.get("name"))
+            if methods > 30 or (methods - 2*fields > 10 and fields > 5):
+	        self.__report += "\nClass {0} has too many methods. Looks like it has too many responsibilities. Maybe you should divide it?".format(clazz)
+        
