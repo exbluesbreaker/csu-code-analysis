@@ -292,7 +292,7 @@ class BigClassAnalyzerJavaAst(UCFRHandler, ClassIRHandler):
                     self.__report += "\nClass {0} has method {1}() with too many blocks in control flow ({2}). Maybe you need to extract some to new method?".format(clazz, method.get("name"), blocks)
                 if flows > 20:
                     self.__report += "\nClass {0} has method {1}() with too many flows ({2}). Maybe you need to extract a new method?".format(clazz, method.get("name"), flows)
-                if float(flows)/float(blocks) > 2.0:
+                if blocks != 0 and float(flows)/float(blocks) > 2.0:
                     self.__report += "\nClass {0} has method {1}() with complex control flow. Maybe you need to extract a new methods or simplify this?".format(clazz, method.get("name"))
             if methods > 30 or (methods - 2*fields > 10 and fields > 5):
 	        self.__report += "\nClass {0} has too many methods. Looks like it has too many responsibilities. Maybe you should divide it?".format(clazz)
