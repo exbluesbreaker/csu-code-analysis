@@ -18,11 +18,12 @@ This is python utility for static analysis. Its main features:
 	- performing analysis for big classes with many responsibilities(9)
 	- performing analysis of object creation places (10)
 	- performing analysis of methods, which uses another class too much (11)
+	- performing analysis for big classes with many responsibilities (same as 9, but on Java AST, see Java-XML section) (12)
 
 Project is on prototype stage and installation is not supported yet. For running you must need to add src directory of sources to PYTHONPATH environment variable and use CSUStan/main.py for run. main.py accepts two argument - type of run(-t) and optional file name of config file(-c, by default csu.ini will be used). Other paramaters must be set in config file. Example of config file presented in data/csu.ini.
 
 Requirenments:
-	Python(>= 2.6 and < 3.0)
+	Python(>= 2.7 and < 3.0)
 	Graphviz
 	pylint
 	logilab-astng
@@ -47,6 +48,7 @@ Supported run types:
 	BigClassAnalyzer - analyzes whole project and finds classes with many responsibilities(9)
 	ObjectCreationAnalysis - analyzes whole project and finds classes, which instances are created in few places (i.e. factories) (10)
 	GreedyFunctionsAnalyzer - analyzes whole project and finds "greedy functions"(11)
+	BigClassAnalyzer_JavaAST - analyzes whole project's Java AST and finds classes with many responsibilities (12)
 
 	Extraction of UCR and CFG needs name of top-level module of project as project argument in config file. If you want to analyze module, which not installed in standard location in system (for example site-packages directory), you need to add directory, which contains top-level module of project to PYTHONPATH.
 
