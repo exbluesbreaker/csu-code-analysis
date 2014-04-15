@@ -74,6 +74,9 @@ public class MethodInvocationContext extends ContextBase {
 		if ("identifier".equals(name)){
 			label = attrs.getNameAttribute();
 		}
+		if (name.endsWith("literal")){
+			label = "\"" + attrs.getStringAttribute("value") + "\"";
+		}
 	}
 
 	@Override

@@ -113,6 +113,11 @@ public class ClassContext extends ContextBase {
 	}
 	
 	public void setNewClassState(){
+		// TODO: Fix this hack!
+		if (stateStack.peek() == ContextState.FIELD){
+			classStack.peek().getAttr().add(currentAttribute);
+			currentAttribute = null;
+		}
 		stateStack.push(ContextState.NEW_CLASS);
 	}
 	
@@ -219,8 +224,11 @@ public class ClassContext extends ContextBase {
 				classStack.peek().getMethod().add(methodStack.pop());
 				break;
 			case FIELD:
-				classStack.peek().getAttr().add(currentAttribute);
-				currentAttribute = null;
+				// TODO: Impossible situation! Fix this hack!
+				if (currentAttribute != null){
+					classStack.peek().getAttr().add(currentAttribute);
+					currentAttribute = null;
+				}
 				break;
 			case ARGUMENT:
 				methodStack.peek().getArg().add(currentArgument);
