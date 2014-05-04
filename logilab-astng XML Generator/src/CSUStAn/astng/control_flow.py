@@ -131,6 +131,7 @@ class UCFRLinker(IdGeneratorMixIn, DuckLinker):
                 self.extract_duck_types(child,class_node)
         
     def leave_function(self,node):
+        return
         ''' DEBUG '''
         if self._stop:
             del self._stack[node]
@@ -350,6 +351,8 @@ class UCFRLinker(IdGeneratorMixIn, DuckLinker):
                     # It imports correctly and causes infinite recursion.
 
                     if label == '__builtin__' and space_type == "external" and module.name == asgn.modname:
+                        raise InferenceError(module.name)
+                    if not module.name.startswith(self._project_name):
                         raise InferenceError(module.name)
                     space_type,called,called_id, label = self.handle_lookup(module, name, space_type)
                 except InferenceError:

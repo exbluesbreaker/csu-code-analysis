@@ -6,10 +6,13 @@ Created on 02.03.2014
 
 import re
 import os
+import numpy
 from lxml import etree
 from copy import deepcopy
 from logilab.common.configuration import ConfigurationMixIn
+from pylint.pyreverse.utils import get_visibility
 from pylint.pyreverse.main import OPTIONS
+from CSUStAn.exceptions import CSUStAnException
 
 class ClassIRHandler:
     # Process XML class IR
@@ -76,6 +79,15 @@ class ClassIRHandler:
         result|= set(parents)
         for p in parents:
             result = self.get_all_parents(p, result)
+        return result
+    def get_all_children(self,node,result=None):
+        if(result is None):
+            result = set([])
+        node_id = node.get("id")
+        children = self._ucr_tree.xpath("/Classes/Class[Parent/@id="+node_id+"]")
+        result|= set(children)
+        for c in children:
+            result = self.get_all_children(c, result)
         return result
     def get_class_by_full_name(self,full_name):
         if self._full_name_dict.has_key(full_name):
@@ -277,11 +289,13 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
     
     options = OPTIONS
     _methods = None
+    _classes_info = None
     
     def __init__(self, args):
         ConfigurationMixIn.__init__(self, usage=__doc__)
         ClassIRHandler.__init__(self, args[0])
         self._methods = {}
+        self._classes_info = {}
         self.run()
     
     def run(self):
@@ -292,11 +306,14 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
             # ProbUsed will be true, if this class will be detect as candidate for duck field
             #self._complete_signatures[node.get("id")]={'Attrs':Set([]),'Methods':Set([]),'ProbUsed' : False}
             for method in self.get_methods(node):
+                if get_visibility(method)=='special':
+                    ''' ignore __init__ etc.'''
+                    continue
                 if self._assign_method(node,method):
                     if self._methods.has_key(method):
-                        self._methods[method].append(node.get("id"))
+                        self._methods[method].append((node.get("id"),node,method))
                     else:
-                        self._methods[method]=[node.get("id")]
+                        self._methods[method]=[(node.get("id"),node,method)]
             status +=1
         methods_num = len(self._methods.keys())
         status = 0
@@ -304,9 +321,16 @@ class PotentialSiblingsCounter(ConfigurationMixIn,ClassIRHandler):
         for method in self._methods.keys():
             print "Complete ",status,"/",methods_num," method names"
             if(len(self._methods[method])>1):
-                print "Method ",method," implemented in classes(id): ",self._methods[method]
+                print "Method ",method," implemented in classes(id): ",[t[0] for t in self._methods[method]]
+                for t in self._methods[method]:
+                    if self._classes_info.has_key(t[1]):
+                        self._classes_info[t[1]].append(t[2])
+                    else:
+                        self._classes_info[t[1]]=[t[2]]
                 count+=1
             status +=1
+        for k in self._classes_info.keys():
+            print len(self._classes_info[k])*1.0/len(self.get_methods(k))
         print count," method names of ",methods_num,"unique method names in project pretend to to be passed to common superclass"
                 
                 
@@ -348,14 +372,58 @@ class InheritanceSlicer(ConfigurationMixIn,UCRSlicer):
     options = OPTIONS
     _methods = None
     _class_id = None
+    _in_file = None
     
-    def __init__(self, in_file,out_file, class_id):
+    def __init__(self, in_file,out_file, class_id,criteria):
         ConfigurationMixIn.__init__(self, usage=__doc__)
         UCRSlicer.__init__(self, in_file)
-        self._methods = {}
-        self._class_id = class_id
-        root_node = self.slice_ucr()
-        self.write_slicing(out_file,root_node)
+        self._in_file = in_file
+        if criteria == 'slice':
+            self._methods = {}
+            self._class_id = class_id
+            root_node = self.slice_ucr()
+            self.write_slicing(out_file,root_node)
+        elif criteria == 'summary':
+            self.handle_summary()
+        else:
+            raise CSUStAnException("Unknown criteria!")
+        
+    
+    def handle_summary(self):
+        class_ids = set([c.get("id") for c in self._classes])
+        subtrees = []
+        max_size = 0
+        length = 0
+        subtree_sizes = []
+        class_num = len(class_ids)
+        subtree_num=1
+        while len(class_ids) >0:
+            print "Processing",subtree_num,"tree,",len(class_ids),"classes left"
+            subtree_num+=1
+            c = self.get_class_by_id(list(class_ids)[0])
+            subtree = set([c])
+            subtree |= self.get_all_children(c)
+            parents = self.get_all_parents(c)
+            for p in parents:
+                subtree = self.get_all_children(p,subtree)
+            subtrees.append(subtree)
+            subtree_ids = set([c.get("id") for c in subtree])
+            class_ids = set(class_ids) - subtree_ids 
+            subtree_sizes.append(len(subtree_ids))
+            for c in subtree:
+                c.getparent().remove(c)
+        print "Input file -",self._in_file 
+        print "Number of classes ",class_num
+        print "Number of inheritance trees ",len(subtrees)
+        print "Max inheritance tree size ", numpy.max(subtree_sizes)
+        print "Min inheritance tree size ", numpy.min(subtree_sizes)
+        print "Avg inheritance tree size ", numpy.average(subtree_sizes)
+        print "Median inheritance tree size ", numpy.median(subtree_sizes)
+        print "Variance inheritance tree size ", numpy.var(subtree_sizes)
+        print "Standard deviation inheritance tree size ", numpy.std(subtree_sizes)
+#         for c in self._classes:
+#                 print self.get_all_children(c)
+    
         
     def slice(self):
         self.slice_class(self._id_dict[self._class_id])

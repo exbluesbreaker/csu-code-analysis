@@ -97,7 +97,7 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
         for current_class in linker.get_classes():
             for duck in current_class.cir_ducks.keys():
                 print "Processing ", count, " duck of ",ducks_num
-                print duck,current_class.cir_ducks[duck]
+#                 print duck,current_class.cir_ducks[duck]
                 count +=1
                 duck_attrs, duck_methods = self.get_duck_signature(current_class.cir_ducks[duck])
                 # ignore empty ducks
@@ -118,7 +118,7 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
                     if(result):
                         current_class.cir_ducks[duck]['type'].append(field_candidate)
                         self._prob_used_classes |= set([field_candidate.cir_uid]) 
-                        print current_class,duck,field_candidate
+#                         print current_class,duck,field_candidate
                     duck_found = result or duck_found
                       
                 #check if duck not found at all
@@ -128,8 +128,8 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
                     self._found_ducks+=1 
                     dbg.add(str(current_class)+duck)
 #        empty_ducks = len(list(linker.get_empty_ducks()))  
-        print len(dbg)
-        print dbg
+#         print len(dbg)
+#         print dbg
         print "Project - ",self._project        
         print "Duck typing criteria - ",self._criteria            
         print "Numbers of ducks: ", linker.get_ducks_count()

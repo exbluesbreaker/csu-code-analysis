@@ -189,10 +189,11 @@ elif(args.type=="UCFRVisualizer"):
     out_dir = cfg_parser.get(args.type,'out_dir')
     runner = UCFRVisualizer(lcfg_xml,out_dir)
 elif(args.type=="InheritanceSlicer"):
+    criteria = cfg_parser.get(args.type,'criteria')
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
     class_id = cfg_parser.get(args.type,'id')
-    runner = InheritanceSlicer(in_file,out_file,class_id)
+    runner = InheritanceSlicer(in_file,out_file,class_id,criteria)
 elif(args.type=="FlatUCFRSlicer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
@@ -251,6 +252,10 @@ elif(args.type=="UnreachableCodeSearch"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
     runner = UnreachableCodeSearch(ucr_xml,lcfg_xml)
+elif(args.type=="ExecRouteSearch"):
+    criteria = cfg_parser.get(args.type,'criteria')
+    lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
+    runner = ExecRouteSearch(lcfg_xml,criteria)
 elif (args.type == "BigClassAnalyzer_JavaAST"):
     ast_xml = cfg_parser.get(args.type, "ast_xml")
     runner = BigClassAnalyzerJavaAst(ast_xml)

@@ -44,8 +44,10 @@ class LogilabObjectTracer(ObjectTracer):
         ObjectTracer.__init__(self,'logilab', in_file ,preload_file,skip_classes=(Const),only_preload=only_preload)
         
     def run(self):
-        from pylint.pyreverse import main
-        main.Run(sys.argv[1:])
+        from pylint import run_pyreverse
+        run_pyreverse()
+#         from pylint.pyreverse import main
+#         main.Run(sys.argv[1:])
 
 class TwistedObjectTracer(ObjectTracer):
     

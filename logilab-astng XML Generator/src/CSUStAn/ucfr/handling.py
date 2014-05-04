@@ -3,6 +3,7 @@ Created on 02.03.2014
 
 @author: bluesbreaker
 '''
+import numpy
 from lxml import etree
 from logilab.astng.inspector import IdGeneratorMixIn
 from CSUStAn.exceptions import CSUStAnException
@@ -52,7 +53,7 @@ class UCFRSlicer(UCFRHandler):
     def slice(self):
         self.extract_slicing()
         ''' Extract sliced methods/funcs from CFG'''
-        for frame in self._cfg_tree.xpath("//Method|//Function"):
+        for frame in self._cfg_tree.xpath("/Project/Method|/Project/Function"):
             if frame not in self._sliced_frames:
                 frame.getparent().remove(frame)
         f = open(self._out_xml,'w')
@@ -63,12 +64,17 @@ class FlatUCFRSlicer(UCFRSlicer):
     _id = None
     _criteria = None
     _visited = set([])
+    _input_file = None
     
     def __init__(self,lcfg_xml,out_xml,target_id,criteria):
         UCFRSlicer.__init__(self, lcfg_xml,out_xml)
         self._id = target_id
         self._criteria = criteria
-        self.slice()
+        self._input_file = lcfg_xml
+        if self._criteria == "summary":
+            self.handle_summary()
+        else:
+            self.slice()
         
     def extract_slicing(self):
         if self._criteria == "callers":
@@ -79,6 +85,28 @@ class FlatUCFRSlicer(UCFRSlicer):
             print "Unknown CFG slicing criteria!"
             return
         print len(self._sliced_frames),"methods after slicing"
+        
+    def handle_summary(self):
+        calls_dict = {f.get("cfg_id"):set([]) for f in self.get_frames()}
+        targeted_calls = self._cfg_tree.xpath("/Project/Method/Block/Call/Getattr/Target[@cfg_id]|"+
+                                              "/Project/Method/Block/Call/Direct/Target[@cfg_id]|"+
+                                              "/Project/Function/Block/Call/Getattr/Target[@cfg_id]|"+
+                                              "/Project/Function/Block/Call/Direct/Target[@cfg_id]") 
+        calls_num = len(targeted_calls)
+        call_num = 1
+        for c in targeted_calls:
+            print "Processing",call_num,"targeted call from",calls_num
+            call_num+=1
+            frame = c.getparent().getparent().getparent().getparent().get("cfg_id")
+            calls_dict[frame].add(c.get("cfg_id"))
+        inner_calls = [len(calls_dict[c])for c in calls_dict.keys()]
+        print "Processed",self._input_file
+        print "Number of frames",len(calls_dict.keys())
+        print "Max inner calls for frame ", numpy.max(inner_calls)
+        print "Min inner calls for frame ", numpy.min(inner_calls)
+        print "Avg inner calls for frame ", numpy.average(inner_calls)
+        print "Variance inner calls for frame ", numpy.var(inner_calls)
+        print "Standard deviation inner calls for frame ", numpy.std(inner_calls)
     
     def handle_tree(self,node_id=None):
         ''' Slice methods/funcs called from given'''
@@ -88,16 +116,16 @@ class FlatUCFRSlicer(UCFRSlicer):
         if node_id in self._visited:
             return
         self._visited.add(node_id)
-        self._sliced_frames|=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+node_id+"\"]|//Method[@cfg_id=\""+node_id+"\"]"))
-        calls = self._cfg_tree.xpath("//Method[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]|\
-                                                        //Function[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]")
+        self._sliced_frames|=set(self._cfg_tree.xpath("/Project/Function[@cfg_id=\""+node_id+"\"]|/Project/Method[@cfg_id=\""+node_id+"\"]"))
+        calls = self._cfg_tree.xpath("/Project/Method[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]|\
+                                                        /Project/Function[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]")
         for id in set([c.get("cfg_id") for c in calls]):
             self.handle_tree(id)
             
     def handle_callers(self):
         ''' Slice callers methods/funcs for given'''
         ''' method/func of interest'''
-        self._sliced_frames=set(self._cfg_tree.xpath("//Function[@cfg_id=\""+self._id+"\"]|//Method[@cfg_id=\""+self._id+"\"]"))
+        self._sliced_frames=set(self._cfg_tree.xpath("/Project/Function[@cfg_id=\""+self._id+"\"]|/Project/Method[@cfg_id=\""+self._id+"\"]"))
         ''' calls of method/func of interest'''
         for call in self._cfg_tree.xpath("//Target[@cfg_id=\""+self._id+"\"]"):
             self._sliced_frames.add(call.getparent().getparent().getparent().getparent())
@@ -202,3 +230,29 @@ class ExecPathHandler(UCFRHandler,IdGeneratorMixIn):
             raise CSUStAnException("Error: No nodes for exec path entry id("+str(frame_id)+")")
             return None
         return nodes[0].xpath(".//Target[@cfg_id]")
+    
+class ExecRouteSearch(UCFRHandler):
+    _call_map = None
+    _input_xml = None
+    def __init__(self,lcfg_xml,criteria):
+        UCFRHandler.__init__(self, lcfg_xml)
+        self._input_xml = lcfg_xml
+        if criteria == 'summary':
+            self.handle_summary()
+        else:
+            print "Unknown criteria!"
+            return
+    
+    def handle_summary(self):
+        self._call_map = {}
+        for f in self.get_frames():
+            self._call_map[f.get("cfg_id")] = []
+        targeted_calls = self._cfg_tree.xpath("/Project/Method/Block/Call/Getattr/Target[@cfg_id]|"+
+                                              "/Project/Method/Block/Call/Direct/Target[@cfg_id]|"+
+                                              "/Project/Function/Block/Call/Getattr/Target[@cfg_id]|"+
+                                              "/Project/Function/Block/Call/Direct/Target[@cfg_id]")
+        for call in targeted_calls:
+            source = call.getparent().getparent().getparent().getparent().get("cfg_id")
+            self._call_map[source].append(call.get("cfg_id"))
+        print "Processed",self._input_xml
+        print "Calls to frames ratio",len(targeted_calls)*1.0/len(self._call_map.keys())

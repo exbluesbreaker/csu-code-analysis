@@ -4,6 +4,7 @@ Created on 02.03.2014
 @author: bluesbreaker
 '''
 
+import numpy
 from lxml import etree
 from CSUStAn.ucfr.handling import UCFRHandler
 from CSUStAn.ucr.handling import ClassIRHandler,UCRSlicer
@@ -15,9 +16,13 @@ class DataflowLinker(UCFRHandler,ClassIRHandler):
     _typed_ga_calls = 0
     _unknown_ga_calls = 0
     _class_dict = {}
+    _input_ucr = None
+    _input_ucfr = None
     def __init__(self,ucr_xml,cfg_xml,out_xml):
         ClassIRHandler.__init__(self, ucr_xml)
         UCFRHandler.__init__(self, cfg_xml)
+        self._input_ucr = ucr_xml
+        self._input_ucfr = cfg_xml
         self._out_xml = out_xml
         self.run()
     def run(self):
@@ -57,17 +62,21 @@ class DataflowLinker(UCFRHandler,ClassIRHandler):
         f = open(self._out_xml,'w')
         f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
         f.close()
-        print "Found ",self._targeted," UCR classes"
-        print "Found getattr calls ",self._typed_ga_calls,"  unknown - ", self._unknown_ga_calls   
+        print "Processed",self._input_ucr, "and",self._input_ucfr
+        print "Written",self._out_xml  
 
 class InstanceInitSlicer(UCFRHandler, UCRSlicer):
     ''' Search for all classes, created in methods of given class '''
     _ucr_id = None
     _keep_parents = None
     _criteria = None
+    _input_ucr_xml = None
+    _input_ucfr_xml = None
     def __init__(self,ucr_xml,lcfg_xml,ucr_id,out_xml,keep_parents=False,criteria='creators'):
         UCRSlicer.__init__(self, ucr_xml)
         UCFRHandler.__init__(self, lcfg_xml)
+        self._input_ucr_xml = ucr_xml
+        self._input_ucfr_xml = lcfg_xml
         self._ucr_id = ucr_id
         self._keep_parents = keep_parents
         self._criteria = criteria
@@ -81,14 +90,23 @@ class InstanceInitSlicer(UCFRHandler, UCRSlicer):
         elif self._criteria == 'created':
             self.slice_created()
         elif self._criteria == 'summary':
-            self.show_all()
+            self.handle_summary()
         else:
             raise CSUStAnException("Unknown criteria - "+self._criteria+"!")
         
-    def show_all(self):
+    def handle_summary(self):
+        init_dict = {c.get("id"):[] for c in self._classes}
         for c in self._cfg_tree.xpath("//Method//Direct//Target[@type=\"method\"]//TargetClass[@ucr_id]"):
             creator = c.getparent().getparent().getparent().getparent().getparent()
-            print "Method",creator.get("name")+"[cfg_id="+creator.get("cfg_id")+"] of",creator.get("parent_class")+"[ucr_id="+creator.get("ucr_id")+"] creates object of class",c.getparent().getparent().get("name")+"[ucr_id="+c.get("ucr_id")+"]" 
+            init_dict[creator.get("ucr_id")].append(c.get("ucr_id"))
+            print "Method",creator.get("name")+"[cfg_id="+creator.get("cfg_id")+"] of",creator.get("parent_class")+"[ucr_id="+creator.get("ucr_id")+"] creates object of class",c.getparent().getparent().get("name")+"[ucr_id="+c.get("ucr_id")+"]"
+        unique_init_dict = {c:set(init_dict[c])for c in init_dict.keys()}
+        inits = [len(init_dict[c]) for c in init_dict.keys()]
+        unique_inits = [len(init_dict[c]) for c in unique_init_dict.keys()]
+        print "Processed",self._input_ucr_xml,"and",self._input_ucfr_xml
+        print "Max objects inits for class", numpy.max(inits)
+        print "Avg objects inits for class", numpy.average(inits)
+        print "Standard deviation objects inits for class", numpy.std(inits)
                 
     def slice_creators(self):
         current_class = self.get_class_by_id(self._ucr_id)
@@ -145,6 +163,7 @@ class UnreachableCodeSearch(UCFRHandler, ClassIRHandler):
         not_called_frames = set([f for f in self.get_frames() if f.get("cfg_id") in not_called])
         for f in not_called_frames:
             print "Not found calls for",f.tag, f.get("name"),"[cfg_id="+f.get("cfg_id")+"]", "from",f.get("label") 
+        print "Processed",lcfg_xml
         print "Reachable ",len(all_called)," from ", len(all_frames)
         print len(all_frames)
         print len(all_called)
