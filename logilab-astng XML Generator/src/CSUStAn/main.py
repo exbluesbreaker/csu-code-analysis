@@ -243,11 +243,23 @@ elif (args.type == "ObjectCreationAnalysis"):
     ucr_xml = cfg_parser.get(args.type, "ucr_xml")
     cfg_xml = cfg_parser.get(args.type, "cfg_xml")
     cfg_id = cfg_parser.get(args.type, "cfg_id")
-    runner = ObjectCreationAnalysis(ucr_xml, cfg_xml, cfg_id)
+    if cfg_parser.has_option(args.type, "call_count"):
+        creation_count = cfg_parser.get(args.type, "creation_count")
+        if creation_count == None:
+            creation_count = 5
+    else:
+        creation_count = 2
+    runner = ObjectCreationAnalysis(ucr_xml, cfg_xml, cfg_id, creation_count)
 elif (args.type == "GreedyFunctionsAnalyzer"):
     ucr_xml = cfg_parser.get(args.type, "ucr_xml")
     cfg_xml = cfg_parser.get(args.type, "cfg_xml")
-    runner = GreedyFunctionsAnalyzer(ucr_xml, cfg_xml)
+    if cfg_parser.has_option(args.type, "call_count"):
+        call_count = cfg_parser.get(args.type, "call_count")
+        if call_count == None:
+            call_count = 5
+    else:
+        call_count = 5
+    runner = GreedyFunctionsAnalyzer(ucr_xml, cfg_xml, call_count)
 elif(args.type=="UnreachableCodeSearch"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
