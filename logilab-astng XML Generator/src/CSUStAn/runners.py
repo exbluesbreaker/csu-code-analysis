@@ -123,22 +123,26 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
         Analyzes conditions of places where instance of classes are created (constructors called).
     """
     
-    def __init__(self, ucr_xml, cfg_xml, cfg_id):
+    def __init__(self, ucr_xml, cfg_xml, cfg_id, creation_count):
         UCFRHandler.__init__(self, cfg_xml)
         ClassIRHandler.__init__(self, ucr_xml)
         self.__method_id = cfg_id
         self.__count = {}
+        self.__creation_count = creation_count
         self.run()
     
     def run(self):
         self.__counter = 1
         self.__report = ""
         self.__count = {}
+        self.__total = 0
         self.for_each_class(self.process_class())
         for clazz, cnt in self.__count.items():
-            if cnt <= 2 and cnt > 0:
+            if cnt <= self.__creation_count and cnt > 0:
                 self.__report += "\nClass {className} created only in few methods: {methods}".format(className = clazz, methods = cnt)
+                self.__total += 1
         print self.__report
+        print "Total classes with limited creation counts is {0}".format(self.__total)
         
     def process_class(self):
         def process_class_internal(c):
@@ -177,16 +181,21 @@ class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
     __MB_GREEDY_METHOD = ("\nMethod {0} from class {1} may be greedy. It uses too much variable {2} ({3}). But class of variable wasn't recognized."
                             "\nIt may happens when class isn't in project or variable of this class wasn't found or it is external module, not a class.\n")
     
-    def __init__(self, ucr_xml, cfg_xml):
+    def __init__(self, ucr_xml, cfg_xml, call_count):
         UCFRHandler.__init__(self, cfg_xml)
         ClassIRHandler.__init__(self, ucr_xml)
+        self.__call_count = call_count
         self.run()
         
     def run(self):
         self.__counter = 1
         self.__report = ""
+        self.__total = 0
+        self.__total_names = 0
         self.for_each_method(self.process_method())
         print self.__report
+        print "Total greedy methods is {0}".format(self.__total)
+        print "Total probably greedy methods {0}".format(self.__total_names)
     
     def process_method(self):
         def process_method_internal(method):
@@ -194,7 +203,7 @@ class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
             self.__counter += 1
             classes_used = {}
             names_used = {}
-            for get_attr in method.xpath("Block/Call/Getattr"):
+            for get_attr in method.xpath("./Block/Call/Getattr"):
                 label = get_attr.get("label")
                 if label != "self" and label != "this": 
                     if label in names_used:
@@ -210,12 +219,15 @@ class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
                             classes_used[ucr_id] += 1
                         else:
                             classes_used[ucr_id] = 1
+            
             for k, v in classes_used.items():
-                if v > 5:
+                if v > self.__call_count:
                     self.__report += self.__GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), self.get_class_by_id(k).get("name"))
+                    self.__total += 1
             for k, v in names_used.items():
-                if v > 7:
+                if v > self.__call_count + 2:
                     self.__report += self.__MB_GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), k, str(v))
+                    self.__total_names += 1
             
         return process_method_internal
 
