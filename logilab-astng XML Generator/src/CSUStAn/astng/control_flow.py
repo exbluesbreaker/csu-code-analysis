@@ -51,9 +51,10 @@ class UCFRLinker(IdGeneratorMixIn, DuckLinker):
     def write_result(self,node):
         print self._dbg_calls
         print self._dbg_call_lookup
-        print "Func calls ",self._func_calls
-        print "Class calls ",self._class_calls
-        print "Getattr calls ",self._getattr_calls
+        all_calls = self._func_calls+self._class_calls+self._getattr_calls
+        print "Func calls ",self._func_calls,self._func_calls*100.0/all_calls,"%"
+        print "Class calls ",self._class_calls,self._class_calls*100.0/all_calls,"%"
+        print "Getattr calls ",self._getattr_calls,self._getattr_calls*100.0/all_calls,"%"
         for t in self._root.xpath("//Target[@cfg_id]"):
             if not int(t.get("cfg_id")) in self._ids:
                 t.attrib.pop("cfg_id")

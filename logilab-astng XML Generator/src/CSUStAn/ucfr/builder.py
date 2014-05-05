@@ -36,6 +36,8 @@ class UCFRBuilder(ASTNGHandler,DuckTypeHandler):
         err_methods = set([])
         f_num = 1
         f_len = len(frames)
+        non_empty_ducks = 0
+        found_ducks = 0
         for frame in frames:
             print "Processing",f_num,"frame of",f_len
             f_num+=1
@@ -47,6 +49,9 @@ class UCFRBuilder(ASTNGHandler,DuckTypeHandler):
                 for m in frame.duck_info[name]['methods'].keys():
                     all_calls |= frame.duck_info[name]['methods'][m]
                 linked  = {m:set([]) for m in all_calls}
+                if frame.duck_info[name]['attrs'] or frame.duck_info[name]['methods']:
+                    non_empty_ducks += 1
+                found = False
                 for c in classes:
                     if self.check_candidate(frame.duck_info[name]['attrs'], frame.duck_info[name]['methods'], c):
                         target_methods = self.get_complete_signature(c)['methods']
@@ -66,6 +71,9 @@ class UCFRBuilder(ASTNGHandler,DuckTypeHandler):
                                             "TODO fix bug!!!!!!"
                                             if(target_method in linked[call]):
                                                 continue
+                                            if( not found):
+                                                found = True
+                                                found_ducks +=1
                                             linked[call].add(target_method)
                                             target_subnode = etree.Element("Target")
                                             target_subnode.set("type","method")
@@ -74,7 +82,9 @@ class UCFRBuilder(ASTNGHandler,DuckTypeHandler):
                                 else:
                                     ''' TODO calls in for, if etc. not handled yet'''
                                     err_cnt2 +=1
-        print err_cnt1, err_cnt2, succ_cnt
+        print "Number of duck local_names",non_empty_ducks
+        print "Found ducks:",found_ducks,"percentage from non-empty ducks:",found_ducks*100.0/non_empty_ducks,"%"
+#         print err_cnt1, err_cnt2, succ_cnt
 #                 if called=='function':
 #                     target_subnode.set("type","function")
 #                     if label is not None:

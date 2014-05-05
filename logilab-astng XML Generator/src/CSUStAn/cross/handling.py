@@ -106,6 +106,7 @@ class InstanceInitSlicer(UCFRHandler, UCRSlicer):
         print "Processed",self._input_ucr_xml,"and",self._input_ucfr_xml
         print "Max objects inits for class", numpy.max(inits)
         print "Avg objects inits for class", numpy.average(inits)
+        print "Median objects inits for class", numpy.median(inits)
         print "Standard deviation objects inits for class", numpy.std(inits)
                 
     def slice_creators(self):
@@ -165,6 +166,7 @@ class UnreachableCodeSearch(UCFRHandler, ClassIRHandler):
             print "Not found calls for",f.tag, f.get("name"),"[cfg_id="+f.get("cfg_id")+"]", "from",f.get("label") 
         print "Processed",lcfg_xml
         print "Reachable ",len(all_called)," from ", len(all_frames)
+        print "Reachable ratio",len(all_called)*1.0/len(all_frames)
         print len(all_frames)
         print len(all_called)
         print len(not_called)

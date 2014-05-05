@@ -132,14 +132,13 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
 #         print dbg
         print "Project - ",self._project        
         print "Duck typing criteria - ",self._criteria            
-        print "Numbers of ducks: ", linker.get_ducks_count()
-        print "Numbers of ducks with assignment in class: ", len(list(linker.get_assigned_ducks()))
+        print "Numbers of classes: ",len(list(linker.get_classes()))
+        print "Numbers of ducks(non-empty): ", linker.get_ducks_count()-empty_ducks
         print "Numbers of ducks with complex type: ", len(list(linker.get_complex_ducks()))
         if(linker.get_ducks_count()!=empty_ducks):
             print "Found ducks: ",self._found_ducks, " percentage from non-empty ducks: ",round(100*float(self._found_ducks)/(linker.get_ducks_count()-empty_ducks),1), " %"
         if(linker.get_attrs_count()!=0):
             print "Numbers of all attributes in project: ", linker.get_attrs_count(), " percentage of found attrs: ",round(100*float(self._found_ducks)/linker.get_attrs_count(),1), " %"
-        print "Numbers of classes: ",len(list(linker.get_classes()))
         if(len(list(linker.get_classes()))!=0):
             print "Probably used (as field) classes: ",len(self._prob_used_classes)," percentage: ",round(100*float(len(self._prob_used_classes))/len(list(linker.get_classes())),1), " %"
         

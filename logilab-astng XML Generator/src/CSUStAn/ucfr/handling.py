@@ -105,6 +105,7 @@ class FlatUCFRSlicer(UCFRSlicer):
         print "Max inner calls for frame ", numpy.max(inner_calls)
         print "Min inner calls for frame ", numpy.min(inner_calls)
         print "Avg inner calls for frame ", numpy.average(inner_calls)
+        print "Median inner calls for frame ", numpy.median(inner_calls)
         print "Variance inner calls for frame ", numpy.var(inner_calls)
         print "Standard deviation inner calls for frame ", numpy.std(inner_calls)
     
