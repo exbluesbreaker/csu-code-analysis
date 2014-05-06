@@ -254,5 +254,12 @@ elif(args.type=="UnreachableCodeSearch"):
 elif (args.type == "BigClassAnalyzer_JavaAST"):
     ast_xml = cfg_parser.get(args.type, "ast_xml")
     runner = BigClassAnalyzerJavaAst(ast_xml)
+elif (args.type == "BCAChecker"):
+    ucr_xml = cfg_parser.get(args.type, "ucr_xml")
+    cfg_xml = cfg_parser.get(args.type, "cfg_xml")
+    runner = BCAChecker(ucr_xml, cfg_xml)
+elif (args.type == "BCAChecker_JavaAST"):
+    ast_xml = cfg_parser.get(args.type, "ast_xml")
+    runner = BCAAstChecker(ast_xml)
 else:
     print "Unknown type!"
