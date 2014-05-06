@@ -21,6 +21,7 @@ from CSUStAn.cross.handling import DataflowLinker, UnreachableCodeSearch,Instanc
 from CSUStAn.ucr.handling import PotentialSiblingsCounter,InheritanceSlicer
 from CSUStAn.ucfr.handling import UCFRHandler
 from lxml import etree
+import time
 
 
 '''Entry points for different ASTNG processing'''
@@ -88,8 +89,23 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
     def run(self):
         self.__counter = 1
         self.__report = ""
+	self.__make_connections()
         self.for_each_class(self.process_class())
         print self.__report
+
+    def __make_connections(self):
+        self.__ucfr_methods = {}
+        for method in self._methods:
+	    ucr_id = method.get("ucr_id") 
+	    if ucr_id in self.__ucfr_methods:
+	        self.__ucfr_methods[ucr_id].append(method)
+	    else:
+	        self.__ucfr_methods[ucr_id] = [method]
+
+    def __get_method(self, ucr_id, name):
+        for method in self.__ucfr_methods[ucr_id]:
+	    if method.get("name") == name:
+	        yield method
         
     def process_class(self):
         def process_class_internal(c):
@@ -104,7 +120,7 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
                 args = len([x.get("name") for x in method.iter("Arg")])
                 if args > 5:
                     self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many arguments (" + str(args) + "). Maybe some of it should be fields?"
-                for cfg_method in self._cfg_tree.xpath("//Method[@ucr_id=\"" + c.get("id") + "\" and @name=\"" + method.get("name") + "\"]"):
+                for cfg_method in self.__get_method(c.get("id"), method.get("name")):
                     flows = len([x.get("name") for x in cfg_method.iter("Flow")])
                     blocks = len([x.get("name") for x in cfg_method.iter("Block")])
                     if blocks > 10:
@@ -240,7 +256,7 @@ class BigClassAnalyzerJavaAst(UCFRHandler, ClassIRHandler):
     
     def __init__(self, ast_xml):
         parser = etree.XMLParser(remove_blank_text=True)
-        self.__ast_tree = etree.parse(ast_xml, parser)
+        self._ast_tree = etree.parse(ast_xml, parser)
         self.run()
     
     def run(self):
@@ -252,7 +268,7 @@ class BigClassAnalyzerJavaAst(UCFRHandler, ClassIRHandler):
         print self.__report
         
     def find_classes(self):
-        for node in self.__ast_tree.iter("compilation_unit"):
+        for node in self._ast_tree.iter("compilation_unit"):
 	    package = ""
 	    for package_node in node.iter("package"):
                 package = self.get_package_name(package_node)
@@ -309,3 +325,29 @@ class BigClassAnalyzerJavaAst(UCFRHandler, ClassIRHandler):
             if methods > 30 or (methods - 2*fields > 10 and fields > 5):
 	        self.__report += "\nClass {0} has too many methods. Looks like it has too many responsibilities. Maybe you should divide it?".format(clazz)
         
+def current_time():
+    return int(round(time.time() * 1000))
+
+class BCAChecker(BigClassAnalyzer):
+    
+    def __init__(self, ucr_xml, cfg_xml):
+        UCFRHandler.__init__(self, cfg_xml)
+        ClassIRHandler.__init__(self, ucr_xml)
+	t = current_time()
+	for i in xrange(0, 10000):
+            self.run()
+	    print "*** {0} out of 10 000 ***".format(i)
+	t = current_time() - t
+	print "Time in millis:", t
+
+class BCAAstChecker(BigClassAnalyzerJavaAst):
+    
+    def __init__(self, ast_xml):
+        parser = etree.XMLParser(remove_blank_text=True)
+        self._ast_tree = etree.parse(ast_xml, parser)
+	t = current_time()
+	for i in xrange(0, 10000):
+            self.run()
+	    print "*** {0} out of 10 000 ***".format(i)
+	t = current_time() - t
+	print "Time in millis:", t
