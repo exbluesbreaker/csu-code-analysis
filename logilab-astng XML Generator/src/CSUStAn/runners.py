@@ -144,7 +144,7 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
         ClassIRHandler.__init__(self, ucr_xml)
         self.__method_id = cfg_id
         self.__count = {}
-        self.__creation_count = creation_count
+        self.__creation_count = int(creation_count)
         self.run()
     
     def run(self):
@@ -152,17 +152,22 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
         self.__report = ""
         self.__count = {}
         self.__total = 0
+	self.__total_methods = 0
         self.for_each_class(self.process_class())
         for clazz, cnt in self.__count.items():
-            if cnt <= self.__creation_count and cnt > 0:
+            if (cnt <= self.__creation_count) and (cnt > 0):
                 self.__report += "\nClass {className} created only in few methods: {methods}".format(className = clazz, methods = cnt)
-                self.__total += 1
+                self.__total += cnt
         print self.__report
         print "Total classes with limited creation counts is {0}".format(self.__total)
+	print "Total methods count is {0}".format(self.__total_methods)
         
     def process_class(self):
         def process_class_internal(c):
-            print "Processing class " + c.get("name") + " (" + str(self.__counter) + "/" + str(self.get_num_of_classes()) + ")"
+	    methods_count = len([meth.get("name") for meth in c.iter("Method")])
+            print "Processing class " + c.get("name") + " (" + str(self.__counter) + "/" + str(self.get_num_of_classes()) + "), methods - " + str(methods_count)
+	    self.__total_methods += methods_count
+	    short_name = c.get("name").split(".")[-1:]
             self.__counter += 1
             if c.get("name") not in self.__count.keys():
                 self.__count[c.get("name")] = 0
@@ -178,7 +183,7 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
                     class_name = direct.getparent().getparent().getparent().get("parent_class")
                     self.__report += "\nClass {clazz} created in {method_name} (target id {method_id}) from {parent_class}".format(clazz = c.get("name"), method_name = method_name, method_id = target.get("cfg_id"), parent_class = class_name)
                     self.__count[c.get("name")] += 1
-                for tc in self._cfg_tree.xpath("//Method/Block/Call/Direct/Target/TargetClass[@label='{class_name}']".format(class_name = c.get("name"))):
+                for tc in self._cfg_tree.xpath("//Method/Block/Call/Direct[contains('{class_name}', @name)]/Target/TargetClass[@label='{class_name}']".format(class_name = c.get("name"))):
                     target = tc.getparent()
                     method_name = tc.getparent().getparent().getparent().getparent().getparent().get("name")
                     class_name = tc.getparent().getparent().getparent().getparent().getparent().get("parent_class")
@@ -200,7 +205,7 @@ class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
     def __init__(self, ucr_xml, cfg_xml, call_count):
         UCFRHandler.__init__(self, cfg_xml)
         ClassIRHandler.__init__(self, ucr_xml)
-        self.__call_count = call_count
+        self.__call_count = int(call_count)
         self.run()
         
     def run(self):
@@ -241,7 +246,7 @@ class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
                     self.__report += self.__GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), self.get_class_by_id(k).get("name"))
                     self.__total += 1
             for k, v in names_used.items():
-                if v > self.__call_count + 2:
+                if v > self.__call_count:
                     self.__report += self.__MB_GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), k, str(v))
                     self.__total_names += 1
             

@@ -243,10 +243,10 @@ elif (args.type == "ObjectCreationAnalysis"):
     ucr_xml = cfg_parser.get(args.type, "ucr_xml")
     cfg_xml = cfg_parser.get(args.type, "cfg_xml")
     cfg_id = cfg_parser.get(args.type, "cfg_id")
-    if cfg_parser.has_option(args.type, "call_count"):
+    if cfg_parser.has_option(args.type, "creation_count"):
         creation_count = cfg_parser.get(args.type, "creation_count")
         if creation_count == None:
-            creation_count = 5
+            creation_count = 2
     else:
         creation_count = 2
     runner = ObjectCreationAnalysis(ucr_xml, cfg_xml, cfg_id, creation_count)
