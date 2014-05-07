@@ -15,10 +15,16 @@ class UCFRBuilder(ASTNGHandler,DuckTypeHandler):
     _project_name = None
     _out_xml = None
     _linker = None
-    def __init__(self,project,out_xml):
+    _criteria = None
+    _threshold = None
+    _add_value = None
+    def __init__(self,project,out_xml,criteria,threshold,add_value):
         self._project_name = project
         self._out_xml = out_xml
         ASTNGHandler.__init__(self,[project])
+        self._add_value = add_value
+        self._criteria = criteria
+        self._threshold = threshold
         self.run()
     def run(self):
         self._linker = UCFRLinker(self._project_name,self._out_xml)
@@ -53,9 +59,13 @@ class UCFRBuilder(ASTNGHandler,DuckTypeHandler):
                     non_empty_ducks += 1
                 found = False
                 for c in classes:
-                    if self.check_candidate(frame.duck_info[name]['attrs'], frame.duck_info[name]['methods'], c):
+                    result = self.check_candidate(frame.duck_info[name]['attrs'], frame.duck_info[name]['methods'], c,self._criteria) 
+                    if result >= self._threshold :
                         target_methods = self.get_complete_signature(c)['methods']
                         for method_name in frame.duck_info[name]['methods'].keys():
+                            if not target_methods.has_key(method_name):
+                                ''' This method is missed in class candidate. It can happens if capacity criteria used'''
+                                continue
                             target_method = target_methods[method_name]
                             for call in frame.duck_info[name]['methods'][method_name]:
                                 call_node = self._linker.get_call(call)                               
@@ -78,6 +88,8 @@ class UCFRBuilder(ASTNGHandler,DuckTypeHandler):
                                             target_subnode = etree.Element("Target")
                                             target_subnode.set("type","method")
                                             target_subnode.set("cfg_id",str(target_method.id))
+                                            if self._add_value: 
+                                                target_subnode.set("type_value",str(result))
                                             childs[0].append(target_subnode)
                                 else:
                                     ''' TODO calls in for, if etc. not handled yet'''

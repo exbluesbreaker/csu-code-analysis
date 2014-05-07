@@ -5,6 +5,7 @@ Created on 02.03.2014
 '''
 
 import re
+import numpy
 from lxml import etree
 from CSUStAn.astng.inspector import ClassIRLinker
 from CSUStAn.cross.duck_typing import DuckTypeHandler 
@@ -30,7 +31,7 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
     _all_ducks = 0
     # numbers of classes in project (for complexity estimation)
     _all_classes = 0
-    _found_ducks = 0
+#     _found_ducks = 0
     _prob_used_classes = None
     _dbg_assattr_parents = None 
     _list_attrs = [attr for attr in dir([]) if not re.search('\A(?!_)',attr)]
@@ -50,7 +51,6 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
         self._treshold = treshold
         self._out_file = out_file
         self._criteria = criteria
-        self._prob_used_classes = set([])
         self._dbg_assattr_parents = set([])
         insert_default_options()
         self.manager = ASTNGManager()
@@ -87,8 +87,14 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
         self.project = project
         linker = ClassIRLinker(project)
         linker.visit(project)
-        bad_ducks = 0
-        successes = 0
+        if self._criteria == 'capacity':
+            found_ducks = {t:0 for t in numpy.arange(self._treshold,1,0.05)}
+            bad_ducks = {t:0 for t in numpy.arange(self._treshold,1,0.05)}
+            prob_used_classes = {t:set([]) for t in numpy.arange(self._treshold,1,0.05)}
+        else:
+            prob_used_classes = set([])
+            bad_ducks = 0
+            found_ducks = 0
         ducks_num = len(list(linker.get_ducks()))
         count = 1
         dbg = set([])
@@ -100,33 +106,60 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
 #                 print duck,current_class.cir_ducks[duck]
                 count +=1
                 duck_attrs, duck_methods = self.get_duck_signature(current_class.cir_ducks[duck])
-                # ignore empty ducks
+                """ ignore empty ducks """
                 if((not duck_attrs) and (not duck_methods)):
                     empty_ducks+=1
                     continue
                 if not hasattr(current_class.cir_ducks[duck], 'complex_type'):
-                    # if duck is not detected  as complex type on previous stage (according to [],{} etc. usage)
-                    # we need to check its methods and fields
+                    """ if duck is not detected  as complex type on previous stage (according to [],{} etc. usage)
+                     we need to check its methods and fields """
                     complex_type = self._check_complex_type(duck_attrs, duck_methods)
                     if(complex_type):
                         current_class.cir_ducks[duck]['complex_type'] = complex_type
-                        self._found_ducks+=1
+                        if self._criteria == 'capacity':
+                            for t in found_ducks.keys():
+                                found_ducks[t]+=1
+                        else:
+                            found_ducks+=1
                         continue
-                duck_found = False
+                if(self._criteria=='capacity'):
+                    ''' Results of candidate class search will be saved for different thresholds '''
+                    duck_found = {t:False for t in numpy.arange(self._treshold,1,0.05)} 
+                else:
+                    duck_found = False
                 for field_candidate in linker.get_classes():
                     result = self.check_candidate(duck_attrs, duck_methods, field_candidate,self._criteria)
-                    if(result):
-                        current_class.cir_ducks[duck]['type'].append(field_candidate)
-                        self._prob_used_classes |= set([field_candidate.cir_uid]) 
-#                         print current_class,duck,field_candidate
-                    duck_found = result or duck_found
+                    if self._criteria == 'capacity':
+                        if(result>= self._treshold):
+                            current_class.cir_ducks[duck]['type'].append(field_candidate)
+                            if self._add_value:
+                                ''' save value for candidate '''
+                                if current_class.cir_ducks[duck].has_key('type_values'):
+                                    current_class.cir_ducks[duck]['type_values'][field_candidate.cir_uid]=result
+                                else:
+                                    current_class.cir_ducks[duck]['type_values']={field_candidate.cir_uid:result}
+                        for t in duck_found.keys():
+                            ''' Save probably used classes for different thresholds '''
+                            if(result>=t):
+                                prob_used_classes[t] |= set([field_candidate.cir_uid])
+                                duck_found[t] = True
+                    else:
+                        if(result):
+                            current_class.cir_ducks[duck]['type'].append(field_candidate)
+                            prob_used_classes |= set([field_candidate.cir_uid])
                       
-                #check if duck not found at all
-                if(not duck_found):
-                    bad_ducks += 1
+                ''' check if duck not found at all '''
+                if self._criteria =='capacity':
+                    for t in duck_found.keys():
+                        if(not duck_found[t]):
+                            bad_ducks[t] += 1
+                        else:
+                            found_ducks[t]+=1 
                 else:
-                    self._found_ducks+=1 
-                    dbg.add(str(current_class)+duck)
+                    if(not duck_found):
+                        bad_ducks += 1
+                    else:
+                        found_ducks+=1 
 #        empty_ducks = len(list(linker.get_empty_ducks()))  
 #         print len(dbg)
 #         print dbg
@@ -135,12 +168,24 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
         print "Numbers of classes: ",len(list(linker.get_classes()))
         print "Numbers of ducks(non-empty): ", linker.get_ducks_count()-empty_ducks
         print "Numbers of ducks with complex type: ", len(list(linker.get_complex_ducks()))
-        if(linker.get_ducks_count()!=empty_ducks):
-            print "Found ducks: ",self._found_ducks, " percentage from non-empty ducks: ",round(100*float(self._found_ducks)/(linker.get_ducks_count()-empty_ducks),1), " %"
-        if(linker.get_attrs_count()!=0):
-            print "Numbers of all attributes in project: ", linker.get_attrs_count(), " percentage of found attrs: ",round(100*float(self._found_ducks)/linker.get_attrs_count(),1), " %"
-        if(len(list(linker.get_classes()))!=0):
-            print "Probably used (as field) classes: ",len(self._prob_used_classes)," percentage: ",round(100*float(len(self._prob_used_classes))/len(list(linker.get_classes())),1), " %"
+        if self._criteria == 'capacity':
+            if(linker.get_ducks_count()!=empty_ducks):
+                b = found_ducks.keys()
+                for t in sorted(found_ducks.keys()):
+                    print t,"found ducks: ",found_ducks[t], " percentage from non-empty ducks: ",round(100*float(found_ducks[t])/(linker.get_ducks_count()-empty_ducks),1), " %"
+            if(linker.get_attrs_count()!=0):
+                for t in sorted(found_ducks.keys()):
+                    print t,"Numbers of all attributes in project: ", linker.get_attrs_count(), " percentage of found attrs: ",round(100*float(found_ducks[t])/linker.get_attrs_count(),1), " %"
+            if(len(list(linker.get_classes()))!=0):
+                for t in sorted(found_ducks.keys()):
+                    print t,"Probably used (as field) classes: ",len(prob_used_classes[t])," percentage: ",round(100*float(len(prob_used_classes[t]))/len(list(linker.get_classes())),1), " %"
+        else:  
+            if(linker.get_ducks_count()!=empty_ducks):
+                print "Found ducks: ",found_ducks, " percentage from non-empty ducks: ",round(100*float(found_ducks)/(linker.get_ducks_count()-empty_ducks),1), " %"
+            if(linker.get_attrs_count()!=0):
+                print "Numbers of all attributes in project: ", linker.get_attrs_count(), " percentage of found attrs: ",round(100*float(found_ducks)/linker.get_attrs_count(),1), " %"
+            if(len(list(linker.get_classes()))!=0):
+                print "Probably used (as field) classes: ",len(prob_used_classes)," percentage: ",round(100*float(len(prob_used_classes))/len(list(linker.get_classes())),1), " %"
         
         # result XML generation
         mapper = {}

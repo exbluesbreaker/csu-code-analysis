@@ -40,8 +40,12 @@ class DuckTypeHandler:
         if criteria == 'default':
             if(all(attr in candidate_attrs for attr in duck_attrs) and all(method in candidate_methods for method in duck_methods)):
                 return True
+        elif criteria == 'capacity':
+            value = float(len(proper_attrs)+len(proper_methods))/(len(duck_attrs)+len(duck_methods))
         else:
             raise CSUStAnException("Unsupported duck typing criteria!!")
+        if value is not None:
+            return value
         return False
     
     def get_duck_val(self,duck,names,label):

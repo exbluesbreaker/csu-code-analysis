@@ -177,8 +177,11 @@ elif(args.type=="TestRunner"):
 elif(args.type=="UCFRBuilder"):
     project = cfg_parser.get(args.type,'project')
     out_file = cfg_parser.get(args.type,'out_file')
+    criteria = cfg_parser.get(args.type,'criteria')
+    treshold = cfg_parser.getfloat(args.type,'treshold')
+    add_value = cfg_parser.getboolean(args.type,'add_value')
     sys.argv = ["main.py",project]
-    runner = UCFRBuilder(project,out_file)
+    runner = UCFRBuilder(project,out_file,criteria,treshold,add_value)
 elif(args.type=="DataflowLinker"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     cfg_xml = cfg_parser.get(args.type,'cfg_xml')
