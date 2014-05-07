@@ -11,6 +11,7 @@ from CSUStAn.ucr.handling import ClassIRHandler,UCRSlicer
 from CSUStAn.exceptions import CSUStAnException
 
 class DataflowLinker(UCFRHandler,ClassIRHandler):
+    ''' Link UCR and UCFR. Add information about UCR class id to related methods and calls in UCFR '''
     _targeted = 0
     _out_xml = None
     _typed_ga_calls = 0
@@ -57,7 +58,13 @@ class DataflowLinker(UCFRHandler,ClassIRHandler):
                         else:
                             tgt_node = etree.Element("Target",type="method")
                             call.append(tgt_node)
+                        if t.attrib.has_key('type_value'):
+                            ''' Save threshold value for type in Target if it exists '''
+                            tgt_node.set('type_value',t.get('type_value'))
                         tgt_class_node = etree.Element("TargetClass", ucr_id=t.get("id"))
+                        
+#                         if t.hasattr('type_value'):
+#                             tgt_class_node('type_value',t.)
                         tgt_node.append(tgt_class_node)
         f = open(self._out_xml,'w')
         f.write(etree.tostring(self._cfg_tree, pretty_print=True, encoding='utf-8', xml_declaration=True))
