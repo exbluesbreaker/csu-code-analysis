@@ -246,10 +246,10 @@ elif (args.type == "ObjectCreationAnalysis"):
     ucr_xml = cfg_parser.get(args.type, "ucr_xml")
     cfg_xml = cfg_parser.get(args.type, "cfg_xml")
     cfg_id = cfg_parser.get(args.type, "cfg_id")
-    if cfg_parser.has_option(args.type, "call_count"):
+    if cfg_parser.has_option(args.type, "creation_count"):
         creation_count = cfg_parser.get(args.type, "creation_count")
         if creation_count == None:
-            creation_count = 5
+            creation_count = 2
     else:
         creation_count = 2
     runner = ObjectCreationAnalysis(ucr_xml, cfg_xml, cfg_id, creation_count)
@@ -274,5 +274,12 @@ elif(args.type=="ExecRouteSearch"):
 elif (args.type == "BigClassAnalyzer_JavaAST"):
     ast_xml = cfg_parser.get(args.type, "ast_xml")
     runner = BigClassAnalyzerJavaAst(ast_xml)
+elif (args.type == "BCAChecker"):
+    ucr_xml = cfg_parser.get(args.type, "ucr_xml")
+    cfg_xml = cfg_parser.get(args.type, "cfg_xml")
+    runner = BCAChecker(ucr_xml, cfg_xml)
+elif (args.type == "BCAChecker_JavaAST"):
+    ast_xml = cfg_parser.get(args.type, "ast_xml")
+    runner = BCAAstChecker(ast_xml)
 else:
     print "Unknown type!"

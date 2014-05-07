@@ -21,6 +21,7 @@ from CSUStAn.cross.handling import DataflowLinker, UnreachableCodeSearch,Instanc
 from CSUStAn.ucr.handling import PotentialSiblingsCounter,InheritanceSlicer
 from CSUStAn.ucfr.handling import UCFRHandler
 from lxml import etree
+import time
 
 
 '''Entry points for different ASTNG processing'''
@@ -88,8 +89,23 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
     def run(self):
         self.__counter = 1
         self.__report = ""
+	self.__make_connections()
         self.for_each_class(self.process_class())
         print self.__report
+
+    def __make_connections(self):
+        self.__ucfr_methods = {}
+        for method in self._methods:
+	    ucr_id = method.get("ucr_id") 
+	    if ucr_id in self.__ucfr_methods:
+	        self.__ucfr_methods[ucr_id].append(method)
+	    else:
+	        self.__ucfr_methods[ucr_id] = [method]
+
+    def __get_method(self, ucr_id, name):
+        for method in self.__ucfr_methods[ucr_id]:
+	    if method.get("name") == name:
+	        yield method
         
     def process_class(self):
         def process_class_internal(c):
@@ -104,7 +120,7 @@ class BigClassAnalyzer(UCFRHandler, ClassIRHandler):
                 args = len([x.get("name") for x in method.iter("Arg")])
                 if args > 5:
                     self.__report += "\nClass " + c.get("name") + " has method " + method.get("name") + "() with too many arguments (" + str(args) + "). Maybe some of it should be fields?"
-                for cfg_method in self._cfg_tree.xpath("//Method[@ucr_id=\"" + c.get("id") + "\" and @name=\"" + method.get("name") + "\"]"):
+                for cfg_method in self.__get_method(c.get("id"), method.get("name")):
                     flows = len([x.get("name") for x in cfg_method.iter("Flow")])
                     blocks = len([x.get("name") for x in cfg_method.iter("Block")])
                     if blocks > 10:
@@ -128,7 +144,7 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
         ClassIRHandler.__init__(self, ucr_xml)
         self.__method_id = cfg_id
         self.__count = {}
-        self.__creation_count = creation_count
+        self.__creation_count = int(creation_count)
         self.run()
     
     def run(self):
@@ -136,17 +152,22 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
         self.__report = ""
         self.__count = {}
         self.__total = 0
+	self.__total_methods = 0
         self.for_each_class(self.process_class())
         for clazz, cnt in self.__count.items():
-            if cnt <= self.__creation_count and cnt > 0:
+            if (cnt <= self.__creation_count) and (cnt > 0):
                 self.__report += "\nClass {className} created only in few methods: {methods}".format(className = clazz, methods = cnt)
-                self.__total += 1
+                self.__total += cnt
         print self.__report
         print "Total classes with limited creation counts is {0}".format(self.__total)
+	print "Total methods count is {0}".format(self.__total_methods)
         
     def process_class(self):
         def process_class_internal(c):
-            print "Processing class " + c.get("name") + " (" + str(self.__counter) + "/" + str(self.get_num_of_classes()) + ")"
+	    methods_count = len([meth.get("name") for meth in c.iter("Method")])
+            print "Processing class " + c.get("name") + " (" + str(self.__counter) + "/" + str(self.get_num_of_classes()) + "), methods - " + str(methods_count)
+	    self.__total_methods += methods_count
+	    short_name = c.get("name").split(".")[-1:]
             self.__counter += 1
             if c.get("name") not in self.__count.keys():
                 self.__count[c.get("name")] = 0
@@ -162,7 +183,7 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
                     class_name = direct.getparent().getparent().getparent().get("parent_class")
                     self.__report += "\nClass {clazz} created in {method_name} (target id {method_id}) from {parent_class}".format(clazz = c.get("name"), method_name = method_name, method_id = target.get("cfg_id"), parent_class = class_name)
                     self.__count[c.get("name")] += 1
-                for tc in self._cfg_tree.xpath("//Method/Block/Call/Direct/Target/TargetClass[@label='{class_name}']".format(class_name = c.get("name"))):
+                for tc in self._cfg_tree.xpath("//Method/Block/Call/Direct[contains('{class_name}', @name)]/Target/TargetClass[@label='{class_name}']".format(class_name = c.get("name"))):
                     target = tc.getparent()
                     method_name = tc.getparent().getparent().getparent().getparent().getparent().get("name")
                     class_name = tc.getparent().getparent().getparent().getparent().getparent().get("parent_class")
@@ -184,7 +205,7 @@ class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
     def __init__(self, ucr_xml, cfg_xml, call_count):
         UCFRHandler.__init__(self, cfg_xml)
         ClassIRHandler.__init__(self, ucr_xml)
-        self.__call_count = call_count
+        self.__call_count = int(call_count)
         self.run()
         
     def run(self):
@@ -225,7 +246,7 @@ class GreedyFunctionsAnalyzer(UCFRHandler, ClassIRHandler):
                     self.__report += self.__GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), self.get_class_by_id(k).get("name"))
                     self.__total += 1
             for k, v in names_used.items():
-                if v > self.__call_count + 2:
+                if v > self.__call_count:
                     self.__report += self.__MB_GREEDY_METHOD.format(method.get("name"), method.get("parent_class"), k, str(v))
                     self.__total_names += 1
             
@@ -240,7 +261,7 @@ class BigClassAnalyzerJavaAst(UCFRHandler, ClassIRHandler):
     
     def __init__(self, ast_xml):
         parser = etree.XMLParser(remove_blank_text=True)
-        self.__ast_tree = etree.parse(ast_xml, parser)
+        self._ast_tree = etree.parse(ast_xml, parser)
         self.run()
     
     def run(self):
@@ -252,7 +273,7 @@ class BigClassAnalyzerJavaAst(UCFRHandler, ClassIRHandler):
         print self.__report
         
     def find_classes(self):
-        for node in self.__ast_tree.iter("compilation_unit"):
+        for node in self._ast_tree.iter("compilation_unit"):
 	    package = ""
 	    for package_node in node.iter("package"):
                 package = self.get_package_name(package_node)
@@ -309,3 +330,29 @@ class BigClassAnalyzerJavaAst(UCFRHandler, ClassIRHandler):
             if methods > 30 or (methods - 2*fields > 10 and fields > 5):
 	        self.__report += "\nClass {0} has too many methods. Looks like it has too many responsibilities. Maybe you should divide it?".format(clazz)
         
+def current_time():
+    return int(round(time.time() * 1000))
+
+class BCAChecker(BigClassAnalyzer):
+    
+    def __init__(self, ucr_xml, cfg_xml):
+        UCFRHandler.__init__(self, cfg_xml)
+        ClassIRHandler.__init__(self, ucr_xml)
+	t = current_time()
+	for i in xrange(0, 10000):
+            self.run()
+	    print "*** {0} out of 10 000 ***".format(i)
+	t = current_time() - t
+	print "Time in millis:", t
+
+class BCAAstChecker(BigClassAnalyzerJavaAst):
+    
+    def __init__(self, ast_xml):
+        parser = etree.XMLParser(remove_blank_text=True)
+        self._ast_tree = etree.parse(ast_xml, parser)
+	t = current_time()
+	for i in xrange(0, 10000):
+            self.run()
+	    print "*** {0} out of 10 000 ***".format(i)
+	t = current_time() - t
+	print "Time in millis:", t
