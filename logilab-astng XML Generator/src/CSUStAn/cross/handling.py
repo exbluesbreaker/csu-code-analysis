@@ -59,7 +59,7 @@ class DataflowLinker(UCFRHandler,ClassIRHandler):
                             tgt_node = etree.Element("Target",type="method")
                             call.append(tgt_node)
                         if t.attrib.has_key('type_value'):
-                            ''' Save threshold value for type in Target if it exists '''
+                            ''' Save capacity criteria value for type in Target if it exists '''
                             tgt_node.set('type_value',t.get('type_value'))
                         tgt_class_node = etree.Element("TargetClass", ucr_id=t.get("id"))
                         
@@ -107,9 +107,7 @@ class InstanceInitSlicer(UCFRHandler, UCRSlicer):
             creator = c.getparent().getparent().getparent().getparent().getparent()
             init_dict[creator.get("ucr_id")].append(c.get("ucr_id"))
             print "Method",creator.get("name")+"[cfg_id="+creator.get("cfg_id")+"] of",creator.get("parent_class")+"[ucr_id="+creator.get("ucr_id")+"] creates object of class",c.getparent().getparent().get("name")+"[ucr_id="+c.get("ucr_id")+"]"
-        unique_init_dict = {c:set(init_dict[c])for c in init_dict.keys()}
         inits = [len(init_dict[c]) for c in init_dict.keys()]
-        unique_inits = [len(init_dict[c]) for c in unique_init_dict.keys()]
         print "Processed",self._input_ucr_xml,"and",self._input_ucfr_xml
         print "Max objects inits for class", numpy.max(inits)
         print "Avg objects inits for class", numpy.average(inits)
@@ -161,27 +159,50 @@ class UnreachableCodeSearch(UCFRHandler, ClassIRHandler):
     _ucr_id = None
     _keep_parents = None
     _call_map = {}
-    def __init__(self,ucr_xml,lcfg_xml):
+    _use_threshold = None
+    _threshold = None
+    
+    def __init__(self,ucr_xml,lcfg_xml,use_threshold,threshold):
         ClassIRHandler.__init__(self, ucr_xml)
         UCFRHandler.__init__(self, lcfg_xml)
+        self._use_threshold = use_threshold
+        self._threshold = threshold
+        if(use_threshold):
+            self._call_map = {t:{} for t in numpy.arange(threshold,1,0.05)}
         self.get_call_map()
         all_frames = set([f.get("cfg_id") for f in self.get_frames()])
-        all_called = set(self._call_map.keys())
-        not_called = all_frames-all_called
-        not_called_frames = set([f for f in self.get_frames() if f.get("cfg_id") in not_called])
-        for f in not_called_frames:
-            print "Not found calls for",f.tag, f.get("name"),"[cfg_id="+f.get("cfg_id")+"]", "from",f.get("label") 
-        print "Processed",lcfg_xml
-        print "Reachable ",len(all_called)," from ", len(all_frames)
-        print "Reachable ratio",len(all_called)*1.0/len(all_frames)
-        print len(all_frames)
-        print len(all_called)
-        print len(not_called)
-        print all_called-all_frames
+        if use_threshold:
+            for t in sorted(self._call_map.keys()):
+                all_called = set(self._call_map[t].keys())
+                not_called = all_frames-all_called
+                print t,"Reachable ratio",len(all_called)*1.0/len(all_frames)
+            print "Processed",lcfg_xml
+        else:
+            all_called = set(self._call_map.keys())
+            not_called = all_frames-all_called
+            not_called_frames = set([f for f in self.get_frames() if f.get("cfg_id") in not_called])
+            for f in not_called_frames:
+                print "Not found calls for",f.tag, f.get("name"),"[cfg_id="+f.get("cfg_id")+"]", "from",f.get("label")
+            print "Processed",lcfg_xml
+            print "Reachable ",len(all_called)," from ", len(all_frames)
+            print "Reachable ratio",len(all_called)*1.0/len(all_frames)
+            print len(all_frames)
+            print len(all_called)
+            print len(not_called)
+            print all_called-all_frames
     
     def get_call_map(self):
         for call in  self.get_targeted_calls():
-            if self._call_map.has_key(call.get("cfg_id")):
-                self._call_map[call.get("cfg_id")].add(call)
+            if self._use_threshold:
+                ''' Different mapping for different threshold'''
+                for t in self._call_map.keys():
+                    if (not call.attrib.has_key('type_value')) or (float(call.get('type_value'))>=t):  
+                        if self._call_map.has_key(call.get("cfg_id")):
+                            self._call_map[t][call.get("cfg_id")].add(call)
+                        else:
+                            self._call_map[t][call.get("cfg_id")] = set([call])                  
             else:
-                self._call_map[call.get("cfg_id")] = set([call])
+                if self._call_map.has_key(call.get("cfg_id")):
+                    self._call_map[call.get("cfg_id")].add(call)
+                else:
+                    self._call_map[call.get("cfg_id")] = set([call])

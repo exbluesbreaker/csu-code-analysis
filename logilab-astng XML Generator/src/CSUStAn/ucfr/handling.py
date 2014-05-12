@@ -4,6 +4,7 @@ Created on 02.03.2014
 @author: bluesbreaker
 '''
 import numpy
+import copy
 from lxml import etree
 from logilab.astng.inspector import IdGeneratorMixIn
 from CSUStAn.exceptions import CSUStAnException
@@ -65,12 +66,16 @@ class FlatUCFRSlicer(UCFRSlicer):
     _criteria = None
     _visited = set([])
     _input_file = None
+    _use_threshold = None
+    _threshold = None
     
-    def __init__(self,lcfg_xml,out_xml,target_id,criteria):
+    def __init__(self,lcfg_xml,out_xml,target_id,criteria,use_threshold,threshold):
         UCFRSlicer.__init__(self, lcfg_xml,out_xml)
         self._id = target_id
         self._criteria = criteria
         self._input_file = lcfg_xml
+        self._use_threshold = use_threshold
+        self._threshold = threshold
         if self._criteria == "summary":
             self.handle_summary()
         else:
@@ -94,20 +99,40 @@ class FlatUCFRSlicer(UCFRSlicer):
                                               "/Project/Function/Block/Call/Direct/Target[@cfg_id]") 
         calls_num = len(targeted_calls)
         call_num = 1
-        for c in targeted_calls:
-            print "Processing",call_num,"targeted call from",calls_num
-            call_num+=1
-            frame = c.getparent().getparent().getparent().getparent().get("cfg_id")
-            calls_dict[frame].add(c.get("cfg_id"))
-        inner_calls = [len(calls_dict[c])for c in calls_dict.keys()]
+        if self._use_threshold:
+            ''' Different call maps for each threshold '''
+            t_calls_dict = {t:copy.deepcopy(calls_dict) for t in numpy.arange(self._threshold,1,0.05)}
+            for c in targeted_calls:
+                print "Processing",call_num,"targeted call from",calls_num
+                call_num+=1
+                for t in t_calls_dict.keys():
+                    if(not c.attrib.has_key('type_value')) or (float(c.get('type_value'))>=t):
+                        frame = c.getparent().getparent().getparent().getparent().get("cfg_id")
+                        t_calls_dict[t][frame].add(c.get("cfg_id"))
+            t_inner_calls = {t:[len(t_calls_dict[t][c])for c in t_calls_dict[t].keys()] for t in numpy.arange(self._threshold,1,0.05)}
+        else:
+            for c in targeted_calls:
+                print "Processing",call_num,"targeted call from",calls_num
+                call_num+=1
+                frame = c.getparent().getparent().getparent().getparent().get("cfg_id")
+                calls_dict[frame].add(c.get("cfg_id"))
         print "Processed",self._input_file
         print "Number of frames",len(calls_dict.keys())
-        print "Max inner calls for frame ", numpy.max(inner_calls)
-        print "Min inner calls for frame ", numpy.min(inner_calls)
-        print "Avg inner calls for frame ", numpy.average(inner_calls)
-        print "Median inner calls for frame ", numpy.median(inner_calls)
-        print "Variance inner calls for frame ", numpy.var(inner_calls)
-        print "Standard deviation inner calls for frame ", numpy.std(inner_calls)
+        if self._use_threshold:
+            for t in sorted(t_inner_calls.keys()):
+                l=0
+                for c in t_calls_dict[t].keys():
+                   l+= len(t_calls_dict[t][c])
+                print l
+                print t,"Avg inner calls for frame ", numpy.average(t_inner_calls[t])
+        else:
+            inner_calls = [len(calls_dict[c])for c in calls_dict.keys()]
+            print "Max inner calls for frame ", numpy.max(inner_calls)
+            print "Min inner calls for frame ", numpy.min(inner_calls)
+            print "Avg inner calls for frame ", numpy.average(inner_calls)
+            print "Median inner calls for frame ", numpy.median(inner_calls)
+            print "Variance inner calls for frame ", numpy.var(inner_calls)
+            print "Standard deviation inner calls for frame ", numpy.std(inner_calls)
     
     def handle_tree(self,node_id=None):
         ''' Slice methods/funcs called from given'''

@@ -202,7 +202,9 @@ elif(args.type=="FlatUCFRSlicer"):
     out_file = cfg_parser.get(args.type,'out_file')
     target_id = cfg_parser.get(args.type,'id')
     criteria = cfg_parser.get(args.type,'criteria')
-    runner = FlatUCFRSlicer(in_file,out_file,target_id,criteria)
+    use_threshold = cfg_parser.getboolean(args.type,'use_threshold')
+    threshold = cfg_parser.getfloat(args.type,'threshold')
+    runner = FlatUCFRSlicer(in_file,out_file,target_id,criteria,use_threshold,threshold)
 elif(args.type=="ClassUCFRSlicer"):
     in_file = cfg_parser.get(args.type,'in_file')
     out_file = cfg_parser.get(args.type,'out_file')
@@ -266,7 +268,9 @@ elif (args.type == "GreedyFunctionsAnalyzer"):
 elif(args.type=="UnreachableCodeSearch"):
     ucr_xml = cfg_parser.get(args.type,'ucr_xml')
     lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
-    runner = UnreachableCodeSearch(ucr_xml,lcfg_xml)
+    use_threshold = cfg_parser.getboolean(args.type,'use_threshold')
+    threshold = cfg_parser.getfloat(args.type,'threshold')
+    runner = UnreachableCodeSearch(ucr_xml,lcfg_xml,use_threshold,threshold)
 elif(args.type=="ExecRouteSearch"):
     criteria = cfg_parser.get(args.type,'criteria')
     lcfg_xml = cfg_parser.get(args.type,'lcfg_xml')
