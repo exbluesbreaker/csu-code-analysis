@@ -8,6 +8,7 @@ import ru.csu.stan.java.cfg.util.scope.VariableFromScope;
 import ru.csu.stan.java.cfg.util.scope.VariableScope;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.NodeAttributes;
+import ru.csu.stan.java.classgen.util.CompilationUnit;
 
 /**
  * 
@@ -19,12 +20,14 @@ public class VariableContext extends ContextBase implements IClassInsidePart{
 	private VariableScope scope;
 	private VariableFromScope scopedVar;
 	private Block block;
+	private CompilationUnit compilationUnit;
 	
-	VariableContext(ContextBase previousState, VariableScope scope, Block block) {
+	VariableContext(ContextBase previousState, VariableScope scope, Block block, CompilationUnit compilationUnit) {
 		super(previousState);
 		this.scope = scope;
 		scopedVar = new VariableFromScope();
 		this.block = block;
+		this.compilationUnit = compilationUnit;
 	}
 
 	@Override
@@ -41,11 +44,14 @@ public class VariableContext extends ContextBase implements IClassInsidePart{
 			return new VartypeContext(this, scopedVar);
 		if (block != null){
 			if ("method_invocation".equals(eventName)){
-	        	return new MethodInvocationContext(this, block, getClassName());
+	        	return new MethodInvocationContext(this, block, getClassName(), compilationUnit);
 	        }
 	        if ("new_class".equals(eventName)){
-	        	return new NewClassContext(this, block, getClassName());
+	        	return new NewClassContext(this, block, getClassName(), compilationUnit);
 	        }
+		}
+		if ("class".equals(eventName)){
+			return new ClassContext(this, compilationUnit);
 		}
 		return this;
 	}

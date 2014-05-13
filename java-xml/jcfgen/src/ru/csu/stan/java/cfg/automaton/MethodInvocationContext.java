@@ -3,6 +3,7 @@ package ru.csu.stan.java.cfg.automaton;
 import java.math.BigInteger;
 
 import ru.csu.stan.java.cfg.automaton.base.ContextBase;
+import ru.csu.stan.java.cfg.automaton.base.IClassInsidePart;
 import ru.csu.stan.java.cfg.jaxb.Block;
 import ru.csu.stan.java.cfg.jaxb.Call;
 import ru.csu.stan.java.cfg.jaxb.Direct;
@@ -10,15 +11,17 @@ import ru.csu.stan.java.cfg.jaxb.Getattr;
 import ru.csu.stan.java.cfg.jaxb.Project;
 import ru.csu.stan.java.cfg.jaxb.Target;
 import ru.csu.stan.java.cfg.jaxb.TargetClass;
+import ru.csu.stan.java.cfg.util.scope.VariableScope;
 import ru.csu.stan.java.classgen.automaton.IContext;
 import ru.csu.stan.java.classgen.handlers.NodeAttributes;
+import ru.csu.stan.java.classgen.util.CompilationUnit;
 
 /**
  * 
  * @author mz
  *
  */
-public class MethodInvocationContext extends ContextBase {
+public class MethodInvocationContext extends ContextBase implements IClassInsidePart {
 
 	private Block block;
 	private String name;
@@ -26,11 +29,13 @@ public class MethodInvocationContext extends ContextBase {
 	private Call call;
 	private boolean hasInternalCall;
 	private String className;
+	private CompilationUnit compilationUnit;
 	
-	MethodInvocationContext(ContextBase previousState, Block block, String className) {
+	MethodInvocationContext(ContextBase previousState, Block block, String className, CompilationUnit compilationUnit) {
 		super(previousState);
 		this.block = block;
 		this.className = className;
+		this.compilationUnit = compilationUnit;
 	}
 
 	@Override
@@ -45,14 +50,14 @@ public class MethodInvocationContext extends ContextBase {
 	public IContext<Project> getNextState(IContext<Project> context, String eventName) {
 		if ("method_invocation".equals(eventName)){
 			hasInternalCall = true;
-        	return new MethodInvocationContext(this, block, className);
+        	return new MethodInvocationContext(this, block, className, compilationUnit);
         }
 		if ("new_class".equals(eventName)){
 			hasInternalCall = true;
-        	return new NewClassContext(this, block, className);
+        	return new NewClassContext(this, block, className, compilationUnit);
         }
 		if ("arguments".equals(eventName))
-			return new MethodArgumentsContext(this);
+			return new MethodArgumentsContext(this, block, className, compilationUnit);
 		return this;
 	}
 
@@ -102,6 +107,32 @@ public class MethodInvocationContext extends ContextBase {
 				block.getCall().add(call);
 			}
 		}
+	}
+	
+	public void setInternalCall(){
+		this.hasInternalCall = true;
+	}
+	
+	@Override
+	public String getClassName() {
+		return findParentClassNameHolder().getClassName();
+	}
+
+	@Override
+	public int getNextInnerCount() {
+		return findParentClassNameHolder().getNextInnerCount();
+	}
+	
+	private IClassInsidePart findParentClassNameHolder(){
+		ContextBase ctx = this.getUpperState();
+		while (!(ctx instanceof IClassInsidePart) && ctx != null)
+			ctx = ctx.getUpperState();
+		return (IClassInsidePart) ctx;
+	}
+
+	@Override
+	public VariableScope getVariableScope() {
+		return findParentClassNameHolder().getVariableScope();
 	}
 
 }
