@@ -7,18 +7,20 @@ USAGE
 * 1) logilab-astng XML Generator
 
 This is python utility for static analysis. Its main features:
-	- generation of universal class intermediate representation - UCR  (XML) for Python projects(1)
-	- generation of visual representation of class hierarchy from universal class intermediate representation(2)
-	- search for potential siblings in class hierarchy from universal class intermediate representation(3)
-	- tracing of living objects during different runs of Python projects (bazaar,logilab etc.). This needed for checking result of in-project aggregation generation in universal class representation(4)
-	- extraction of CFG for project fuctions and methods(5)
-	- linking of extracted CFG and UCR(6)
-	- simple visualization of linked CFG(7)
-	- slicing of UCR, according to given class(8)
-	- performing analysis for big classes with many responsibilities(9)
+	- generation of universal class intermediate representation - UCR  (XML) for Python projects (1)
+	- generation of visual representation of class hierarchy from universal class intermediate representation (2)
+	- searching for potential siblings in class hierarchy from universal class intermediate representation (3)
+	- tracing of living objects during different runs of Python projects (bazaar,logilab etc.). This needed for checking result of in-project aggregation generation in universal class representation (4)
+	- extraction of universal control-flow representation - UCFR (XML) for Python project fuctions and methods (5)
+	- linking of extracted UCFR and UCR (6)
+	- simple visualization of linked CFG (7)
+	- slicing of UCR & UCFR according to input parameters (8)
+	- performing analysis for big classes with many responsibilities (9)
 	- performing analysis of object creation places (10)
 	- performing analysis of methods, which uses another class too much (11)
 	- performing analysis for big classes with many responsibilities (same as 9, but on Java AST, see Java-XML section) (12)
+	- several kinds of execution path analysis: visualization, search for created objects through it, search for call through it (13)
+	- searching for unreachable code (14)
 
 Project is on prototype stage and installation is not supported yet. For running you must need to add src directory of sources to PYTHONPATH environment variable and use CSUStan/main.py for run. main.py accepts two argument - type of run(-t) and optional file name of config file(-c, by default csu.ini will be used). Other paramaters must be set in config file. Example of config file presented in data/csu.ini.
 
@@ -26,29 +28,35 @@ Requirenments:
 	Python(>= 2.7 and < 3.0)
 	Graphviz
 	pylint
-	logilab-astng
+	logilab-astng(>=0.23)
 	pydot
 	lxml
 
 Supported run types:
-	ClassIR - generation of UCR for Python project(1)
-	LogilabClassIR - old-style UCR generation (deprecated)(1)
+	UCRBuilder - generation of UCR for Python project(1)
+	LogilabClassIR - (deprecated) old-style UCR generation (1)
 	PotentialSibling - search for potential siblings in class hierarchy(3)
 	VisualHierarchy - visual representation of class relations in UCR (UML-like)(2)
-	FieldCandidates - deprecated
 	LogilabObjectTracer - tracing of living objects from logilab package(4)
 	PylintObjectTracer - tracing of living objects from pylint package(4)
 	TwistedObjectTracer -tracing of living objects from twisted package(deprecated) (4)
 	SconsObjectTracer - tracing of living objects from SCons package (4)
 	BazaarObjectTracer - tracing of living objects from bzrlib package (4)
-	CFGExtractor - extraction of control flow graph for project(5)
-	DataflowLinker - add dataflow information to CFG, according to UCR(6)
-	CFGVisualizer - simple svg-based visualizer of CFG(7)
-	ClassSlicer - slice UCR, for class of interest(8)
-	BigClassAnalyzer - analyzes whole project and finds classes with many responsibilities(9)
+	UCFRBuilder - generation of UCFR for Python project (5)
+	DataflowLinker - add dataflow information to UCFR, according to UCR (6)
+	UCFRVisualizer - simple svg-based visualizer of UCFR (7)
+	InheritanceSlicer - slice UCR, for inheritance information (8)
+	FlatUCFRSlicer - slice UCFR, for some frames (8)
+	ClassUCFRSlicer - slice UCFR, for class from UCR (8)
+	InstanceInitSlicer - slice UCR&UCFR, for class instantiation information (8)
+	BigClassAnalyzer - analyzes whole project and finds classes with many responsibilities (9)
 	ObjectCreationAnalysis - analyzes whole project and finds classes, which instances are created in few places (i.e. factories) (10)
-	GreedyFunctionsAnalyzer - analyzes whole project and finds "greedy functions"(11)
+	GreedyFunctionsAnalyzer - analyzes whole project and finds "greedy functions" (11)
 	BigClassAnalyzer_JavaAST - analyzes whole project's Java AST and finds classes with many responsibilities (12)
+	ExecPathVisualizer - vizual representation of given execution path (by list of UCFR ids) (13)
+	ExecPathObjectSlicer - search for created objects through given execution path (13)
+	ExecPathCallsSearch - search for specific call (maybe dangerous) through given execution path (13)
+	UnreachableCodeSearch - search for unreachable code in control-flow with UCFR (14)
 
 	Extraction of UCR and CFG needs name of top-level module of project as project argument in config file. If you want to analyze module, which not installed in standard location in system (for example site-packages directory), you need to add directory, which contains top-level module of project to PYTHONPATH.
 

@@ -181,7 +181,7 @@ class ObjectCreationAnalysis(UCFRHandler, ClassIRHandler):
                     target = direct.get("Target")
                     method_name = direct.getparent().getparent().getparent().get("name")
                     class_name = direct.getparent().getparent().getparent().get("parent_class")
-                    self.__report += "\nClass {clazz} created in {method_name} (target id {method_id}) from {parent_class}".format(clazz = c.get("name"), method_name = method_name, method_id = target.get("cfg_id"), parent_class = class_name)
+                    self.__report += "\nClass {clazz} created in {method_name} (target id {method_id}) from {parent_class}".format(clazz = c.get("name"), method_name = method_name, method_id = target.get("cfg_id") if target != None else "", parent_class = class_name)
                     self.__count[c.get("name")] += 1
                 for tc in self._cfg_tree.xpath("//Method/Block/Call/Direct[contains('{class_name}', @name)]/Target/TargetClass[@label='{class_name}']".format(class_name = c.get("name"))):
                     target = tc.getparent()
