@@ -13,6 +13,7 @@ from logilab.common.configuration import ConfigurationMixIn
 from pylint.pyreverse.utils import get_visibility
 from pylint.pyreverse.main import OPTIONS
 from CSUStAn.exceptions import CSUStAnException
+from CSUStAn.utils import graph_connected_components
 
 class ClassIRHandler:
     # Process XML class IR
@@ -397,21 +398,16 @@ class InheritanceSlicer(ConfigurationMixIn,UCRSlicer):
         subtree_sizes = []
         class_num = len(class_ids)
         subtree_num=1
-        while len(class_ids) >0:
-            print "Processing",subtree_num,"tree,",len(class_ids),"classes left"
-            subtree_num+=1
-            c = self.get_class_by_id(list(class_ids)[0])
-            subtree = set([c])
-            subtree |= self.get_all_children(c)
-            parents = self.get_all_parents(c)
+        adj_map = {}
+        for c_id in class_ids:
+            adj_map[c_id] = set([])
+        for c in self._classes:
+            parents = self.get_parents(c)
+            adj_map[c.get("id")] |= set([p.get("id") for p in parents])
             for p in parents:
-                subtree = self.get_all_children(p,subtree)
-            subtrees.append(subtree)
-            subtree_ids = set([c.get("id") for c in subtree])
-            class_ids = set(class_ids) - subtree_ids 
-            subtree_sizes.append(len(subtree_ids))
-            for c in subtree:
-                c.getparent().remove(c)
+                adj_map[p.get("id")].add(c.get("id"))
+        subtrees = graph_connected_components(adj_map)
+        subtree_sizes = [len(s) for s in subtrees]
         print "Input file -",self._in_file 
         print "Number of classes ",class_num
         print "Number of inheritance trees ",len(subtrees)

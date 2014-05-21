@@ -8,6 +8,7 @@ import copy
 from lxml import etree
 from logilab.astng.inspector import IdGeneratorMixIn
 from CSUStAn.exceptions import CSUStAnException
+from CSUStAn.utils import graph_connected_components
 
 class UCFRHandler:
     ''' Process UCFR XML '''
@@ -92,7 +93,9 @@ class FlatUCFRSlicer(UCFRSlicer):
         print len(self._sliced_frames),"methods after slicing"
         
     def handle_summary(self):
-        calls_dict = {f.get("cfg_id"):set([]) for f in self.get_frames()}
+        calls_dict = {}
+        for f in self.get_frames():
+            calls_dict[f.get("cfg_id")]=set([])
         targeted_calls = self._cfg_tree.xpath("/Project/Method/Block/Call/Getattr/Target[@cfg_id]|"+
                                               "/Project/Method/Block/Call/Direct/Target[@cfg_id]|"+
                                               "/Project/Function/Block/Call/Getattr/Target[@cfg_id]|"+
@@ -272,13 +275,23 @@ class ExecRouteSearch(UCFRHandler):
     def handle_summary(self):
         self._call_map = {}
         for f in self.get_frames():
-            self._call_map[f.get("cfg_id")] = []
+            self._call_map[f.get("cfg_id")] = set([])
         targeted_calls = self._cfg_tree.xpath("/Project/Method/Block/Call/Getattr/Target[@cfg_id]|"+
                                               "/Project/Method/Block/Call/Direct/Target[@cfg_id]|"+
                                               "/Project/Function/Block/Call/Getattr/Target[@cfg_id]|"+
                                               "/Project/Function/Block/Call/Direct/Target[@cfg_id]")
         for call in targeted_calls:
             source = call.getparent().getparent().getparent().getparent().get("cfg_id")
-            self._call_map[source].append(call.get("cfg_id"))
+            self._call_map[source].add(call.get("cfg_id"))
+            self._call_map[call.get("cfg_id")].add(source)
+        subtrees = graph_connected_components(self._call_map)
+        subtree_sizes = [len(s) for s in subtrees]
         print "Processed",self._input_xml
-        print "Calls to frames ratio",len(targeted_calls)*1.0/len(self._call_map.keys())
+        print "Number of frames",len(self._call_map.keys())
+        print "Number of functional trees ",len(subtrees)
+        print "Max functional tree size ", numpy.max(subtree_sizes)
+        print "Min functional tree size ", numpy.min(subtree_sizes)
+        print "Avg functional tree size ", numpy.average(subtree_sizes)
+        print "Median functional tree size ", numpy.median(subtree_sizes)
+        print "Variance functional tree size ", numpy.var(subtree_sizes)
+        print "Standard deviation functional tree size ", numpy.std(subtree_sizes)
