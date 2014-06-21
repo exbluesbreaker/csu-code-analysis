@@ -54,7 +54,9 @@ class UCFRBuilder(ASTNGHandler,DuckTypeHandler):
                 all_calls = set([])
                 for m in frame.duck_info[name]['methods'].keys():
                     all_calls |= frame.duck_info[name]['methods'][m]
-                linked  = {m:set([]) for m in all_calls}
+                linked  = {}
+                for m in all_calls:
+                    linked[m] = set([])
                 if frame.duck_info[name]['attrs'] or frame.duck_info[name]['methods']:
                     non_empty_ducks += 1
                 found = False

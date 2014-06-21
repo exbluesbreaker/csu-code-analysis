@@ -23,7 +23,9 @@ class DuckTypeHandler:
         if hasattr(class_node, 'ucr_complete_signature'):
             return class_node.ucr_complete_signature
         ucr_complete_signature = {'attrs':class_node.ucr_complete_attrs,
-                                  'methods':{m.name: m for m in class_node.methods()}}
+                                  'methods':{}}
+        for m in class_node.methods():
+            ucr_complete_signature['methods'][m.name] = m 
         class_node.ucr_complete_signature = ucr_complete_signature
         return ucr_complete_signature
     

@@ -9,6 +9,7 @@ from lxml import etree
 from logilab.astng.inspector import IdGeneratorMixIn
 from CSUStAn.exceptions import CSUStAnException
 from CSUStAn.utils import graph_connected_components
+import sys
 
 class UCFRHandler:
     ''' Process UCFR XML '''
@@ -148,8 +149,9 @@ class FlatUCFRSlicer(UCFRSlicer):
         self._sliced_frames|=set(self._cfg_tree.xpath("/Project/Function[@cfg_id=\""+node_id+"\"]|/Project/Method[@cfg_id=\""+node_id+"\"]"))
         calls = self._cfg_tree.xpath("/Project/Method[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]|\
                                                         /Project/Function[@cfg_id=\""+node_id+"\"]//Target[@cfg_id]")
-        for id in set([c.get("cfg_id") for c in calls]):
-            self.handle_tree(id)
+        if(node_id == self._id):
+            for id in set([c.get("cfg_id") for c in calls]):
+                self.handle_tree(id)
             
     def handle_callers(self):
         ''' Slice callers methods/funcs for given'''
@@ -284,7 +286,10 @@ class ExecRouteSearch(UCFRHandler):
             source = call.getparent().getparent().getparent().getparent().get("cfg_id")
             self._call_map[source].add(call.get("cfg_id"))
             self._call_map[call.get("cfg_id")].add(source)
+        rec_depth = sys.getrecursionlimit()
+        sys.setrecursionlimit(len(self._call_map.keys()))
         subtrees = graph_connected_components(self._call_map)
+        sys.setrecursionlimit(rec_depth)
         subtree_sizes = [len(s) for s in subtrees]
         print "Processed",self._input_xml
         print "Number of frames",len(self._call_map.keys())
