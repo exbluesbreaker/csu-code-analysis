@@ -131,6 +131,11 @@ if(args.type=="UCRBuilder"):
     add_value = cfg_parser.getboolean(args.type,'add_value')
     sys.argv = ["main.py",project]
     runner = UCRBuilder([project],criteria,out_file,treshold,add_value)
+elif(args.type=="PylintUCRBuilder"):
+    project = cfg_parser.get(args.type,'project')
+    out_file = cfg_parser.get(args.type,'out_file')
+    sys.argv = ["main.py",project]
+    runner = PylintUCRBuilder([project],out_file)
 elif(args.type=="LogilabClassIR"):
     project = cfg_parser.get(args.type,'project')
     sys.argv = ["main.py",project]

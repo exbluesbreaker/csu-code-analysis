@@ -8,7 +8,7 @@ from logilab.common.configuration import ConfigurationMixIn
 from pylint.pyreverse.main import OPTIONS
 from CSUStAn.astng.simple import NamesCheckLinker
 from CSUStAn.reflexion.rm_tools import ReflexionModelVisitor,HighLevelModelDotGenerator,SourceModelXMLGenerator
-from CSUStAn.ucr.builder import UCRBuilder
+from CSUStAn.ucr.builder import UCRBuilder, PylintUCRBuilder
 from CSUStAn.ucr.visual import ClassHierarchyVisualizer
 from CSUStAn.ucr.handling import ClassIRHandler
 from CSUStAn.ucr.visual import UCRVisualizer

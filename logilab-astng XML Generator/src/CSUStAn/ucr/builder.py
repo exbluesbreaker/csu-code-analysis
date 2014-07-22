@@ -10,10 +10,74 @@ from lxml import etree
 from CSUStAn.astng.inspector import ClassIRLinker
 from CSUStAn.cross.duck_typing import DuckTypeHandler 
 from logilab.common.configuration import ConfigurationMixIn
+from logilab.astng.inspector import IdGeneratorMixIn
 from logilab.astng.manager import astng_wrapper, ASTNGManager
 from pylint.pyreverse.utils import get_visibility
 from pylint.pyreverse.main import OPTIONS
 from pylint.pyreverse.utils import insert_default_options
+
+from astroid.manager import AstroidManager
+from astroid.inspector import Linker
+from pylint.pyreverse.diadefslib import DiadefsHandler
+
+class PylintUCRBuilder(ConfigurationMixIn,IdGeneratorMixIn):
+    
+    options = OPTIONS
+    _out_file = None
+    
+    def __init__(self, args,out_file='test.xml'):
+        ConfigurationMixIn.__init__(self, usage=__doc__)
+        IdGeneratorMixIn.__init__(self)
+        insert_default_options()
+        self.manager = AstroidManager()
+        self.register_options_provider(self.manager)
+        args = self.load_command_line_configuration()
+        self._out_file = out_file
+        self.run(args)
+        pass
+    
+    def run(self, args):
+        project = self.manager.project_from_files(args)
+        linker = Linker(project, tag=True)
+        handler = DiadefsHandler(self.config)
+        diadefs = handler.get_diadefs(project, linker)
+        root = etree.Element("Classes")
+        classes = None
+        for diagram in diadefs:
+            if diagram.TYPE == 'class':
+                classes = diagram
+        class_map = {}
+        class_nodes = []
+        for c in classes.objects:
+            ''' First pass - id generation '''
+            c_id = str(self.generate_id())
+            node = etree.Element("Class",name=c.title,id=c_id,label=c.node.root().name)
+            if class_map.has_key(c.title):
+                print "Duplicate class name - ",c.title
+            else:
+                class_map[c.title] = c_id
+            root.append(node)
+            class_nodes.append((c,node))
+        for c, node in class_nodes:
+            ''' Second pass - linking '''
+            for a in c.attrs:
+                a_data =  [w.strip() for w in a.split(':')]
+                attr_node = etree.Element('Attr',name=a_data[0])
+                if (len(a_data) > 1):
+                    types = [w.strip() for w in a_data[1].split(',')]
+                    for t in types:
+                        if class_map.has_key(t):
+                            print "InnerType!"
+                            type_node = etree.Element('CommonType', id=class_map[a_data[1]],name=a_data[1])
+                            attr_node.append(type_node)
+                node.append(attr_node)
+            #mapper[obj] = node
+            
+        print "Writing ", self._out_file
+        f = open(self._out_file,'w')
+        f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
+        f.close()
+    
 
 
 class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
@@ -88,9 +152,13 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
         linker = ClassIRLinker(project)
         linker.visit(project)
         if self._criteria == 'capacity':
-            found_ducks = {t:0 for t in numpy.arange(self._treshold,1,0.05)}
-            bad_ducks = {t:0 for t in numpy.arange(self._treshold,1,0.05)}
-            prob_used_classes = {t:set([]) for t in numpy.arange(self._treshold,1,0.05)}
+            found_ducks = {}
+            bad_ducks = {}
+            prob_used_classes = {}
+            for t in numpy.arange(self._treshold,1,0.05):
+                found_ducks[t] = 0
+                bad_ducks[t] = 0
+                prob_used_classes[t] = set([])
         else:
             prob_used_classes = set([])
             bad_ducks = 0
@@ -124,7 +192,9 @@ class UCRBuilder(ConfigurationMixIn,DuckTypeHandler):
                         continue
                 if(self._criteria=='capacity'):
                     ''' Results of candidate class search will be saved for different thresholds '''
-                    duck_found = {t:False for t in numpy.arange(self._treshold,1,0.05)} 
+                    duck_found = {}
+                    for t in numpy.arange(self._treshold,1,0.05):
+                        duck_found[t] = False 
                 else:
                     duck_found = False
                 for field_candidate in linker.get_classes():
