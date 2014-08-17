@@ -7,6 +7,7 @@ Created on 02.03.2014
 from CSUStAn.ucfr.visual import ExecRouteVisualizer
 from CSUStAn.ucr.visual import UCRVisualizer
 from CSUStAn.ucr.handling import UCRSlicer
+import pydot
 
 class ExecPathObjectSlicer(ExecRouteVisualizer,UCRSlicer,UCRVisualizer):
     ''' Slice UCR according to objects, which created during given exec path'''
@@ -44,4 +45,25 @@ class ExecPathObjectSlicer(ExecRouteVisualizer,UCRSlicer,UCRVisualizer):
             parents = self.get_all_parents(current_class,None)
             for p in parents:
                 self._sliced_classes.add(p)
+    
+    def dot_call(self,call_node):
+        dot_id = self.generate_id()
+        target = call_node.getchildren()[0]
+        cfg_targets = call_node.xpath(".//Target[@cfg_id]")
+        ucr_targets = call_node.xpath(".//Direct/Target/TargetClass")
+        color='black'
+        if len(cfg_targets)>0:
+            cfg_target = "(cfg_id="+cfg_targets[0].get("cfg_id")+")"
+        else:
+            cfg_target = ""
+        if (len(ucr_targets)>0) and (ucr_targets[0].get("ucr_id") is not None):
+            ucr_target = "(ucr_id="+ucr_targets[0].get("ucr_id")+")"
+            color='red'
+        else:
+            ucr_target = ""
+        if(target.tag == "Getattr"):
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("label") + '.' + target.get("name")+cfg_target+ucr_target+"\"", shape='record',color=color)
+        else:
+            dot_call = pydot.Node(str(dot_id), label="\""+target.get("name")+cfg_target+ucr_target+"\"", shape='record',color=color)
+        return dot_call
                 

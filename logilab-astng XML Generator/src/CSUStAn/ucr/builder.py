@@ -58,21 +58,30 @@ class PylintUCRBuilder(ConfigurationMixIn,IdGeneratorMixIn):
                 class_map[c.title] = c_id
             root.append(node)
             class_nodes.append((c,node))
+        attr_num = 0
+        typed_attrs = 0
         for c, node in class_nodes:
             ''' Second pass - linking '''
+            attr_num += len(c.attrs)
             for a in c.attrs:
                 a_data =  [w.strip() for w in a.split(':')]
+                found_attr = False
                 attr_node = etree.Element('Attr',name=a_data[0])
                 if (len(a_data) > 1):
                     types = [w.strip() for w in a_data[1].split(',')]
                     for t in types:
                         if class_map.has_key(t):
                             print "InnerType!"
+                            found_attr = True
                             type_node = etree.Element('CommonType', id=class_map[a_data[1]],name=a_data[1])
                             attr_node.append(type_node)
+                if found_attr:
+                    typed_attrs += 1
                 node.append(attr_node)
             #mapper[obj] = node
-            
+        print "Numbers of all attributes in project: ", attr_num
+        print "Numbers of typed attributes in project: ", typed_attrs
+        print "Percentage: ", typed_attrs*1.0/attr_num
         print "Writing ", self._out_file
         f = open(self._out_file,'w')
         f.write(etree.tostring(root, pretty_print=True, encoding='utf-8', xml_declaration=True))
