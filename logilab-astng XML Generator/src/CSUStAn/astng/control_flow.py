@@ -107,9 +107,11 @@ class UCFRLinker(IdGeneratorMixIn, DuckLinker):
                 if not arg.name == 'self':
                     node.duck_info[arg.name]={'attrs':set([]),'methods':{}}
         self.extract_duck_types(node,class_node)
-        id_count, prev = self.handle_flow_part(func_node,node.body, set([]),0,returns)
+        block_node = etree.Element("Block", type="START",id=str(0))
+        func_node.append(block_node)
+        id_count, prev = self.handle_flow_part(func_node,node.body, set([0]),1,returns)
         id_count +=1
-        block_node = etree.Element("Block", type="<<Exit>>",id=str(id_count))
+        block_node = etree.Element("Block", type="END",id=str(id_count))
         func_node.append(block_node)
         ''' Flows to the end of function '''
         for p in prev.union(returns):

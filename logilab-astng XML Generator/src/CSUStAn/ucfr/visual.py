@@ -50,8 +50,13 @@ class UCFRVisual:
             block_node = pydot.Node(dot_id,label=block.tag,shape='diamond')
             return block_node
         call_nodes = [c for c in block.iter("Call")]
+        label_text = None
+        if (block.get("type") is not None):
+            label_text = block.get("type")
+        else:
+            label_text = 'Block '+str(block.get("id"))
         if(len(call_nodes)>0):
-            block_node = pydot.Cluster(str(dot_id),shape='record',label='Block '+str(block.get("id")))
+            block_node = pydot.Cluster(str(dot_id),shape='record',label=label_text)
             for c in call_nodes[:-1]:
                 call_node = self.dot_call(c)
                 block_node.add_node(call_node)
@@ -59,11 +64,14 @@ class UCFRVisual:
             block_node.add_node(call_node)
             return block_node,call_node
         else:
-            block_node = pydot.Node(str(dot_id),shape='record',label='Block '+str(block.get("id")))
+            block_node = pydot.Node(str(dot_id),shape='record',label=label_text)
             return block_node
         
     def dot_frame(self,frame_node):
-        frame_graph = pydot.Cluster(str(self.generate_id()),shape='record',label=frame_node.get("label")+'.'+frame_node.get("name")+"(cfg_id="+frame_node.get("cfg_id")+")")
+        if(frame_node.get("parent_class") is not None):
+            frame_graph = pydot.Cluster(str(self.generate_id()),shape='record',label=frame_node.get("label")+'.'+frame_node.get("parent_class")+'.'+frame_node.get("name")+"(cfg_id="+frame_node.get("cfg_id")+")")
+        else:
+            frame_graph = pydot.Cluster(str(self.generate_id()),shape='record',label=frame_node.get("label")+'.'+frame_node.get("name")+"(cfg_id="+frame_node.get("cfg_id")+")")
         block_dict = {}
         for block in frame_node.iter("Block"):
             block_node = self.dot_block(block)
