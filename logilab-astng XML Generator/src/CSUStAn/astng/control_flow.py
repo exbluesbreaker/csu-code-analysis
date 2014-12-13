@@ -184,8 +184,9 @@ class UCFRLinker(IdGeneratorMixIn, DuckLinker):
             #block_node.append(subblock_node)
             if(isinstance(child, (If, While, For, TryExcept, TryFinally, With)) or (block_node is None)):
                 for p in prev:
-                    flow_node = etree.Element("Flow", from_id=str(p), to_id=str(curr_id))
-                    func_node.append(flow_node)
+                    if (p not in returns):
+                        flow_node = etree.Element("Flow", from_id=str(p), to_id=str(curr_id))
+                        func_node.append(flow_node)
             if isinstance(child, If):
                 if_node = etree.Element("If", id=str(id_count), test=child.test.__class__.__name__)
                 if_node.set("fromlineno",str(child.fromlineno))
@@ -234,11 +235,21 @@ class UCFRLinker(IdGeneratorMixIn, DuckLinker):
         ''' Handle conditional part of flow, e.g. If block'''
         curr_id = id_count
         parent_ids = set([]) 
-        if isinstance(node, (If,While, For)):
+        if isinstance(node, If):
             id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
             parent_ids |=ids
             id_count, ids = self.handle_flow_part(func_node,node.orelse, set([curr_id]), id_count,returns)
             parent_ids |=ids
+            if (not node.orelse):
+                ''' If there are no else then no direct block from if is needed'''
+                parent_ids.add(curr_id)
+        elif isinstance(node, (While, For)):
+            id_count, ids = self.handle_flow_part(func_node,node.body, set([curr_id]), id_count,returns)
+            for p in ids:
+                    if (p not in returns):
+                        flow_node = etree.Element("Flow", from_id=str(p), to_id=str(curr_id))
+                        func_node.append(flow_node)
+            parent_ids.add(curr_id)
             if (not node.orelse):
                 ''' If there are no else then no direct block from if is needed'''
                 parent_ids.add(curr_id)
