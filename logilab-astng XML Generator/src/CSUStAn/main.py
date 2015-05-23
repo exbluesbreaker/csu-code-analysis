@@ -12,6 +12,7 @@ from CSUStAn.runners import *
 from CSUStAn.reflexion.rm_tools import RegexMapper
 from ConfigParser import SafeConfigParser
 from CSUStAn.astng.obsolete import LogilabUCRBuilder
+from CSUStAn.ucfr.visual import CallGraphVisualizer
 
 if __name__ == '__main__':
     pass
@@ -290,5 +291,9 @@ elif (args.type == "BCAChecker"):
 elif (args.type == "BCAChecker_JavaAST"):
     ast_xml = cfg_parser.get(args.type, "ast_xml")
     runner = BCAAstChecker(ast_xml)
+elif (args.type == "CallGraphVisualizer"):
+    ucfr_xml = cfg_parser.get(args.type, "ucfr_xml")
+    out_file = cfg_parser.get(args.type, "out_file")
+    runner = CallGraphVisualizer(ucfr_xml, out_file)
 else:
     print "Unknown type!"

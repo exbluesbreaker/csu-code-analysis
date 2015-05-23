@@ -16,8 +16,8 @@ from pylint.pyreverse.utils import get_visibility
 from pylint.pyreverse.main import OPTIONS
 from pylint.pyreverse.utils import insert_default_options
 
-from astroid.manager import AstroidManager
-from astroid.inspector import Linker
+#from astroid.manager import AstroidManager
+#from astroid.inspector import Linker
 from pylint.pyreverse.diadefslib import DiadefsHandler
 
 class PylintUCRBuilder(ConfigurationMixIn,IdGeneratorMixIn):

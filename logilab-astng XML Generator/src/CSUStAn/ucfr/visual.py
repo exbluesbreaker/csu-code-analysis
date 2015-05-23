@@ -270,3 +270,66 @@ class ExecPathCallsSearch(ExecRouteVisualizer):
         else:
             dot_call = pydot.Node(str(dot_id), label="\""+target.get("name")+cfg_target+ucr_target+"\"", shape='record',color=color)
         return dot_call
+    
+class FunctionNode:
+    
+    def __init__(self, ucfr_id, xml_node):
+        self.ucfr_id = ucfr_id
+        self.xml_node = xml_node
+    
+class ClassNode:
+    
+    def __init__(self, ucr_id, dot_node, ucfr_ids, method_nodes):
+        self.ucr_id = ucr_id
+        self.ucfr_ids = ucfr_ids
+        self.dot_node = dot_node
+        self.method_nodes = method_nodes
+    
+class CallGraphVisualizer(UCFRHandler,IdGeneratorMixIn):
+    
+    def __init__(self, ucfr_xml, out_file):
+        UCFRHandler.__init__(self, ucfr_xml)
+        IdGeneratorMixIn.__init__(self)
+        self.__out_file = out_file
+        self.run()
+        
+    def run(self):
+        graph = pydot.Dot(graph_type='digraph', compound='true', pad = 0.25)
+        class_nodes = {}
+        for method in self._methods:
+            ucr_id = method.get("ucr_id")
+            ucfr_id = method.get("cfg_id")
+            title = "{" + method.get("parent_class").split(".")[-1:][0] + "\nid={0}".format(ucr_id) + "}"
+            if ucr_id in class_nodes:
+                class_nodes[ucr_id].ucfr_ids.append(ucfr_id)
+                class_nodes[ucr_id].method_nodes.append(FunctionNode(ucfr_id, method))
+            else:
+                dot_node = pydot.Node(ucr_id, label = title, shape = "record", margin = 0.5)
+                class_nodes[ucr_id] = ClassNode(ucr_id, dot_node, [ucfr_id], [FunctionNode(ucfr_id, method)])
+                graph.add_node(dot_node)
+        function_nodes = {}
+        for function in self._funcs:
+            ucfr_id = function.get("cfg_id")
+            title = function.get("name")
+            function_nodes[ucfr_id] = FunctionNode(ucfr_id, function)
+            graph.add_node(pydot.Node(ucfr_id, label = title, shape = "record"))
+            
+        edges = {}
+        for id, node in class_nodes.items():
+            for method in node.method_nodes:
+                for call in method.xml_node.xpath("./Block/Call/Getattr"):
+                    target = call.find("Target")
+                    if target != None:
+                        ucfr_id = target.get("cfg_id")
+                        targetClass = target.find("TargetClass")
+                        if targetClass != None:
+                            ucr_id = targetClass.get("ucr_id")
+                            if ucr_id in class_nodes and ucfr_id in class_nodes[ucr_id].ucfr_ids:
+                                edge_id = "{0}-{1}".format(id, ucr_id)
+                                if not edge_id in edges:
+                                    dot_edge = pydot.Edge(id, ucr_id)
+                                    edges[edge_id] = dot_edge
+                                    graph.add_edge(dot_edge)
+        
+        graph.write_dot(self.__out_file + ".dot")
+        graph.write_svg(self.__out_file)
